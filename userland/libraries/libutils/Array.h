@@ -28,5 +28,17 @@ public:
     constexpr T *raw_storage() { return _storage; }
     constexpr const T *raw_storage() const { return _storage; }
 
+    T &at(size_t index)
+    {
+        assert(index < N);
+        return _storage[index];
+    }
+        
+    const T &at(size_t index) const
+    {
+        assert(index < N);
+        return _storage[index];
+    }
+    
 };
 }
