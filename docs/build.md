@@ -36,7 +36,8 @@ $ cd pranaOS
 
 - then for building pranaos follow these steps:
 
-```
+```sh
+# note: run this without root
 $ toolchain/buildit.sh
 ```
 - building will take upto 1 - 2 hrs it depends on your processor & ram
