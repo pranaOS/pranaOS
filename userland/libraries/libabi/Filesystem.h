@@ -41,3 +41,8 @@ enum JFileType
 
 typedef unsigned int JOpenFlag;
 
+struct JStat
+{
+    size_t size;
+    JFileType type
+};
