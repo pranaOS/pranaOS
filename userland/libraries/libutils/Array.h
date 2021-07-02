@@ -39,6 +39,21 @@ public:
         assert(index < N);
         return _storage[index];
     }
-    
+
+    constexpr Array()
+    {
+    }
+
+    constexpr Array(std::initializer_list<T> data)
+    {
+        assert(data.size() <= N);
+
+        for (size_t i = 0; i < MIN(N, data.size()); i++)
+        {
+            _storage[i] = *(data.begin() + i);
+        }
+    }
+
+
 };
 }
