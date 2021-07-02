@@ -48,4 +48,16 @@ inline void falsity(bool a, SourceLocation location = SourceLocation::current())
     }
 }
 
+template <typename A, typename B>
+inline void equal(const A a, const B b, SourceLocation location = SourceLocation::current())
+{
+    if constexpr (!(__CONFIG_IS_RELEASE__))
+    {
+        if (a != static_cast<A>(b))
+        {
+            assert_failed(IO::format("{} not equal {}", a, b).cstring(), location.file(), location.function(), location.line());
+        }
+    }
+}
+
 }
