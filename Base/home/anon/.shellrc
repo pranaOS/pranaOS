@@ -1,0 +1,4 @@
+#!/bin/sh
+IFS="\x0a"
+
+export HISTCONTROL="ignoreboth"

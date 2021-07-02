@@ -1,0 +1,38 @@
+#pragma once
+
+// includes
+#include <Kernel/Interrupts/IRQHandler.h>
+#include <Kernel/Lock.h>
+#include <Kernel/Storage/AHCIPort.h>
+#include <Kernel/Storage/StorageDevice.h>
+
+namespace Kernel {
+
+class AHCIController;
+class SATADiskDevice final : public StorageDevice {
+    friend class AHCIController;
+
+public:
+    enum class InterfaceType : u8 {
+        SATA,
+        SATAPI,
+    };
+
+public:
+    static NonnullRefPtr<SATADiskDevice> create(const AHCIController&, const AHCIPort&, size_t sector_size, u64 max_addressable_block);
+    virtual ~SATADiskDevice() override;
+
+    // ^StorageDevice
+    // ^BlockDevice
+    virtual void start_request(AsyncBlockDeviceRequest&) override;
+    virtual String device_name() const override;
+
+private:
+    SATADiskDevice(const AHCIController&, const AHCIPort&, size_t sector_size, u64 max_addressable_block);
+
+    // ^DiskDevice
+    virtual const char* class_name() const override;
+    NonnullRefPtr<AHCIPort> m_port;
+};
+
+}
