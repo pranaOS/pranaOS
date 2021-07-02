@@ -84,4 +84,16 @@ inline void greater_equal(const A a, const B b, SourceLocation location = Source
     }
 }
 
+template <typename A, typename B>
+inline void greater_than(const A a, const B b, SourceLocation location = SourceLocation::current())
+{
+    if constexpr (!(__CONFIG_IS_RELEASE__))
+    {
+        if (!(a > static_cast<A>(b)))
+        {
+            assert_failed(IO::format("{} not greater than {}", a, b).cstring(), location.file(), location.function(), location.line());
+        }
+    }
+}
+
 }
