@@ -46,3 +46,9 @@ struct JStat
     size_t size;
     JFileType type
 };
+
+struct JDirEntry
+{
+    char name[FILE_NAME_LENGHT];
+    JStat stat;
+};
