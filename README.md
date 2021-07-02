@@ -19,6 +19,6 @@ See the [pranaOS build instructions](https://github.com/krishpranav/pranaOS/blob
 
 # Contributors
 
-<a href="https://github.com/krishpranav/pranaOS/graphs/contributors">
-  <img src="https://contributors-img.web.app/image?repo=krishpranav/pranaOS" />
+<a href="https://github.com/pranaOS/pranaOS/graphs/contributors">
+  <img src="https://contributors-img.web.app/image?repo=pranaOS/pranaOS" />
 </a>
