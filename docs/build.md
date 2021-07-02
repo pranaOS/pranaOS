@@ -42,3 +42,16 @@ $ toolchain/buildit.sh
 - building will take upto 1 - 2 hrs it depends on your processor & ram
 
 
+# Building Image and running
+
+```
+$ cd ../ && make all
+```
+
+- running pranaOS
+```sh
+# for qemu
+$ make run VMACHINE=qemu
+# for virtualbox
+$ make run VMACHINE=vbox
+```
