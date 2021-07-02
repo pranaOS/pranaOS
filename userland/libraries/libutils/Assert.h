@@ -21,7 +21,7 @@ inline void not_null(const A a, SourceLocation location = SourceLocation::curren
     {
         if (a == nullptr)
         {
-            assert_failed("variable is null", location.file(), location.function(), location.line());
+            assert_failed("variable is nullptr", location.file(), location.function(), location.line());
         }
     }
 }
@@ -108,5 +108,24 @@ inline void lower_equal(const A a, const B b, SourceLocation location = SourceLo
     }
 }
 
-
+template <typename A, typename B>
+inline void lower_than(const A a, const B b, SourceLocation location = SourceLocation::current())
+{
+    if constexpr (!(__CONFIG_IS_RELEASE__))
+    {
+        if (!(a < static_cast<A>(b)))
+        {
+            assert_failed(IO::format("{} not lower than {}", a, b).cstring(), location.file(), location.function(), location.line());
+        }
+    }
 }
+
+inline void unreachable(SourceLocation location = SourceLocation::current())
+{
+    if constexpr (!(__CONFIG_IS_RELEASE__))
+    {
+        assert_failed("the unreachable() has been reached, and that's not a good thing!", location.file(), location.function(), location.line());
+    }
+}
+
+} 
