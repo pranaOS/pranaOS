@@ -10,3 +10,13 @@
 #include <libmath/MinMax.h>
 #include <libutils/Assert.h>
 
+namespace Utils
+{
+
+
+template <typename T, size_t N>
+struct Array
+{
+    static_assert(N > 0, "Array must have size greater than 0");
+}
+}
