@@ -1,18 +1,10 @@
-/*
- * Copyright (c) 2021, Krisna Pranav
- *
- * SPDX-License-Identifier: BSD-2-Clause
-*/
-
 #pragma once
 
-// includes
 #include <libmath/MinMax.h>
 #include <libutils/Assert.h>
 
 namespace Utils
 {
-
 
 template <typename T, size_t N>
 struct Array
@@ -22,9 +14,9 @@ struct Array
 private:
     T _storage[N];
 
-
 public:
     constexpr size_t count() const { return N; }
+
     constexpr T *raw_storage() { return _storage; }
     constexpr const T *raw_storage() const { return _storage; }
 
@@ -33,7 +25,7 @@ public:
         assert(index < N);
         return _storage[index];
     }
-        
+
     const T &at(size_t index) const
     {
         assert(index < N);
@@ -61,18 +53,50 @@ public:
         return _storage[index];
     }
 
-    const T &operator[](size_T index) const
+    const T &operator[](size_t index) const
     {
         assert(index < N);
 
         return _storage[index];
     }
 
-    bool operator!=(const Array *other) const
+    bool operator!=(const Array &other) const
     {
-        return !(&this == other);
+        return !(*this == other);
     }
 
+    bool operator==(const Array<T, N> &other) const
+    {
+        if (this == &other)
+        {
+            return true;
+        }
 
+        if (count() != other.count())
+        {
+            return false;
+        }
+
+        for (size_t i = 0; i < count(); i++)
+        {
+            if (_storage[i] != other._storage[i])
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    constexpr ContiguousIterator<T> begin() const
+    {
+        return _storage;
+    }
+
+    constexpr ContiguousIterator<T> end() const
+    {
+        return _storage + N;
+    }
 };
+
 }
