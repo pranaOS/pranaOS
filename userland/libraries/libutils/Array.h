@@ -18,5 +18,15 @@ template <typename T, size_t N>
 struct Array
 {
     static_assert(N > 0, "Array must have size greater than 0");
-}
+
+private:
+    T _storage[N];
+
+
+public:
+    constexpr size_t count() const { return N; }
+    constexpr T *raw_storage() { return _storage; }
+    constexpr const T *raw_storage() const { return _storage; }
+
+};
 }
