@@ -1,30 +1,44 @@
 # Build Guide
 
-- Supported Distros:
-<!-- 
-```
-debian, arch, ubuntu
-mac
-``` -->
+# Supported Distros:
+
 - debian
 - arch
 - ubuntu
 - mac
 - fedora & redhat
 
-- Installing Requirements:
+# Installing Requirements:
 
 - Debian, Ubuntu
 ```
-$ sudo apt install nasm gcc make binutils grub-pc-bin xorriso mtools git qemu qemu-kvm libgtk-3-dev
+$ sudo apt install nasm gcc make binutils grub-pc-bin xorriso mtools git qemu qemu-kvm build-essential bison flex libgmp3-dev libmpc-dev libmpfr-dev texinfo
 ```
 
 - Arch
 ```
-$ sudo pacman -S nasm gcc make binutils grub qemu libisoburn mtools git qemu libgtk-3-dev
+$ sudo pacman -S nasm gcc make binutils grub qemu libisoburn mtools git qemu base-devel bison flex mpc mpfr texinfo
 ```
 
 - Fedora, Redhat
 ```
-$ sudo dnf install nasm gcc gcc-g++ make binutils xorriso mtools ImageMagick git qemu qemu-kvm patch gtk3*
+$ sudo dnf install nasm gcc gcc-g++ make binutils xorriso mtools ImageMagick git qemu qemu-kvm patch bison flex mpc-devel mpfr-devel gmp-devel texinfo patch 
 ```
+
+# Building pranaOS
+
+- clone the repo:
+
+```
+$ git clone https://github.com/pranaOS/pranaOS
+$ cd pranaOS
+```
+
+- then for building pranaos follow these steps:
+
+```
+$ toolchain/buildit.sh
+```
+- building will take upto 1 - 2 hrs it depends on your processor & ram
+
+
