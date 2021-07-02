@@ -26,4 +26,15 @@ inline void not_null(const A a, SourceLocation location = SourceLocation::curren
     }
 }
 
+inline void truth(bool a, SourceLocation location = SourceLocation::current())
+{
+    if constexpr (!(__CONFIG_IS_RELEASE__))
+    {
+        if (!a)
+        {
+            assert_failed("variable is false", location.file(), location.function(), location.line());
+        }
+    }
+}
+
 }
