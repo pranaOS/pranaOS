@@ -54,6 +54,25 @@ public:
         }
     }
 
+    T &operator[](size_t index)
+    {
+        assert(index < N);
+
+        return _storage[index];
+    }
+
+    const T &operator[](size_T index) const
+    {
+        assert(index < N);
+
+        return _storage[index];
+    }
+
+    bool operator!=(const Array *other) const
+    {
+        return !(&this == other);
+    }
+
 
 };
 }
