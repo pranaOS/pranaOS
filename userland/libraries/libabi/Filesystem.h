@@ -38,3 +38,6 @@ enum JFileType
 #define J_OPEN_SOCKET (1 << 8)
 #define J_OPEN_CLIENT (1 << 9)
 #define J_OPEN_SERVER (1 << 10)
+
+typedef unsigned int JOpenFlag;
+
