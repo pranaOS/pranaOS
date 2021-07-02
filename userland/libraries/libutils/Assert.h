@@ -37,4 +37,15 @@ inline void truth(bool a, SourceLocation location = SourceLocation::current())
     }
 }
 
+inline void falsity(bool a, SourceLocation location = SourceLocation::current())
+{
+    if constexpr (!(__CONFIG_IS_RELEASE__))
+    {
+        if (a)
+        {
+            assert_failed("variable is true", location.file(), location.function(), location.line());
+        }
+    }
+}
+
 }
