@@ -1,9 +1,17 @@
+/*
+ * Copyright (c) 2021, Krisna Pranav
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+*/
+
+// file system jobs headers 
+
 #pragma once
 
 #include <libutils/Prelude.h>
 
-#define FILE_NAME_LENGHT (64)
-#define PATH_LENGHT (512)
+#define FILE_NAME_LENGTH (64)
+#define PATH_LENGTH (512)
 #define PATH_DEPTH (16)
 #define PATH_SEPARATOR '/'
 
@@ -44,11 +52,11 @@ typedef unsigned int JOpenFlag;
 struct JStat
 {
     size_t size;
-    JFileType type
+    JFileType type;
 };
 
 struct JDirEntry
 {
-    char name[FILE_NAME_LENGHT];
+    char name[FILE_NAME_LENGTH];
     JStat stat;
 };
