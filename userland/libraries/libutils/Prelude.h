@@ -14,3 +14,13 @@
 #include <libabi/Process.h>
 #include <libutils/Macros.h>
 
+
+typedef uint64_t size64_t;
+typedef int64_t ssize64_t;
+
+#ifdef __cplusplus
+#      ifndef NO_PRANAOS_USing_UTILS_NAMESPACE
+
+namespace Utils
+{
+}
