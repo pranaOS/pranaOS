@@ -17,6 +17,15 @@ template <typename TKey, typename TValue>
 struct HashMap
 {
 private:
+    struct Item
+    {
+        uint32_t hash;
+        TKey key;
+        TValue value;
+    };
     
-}
+    static constexpr int BUCKET_COUNT = 256;
+};
+
+
 }
