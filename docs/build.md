@@ -15,6 +15,11 @@
 $ sudo apt install nasm gcc make binutils grub-pc-bin xorriso mtools git qemu qemu-kvm build-essential bison flex libgmp3-dev libmpc-dev libmpfr-dev texinfo
 ```
 
+- Macos:
+```
+$ brew install nasm gcc make binutils grub-pc-bin xorriso mtools git qemu qemu-kvm build-essential bison flex libgmp3-dev libmpc-dev libmpfr-dev texinfo
+```
+
 - Arch
 ```
 $ sudo pacman -S nasm gcc make binutils grub qemu libisoburn mtools git qemu base-devel bison flex mpc mpfr texinfo
