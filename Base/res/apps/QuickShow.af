@@ -1,7 +1,0 @@
-[App]
-Name=QuickShow
-Executable=/bin/QuickShow
-Category=Graphics
-
-[Launcher]
-FileTypes=pbm,pgm,png,ppm,gif,jpg,jpeg
