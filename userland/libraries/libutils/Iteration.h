@@ -20,4 +20,19 @@ enum struct Iteration
 };
 
 
+template <typename T>
+using IterFunc = Func<Iteration(T)>;
+
+template <typename T>
+struct ContiguousIterator
+{
+
+private:
+    T *_ptr;
+
+public:
+    ContiguousIterator(T *ptr) : _ptr(ptr) {}
+
+}
+
 }
