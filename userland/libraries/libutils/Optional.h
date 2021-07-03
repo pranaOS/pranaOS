@@ -26,6 +26,24 @@ private:
         T _storage;
     };
 
+public:
+    ALWAYS_INLINE bool present() const
+    {
+        return _present;
+    }
+
+    ALWAYS_INLINE T &unwrap()
+    {
+        assert(present());
+        return _storage;
+    }
+
+    ALWAYS_INLINE const T &unwrap() const
+    {
+        assert(present());
+        return _storage;
+    }
+
 };
 
 }
