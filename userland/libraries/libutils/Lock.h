@@ -38,5 +38,28 @@ private:
         ASSERT_NOT_REACHED();
     }
 
+public:
+    bool locked() const
+    {
+        bool result;
+        __atomic_load(&_locked, &result, __ATOMIC_SEQ_CST);
+        return result;
+    }
+
+    int holder() const
+    {
+        int result;
+        __atomic_load(&_holder, &result, __ATOMIC_SEQ_CST);
+        return result;
+    }
+
+    const char *name() const
+    {
+        return _name
+    }
+
+    SourceLocation acquire_location() { return _last_acquire_location; }
+    SourceLocation release_location() { return _last_acquire_location; }
+
 };
 }
