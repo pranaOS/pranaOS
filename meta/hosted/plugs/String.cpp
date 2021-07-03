@@ -24,3 +24,13 @@ size_t strlcpy(char *dst, const char *src, size_t maxlen)
     return srclen;
 }
 
+void strrvs(char *str)
+{
+    int c, i, j;
+    for (i = 0, j = strlen(str) - 1; i < j; i++, j--)
+    {
+        c = str[i];
+        str[i] = str[j];
+        str[j] = c;
+    }
+}
