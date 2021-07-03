@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, evilbat831
+ * Copyright (c) 2021, evilbat831, nuke123-sudo, krishpranav
  *
  * SPDX-License-Identifier: BSD-2-Clause
 */
@@ -47,7 +47,7 @@ private:
     };
 
     OwnPtr<CallableWrapperBase> _wrapper;
-    
+
 public:
     Func() = default;
     Func(nullptr_t) {}
@@ -84,5 +84,21 @@ public:
         _wrapper = own<CallableWrapper<TCallable>>(std::move(callable));
         return *this;
     }
-    
+
+    template <
+        typename TFunction,
+        typename = typename EnableIf<IsPointer<TFunction>::value && IsFunction<typename RemovePointer<TFunction>::Type>::value>::Type>
+    Func &operator=(TFunction function)
+    {
+        _wrapper = own<CallableWrapper<TFunction>>(std::move(function));
+        return *this;
+    }
+
+    Func &operator=(nullptr_t)
+    {
+        _wrapper = nullptr;
+        return *this;
+    }
+};
+
 }
