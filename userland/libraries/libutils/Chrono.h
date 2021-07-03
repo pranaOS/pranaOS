@@ -22,5 +22,18 @@ private:
     NONMOVABLE(Chrono);
     NONCOPYABLE(Chrono);
 
+public:
+    Chrono(const char *name)
+    {
+        _name = name;
+        j_system_tick(&_start);
+    }
+
+    ~Chrono()
+    {
+        Tick end;
+        j_system_tick(&end);
+    }
+
 }
 }
