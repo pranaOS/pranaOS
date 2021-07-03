@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, nuke123-sudo
+ * Copyright (c) 2021, nuke123-sudo, krishpranav
  *
  * SPDX-License-Identifier: BSD-2-Clause
 */
@@ -45,3 +45,20 @@ constexpr TValue swap_big_endian(TValue value)
     return value;
 #endif
 }
+
+template <typename TValue>
+struct PACKED LittleEndian
+{
+private:
+    TValue _value{0};
+
+public:
+    constexpr LittleEndian() {}
+
+    constexpr LittleEndian(TValue value) : _value(swap_little_endian(value)) {}
+
+    constexpr TValue operator()() const
+    {
+        return swap_little_endian(_value);
+    }
+};
