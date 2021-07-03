@@ -76,3 +76,23 @@ int open_flags_to_posix(JOpenFlag flags)
 
     return result;
 }
+
+int whence_to_posix(JWhence whence)
+{
+    if (whence == J_WHENCE_START)
+    {
+        return SEEK_SET;
+    }
+
+    if (whence == J_WHENCE_CURRENT)
+    {
+        return SEEK_CUR;
+    }
+
+    if (whence == J_WHENCE_END)
+    {
+        return SEEK_END;
+    }
+
+    return -1;
+}
