@@ -33,7 +33,9 @@ public:
     {
         Tick end;
         j_system_tick(&end);
-    }
 
-}
-}
+        IO::logln("Chrono '{}' ended at {}", _name, end - _start);
+    }
+};
+
+} 
