@@ -35,7 +35,23 @@ private:
     Node *_head = nullptr;
     Node *_tail = nullptr;
 
-    
+public:
+    bool empty() const
+    {
+        return _count == 0;
+    }
+
+    bool any() const
+    {
+        return _count > 0;
+    }
+
+    size_t count() const
+    {
+        return _const;
+    }
+
+    List() {}
 
 };
 
