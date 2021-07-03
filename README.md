@@ -19,6 +19,7 @@ See the [pranaOS build instructions](https://github.com/pranaOS/pranaOS/blob/mas
 
 # Contributors
 
-<a href="https://github.com/pranaOS/pranaOS/graphs/contributors">
-  <img src="https://contributors-img.web.app/image?repo=pranaOS/pranaOS" />
-</a>
+[krishpranav](https://github.com/krishpranav)
+[nuke123-sudo](https://github.com/nuke123-sudo)
+[evilbat831](https://github.com/evilbat831)
+[michaelsmith213](https://github.com/michaelsmith213)
