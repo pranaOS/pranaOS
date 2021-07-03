@@ -7,7 +7,6 @@
 // includes
 #include <libsystem/process/Process.h>
 
-
 String process_resolve(String path)
 {
     return path;
@@ -15,10 +14,10 @@ String process_resolve(String path)
 
 int process_this()
 {
-    return 69
+    return 69;
 }
 
-const char *process()
+const char *process_name()
 {
     return "hosted";
 }
