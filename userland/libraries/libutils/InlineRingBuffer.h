@@ -15,7 +15,6 @@ namespace Utils
 template <typename T, size_t N>
 struct InlineRingBuffer
 {
-
 private:
     size_t _head = 0;
     size_t _tail = 0;
@@ -61,11 +60,11 @@ public:
     InlineRingBuffer &operator=(InlineRingBuffer &&other)
     {
         std::swap(_head, other._head);
-        std::swap(_tail, other._head);
+        std::swap(_tail, other._tail);
         std::swap(_used, other._used);
         std::swap(_buffer, other._buffer);
 
-        return *this
+        return *this;
     }
 
     bool empty() const { return _used == 0; }
@@ -114,7 +113,18 @@ public:
         return read;
     }
 
+    size_t write(const T *buffer, size_t size)
+    {
+        size_t written = 0;
 
+        while (!full() && written < size)
+        {
+            put(buffer[written]);
+            written++;
+        }
 
+        return written;
+    }
 };
-}
+
+} // namespace Utils
