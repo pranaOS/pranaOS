@@ -31,6 +31,12 @@ private:
         Node(const T &v) : value{v} {}
     };
 
+    size_t _count = 0;
+    Node *_head = nullptr;
+    Node *_tail = nullptr;
+
+    
+
 };
 
 }
