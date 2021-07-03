@@ -68,7 +68,52 @@ public:
         return *this
     }
 
-    
+    bool empty() const { return _used == 0; }
+
+    bool full() const { return _used == N; }
+
+    size_t used() const { return _used; }
+
+    void put(T c)
+    {
+        assert(!full());
+
+        _buffer[_head] = c;
+        _head = (_head + 1) % N;
+        _used++;
+    }
+
+    T get()
+    {
+        assert(!empty());
+
+        T c = _buffer[_tail];
+        _tail = (_tail + 1) % N;
+        _used--;
+
+        return c;
+    }
+
+    T peek(size_t peek)
+    {
+        int offset = (_tail + peek) % N;
+
+        return _buffer[offset];
+    }
+
+    size_t read(T *buffer, size_t size)
+    {
+        size_t read = 0;
+
+        while (!empty() && read < size)
+        {
+            buffer[read] = get();
+            read++;
+        }
+
+        return read;
+    }
+
 
 
 };
