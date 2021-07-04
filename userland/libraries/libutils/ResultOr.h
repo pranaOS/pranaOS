@@ -13,7 +13,6 @@
 #include <libutils/Optional.h>
 #include <libutils/Std.h>
 
-
 namespace Utils
 {
 
@@ -75,5 +74,16 @@ ALWAYS_INLINE static inline JResult __extract_value(JResult r) { return r; }
 template <typename T>
 ALWAYS_INLINE static inline T __extract_value(ResultOr<T> r) { return r.unwrap(); };
 
+#define TRY(__stuff)                                        \
+    ({                                                      \
+        auto __eval__ = __stuff;                            \
+                                                            \
+        if (::Utils::__extract_result(__eval__) != SUCCESS) \
+        {                                                   \
+            return ::Utils::__extract_result(__eval__);     \
+        }                                                   \
+                                                            \
+        ::Utils::__extract_value(__eval__);                 \
+    })
 
-}
+} 
