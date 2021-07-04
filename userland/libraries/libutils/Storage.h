@@ -12,7 +12,6 @@
 namespace Utils
 {
 
-
 struct Storage : public RefCounted<Storage>
 {
     virtual ~Storage() {}
@@ -26,5 +25,11 @@ struct Storage : public RefCounted<Storage>
     virtual const void *end() const { return const_cast<Storage *>(this)->end(); }
 };
 
+struct RawStorage
+{
+    virtual ~RawStorage() {}
+
+    virtual RefPtr<Storage> storage() = 0;
+};
 
 }
