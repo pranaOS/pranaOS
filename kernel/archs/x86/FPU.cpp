@@ -26,7 +26,24 @@ void fpu_initialize()
                  : "=r"(t));
     t |= 3 << 9;
     asm volatile("mov %0, %%cr4" ::"r"(t));
- 
+
     asm volatile("fninit");
     asm volatile("fxsave (%0)" ::"r"(fpu_initial_context));
+}
+
+void fpu_init_context(Task *task)
+{
+    memcpy(&task->fpu_registers, &fpu_initial_context, 512);
+}
+
+void fpu_save_context(Task *task)
+{
+    asm volatile("fxsave (%0)" ::"r"(fpu_registers));
+    memcpy(&task->fpu_registers, &fpu_registers, 512);
+}
+
+void fpu_load_context(Task *task)
+{
+    memcpy(&fpu_registers, &task->fpu_registers, 512);
+    asm volatile("fxrstor (%0)" ::"r"(fpu_registers));
 }
