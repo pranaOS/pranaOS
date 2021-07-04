@@ -138,6 +138,29 @@ public:
 
     bool operator!=(const T *other) const { return _ptr != other; }
 
+
+    operator bool() const
+    {
+        return _ptr != nullptr;
+    }
+
+    bool operator!() const
+    {
+        return _ptr == nullptr;
+    }
+
+    int refcount() 
+    {
+        if (_ptr)
+        {
+            return ptr->refcount();
+        }
+        else
+        {
+            return 0;
+        }
+    }
+
 }
 
 }
