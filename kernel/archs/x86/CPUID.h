@@ -106,4 +106,42 @@ struct PACKED CPUID
         };
         uint32_t RAW_ECX;
     };
+
+    union PACKED
+    {
+        struct PACKED
+        {
+            bool FPU : 1;
+            bool VME : 1;
+            bool DE : 1;
+            bool PSE : 1;
+            bool TSC : 1;
+            bool MSR : 1;
+            bool PAE : 1;
+            bool MCE : 1;
+            bool CX8 : 1;
+            bool APIC : 1;
+            bool SEP : 1;
+            bool MTRR : 1;
+            bool PGE : 1;
+            bool MCA : 1;
+            bool CMOV : 1;
+            bool PAT : 1;
+            bool PSE36 : 1;
+            bool PSN : 1;
+            bool CLF : 1;
+            bool DTES : 1;
+            bool ACPI : 1;
+            bool MMX : 1;
+            bool FXSR : 1;
+            bool SSE : 1;
+            bool SSE2 : 1;
+            bool SS : 1;
+            bool HTT : 1;
+            bool TM1 : 1;
+            bool IA64 : 1;
+            bool PBE : 1;
+        };
+        uint32_t RAW_EDX;
+    };
 };
