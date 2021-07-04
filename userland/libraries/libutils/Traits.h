@@ -7,7 +7,6 @@
 
 #pragma once
 
-// includes
 #include <libutils/Prelude.h>
 
 namespace Utils
@@ -18,13 +17,46 @@ struct EnableIf
 {
 };
 
-
 template <typename T>
 struct EnableIf<true, T>
 {
     using Type = T;
 };
 
+template <typename T>
+struct AddConst
+{
+    using Type = const T;
+};
 
+template <typename T>
+struct RemoveConst
+{
+    using Type = T;
+};
+
+template <typename T>
+struct RemoveConst<const T>
+{
+    using Type = T;
+};
+
+template <typename T>
+struct RemoveVolatile
+{
+    using Type = T;
+};
+
+template <typename T>
+struct RemoveVolatile<volatile T>
+{
+    using Type = T;
+};
+
+template <typename T>
+struct RemoveConstVolatile
+{
+    typedef typename RemoveVolatile<typename RemoveConst<T>::Type>::Type Type;
+};
 
 }
