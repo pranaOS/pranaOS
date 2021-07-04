@@ -6,6 +6,7 @@
 
 #pragma once
 
+// includes
 #include <libutils/Prelude.h>
 
 namespace Utils
@@ -20,5 +21,6 @@ static TypeId GetTypeId()
     return (reinterpret_cast<TypeId>(&placeHolder));
 }
 
+constexpr TypeId INVALID_TYPE_ID = -1;
 
 }
