@@ -12,16 +12,14 @@
 #include <libutils/Tags.h>
 #include <libutils/Traits.h>
 
-namespace Utisl
-
+namespace Utils
 {
 
 template <typename T>
 struct RefPtr
 {
 private:
-    T *ptr = nullptr;
-
+    T *_ptr = nullptr;
 
 public:
     RefPtr() {}
@@ -118,13 +116,11 @@ public:
         return *this;
     }
 
-
     T *operator->() const
     {
         assert(_ptr);
         return _ptr;
     }
-
 
     T &operator*() { return *_ptr; }
 
@@ -138,7 +134,6 @@ public:
 
     bool operator!=(const T *other) const { return _ptr != other; }
 
-
     operator bool() const
     {
         return _ptr != nullptr;
@@ -149,17 +144,17 @@ public:
         return _ptr == nullptr;
     }
 
-    int refcount() 
+    int refcount()
     {
         if (_ptr)
         {
-            return ptr->refcount();
+            return _ptr->refcount();
         }
         else
         {
             return 0;
         }
-    }   
+    }
 
     [[nodiscard]] T *give_ref()
     {
@@ -170,12 +165,12 @@ public:
 
     T *naked() const
     {
-        return _ptr ;
+        return _ptr;
     }
 };
 
 template <typename T>
-struct CallableReftPtr : public RefPtr<T>
+struct CallableRefPtr : public RefPtr<T>
 {
 public:
     template <typename... TArgs>
@@ -185,5 +180,41 @@ public:
     }
 };
 
+template <typename T>
+inline RefPtr<T> adopt(T &object)
+{
+    return RefPtr<T>(ADOPT, object);
+}
+
+template <typename Type, typename... Args>
+inline RefPtr<Type> make(Args &&...args)
+{
+    return RefPtr<Type>(adopt(*new Type(std::forward<Args>(args)...)));
+}
+
+template <typename Type, typename... Args>
+inline CallableRefPtr<Type> make_callable(Args &&...args)
+{
+    return CallableRefPtr<Type>(adopt(*new Type(std::forward<Args>(args)...)));
+}
+
+template <typename T>
+struct TrimRefPtr;
+
+template <typename T>
+struct TrimRefPtr<RefPtr<T>>
+{
+    typedef T type;
+};
+
+template <typename T>
+struct IsRefPtr : public FalseType
+{
+};
+
+template <typename T>
+struct IsRefPtr<RefPtr<T>> : public TrueType
+{
+};
 
 }
