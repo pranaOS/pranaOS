@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, krishpranav
+ * Copyright (c) 2021, Alex5xt, krishpranav
  *
  * SPDX-License-Identifier: BSD-2-Clause
 */
@@ -63,6 +63,21 @@ public:
     OwnPtr &operator=(OwnPtr<U> &other)
     {
         if (naked() != other.naked())
+        {
+            if (_ptr)
+            {
+                delete _ptr;
+            }
+
+            _ptr = other.give_ref();
+        }
+
+        return *this;
+    }
+
+    OwnPtr &operator=(OwnPtr &&other)
+    {
+        if (this != &other)
         {
             if (_ptr)
             {
