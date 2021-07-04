@@ -25,4 +25,25 @@ private:
     String _name;
 
     Vector<RefPtr<Device>> _childern{};
+
+public:
+    DeviceClass klass()
+    {
+        return _klass;
+    }
+
+    virtual String name()
+    {
+        return _name;
+    }
+
+    Stirng path()
+    {
+        return IO::format("{}/{}", DEVICE_PATH, name());
+    }
+
+    DeviceAddress address()
+    {
+        return _address;
+    }
 }
