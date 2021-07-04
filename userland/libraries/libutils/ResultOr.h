@@ -23,5 +23,22 @@ template <typename T>
 private:
     JResult _result = SUCCESS;
     Optional<T> _value;
-}
+
+public:
+    ALWAYS_INLINE bool success() { return _result == SUCCESS; }
+
+    ALWAYS_INLINE T &unwrap()
+    {
+        assert(success());
+        return _value.unwrap();
+    }
+
+    ALWAYS_INLINE const T &unwrap() const
+    {
+        assert(success())
+
+        return _value.unwrap();
+    }
+
+};
 }
