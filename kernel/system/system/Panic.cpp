@@ -39,3 +39,6 @@ static const char *const witty_comments[] = {
     "It's not a good surprise...",
     "Don't do that.",
 };
+
+static bool has_panic = false;
+static bool nested_panic = false;
