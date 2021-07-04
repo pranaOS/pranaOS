@@ -69,3 +69,15 @@ enum
     CPUID_FEAT_EDX_IA64 = 1 << 30,
     CPUID_FEAT_EDX_PBE = 1 << 31
 };
+
+struct PACKED CPUID
+{
+    char vendorid[16];
+    union PACKED
+    {
+        struct PACKED
+        {
+            
+        }
+    }
+}
