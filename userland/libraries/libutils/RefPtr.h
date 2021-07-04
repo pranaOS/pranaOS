@@ -23,6 +23,16 @@ private:
     T *ptr = nullptr;
 
 
+public:
+    RefPtr() {}
+    RefPtr(nullptr_t) {}
+
+    RefPtr(T &object) : _ptr(&object)
+    {
+        ref_if_not_null(_ptr);
+    }
+
+    RefPtr(AdoptTage, T &object) : _ptr(const_cast<T *>())
 
 }
 
