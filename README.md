@@ -23,3 +23,4 @@ See the [pranaOS build instructions](https://github.com/pranaOS/pranaOS/blob/mas
 - [nuke123-sudo](https://github.com/nuke123-sudo)
 - [evilbat831](https://github.com/evilbat831)
 - [michaelsmith213](https://github.com/michaelsmith213)
+- [Alex5xt](https://github.com/Alex5xt)
