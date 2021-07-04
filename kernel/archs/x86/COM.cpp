@@ -18,3 +18,23 @@ bool com_can_write(COMPort port)
 {
     return (in8(port + 5) & 0b0100000);
 }
+
+void com_wait_write(COMPort port)
+{
+    while (!com_can_write(port))
+    { 
+    }
+}
+
+void com_wait_read(COMPort port)
+{
+    while (!com_can_read(port))
+    { 
+    }
+}
+
+void com_putc(COMPort port, char c)
+{
+    com_wait_write(port);
+    out8(port, c);
+}
