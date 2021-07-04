@@ -22,7 +22,7 @@ void system_hang()
 void system_stop()
 {
     Arch::disable_interrupts();
-    Kernel::logln("System stopped due to issues!!!");
+    Kernel::logln("System stopped due to some issues!!!");
 
     while (1)
     {
@@ -31,7 +31,7 @@ void system_stop()
     }
 }
 
-struct uint32_t _system_tick;
+static uint32_t _system_tick;
 
 void system_tick()
 {
@@ -41,4 +41,22 @@ void system_tick()
     }
 
     _system_tick++;
+}
+
+uint32_t system_get_tick()
+{
+    return _system_tick;
+}
+
+static TimeStamp _system_boot_timestamp = 0;
+
+ElapsedTime system_get_uptime()
+{
+    return Arch::get_time() - _system_boot_timestamp;
+}
+
+void system_initialize()
+{
+    _system_boot_timestamp = Arch::get_time();
+    Kernel::logln("hjert - " __BUILD_GITREF__);
 }
