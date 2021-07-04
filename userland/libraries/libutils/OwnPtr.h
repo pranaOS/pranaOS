@@ -89,5 +89,27 @@ public:
 
         return *this;
     }
+
+    template <typename U>
+    OwnPtr &operator=(OwnPtr<U> &&other)
+    {
+        if (this != static_cast<void *>(&other))
+        {
+            if (_ptr)
+            {
+                delete _ptr
+            }
+
+            _ptr = other.give_ref();
+        }
+
+        return *this;
+    }
+
+    T *operator->() const
+    {
+        assert(_ptr);
+        return _ptr;
+    }
     
 };
