@@ -74,4 +74,8 @@ struct Constant
 
 };
 
+using FalseType = Constant<bool, false>;
+
+using TrueType = Constant<bool, true>;
+
 }
