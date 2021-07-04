@@ -17,6 +17,7 @@ struct RefCounted
 {
 private:
     int _refcount = 1;
+
     NONCOPYABLE(RefCounted);
     NONMOVABLE(RefCounted);
 
@@ -30,11 +31,11 @@ public:
 
     void ref()
     {
-        int refcount = __atmoc_add_fetch(&_refcount, 1, __ATOMIC_SEQ_CST);
+        int refcount = __atomic_add_fetch(&_refcount, 1, __ATOMIC_SEQ_CST);
         assert(refcount >= 0);
     }
 
-    void dref()
+    void deref()
     {
         int refcount = __atomic_sub_fetch(&_refcount, 1, __ATOMIC_SEQ_CST);
         assert(refcount >= 0);
@@ -42,14 +43,26 @@ public:
         if (refcount == 1)
         {
             if constexpr (requires(const T &t) {
-                            t.one_ref_left();
-            })
+                              t.one_ref_left();
+                          })
             {
-                
+                this->one_ref_left();
             }
+        }
+
+        if (refcount == 0)
+        {
+            delete static_cast<T *>(this);
         }
     }
 
+    int refcount()
+    {
+        return _refcount;
+    }
 };
+
+
+
 
 }
