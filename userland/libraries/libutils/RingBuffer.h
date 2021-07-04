@@ -21,7 +21,7 @@ private:
     size_t _head = 0;
     size_t _tail = 0;
     size_t _size = 0;
-    size_t _used = 0
+    size_t _used = 0;
 
     T *_buffer = nullptr;
 
@@ -79,7 +79,7 @@ public:
 
     bool empty() const
     {
-        return _used = 0;
+        return _used == 0;
     }
 
     bool full() const
@@ -92,5 +92,58 @@ public:
         return _used;
     }
 
-}
-}
+    void put(T c)
+    {
+        assert(!full());
+
+        _buffer[_head] = c;
+        _head = (_head + 1) % (_size);
+        _used++;
+    }
+
+    T get()
+    {
+        assert(!empty());
+
+        char c = _buffer[_tail];
+        _tail = (_tail + 1) % (_size);
+        _used--;
+
+        return c;
+    }
+
+    T peek(size_t peek)
+    {
+        int offset = (_tail + peek) % (_size);
+
+        return _buffer[offset];
+    }
+
+    size_t read(T *buffer, size_t size)
+    {
+        size_t read = 0;
+
+        while (!empty() && read < size)
+        {
+            buffer[read] = get();
+            read++;
+        }
+
+        return read;
+    }
+
+    size_t write(const T *buffer, size_t size)
+    {
+        size_t written = 0;
+
+        while (!full() && written < size)
+        {
+            put(buffer[written]);
+            written++;
+        }
+
+        return written;
+    }
+};
+
+} 
