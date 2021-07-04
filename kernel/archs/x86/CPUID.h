@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, krishpranav
+ * Copyright (c) 2021, michaelsmith213, Andrew-stew, krishpranav
  *
  * SPDX-License-Identifier: BSD-2-Clause
 */
@@ -145,3 +145,13 @@ struct PACKED CPUID
         uint32_t RAW_EDX;
     };
 };
+
+CPUID cpuid();
+
+#ifdef __cplusplus
+extern "C" uint32_t cpuid_get_feature_EDX();
+extern "C" uint32_t cpuid_get_feature_ECX();
+#else
+extern uint32_t cpuid_get_feature_EDX();
+extern uint32_t cpuid_get_feature_ECX();
+#endif
