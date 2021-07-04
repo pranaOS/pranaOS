@@ -21,5 +21,20 @@ private:
     const void *_start = nullptr;
     size_t size = 0;
 
+public:
+    bool any() const { return _size > 0; }
+
+    size_t size() const { return _size; }
+
+    const void *start() const 
+    {
+        return _start;
+    }
+
+    const void *end() const
+    {
+        return reinterpret_cast<const char *>(start()) + _size;
+    }
+
 
 }
