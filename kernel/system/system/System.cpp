@@ -18,3 +18,15 @@ void system_hang()
         Arch::halt();
     }
 }
+
+void system_stop()
+{
+    Arch::disable_interrupts();
+    Kernel::logln("System stopped due to issues!!!");
+
+    while (1)
+    {
+        Arch::disable_interrupts();
+        Arch::halt();
+    }
+}
