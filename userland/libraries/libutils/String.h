@@ -23,7 +23,36 @@ struct String :
 private:
     RefPtr<StringStorage> _storage;
 
+public:
+    size_t length() const
+    {
+        return _storage->size();
+    }
 
+    bool empty() const
+    {
+        return lenght() == 0;
+    }
+
+    const char *cstring() const
+    {
+        if (!_storage)
+        {
+            return "";
+        }
+
+        return _storage->cstring();
+    }
+
+    const char &at(int index) const
+    {
+        return _storage->cstring()[index];
+    }
+
+    bool null_or_empty() const
+    {
+        return _storage == nullptr || _storage->size() == 0;
+    }
 }
 
 }
