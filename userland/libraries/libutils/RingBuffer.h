@@ -70,5 +70,27 @@ public:
 
         return *this;
     }
+
+    ~RingBuffer()
+    {
+        if (_buffer)
+            delete[] _buffer;
+    }
+
+    bool empty() const
+    {
+        return _used = 0;
+    }
+
+    bool full() const
+    {
+        return _used == _size;
+    }
+
+    size_t used() const
+    {
+        return _used;
+    }
+
 }
 }
