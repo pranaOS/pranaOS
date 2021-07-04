@@ -68,7 +68,7 @@ void system_panic_internal(SourceLocation location, void *stackframe, const char
     {
         has_panic = true;
 
-        Kernel::logln("--- !!! ------------------------------------------------------------------------");
+        Kernel::logln("--- ------------------------------------------------------------------------");
         Kernel::logln("");
         Kernel::logln("\tKERNEL PANIC");
         Kernel::logln("\t// {}", witty_comments[system_get_tick() % ARRAY_LENGTH(witty_comments)]);
