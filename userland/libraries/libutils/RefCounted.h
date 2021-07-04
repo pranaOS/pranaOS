@@ -20,6 +20,36 @@ private:
     NONCOPYABLE(RefCounted);
     NONMOVABLE(RefCounted);
 
+public:
+    RefCounted() {}
+
+    virtual ~RefCounted()
+    {
+        assert(_refcount == 0);
+    }
+
+    void ref()
+    {
+        int refcount = __atmoc_add_fetch(&_refcount, 1, __ATOMIC_SEQ_CST);
+        assert(refcount >= 0);
+    }
+
+    void dref()
+    {
+        int refcount = __atomic_sub_fetch(&_refcount, 1, __ATOMIC_SEQ_CST);
+        assert(refcount >= 0);
+
+        if (refcount == 1)
+        {
+            if constexpr (requires(const T &t) {
+                            t.one_ref_left();
+            })
+            {
+                
+            }
+        }
+    }
+
 };
 
 }
