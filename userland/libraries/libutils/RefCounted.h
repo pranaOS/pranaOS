@@ -63,6 +63,20 @@ public:
 };
 
 
+struct AnyRef : public RefCounted<AnyRef>
+{
+    virtual ~AnyRef() = default;
+};
 
+template <typename T>
+T *ref_if_not_null(T *ptr)
+{
+    if (ptr)
+    {
+        ptr->ref();
+    }
+
+    return ptr;
+}
 
 }
