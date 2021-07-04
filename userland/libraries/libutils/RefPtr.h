@@ -174,6 +174,16 @@ public:
     }
 };
 
+template <typename T>
+struct CallableReftPtr : public RefPtr<T>
+{
+public:
+    template <typename... TArgs>
+    auto operator()(TArgs &&...args)
+    {
+        return (*this->naked())(std::forward<TArgs>(args)...);
+    }
+};
 
 
 }
