@@ -159,8 +159,21 @@ public:
         {
             return 0;
         }
+    }   
+
+    [[nodiscard]] T *give_ref()
+    {
+        T *ptr = _ptr;
+        _ptr = nullptr;
+        return ptr;
     }
 
-}
+    T *naked() const
+    {
+        return _ptr ;
+    }
+};
+
+
 
 }
