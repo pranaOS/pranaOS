@@ -65,4 +65,15 @@ public:
     ALWAYS_INLINE ResultOr(T value) : _result{SUCCESS}, _value{std::move(value)} {}
 };
 
+ALWAYS_INLINE static inline JResult __extract_result(JResult r) { return r; }
+
+template <typename T>
+ALWAYS_INLINE static inline JResult __extract_result(ResultOr<T> r) { return r.result(); };
+
+ALWAYS_INLINE static inline JResult __extract_value(JResult r) { return r; }
+
+template <typename T>
+ALWAYS_INLINE static inline T __extract_value(ResultOr<T> r) { return r.unwrap(); };
+
+
 }
