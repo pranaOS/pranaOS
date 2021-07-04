@@ -30,3 +30,15 @@ void system_stop()
         Arch::halt();
     }
 }
+
+struct uint32_t _system_tick;
+
+void system_tick()
+{
+    if (_system_tick + 1 < _system_tick)
+    {
+        system_panic("System tick overflowed!!!");
+    }
+
+    _system_tick++;
+}
