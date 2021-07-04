@@ -11,3 +11,10 @@
 #include "system/scheduling/Scheduler.h"
 #include "system/system/System.h"
 
+void system_hang()
+{
+    while (true)
+    {
+        Arch::halt();
+    }
+}
