@@ -77,7 +77,33 @@ struct PACKED CPUID
     {
         struct PACKED
         {
-            
-        }
-    }
-}
+            bool SSE3 : 1;
+            bool PCLMUL : 1;
+            bool DTES64 : 1;
+            bool MONITOR : 1;
+            bool DS_CPL : 1;
+            bool VMX : 1;
+            bool SMX : 1;
+            bool EST : 1;
+            bool TM2 : 1;
+            bool SSSE3 : 1;
+            bool CID : 1;
+            bool FMA : 1;
+            bool CX16 : 1;
+            bool ETPRD : 1;
+            bool PDCM : 1;
+            bool PCIDE : 1;
+            bool DCA : 1;
+            bool SSE4_1 : 1;
+            bool SSE4_2 : 1;
+            bool x2APIC : 1;
+            bool MOVBE : 1;
+            bool POPCNT : 1;
+            bool AES : 1;
+            bool XSAVE : 1;
+            bool OSXSAVE : 1;
+            bool AVX : 1;
+        };
+        uint32_t RAW_ECX;
+    };
+};
