@@ -148,3 +148,59 @@ void pci_initialize_isa_bridge()
         }
     });
 }
+
+int pci_get_interrupt(PCIAddress address)
+{
+    if (_has_isa_bridge)
+    {
+        uint32_t irq_pin = address.read8(PCI_INTERRUPT_PIN);
+        if (irq_pin == 0)
+        {
+            Kernel::logln("PCI device does not specify an interrupt line!");
+            return address.read8(PCI_INTERRUPT_LINE);
+        }
+
+        int pirq = (irq_pin + address.slot() - 2) % 4;
+        int int_line = address.read8(PCI_INTERRUPT_LINE);
+
+        Kernel::logln("Slot is {}, irq pin is {}, so pirq is {} and that maps to {}? int_line={}",
+                      address.slot(), irq_pin, pirq, _isa_remaps[pirq], int_line);
+
+        for (int i = 0; i < 4; ++i)
+        {
+            Kernel::logln("  irq[{}] = {}", i, _isa_remaps[i]);
+        }
+
+        if (_isa_remaps[pirq] >= 0x80)
+        {
+            Kernel::logln("Not mapped, remapping?");
+
+            if (int_line == 0xFF)
+            {
+                Kernel::logln("Just going in blind here.");
+                int_line = 10;
+                address.write8(PCI_INTERRUPT_LINE, 1);
+            }
+
+            _isa_remaps[pirq] = int_line;
+            uint32_t out = 0;
+            memcpy(&out, &_isa_remaps, 4);
+            _isa_bridge_address.write32(0x60, out);
+
+            return int_line;
+        }
+
+        address.write8(PCI_INTERRUPT_LINE, _isa_remaps[pirq]);
+
+        return _isa_remaps[pirq];
+    }
+    else
+    {
+        return address.read8(PCI_INTERRUPT_LINE);
+    }
+}
+
+void pci_initialize()
+{
+    pci_initialize_isa_bridge();
+}
