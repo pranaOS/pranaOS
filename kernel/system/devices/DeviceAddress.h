@@ -38,5 +38,28 @@ private:
         UNIXAddress _unix;
     };
 
+public:
+    DeviceBus bus()
+    {
+        return _bus;
+    }
+
+    LegacyAddress legacy()
+    {
+        assert(_bus == BUS_LEGACY);
+        return _legacy;
+    }
+
+    PCIAddress pci()
+    {
+        assert(_bus == BUS_PCI);
+        return _pci;
+    }
+
+    UNIXAddress unix()
+    {
+        assert(_bus == BUS_UNIX);
+        return _unix;
+    }
 
 }
