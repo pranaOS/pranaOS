@@ -86,9 +86,9 @@ private:
     RingBuffer<char> _buffer{AC97_RINGBUFFER_LEN};
 
     RefPtr<MMIORange> buffer_descriptors_range{};
-  
+
     AC97BufferDescriptor *buffer_descriptors_list;
-  
+
     Vector<RefPtr<MMIORange>> buffers;
 
     bool _quirk_5bit_volume;
@@ -100,4 +100,18 @@ private:
 
     void query_from_buffer(void *destination, size_t size);
 
+public:
+    AC97(DeviceAddress address);
+
+    ~AC97();
+
+    void acknowledge_interrupt() override;
+
+    void handle_interrupt() override;
+
+    bool can_write() override;
+
+    ResultOr<size_t> write(size64_t offset, const void *buffer, size_t size) override;
+
+    HjResult call(IOCall request, void *args) override;
 };
