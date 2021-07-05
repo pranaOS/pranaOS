@@ -101,3 +101,35 @@ void devices_handle_interrupt(int interrupt)
         return Iteration::CONTINUE;
     });
 }
+
+void device_initialize()
+{
+    pci_initialize();
+
+    Kernel::logln("Initializing devices...");
+
+    _devices = new Vector<RefPtr<Device>>();
+
+    device_scan([&](DeviceAddress address) {
+        Kernel::logln("Initializing device {}...", address.as_static_cstring());
+
+        auto driver = driver_for(address);
+
+        if (!driver)
+        {
+            Kernel::logln("No driver found!");
+
+            return Iteration::CONTINUE;
+        }
+
+        Kernel::logln("Found a driver: {}", driver->name());
+
+        auto device = driver->instance(address);
+        if (!device->did_fail())
+        {
+            _devices->push_back(device);
+        }
+
+        return Iteration::CONTINUE;
+    });
+}
