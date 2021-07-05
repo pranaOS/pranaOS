@@ -20,4 +20,16 @@ public:
     DeviceBus bus() const { return _bus; }
 
     const char *name() const { return _name; }
-}
+
+    constexpr DeviceMatcher(DeviceBus bus, const char *name)
+        : _bus(bus),
+          _name(name)
+    {
+    }
+
+    virtual ~DeviceMatcher() {}
+
+    virtual bool match(DeviceAddress address) = 0;
+
+    virtual RefPtr<Device> instance(DeviceAddress address) = 0;
+};
