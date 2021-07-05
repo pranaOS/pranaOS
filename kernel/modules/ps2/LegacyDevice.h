@@ -55,3 +55,12 @@ public:
         ASSERT_NOT_REACHED();
     }
 };
+
+template <typename LegacyDeviceType>
+struct LegacyDeviceMatcher : public DeviceMatcher
+{
+
+private:
+    LegacyAddress _address;
+    
+}
