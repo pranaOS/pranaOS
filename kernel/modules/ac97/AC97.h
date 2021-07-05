@@ -8,7 +8,6 @@
 
 #include <libutils/RingBuffer.h>
 #include <libutils/Vector.h>
-
 #include "pci/PCIDevice.h"
 #include "system/memory/MMIO.h"
 
@@ -72,4 +71,33 @@ struct PACKED AC97BufferDescriptor
 {
     uintptr_t pointer;
     uint32_t cl;
+};
+
+struct AC97 : public PCIDevice
+{
+private:
+    uint16_t _status;
+
+    uint16_t nabmbar;
+    uint16_t nambar;
+
+    uint8_t _last_valid_index;
+
+    RingBuffer<char> _buffer{AC97_RINGBUFFER_LEN};
+
+    RefPtr<MMIORange> buffer_descriptors_range{};
+  
+    AC97BufferDescriptor *buffer_descriptors_list;
+  
+    Vector<RefPtr<MMIORange>> buffers;
+
+    bool _quirk_5bit_volume;
+
+    uint16_t _volume_PCM;
+    uint16_t _volume_master;
+
+    void initialise_buffers();
+
+    void query_from_buffer(void *destination, size_t size);
+
 };
