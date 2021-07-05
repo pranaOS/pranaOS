@@ -13,7 +13,7 @@
 KeyMap *keyboard_load_keymap(const char *keymap_path)
 {
     CLEANUP(stream_cleanup)
-    Stream *keymap_file = stream_open(keymap_path, HJ_OPEN_READ);
+    Stream *keymap_file = stream_open(keymap_path, J_OPEN_READ);
 
     if (handle_has_error(keymap_file))
     {
@@ -21,10 +21,10 @@ KeyMap *keyboard_load_keymap(const char *keymap_path)
         return nullptr;
     }
 
-    HjStat stat;
+    JStat stat;
     stream_stat(keymap_file, &stat);
 
-    if (stat.type != HJ_FILE_TYPE_REGULAR)
+    if (stat.type != J_FILE_TYPE_REGULAR)
     {
         Kernel::logln("Failed to load keymap from {}: This is not a regular file", keymap_path);
 
@@ -223,7 +223,7 @@ ResultOr<size_t> LegacyKeyboard::read(size64_t offset, void *buffer, size_t size
     return _events.read((char *)buffer, (size / sizeof(KeyboardPacket)) * sizeof(KeyboardPacket));
 }
 
-HjResult LegacyKeyboard::call(IOCall request, void *args)
+JResult LegacyKeyboard::call(IOCall request, void *args)
 {
     if (request == IOCALL_KEYBOARD_GET_KEYMAP)
     {
