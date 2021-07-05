@@ -25,3 +25,28 @@ void AC97::initialise_buffers()
         buffer_descriptors_list[i].cl |= AC97_CL_IOC;
     }
 }
+
+
+AC97::~AC97()
+{
+}
+
+void AC97::query_from_buffer(void *destination, size_t size)
+{
+    size_t writtent = _buffer.read((char *)destination, size);
+
+    if (writtent < size)
+    {
+        memset((char *)destination + writtent, 0, size - writtent);
+    }
+}
+
+void AC97::acknowledge_interrupt()
+{
+    _status = in16(nabmbar + AC97_PO_SR);
+
+    if (_status)
+    {
+        out16(nabmbar + AC97_PO_SR, _status & 0x1E);
+    }
+}
