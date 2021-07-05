@@ -63,7 +63,7 @@ namespace Smbios
     __ENTRY(END_OF_TABLE, 127)
 
 
-enum struct HearderType : uint8_t
+enum struct HeaderType : uint8_t
 {
 
 #define __ENTRY(__name, __id) \
@@ -73,5 +73,82 @@ enum struct HearderType : uint8_t
 #undef __ENTRY
 
 };
+
+struct PACKED Header
+{
+    HearderType type;
+    uint8_t length;
+    uint16_t handle;
+
+    const char *name()
+    {
+        switch (static_cast<int>(type))
+        {
+
+#define __ENTRY(__name, __id) \
+    case __id:                \
+    {                         \
+        return #__name;       \
+    }
+
+            SMBIOS_HEADER_TYPE_LIST(__ENTRY)
+#undef __ENTRY
+
+        default:
+            return "unknow";
+        }
+    }
+
+    const char *string_table() const
+    {
+        return reinterpret_cast<const char *>(this) + length;
+    }
+
+    size_t string_table_lenght() const
+    {
+        size_t size = 1;
+        const char *str = string_table();
+
+        while (str[0] != '\0')
+        {
+            size++;
+            str += strlen(str) + 1;
+        }
+
+        return size;
+    }
+
+    const char *string(int index) const
+    {
+        if (index == 0)
+        {
+            return "";
+        }
+
+        const char *str = string_table();
+        int current_index = 1;
+
+        while (current_index != index)
+        {
+            str += strlen(str) + 1;
+            current_index++;
+        }
+
+        return str;
+    }
+
+    size_t lenght_including_string_table() const
+    {
+        size_t size = length;
+
+        for (size_t i = 0; string_table()[i] != '\0' || string_table()[i + 1] != '\0'; i++)
+        {
+            size++;
+        }
+
+        return size + 2; // We add two for terminators;
+    }
+};
+
 
 }
