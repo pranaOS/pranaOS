@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/bin/env python3
 
 # imports
 import sys
@@ -22,4 +22,19 @@ qemu_proc = subprocess.Popen(
 qemu_stdin = qemu_proc.stdin
 qemu_stdout = qemu_proc.stdout
 
+while True:
+    if qemu_proc.poll() != None:
+        sys.exit(-1)
 
+    message = qemu_stdout.readline().decode(errors='replace').strip()
+
+    if message == 'test: PASSED':
+        qemu_proc.kill()
+        sys.exit(0)
+
+    elif message == 'test: FAILED':
+        qemu_proc.kill()
+        sys.exit(-1)
+
+    elif message != '':
+        print(message)
