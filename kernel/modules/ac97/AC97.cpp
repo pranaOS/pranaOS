@@ -4,11 +4,10 @@
  * SPDX-License-Identifier: BSD-2-Clause
 */
 
+// includes
 #include "system/Streams.h"
-
 #include "system/scheduling/Scheduler.h"
 #include "system/tasking/Task.h"
-
 #include "ac97/AC97.h"
 
 AC97::AC97(DeviceAddress address) : PCIDevice(address, DeviceClass::SOUND)
