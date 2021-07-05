@@ -33,4 +33,12 @@ private:
 
     void handle_packet(uint8_t packet);
 
+public:
+    LegacyMouse(DeviceAddress address);
+
+    void handle_interrupt() override;
+
+    bool can_read() override;
+
+    ResultOr<size_t> read(size64_t offset, void *buffer, size_t size);
 };
