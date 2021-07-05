@@ -85,4 +85,26 @@ public:
     {
     }
 
-}
+    const char *as_static_cstring()
+    {
+        static char buffer[128];
+
+        switch(_bus)
+        {
+        
+        case BUS_LEGACY:
+            snprintf(buffer, 127, "legacy:%d", legacy());
+            break;
+
+        case BUS_UNIX:
+            snprintf(buffer, 127, "unix:%d", unix());
+            break;
+        default:
+            snprintf(buffer, 127, "none");
+            break;
+        }
+
+        return buffer;
+    }
+
+};
