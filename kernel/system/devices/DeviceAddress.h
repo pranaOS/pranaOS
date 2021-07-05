@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, krishpranav
+ * Copyright (c) 2021, krishpranav, nuke123-sudo
  *
  * SPDX-License-Identifier: BSD-2-Clause
 */
@@ -60,6 +60,29 @@ public:
     {
         assert(_bus == BUS_UNIX);
         return _unix;
+    }
+    
+        DeviceAddress()
+        : _bus(BUS_NONE)
+    {
+    }
+
+    DeviceAddress(LegacyAddress address)
+        : _bus(BUS_LEGACY),
+          _legacy(address)
+    {
+    }
+
+    DeviceAddress(PCIAddress address)
+        : _bus(BUS_PCI),
+          _pci(address)
+    {
+    }
+
+    DeviceAddress(UNIXAddress address)
+        : _bus(BUS_UNIX),
+          _unix(address)
+    {
     }
 
 }
