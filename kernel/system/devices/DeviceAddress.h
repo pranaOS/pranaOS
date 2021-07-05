@@ -8,14 +8,12 @@
 
 // includes
 #include <assert.h>
-
 #include <libutils/Iteration.h>
 #include <stdio.h>
 #include "pci/PCIAddress.h"
 #include "ps2/LegacyAddress.h"
 #include "unix/UNIXAddress.h"
 #include "virtio/VirtioAddress.h"
-
 
 enum DeviceBus
 {
@@ -48,21 +46,21 @@ public:
     {
         assert(_bus == BUS_LEGACY);
         return _legacy;
-    }
+    };
 
     PCIAddress pci()
     {
         assert(_bus == BUS_PCI);
         return _pci;
-    }
+    };
 
     UNIXAddress unix()
     {
         assert(_bus == BUS_UNIX);
         return _unix;
-    }
-    
-        DeviceAddress()
+    };
+
+    DeviceAddress()
         : _bus(BUS_NONE)
     {
     }
@@ -89,9 +87,8 @@ public:
     {
         static char buffer[128];
 
-        switch(_bus)
+        switch (_bus)
         {
-        
         case BUS_LEGACY:
             snprintf(buffer, 127, "legacy:%d", legacy());
             break;
@@ -99,6 +96,16 @@ public:
         case BUS_UNIX:
             snprintf(buffer, 127, "unix:%d", unix());
             break;
+
+        case BUS_PCI:
+            snprintf(buffer, 127, "pci:%02x:%02x.%x %04x:%04x",
+                     pci().bus(),
+                     pci().slot(),
+                     pci().func(),
+                     pci().read16(PCI_VENDOR_ID),
+                     pci().read16(PCI_DEVICE_ID));
+            break;
+
         default:
             snprintf(buffer, 127, "none");
             break;
@@ -106,5 +113,4 @@ public:
 
         return buffer;
     }
-
 };
