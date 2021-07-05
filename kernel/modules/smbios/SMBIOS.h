@@ -161,4 +161,22 @@ struct PACKED BIOSInfo
     const char *version() const { return header.string(_version); }
 };
 
+struct PACKED SystemInfo
+{
+    Header header;
+
+    uint8_t _manufaturer;
+    const char *manufaturer() const { return header.string(_manufaturer); }
+
+    uint8_t _product;
+    const char *product() const { return header.string(_product); }
+
+    uint8_t _version;
+    const char *version() const { return header.string(_version); }
+
+    uint8_t _serial_number;
+    const char *serial_number() const { return header.string(_serial_number); }
+};
+
+
 }
