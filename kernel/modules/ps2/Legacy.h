@@ -18,4 +18,6 @@
 #define PS2_MOUSE_BUFFER 0x20
 #define PS2_KEYBOARD_BUFFER 0x00
 
+
 Iteration legacy_scan(IterFunc<LegacyAddress> callback);
+
