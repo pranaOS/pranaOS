@@ -5,6 +5,7 @@
 */
 
 #pragma once
+
 // includes
 #include "archs/x86_32/x86_32.h"
 
@@ -49,7 +50,6 @@
 
 struct PCIAddress
 {
-
 private:
     int _bus = 0;
     int _slot = 0;
@@ -73,4 +73,44 @@ public:
     {
     }
 
+    uint8_t read8(size_t offset)
+    {
+        select(offset);
+        return in8(PCI_VALUE_PORT + (offset & 3));
+    }
+
+    uint16_t read16(size_t offset)
+    {
+        select(offset);
+        return in16(PCI_VALUE_PORT + (offset & 2));
+    }
+
+    uint32_t read32(size_t offset)
+    {
+        select(offset);
+        return in32(PCI_VALUE_PORT);
+    }
+
+    void write8(size_t offset, uint8_t value)
+    {
+        select(offset);
+        out8(PCI_VALUE_PORT, value);
+    }
+
+    void write16(size_t offset, uint16_t value)
+    {
+        select(offset);
+        out16(PCI_VALUE_PORT, value);
+    }
+
+    void write32(size_t offset, uint32_t value)
+    {
+        select(offset);
+        out32(PCI_VALUE_PORT, value);
+    }
+
+    uint16_t read_class_sub_class()
+    {
+        return (read8(PCI_CLASS) << 8) | read8(PCI_SUBCLASS);
+    }
 };
