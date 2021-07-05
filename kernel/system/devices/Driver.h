@@ -33,3 +33,6 @@ public:
 
     virtual RefPtr<Device> instance(DeviceAddress address) = 0;
 };
+
+void driver_initialize();
+DeviceMatcher *driver_for(DeviceAddress address);
