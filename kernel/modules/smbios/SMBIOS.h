@@ -150,5 +150,15 @@ struct PACKED Header
     }
 };
 
+struct PACKED BIOSInfo
+{
+    Header header;
+
+    uint8_t _vendor;
+    const char *vendor() const { return header.string(_vendor); }
+
+    uint8_t _version;
+    const char *version() const { return header.string(_version); }
+};
 
 }
