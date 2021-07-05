@@ -67,3 +67,9 @@
 #define AC97_LR_SPLRATE 0x0032
 #define AC97_PLAYBACK_SPEED 48000
 #define AC97_GLB_CTRL_STAT 0x0060
+
+struct PACKED AC97BufferDescriptor
+{
+    uintptr_t pointer;
+    uint32_t cl;
+};
