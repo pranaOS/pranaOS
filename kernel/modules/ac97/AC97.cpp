@@ -5,10 +5,62 @@
 */
 
 #include "system/Streams.h"
+
 #include "system/scheduling/Scheduler.h"
 #include "system/tasking/Task.h"
+
 #include "ac97/AC97.h"
 
+AC97::AC97(DeviceAddress address) : PCIDevice(address, DeviceClass::SOUND)
+{
+    _volume_PCM = AC97_PCM_OUT_VOLUME;
+    _volume_master = AC97_MASTER_VOLUME;
+
+    nabmbar = bar(1).base();
+    nambar = bar(0).base();
+
+    out16(nambar + AC97_RESET, 42);
+    out8(nabmbar + AC97_GLB_CTRL_STAT, 0x02);
+
+    out8(nabmbar + AC97_PO_CR, AC97_X_CR_FEIE | AC97_X_CR_IOCE);
+
+    pci_address().write16(PCI_COMMAND, 0x5);
+
+    out16(nambar + AC97_PCM_OUT_VOLUME, 0x0000);
+
+    initialise_buffers();
+
+    out32(nabmbar + AC97_PO_BDBAR, buffer_descriptors_range->physical_base());
+
+    _last_valid_index = 0;
+    out8(nabmbar + AC97_PO_LVI, _last_valid_index);
+
+    out32(nambar + AC97_MASTER_VOLUME, 0x2020);
+    uint16_t t = in32(nambar + AC97_MASTER_VOLUME) & 0x1f;
+    if (t == 0x1f)
+    {
+        Kernel::logln("This device only supports 5 bits of audio volume.");
+        _quirk_5bit_volume = true;
+        out32(nambar + AC97_MASTER_VOLUME, 0x0f0f);
+    }
+    else
+    {
+        _quirk_5bit_volume = false;
+        out32(nambar + AC97_MASTER_VOLUME, 0x1f1f);
+    }
+
+    // Enable variable rate audio
+    out16(nambar + AC97_EXT_AUDIO_STC, in16(nambar + AC97_EXT_AUDIO_STC) | 1);
+    task_sleep(scheduler_running(), 10);
+
+    // General Sample rate: 44100 Hz
+    out16(nambar + AC97_FRONT_SPLRATE, AC97_PLAYBACK_SPEED);
+    out16(nambar + AC97_LR_SPLRATE, AC97_PLAYBACK_SPEED);
+
+    out8(nabmbar + AC97_PO_CR, in8(nabmbar + AC97_PO_CR) | AC97_X_CR_RPBM);
+
+    Kernel::logln("AC97 initialised successfully");
+}
 
 void AC97::initialise_buffers()
 {
@@ -25,7 +77,6 @@ void AC97::initialise_buffers()
         buffer_descriptors_list[i].cl |= AC97_CL_IOC;
     }
 }
-
 
 AC97::~AC97()
 {
@@ -69,4 +120,24 @@ void AC97::handle_interrupt()
     {
         Kernel::logln("IRQ is fifoe");
     }
+}
+
+bool AC97::can_write()
+{
+    return !_buffer.full();
+}
+
+ResultOr<size_t> AC97::write(size64_t offset, const void *buffer, size_t size)
+{
+    UNUSED(offset);
+
+    return _buffer.write((char *)buffer, size);
+}
+
+HjResult AC97::call(IOCall request, void *args)
+{
+    UNUSED(request);
+    UNUSED(args);
+
+    return ERR_INAPPROPRIATE_CALL_FOR_DEVICE;
 }
