@@ -61,4 +61,16 @@ private:
         out32(PCI_ADDRESS_PORT, address);
     }
 
+public:
+    int bus() { return _bus; }
+    int slot() { return _slot; }
+    int func() { return _func; }
+
+    constexpr PCIAddress() {}
+
+    constexpr PCIAddress(int bus, int slot, int func)
+        : _bus(bus), _slot(slot), _func(func)
+    {
+    }
+
 };
