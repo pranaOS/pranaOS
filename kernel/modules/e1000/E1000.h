@@ -12,7 +12,7 @@
 #include "system/memory/MMIO.h"
 
 
-// e100 port
+// e1000 port
 #define E1000_REG_CONTROL 0x0000
 #define E1000_REG_STATUS 0x0008
 
