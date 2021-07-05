@@ -28,3 +28,26 @@ void LegacySerial::handle_interrupt()
         _buffer.put(byte);
     }
 }
+
+bool LegacySerial::can_read()
+{
+    return !_buffer.empty();
+}
+
+ResultOr<size_t> LegacySerial::read(size64_t offset, void *buffer, size_t size)
+{
+    UNUSED(offset);
+
+    LockHolder holder(_buffer_lock);
+
+    return _buffer.read((char *)buffer, size);
+}
+
+ResultOr<size_t> LegacySerial::write(size64_t offset, const void *buffer, size_t size)
+{
+    UNUSED(offset);
+
+    LockHolder holder(_buffer_lock);
+
+    return com_write(COM1, buffer, size);
+}
