@@ -63,3 +63,41 @@ String device_claim_name(DeviceClass klass)
     }
 }
 
+void device_iterate(IterFunc<RefPtr<Device>> callback)
+{
+    if (_devices)
+    {
+        _devices->foreach([&](auto &device) {
+            if (callback(device) == Iteration::STOP)
+            {
+                return Iteration::STOP;
+            }
+
+            return device->iterate(callback);
+        });
+    }
+}
+
+void devices_acknowledge_interrupt(int interrupt)
+{
+    device_iterate([&](auto device) {
+        if (device->interrupt() == interrupt)
+        {
+            device->acknowledge_interrupt();
+        }
+
+        return Iteration::CONTINUE;
+    });
+}
+
+void devices_handle_interrupt(int interrupt)
+{
+    device_iterate([&](auto device) {
+        if (device->interrupt() == interrupt)
+        {
+            device->handle_interrupt();
+        }
+
+        return Iteration::CONTINUE;
+    });
+}
