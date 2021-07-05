@@ -47,3 +47,14 @@ KeyMap *keyboard_load_keymap(const char *keymap_path)
 
     return keymap;
 }
+
+Key LegacyKeyboard::scancode_to_key(int scancode)
+{
+#define SCAN_CODE_TO_KEY_ENTRY(__key_name, __key_number) \
+    if (scancode == (_key_nunber))                       \
+        return __key_name;
+    
+    KEY_LIST(SCAN_CODE_TO_KEY_ENTRY);
+
+    return KEYBOARD_KEY_INVALID;
+}
