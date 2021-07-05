@@ -63,6 +63,15 @@ namespace Smbios
     __ENTRY(END_OF_TABLE, 127)
 
 
-    
+enum struct HearderType : uint8_t
+{
+
+#define __ENTRY(__name, __id) \
+    __name = __id,
+
+    SMBIOS_HEADER_TYPE_LIST(__ENTRY)
+#undef __ENTRY
+
+};
 
 }
