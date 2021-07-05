@@ -45,3 +45,21 @@ void device_scan(IterFunc<DeviceAddress> callback)
         return;
     }
 }
+
+String device_claim_name(DeviceClass klass)
+{
+    _device_ids[(uint8_t)klass]++;
+
+    if (_device_ids[(uint8_t)klass] == 1)
+    {
+        return _device_names[(uint8_t)klass];
+    }
+    else
+    {
+        return IO::format(
+            "{}{}",
+            _device_names[(uint8_t)klass],
+            _device_ids[(uint8_t)klass] - 1);
+    }
+}
+
