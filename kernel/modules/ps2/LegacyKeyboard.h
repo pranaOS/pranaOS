@@ -7,7 +7,7 @@
 #pragma once
 
 // includes
-#include <abi/Keyboard.h>
+#include <libabi/Keyboard.h>
 #include <libutils/Lock.h>
 #include <libutils/RingBuffer.h>
 
@@ -32,4 +32,14 @@ private:
 
     void handle_key(Key key, KeyMotion motion);
 
-}
+public:
+    LegacyKeyboard(DeviceAddress address);
+
+    void handle_interrupt() override;
+
+    bool can_read() override;
+
+    ResultOr<size_t> read(size64_t offset, void *buffer, size_t size) override;
+
+    HjResult call(IOCall request, void *args) override;
+};
