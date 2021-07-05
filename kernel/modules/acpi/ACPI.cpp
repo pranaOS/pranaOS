@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
 */
 
+// includes
 #include "system/Streams.h"
 #include "archs/x86/IOAPIC.h"
 #include "archs/x86/LAPIC.h"
@@ -54,4 +55,23 @@ void madt_initialize(MADT *madt)
 
         return Iteration::CONTINUE;
     });
+}
+
+void initialize(Handover *handover)
+{
+    if (!handover->acpi_rsdp_address)
+    {
+        Kernel::logln("No acpi rsdp found!");
+        return;
+    }
+
+    RSDP *rsdp = (RSDP *)(handover->acpi_rsdp_address);
+
+    RSDT *rsdt = (RSDT *)((uintptr_t)rsdp->rsdt_address);
+
+    MADT *madt = (MADT *)rsdt->child("APIC");
+
+    madt_initialize(madt);
+}
+
 }
