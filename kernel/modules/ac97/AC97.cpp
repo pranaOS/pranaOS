@@ -50,3 +50,23 @@ void AC97::acknowledge_interrupt()
         out16(nabmbar + AC97_PO_SR, _status & 0x1E);
     }
 }
+
+void AC97::handle_interrupt()
+{
+    if (_status & AC97_X_SR_BCIS)
+    {
+        size_t f = (_last_valid_index + 2) % AC97_BDL_LEN;
+
+        query_from_buffer((void *)buffers[f]->base(), AC97_BDL_BUFFER_LEN * 2);
+        _last_valid_index = (_last_valid_index + 1) % AC97_BDL_LEN;
+        out8(nabmbar + AC97_PO_LVI, _last_valid_index);
+    }
+    else if (_status & AC97_X_SR_LVBCI)
+    {
+        Kernel::logln("IRQ is lvbci");
+    }
+    else if (_status & AC97_X_SR_FIFOE)
+    {
+        Kernel::logln("IRQ is fifoe");
+    }
+}
