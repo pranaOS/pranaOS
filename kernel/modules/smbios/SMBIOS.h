@@ -62,8 +62,7 @@ namespace Smbios
     __ENTRY(INACTIVE, 126)                               \
     __ENTRY(END_OF_TABLE, 127)
 
-
-enum struct HeaderType : uint8_t
+enum struct HearderType : uint8_t
 {
 
 #define __ENTRY(__name, __id) \
@@ -194,4 +193,194 @@ struct PACKED MainboardInfo
     uint8_t _serial_number;
     const char *serial_number() const { return header.string(_serial_number); }
 };
+
+#define ENCLOSURE_TYPE_LIST(__ENTRY)     \
+    __ENTRY(OTHER, 0x01)                 \
+    __ENTRY(UNKNOWN, 0x02)               \
+    __ENTRY(DESKTOP, 0x03)               \
+    __ENTRY(LOW_PROFILE_DESKTOP, 0x04)   \
+    __ENTRY(PIZZA_BOX, 0x05)             \
+    __ENTRY(MINI_TOWER, 0x06)            \
+    __ENTRY(TOWER, 0x07)                 \
+    __ENTRY(PORTABLE, 0x08)              \
+    __ENTRY(LAPTOP, 0x09)                \
+    __ENTRY(NOTEBOOK, 0x0A)              \
+    __ENTRY(HAND_HELD, 0x0B)             \
+    __ENTRY(DOCKING_STATION, 0x0C)       \
+    __ENTRY(ALL_IN_ONE, 0x0D)            \
+    __ENTRY(SUB_NOTEBOOK, 0x0E)          \
+    __ENTRY(SPACE_SAVING, 0x0F)          \
+    __ENTRY(LUNCH_BOX, 0x10)             \
+    __ENTRY(MAIN_SERVER_CHASSIS, 0x11)   \
+    __ENTRY(EXPANSION_CHASSIS, 0x12)     \
+    __ENTRY(SUB_CHASSIS, 0x13)           \
+    __ENTRY(BUS_EXPANSION_CHASSIS, 0x14) \
+    __ENTRY(PERIPHERAL_CHASSIS, 0x15)    \
+    __ENTRY(RAID_CHASSIS, 0x16)          \
+    __ENTRY(RACK_MOUNT_CHASSIS, 0x17)    \
+    __ENTRY(SEALED_CASE_PC, 0x18)        \
+    __ENTRY(MULTI_SYSTEM_CHASSIS, 0x19)  \
+    __ENTRY(COMPACT_PCI, 0x1A)           \
+    __ENTRY(ADVANCED_TCA, 0x1B)          \
+    __ENTRY(BLADE, 0x1C)                 \
+    __ENTRY(BLADE_ENCLOSURE, 0x1D)       \
+    __ENTRY(TABLET, 0x1E)                \
+    __ENTRY(CONVERTIBLE, 0x1F)           \
+    __ENTRY(DETACHABLE, 0x20)            \
+    __ENTRY(IOT_GATEWAY, 0x21)           \
+    __ENTRY(EMBEDDED_PC, 0x22)           \
+    __ENTRY(MINI_PC, 0x23)               \
+    __ENTRY(STICK_PC, 0x24)
+
+enum struct EnclosureType : uint8_t
+{
+#define __ENTRY(__name, __id) \
+    __name = __id,
+
+    ENCLOSURE_TYPE_LIST(__ENTRY)
+#undef __ENTRY
+};
+
+struct PACKED EnclosureInfo
+{
+    Header header;
+
+    uint8_t has_lock : 1;
+    EnclosureType type : 7;
+
+    const char *type_string()
+    {
+        switch (static_cast<int>(type))
+        {
+
+#define __ENTRY(__name, __id) \
+    case __id:                \
+    {                         \
+        return #__name;       \
+    }
+
+            ENCLOSURE_TYPE_LIST(__ENTRY)
+#undef __ENTRY
+
+        default:
+            return "UNKNOW";
+        }
+    }
+
+    uint8_t _manufaturer;
+    const char *manufaturer() const { return header.string(_manufaturer); }
+
+    uint8_t _product;
+    const char *product() const { return header.string(_product); }
+
+    uint8_t _version;
+    const char *version() const { return header.string(_version); }
+
+    uint8_t _serial_number;
+    const char *serial_number() const { return header.string(_serial_number); }
+};
+
+struct PACKED ProcessorInfo
+{
+    Header header;
+};
+
+struct PACKED CacheInfo
+{
+    Header header;
+};
+
+struct PACKED SlotsInfo
+{
+    Header header;
+};
+
+struct PACKED PhysicalMemoryArray
+{
+    Header header;
+};
+
+struct PACKED MemoryDeviceInfo
+{
+    Header header;
+};
+
+struct PACKED MemoryArrayMappedAddress
+{
+    Header header;
+};
+
+struct PACKED MemoryDeviceMappedAddress
+{
+    Header header;
+};
+
+struct PACKED SystemBootInfo
+{
+    Header header;
+};
+
+struct EntryPoint
+{
+    char header[4];
+    uint8_t checksum_;
+    uint8_t length;
+    uint8_t major_version;
+    uint8_t minor_version;
+    uint16_t max_structure_size;
+    uint8_t entry_point_revision;
+    char formatted_area[5];
+
+    char header2[5];
+    uint8_t checksum2;
+    uint16_t length2;
+    uint32_t table_address;
+    uint16_t number_of_structures;
+    uint8_t bcd_revision;
+
+    uint8_t checksum()
+    {
+        uint8_t checksum = 0;
+
+        for (size_t i = 0; i < this->length; i++)
+        {
+            checksum += (reinterpret_cast<uint8_t *>(this))[i];
+        }
+
+        return checksum;
+    }
+
+    template <typename IterFunc>
+    void iterate(IterFunc callback)
+    {
+        Header *header = reinterpret_cast<Header *>(table_address);
+
+        while (header->type != HearderType::END_OF_TABLE)
+        {
+            if (callback(header) == Iteration::STOP)
+            {
+                return;
+            }
+
+            header = reinterpret_cast<Header *>(reinterpret_cast<uintptr_t>(header) + header->lenght_including_string_table());
+        }
+    }
+};
+
+static inline EntryPoint *find(MemoryRange range)
+{
+    for (uintptr_t address = range.base(); address < range.end(); address += 16)
+    {
+        EntryPoint *entry_point = reinterpret_cast<EntryPoint *>(address);
+
+        if (memcmp(entry_point->header, "_SM_", 4) == 0 &&
+            entry_point->checksum() == 0)
+        {
+            return entry_point;
+        }
+    }
+
+    return nullptr;
 }
+
+} // namespace Smbios
