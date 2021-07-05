@@ -39,3 +39,16 @@ static Iteration serialize_task(Json::Value::Array *list, Task *task)
 
     return Iteration::CONTINUE;
 }
+
+JResult FsProcessInfo::open(FsHandle &handle)
+{
+    Json::Value::Array list{};
+
+    task_iterate(&list, (TaskIterateCallback)serialize_task);
+
+    auto str = Json::stringify(list);
+    handle.attached = str.storage().give_ref();
+    handle.attached_size = reinterpret_cast<StringStorage *>(handle.attached)->size();
+
+    return SUCCESS;
+}
