@@ -21,3 +21,27 @@ static int _device_ids[(uint8_t)DeviceClass::__COUNT] = {};
 static const char *_device_names[(uint8_t)DeviceClass::__COUNT] = {
 #define DEVICE_NAMES_ENTRY(__type, __name) #__name,
     DEVICE_CLASS_LIST(DEVICE_NAMES_ENTRY)};
+
+void device_scan(IterFunc<DeviceAddress> callback)
+{
+    if (legacy_scan([&](LegacyAddress address) {
+            return callback(DeviceAddress(address));
+        }) == Iteration::STOP)
+    {
+        return;
+    }
+
+    if (pci_scan([&](PCIAddress address) {
+            return callback(DeviceAddress(address));
+        }) == Iteration::STOP)
+    {
+        return;
+    }
+
+    if (unix_scan([&](UNIXAddress address) {
+            return callback(DeviceAddress(address));
+        }) == Iteration::STOP)
+    {
+        return;
+    }
+}
