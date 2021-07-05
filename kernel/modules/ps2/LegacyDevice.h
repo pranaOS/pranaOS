@@ -59,8 +59,23 @@ public:
 template <typename LegacyDeviceType>
 struct LegacyDeviceMatcher : public DeviceMatcher
 {
-
 private:
     LegacyAddress _address;
-    
-}
+
+public:
+    LegacyDeviceMatcher(const char *name, LegacyAddress address)
+        : DeviceMatcher(BUS_LEGACY, name),
+          _address(address)
+    {
+    }
+
+    bool match(DeviceAddress address)
+    {
+        return _address == address.legacy();
+    }
+
+    RefPtr<Device> instance(DeviceAddress address)
+    {
+        return make<LegacyDeviceType>(address);
+    }
+};
