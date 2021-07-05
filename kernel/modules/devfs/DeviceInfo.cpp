@@ -15,11 +15,11 @@
 #include "system/node/Handle.h"
 #include "system/scheduling/Scheduler.h"
 
-FsDeviceInfo::FsDeviceInfo() : FsNode(J_FILE_TYPE_DEVICE)
+FsDeviceInfo::FsDeviceInfo() : FsNode(HJ_FILE_TYPE_DEVICE)
 {
 }
 
-JResult FsDeviceInfo::open(FsHandle &handle)
+HjResult FsDeviceInfo::open(FsHandle &handle)
 {
     Json::Value::Array root{};
 
@@ -50,4 +50,29 @@ JResult FsDeviceInfo::open(FsHandle &handle)
     handle.attached_size = reinterpret_cast<StringStorage *>(handle.attached)->size();
 
     return SUCCESS;
+}
+
+void FsDeviceInfo::close(FsHandle &handle)
+{
+    deref_if_not_null(reinterpret_cast<StringStorage *>(handle.attached));
+}
+
+ResultOr<size_t> FsDeviceInfo::read(FsHandle &handle, void *buffer, size_t size)
+{
+    size_t read = 0;
+
+    if (handle.offset() <= handle.attached_size)
+    {
+        read = MIN(handle.attached_size - handle.offset(), size);
+        memcpy(buffer, reinterpret_cast<StringStorage *>(handle.attached)->cstring() + handle.offset(), read);
+    }
+
+    return read;
+}
+
+void device_info_initialize()
+{
+    scheduler_running()
+        ->domain()
+        .link(IO::Path::parse("/System/devices"), make<FsDeviceInfo>());
 }
