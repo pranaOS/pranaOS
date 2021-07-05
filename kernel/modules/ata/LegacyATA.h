@@ -23,7 +23,6 @@ private:
     void delay(uint16_t io_port);
     void poll(uint16_t io_port);
 
-    
     void write_lba(uint16_t io_port, uint32_t lba);
     uint8_t read_block(uint8_t *buf, uint32_t lba, size_t size);
     uint8_t write_block(uint8_t *buf, uint32_t lba, size_t size);
@@ -36,4 +35,14 @@ private:
     bool _supports_48lba;
     size_t _num_blocks;
 
+public:
+    LegacyATA(DeviceAddress address);
+
+    size_t size() override;
+
+    ResultOr<size_t> read(size64_t offset, void *buffer, size_t size) override;
+
+    ResultOr<size_t> write(size64_t offset, const void *buffer, size_t size) override;
+
+    virtual bool did_fail() override { return !_exists; }
 };
