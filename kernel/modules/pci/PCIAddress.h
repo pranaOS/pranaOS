@@ -46,3 +46,19 @@
 #define PCI_VALUE_PORT 0xCFC
 
 #define PCI_NONE 0xFFFF
+
+struct PCIAddress
+{
+
+private:
+    int _bus = 0;
+    int _slot = 0;
+    int _func = 0;
+
+    void select(size_t offset)
+    {
+        uint32_t address = 0x80000000 | (bus() << 16) | (slot() << 11) | (func() << 8) | ((offset)&0xFC);
+        out32(PCI_ADDRESS_PORT, address);
+    }
+
+};
