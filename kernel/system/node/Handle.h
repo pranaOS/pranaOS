@@ -19,5 +19,22 @@ private:
     JOpenFlag _flags = 0;
     size_t _offset = 0;
 
-public: 
+public:
+    void *attached;
+    size_t attached_size;
+
+    auto node() { return _node; }
+    auto offset() { return _offset; }
+    auto flags() { return _flags; }
+
+    bool has_flag(JOpenFlag flag) { return (_flags & flag) == flag; }
+
+    FsHandle(RefPtr<FsNode> node, JOpenFlag flags);
+
+    FsHandle(FsHandle &other);
+
+    ~FsHandle();
+    
+
+
 }
