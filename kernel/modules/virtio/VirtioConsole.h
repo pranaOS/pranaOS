@@ -11,9 +11,13 @@
 
 struct VirtioConsole : public VirtioDevice
 {
-
 private:
 public:
     VirtioConsole(DeviceAddress address) : VirtioDevice(address, DeviceClass::CONSOLE)
-    
-}
+    {
+    }
+
+    ~VirtioConsole()
+    {
+    }
+};
