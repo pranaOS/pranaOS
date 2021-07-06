@@ -11,7 +11,6 @@
 
 struct UnixNull : public UNIXDevice
 {
-
 private:
 public:
     UnixNull(DeviceAddress address) : UNIXDevice(address, DeviceClass::NULL_)
@@ -28,4 +27,13 @@ public:
 
         return 0;
     }
-}
+
+    ResultOr<size_t> write(size64_t offset, const void *buffer, size_t size) override
+    {
+        UNUSED(offset);
+        UNUSED(buffer);
+        UNUSED(size);
+
+        return size;
+    }
+};
