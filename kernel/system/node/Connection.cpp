@@ -17,3 +17,20 @@ void FsConnection::accepted()
 {
     _accepted = true;
 }
+
+bool FsConnection::is_accepted()
+{
+    return _accepted;
+}
+
+bool FsConnection::can_read(FsHandle &handle)
+{
+    if (handle.has_flag(J_OPEN_CLIENT))
+    {
+        return !_data_to_client.empty() || !server();
+    }
+    else
+    {
+        return !_data_to_server.empty() || !clients();
+    }
+}
