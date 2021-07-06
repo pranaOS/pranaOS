@@ -9,7 +9,7 @@
 #include "system/node/Connection.h"
 #include "system/node/Socket.h"
 
-FsSocket::FsSocket() : FsNode(HJ_FILE_TYPE_SOCKET)
+FsSocket::FsSocket() : FsNode(J_FILE_TYPE_SOCKET)
 {
 }
 

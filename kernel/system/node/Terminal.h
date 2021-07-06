@@ -32,5 +32,5 @@ public:
 
     ResultOr<size_t> write(FsHandle &handle, const void *buffer, size_t size) override;
 
-    HjResult call(FsHandle &handle, IOCall request, void *args) override;
+    JResult call(FsHandle &handle, IOCall request, void *args) override;
 };
