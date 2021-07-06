@@ -28,5 +28,6 @@ private:
     unsigned int _clients = 0;
     unsigned int _server = 0;
 
+public:
     
 }
