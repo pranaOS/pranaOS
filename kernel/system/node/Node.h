@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021, krishpranav, Alex5xt
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+*/
+
+
 #pragma once
 
 // includes
