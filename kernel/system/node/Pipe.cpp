@@ -22,3 +22,16 @@ bool FsPipe::can_write(FsHandle &)
 {
     return !_buffer.full() || !readers();
 }
+
+
+ResultOr<size_t> FsPipe::read(FsHandle &handle, void *buffer, size_t size)
+{
+    UNUSED(handle);
+
+    if (!writers() && _buffer.empty())
+    {
+        return ERR_STREAM_CLOSED;
+    }
+
+    return _buffer.read((char *)buffer, size);
+}
