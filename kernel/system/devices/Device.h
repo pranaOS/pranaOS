@@ -7,8 +7,8 @@
 #pragma once
 
 // includes
-#include <abi/IOCall.h>
-#include <abi/Paths.h>
+#include <libabi/IOCall.h>
+#include <libabi/Paths.h>
 #include <libio/Format.h>
 #include <libutils/RefPtr.h>
 #include <libutils/ResultOr.h>

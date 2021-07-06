@@ -8,7 +8,7 @@
 #pragma once
 
 // includes
-#include <abi/Mouse.h>
+#include <libabi/Mouse.h>
 #include <libutils/Array.h>
 #include <libutils/Lock.h>
 #include <libutils/RingBuffer.h>

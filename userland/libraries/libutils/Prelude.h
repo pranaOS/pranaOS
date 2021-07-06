@@ -12,7 +12,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#include <abi/Process.h>
+#include <libabi/Process.h>
 #include <libutils/Macros.h>
 
 typedef uint64_t size64_t;

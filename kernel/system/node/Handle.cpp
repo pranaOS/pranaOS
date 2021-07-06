@@ -9,7 +9,7 @@
 #include <assert.h>
 #include <string.h>
 
-#include <abi/Result.h>
+#include <libabi/Result.h>
 #include <libmath/MinMax.h>
 
 #include "system/node/Connection.h"
