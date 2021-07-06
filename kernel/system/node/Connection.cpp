@@ -34,3 +34,15 @@ bool FsConnection::can_read(FsHandle &handle)
         return !_data_to_server.empty() || !clients();
     }
 }
+
+bool FsConnection::can_write(FsHandle &handle)
+{
+    if (handle.has_flag(J_OPEN_CLIENT))
+    {
+        return !_data_to_server.full() || !server();
+    }
+    else
+    {
+        return !_data_to_client.full() || !clients();
+    }
+}
