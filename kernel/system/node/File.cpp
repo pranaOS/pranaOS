@@ -43,3 +43,16 @@ size_t FsFile::size()
     return _buffer_size;
 }
 
+
+ResultOr<size_t> FsFile::read(FsHandle &handle, void *buffer, size_t size)
+{
+    size_t read = 0;
+
+    if (handle.offset() <= _buffer_size)
+    {
+        read = MIN(_buffer_size - handle.offset(), size);
+        memcpy(buffer, (char *)_buffer + handle.offset(), read);
+    }
+
+    return read;
+}
