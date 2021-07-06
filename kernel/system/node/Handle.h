@@ -6,17 +6,17 @@
 
 #pragma once
 
-#include <libabi/Handle.h>
+// includes
+#include <abi/Handle.h>
 #include <libio/Seek.h>
 #include "system/node/Node.h"
-
 
 struct FsHandle : public RefCounted<FsHandle>
 {
 private:
     Lock _lock{"fshandle"};
     RefPtr<FsNode> _node = nullptr;
-    JOpenFlag _flags = 0;
+    HjOpenFlag _flags = 0;
     size_t _offset = 0;
 
 public:
@@ -27,14 +27,30 @@ public:
     auto offset() { return _offset; }
     auto flags() { return _flags; }
 
-    bool has_flag(JOpenFlag flag) { return (_flags & flag) == flag; }
+    bool has_flag(HjOpenFlag flag) { return (_flags & flag) == flag; }
 
-    FsHandle(RefPtr<FsNode> node, JOpenFlag flags);
+    FsHandle(RefPtr<FsNode> node, HjOpenFlag flags);
 
     FsHandle(FsHandle &other);
 
     ~FsHandle();
-    
 
+    bool locked();
 
-}
+    void acquire(int who_acquire);
+    void release(int who_release);
+
+    PollEvent poll(PollEvent events);
+
+    ResultOr<size_t> read(void *buffer, size_t size);
+
+    ResultOr<size_t> write(const void *buffer, size_t size);
+
+    ResultOr<ssize64_t> seek(IO::SeekFrom from);
+
+    HjResult call(IOCall request, void *args);
+
+    HjResult stat(HjStat *stat);
+
+    ResultOr<RefPtr<FsHandle>> accept();
+};
