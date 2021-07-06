@@ -21,7 +21,7 @@ public:
 
     ~FsFile() override;
 
-    HjResult open(FsHandle &handle) override;
+    JResult open(FsHandle &handle) override;
 
     size_t size() override;
 

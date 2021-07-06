@@ -58,5 +58,5 @@ ElapsedTime system_get_uptime()
 void system_initialize()
 {
     _system_boot_timestamp = Arch::get_time();
-    Kernel::logln("hjert - " __BUILD_GITREF__);
+    Kernel::logln("Jert - " __BUILD_GITREF__);
 }

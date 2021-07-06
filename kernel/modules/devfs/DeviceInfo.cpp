@@ -15,11 +15,11 @@
 #include "system/node/Handle.h"
 #include "system/scheduling/Scheduler.h"
 
-FsDeviceInfo::FsDeviceInfo() : FsNode(HJ_FILE_TYPE_DEVICE)
+FsDeviceInfo::FsDeviceInfo() : FsNode(J_FILE_TYPE_DEVICE)
 {
 }
 
-HjResult FsDeviceInfo::open(FsHandle &handle)
+JResult FsDeviceInfo::open(FsHandle &handle)
 {
     Json::Value::Array root{};
 

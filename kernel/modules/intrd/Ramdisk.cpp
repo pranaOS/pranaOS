@@ -22,7 +22,7 @@ void ramdisk_load(Module *module)
 
         if (block.name[strlen(block.name) - 1] == '/')
         {
-            HjResult result = scheduler_running()->domain().mkdir(file_path);
+            JResult result = scheduler_running()->domain().mkdir(file_path);
 
             if (result != SUCCESS)
             {
@@ -31,7 +31,7 @@ void ramdisk_load(Module *module)
         }
         else if ((block.typeflag & 8) == 0 || (block.typeflag & 8) == 5)
         {
-            auto result_or_handle = scheduler_running()->domain().open(file_path, HJ_OPEN_WRITE | HJ_OPEN_CREATE);
+            auto result_or_handle = scheduler_running()->domain().open(file_path, J_OPEN_WRITE | J_OPEN_CREATE);
 
             if (!result_or_handle.success())
             {

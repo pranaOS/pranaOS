@@ -12,7 +12,7 @@
 #include "system/node/File.h"
 #include "system/node/Handle.h"
 
-FsFile::FsFile() : FsNode(HJ_FILE_TYPE_REGULAR)
+FsFile::FsFile() : FsNode(J_FILE_TYPE_REGULAR)
 {
     _buffer = (char *)malloc(512);
     _buffer_allocated = 512;
@@ -24,9 +24,9 @@ FsFile::~FsFile()
     free(_buffer);
 }
 
-HjResult FsFile::open(FsHandle &handle)
+JResult FsFile::open(FsHandle &handle)
 {
-    if (handle.has_flag(HJ_OPEN_TRUNC))
+    if (handle.has_flag(J_OPEN_TRUNC))
     {
         free(_buffer);
         _buffer = (char *)malloc(512);

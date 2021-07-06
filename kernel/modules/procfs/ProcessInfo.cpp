@@ -15,7 +15,7 @@
 #include "system/scheduling/Scheduler.h"
 #include "system/tasking/Task-Memory.h"
 
-FsProcessInfo::FsProcessInfo() : FsNode(HJ_FILE_TYPE_DEVICE)
+FsProcessInfo::FsProcessInfo() : FsNode(J_FILE_TYPE_DEVICE)
 {
 }
 
@@ -40,7 +40,7 @@ static Iteration serialize_task(Json::Value::Array *list, Task *task)
     return Iteration::CONTINUE;
 }
 
-HjResult FsProcessInfo::open(FsHandle &handle)
+JResult FsProcessInfo::open(FsHandle &handle)
 {
     Json::Value::Array list{};
 

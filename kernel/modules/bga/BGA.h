@@ -33,7 +33,7 @@ private:
     void write_register(uint16_t address, uint16_t data);
     uint16_t read_register(uint16_t address);
 
-    HjResult set_resolution(int width, int height);
+    JResult set_resolution(int width, int height);
 
 public:
     BGA(DeviceAddress address);
@@ -41,5 +41,5 @@ public:
     size_t size() override;
     ResultOr<size_t> read(size64_t offset, void *buffer, size_t size) override;
     ResultOr<size_t> write(size64_t offset, const void *buffer, size_t size) override;
-    HjResult call(IOCall request, void *args) override;
+    JResult call(IOCall request, void *args) override;
 };

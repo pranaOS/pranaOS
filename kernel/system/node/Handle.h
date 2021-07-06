@@ -16,7 +16,7 @@ struct FsHandle : public RefCounted<FsHandle>
 private:
     Lock _lock{"fshandle"};
     RefPtr<FsNode> _node = nullptr;
-    HjOpenFlag _flags = 0;
+    JOpenFlag _flags = 0;
     size_t _offset = 0;
 
 public:
@@ -27,9 +27,9 @@ public:
     auto offset() { return _offset; }
     auto flags() { return _flags; }
 
-    bool has_flag(HjOpenFlag flag) { return (_flags & flag) == flag; }
+    bool has_flag(JOpenFlag flag) { return (_flags & flag) == flag; }
 
-    FsHandle(RefPtr<FsNode> node, HjOpenFlag flags);
+    FsHandle(RefPtr<FsNode> node, JOpenFlag flags);
 
     FsHandle(FsHandle &other);
 
@@ -48,9 +48,9 @@ public:
 
     ResultOr<ssize64_t> seek(IO::SeekFrom from);
 
-    HjResult call(IOCall request, void *args);
+    JResult call(IOCall request, void *args);
 
-    HjResult stat(HjStat *stat);
+    JResult stat(JStat *stat);
 
     ResultOr<RefPtr<FsHandle>> accept();
 };
