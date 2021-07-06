@@ -15,7 +15,7 @@ jobs:
 
       - name: Installing dependencies
         run: |
-          sudo toolchain/install-dependencies.sh
+          sudo bash toolchain/install-dependencies.sh
 
       - name: Fetching submodules
         run: |
