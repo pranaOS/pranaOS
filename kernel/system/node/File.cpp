@@ -24,3 +24,22 @@ FsFile::~FsFile()
 {
     free(_buffer);
 }
+
+JResult FsFile::open(FsHandle &handle)
+{
+    if (handle.has_flag(J_OPEN_TRUNC))
+    {
+        free(_buffer);
+        _buffer = (char *)malloc(512);
+        _buffer_allocated = 512;
+        _buffer_size = 0;
+    }
+
+    return SUCCESS;
+}
+
+size_t FsFile::size()
+{
+    return _buffer_size;
+}
+
