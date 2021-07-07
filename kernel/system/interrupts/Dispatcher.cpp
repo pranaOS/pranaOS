@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
 */
 
+// includes
 #include "system/Streams.h"
 #include <assert.h>
 #include "system/devices/Devices.h"
@@ -41,4 +42,43 @@ static bool dispatcher_has_interrupt()
     }
 
     return result > 0;
+}
+
+static void dispatcher_snapshot(bool *destination)
+{
+    InterruptsRetainer retainer;
+    memcpy(destination, _pending_interrupts, sizeof(_pending_interrupts));
+    memset(_pending_interrupts, 0, sizeof(_pending_interrupts));
+}
+
+struct BlockerDispatcher : public Blocker
+{
+public:
+    bool can_unblock(Task &) override
+    {
+        return dispatcher_has_interrupt();
+    }
+};
+
+void dispatcher_service()
+{
+    while (true)
+    {
+        BlockerDispatcher blocker{};
+        assert(task_block(scheduler_running(), blocker, -1) == SUCCESS);
+
+        while (dispatcher_has_interrupt())
+        {
+            bool snapshot[256];
+            dispatcher_snapshot(snapshot);
+
+            for (size_t i = 0; i < 256; i++)
+            {
+                if (snapshot[i])
+                {
+                    devices_handle_interrupt(i);
+                }
+            }
+        }
+    }
 }
