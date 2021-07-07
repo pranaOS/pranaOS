@@ -46,7 +46,6 @@
     __ENTRY(ERR_ACCESS_DENIED, "Access denied")                                   \
     __ENTRY(ERR_UNKNOWN, "Unknown failure")
 
-
 enum JResult
 {
 #define RESULT_ENUM_ENTRY(__name, __description) __name,
@@ -54,3 +53,39 @@ enum JResult
 #undef RESULT_ENUM_ENTRY
         __RESULT_COUNT
 };
+
+#define result_is_error(__result) ((__result) != SUCCESS && (__result) != TIMEOUT)
+
+static inline const char *result_to_string(JResult error)
+{
+#define RESULT_ENUM_ENTRY_STRING(__entry, __description) #__entry,
+    const char *RESULT_NAMES[] = {RESULT_ENUM(RESULT_ENUM_ENTRY_STRING)};
+#undef RESULT_ENUM_ENTRY
+
+    if (error < __RESULT_COUNT && error >= 0)
+    {
+        return RESULT_NAMES[error];
+    }
+    else
+    {
+        return "INVALID_RESULT_CODE";
+    }
+}
+
+static inline const char *get_result_description(JResult result)
+{
+    const char *RESULT_DESCRIPTIONS[] = {
+#define RESULT_ENUM_ENTRY(__name, __description) __description,
+        RESULT_ENUM(RESULT_ENUM_ENTRY)
+#undef RESULT_ENUM_ENTRY
+    };
+
+    if (result < __RESULT_COUNT && result >= 0)
+    {
+        return RESULT_DESCRIPTIONS[result];
+    }
+    else
+    {
+        return "INVALID_RESULT_CODE";
+    }
+}
