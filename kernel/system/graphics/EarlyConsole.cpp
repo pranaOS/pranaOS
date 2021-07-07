@@ -10,7 +10,6 @@
 #include "system/graphics/Font.h"
 #include "system/graphics/Graphics.h"
 
-// values
 int _console_x = 0;
 int _console_y = 0;
 bool _console_escaped = false;
@@ -49,4 +48,66 @@ void early_console_enable()
             }
         }
     }
+}
+
+size_t early_console_write(const void *buffer, size_t size)
+{
+    if (!_console_enabled)
+    {
+        return size;
+    }
+
+    if (!graphic_has_framebuffer())
+    {
+        return size;
+    }
+
+    uint8_t *cp = (uint8_t *)buffer;
+
+    for (size_t i = 0; i < size; i++)
+    {
+        if (_console_escaped)
+        {
+            if (isalpha(cp[i]))
+            {
+                _console_escaped = false;
+            }
+        }
+        else
+        {
+            if (cp[i] == '\n')
+            {
+                _console_x = 0;
+                _console_y = (_console_y + 1) % early_console_height();
+            }
+            if (cp[i] == '\t')
+            {
+                int old_console_x = _console_x;
+                _console_x = (_console_x + 4) % early_console_width();
+
+                if (old_console_x > _console_x)
+                {
+                    _console_y = (_console_y + 1) % early_console_height();
+                }
+            }
+            else if (cp[i] == '\e')
+            {
+                _console_escaped = true;
+            }
+            else
+            {
+                font_draw(cp[i], _console_x * font_width(), _console_y * font_height());
+
+                int old_console_x = _console_x;
+                _console_x = (_console_x + 1) % early_console_width();
+
+                if (old_console_x > _console_x)
+                {
+                    _console_y = (_console_y + 1) % early_console_height();
+                }
+            }
+        }
+    }
+
+    return size;
 }
