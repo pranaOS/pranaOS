@@ -17,4 +17,8 @@ struct MousePacket
     int offx;
     int offy;
     int scroll;
+
+    MouseButtonState left;
+    MouseButtonState right;
+    MouseButtonState middle;
 };
