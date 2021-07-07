@@ -24,5 +24,10 @@ int vfprintf(FILE *file, const char *fmt, va_list va)
     info.output = file;
     info.allocated = -1;
 
-    return _-printf(&info, va);
+    return __printf(&info, va);
+}
+
+int vprintf(const char *fmt, va_list va)
+{
+    return vfprintf(stdout, fmt, va);
 }
