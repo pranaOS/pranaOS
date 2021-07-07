@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021, krishpranav
- *
- * SPDX-License-Identifier: BSD-2-Clause
-*/
-
-// includes
 #include <libabi/Paths.h>
 #include "system/Streams.h"
 #include <libmath/MinMax.h>
@@ -24,7 +17,7 @@ static int _framebuffer_bpp = 0;
 struct Framebuffer : public FsNode
 {
 private:
-    
+
 public:
     Framebuffer() : FsNode(HJ_FILE_TYPE_DEVICE)
     {
@@ -89,7 +82,7 @@ void framebuffer_initialize(Handover *handover)
 
     if (_framebuffer_width == 0 || _framebuffer_height == 0)
     {
-        Kernel::logln("No framebuffer!!!!!");
+        Kernel::logln("No framebuffer!");
         return;
     }
 
@@ -105,7 +98,7 @@ void framebuffer_initialize(Handover *handover)
 
     if (_framebuffer_virtual == 0)
     {
-        Kernel::logln("Failed to allocate memory for the framebuffer!!!!!");
+        Kernel::logln("Failed to allocate memory for the framebuffer!");
         return;
     }
 
