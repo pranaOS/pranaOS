@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <abi/Syscalls.h>
-#include <skift/Plugs.h>
+#include <pranaos/Plugs.h>
 
 #ifndef __KERNEL__
 

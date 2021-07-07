@@ -34,7 +34,7 @@
  *      values of n>1.
  */
 
-#define _SKIFT_SOURCE
+#define __PRANAOS_SOURCE
 #include "libm.h"
 
 static const double invsqrtpi = 5.64189583547756279280e-01; /* 0x3FE20DD7, 0x50429B6D */

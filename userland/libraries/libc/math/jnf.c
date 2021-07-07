@@ -13,7 +13,7 @@
  * ====================================================
  */
 
-#define _SKIFT_SOURCE
+#define __PRANAOS_SOURCE
 #include "libm.h"
 
 float jnf(int n, float x)

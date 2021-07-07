@@ -6,9 +6,8 @@
 
 // includes
 #include <ctype.h>
-
-#include <skift/NumberFormatter.h>
-#include <skift/Printf.h>
+#include <pranaos/NumberFormatter.h>
+#include <pranaos/Printf.h>
 #include <string.h>
 
 int __printf_formate_binary(printf_info_t *info, va_list *va)
