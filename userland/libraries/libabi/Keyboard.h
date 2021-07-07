@@ -120,3 +120,90 @@
     __ENTRY(KEYBOARD_KEY_LSUPER, (0x80 + 0x5B))        \
     __ENTRY(KEYBOARD_KEY_RSUPER, (0x80 + 0x5C))        \
     __ENTRY(KEYBOARD_KEY_MENU, (0x80 + 0x5D))
+
+#define KEY_ENUM_ENTRY(__key_name, __key_number) __key_name,
+
+enum Key : uint32_t
+{
+    KEY_LIST(KEY_ENUM_ENTRY)
+        __KEY_COUNT,
+};
+
+enum KeyMotion : uint32_t
+{
+    KEY_MOTION_UP,
+    KEY_MOTION_DOWN,
+    KEY_MOTION_TYPED,
+};
+
+#define KEY_MODIFIER_ALT (1 << 0)
+#define KEY_MODIFIER_ALTGR (1 << 1)
+#define KEY_MODIFIER_SHIFT (1 << 2)
+#define KEY_MODIFIER_CTRL (1 << 3)
+#define KEY_MODIFIER_SUPER (1 << 3)
+typedef uint32_t KeyModifier;
+
+struct KeyboardPacket
+{
+    Key key;
+    KeyModifier modifiers;
+    Text::Rune rune;
+    KeyMotion motion;
+};
+
+struct KeyMapping
+{
+    Key key;
+
+    Text::Rune regular_rune;
+    Text::Rune shift_rune;
+    Text::Rune alt_rune;
+    Text::Rune shift_alt_rune;
+};
+
+#define KEYMAP_LANGUAGE_SIZE 16
+#define KEYMAP_REGION_SIZE 16
+
+struct KeyMap
+{
+    char magic[4]; /* kmap */
+    char language[KEYMAP_LANGUAGE_SIZE];
+    char region[KEYMAP_REGION_SIZE];
+
+    uint32_t length;
+    KeyMapping mappings[];
+};
+
+#define KEY_NAMES_ENTRY(__key_name, __key_number) #__key_name,
+
+static const char *KEYS_NAMES[] = {KEY_LIST(KEY_NAMES_ENTRY)};
+
+static inline const char *key_to_string(Key key)
+{
+    if (key < __KEY_COUNT)
+    {
+        return KEYS_NAMES[key];
+    }
+    else
+    {
+        return "overflow";
+    }
+}
+
+static inline bool key_is_valid(Key key)
+{
+    return key > 0 && key < __KEY_COUNT;
+}
+
+static inline KeyMapping *keymap_lookup(KeyMap *keymap, Key key)
+{
+    for (size_t i = 0; i < keymap->length; i++)
+    {
+        if (keymap->mappings[i].key == key)
+        {
+            return &keymap->mappings[i];
+        }
+    }
+
+    return nullptr;
+}
