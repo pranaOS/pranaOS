@@ -30,3 +30,22 @@ static void __initialize()
         (*__init_array_start[i])(0, nullptr, nullptr);
     }
 }
+
+static void __uninitialize(int exit_code)
+{
+    _fini();
+    __cxa_finalize(nullptr);
+
+    exit(exit_code);
+}
+
+extern "C" void __entry_point(int argc, char **argv, char *env)
+{
+    __initialize();
+
+    environment_load(env);
+
+    int exit_value = main(argc, argv);
+
+    __uninitialize(exit_value);
+}
