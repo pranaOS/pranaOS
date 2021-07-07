@@ -4,13 +4,11 @@
  * SPDX-License-Identifier: BSD-2-Clause
 */
 
-
 // includes
 #include <stdio.h>
 #include <string.h>
-#include <libabi/Syscalls.h>
+#include <abi/Syscalls.h>
 #include <skift/Plugs.h>
-
 
 #ifndef __KERNEL__
 
@@ -23,3 +21,10 @@ void __plug_assert_failed(const char *expr, const char *file, const char *functi
 }
 
 #endif
+
+TimeStamp __plug_system_get_time()
+{
+    TimeStamp timestamp = 0;
+    assert(hj_system_time(&timestamp) == SUCCESS);
+    return timestamp;
+}
