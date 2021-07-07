@@ -2,7 +2,7 @@
 import sys
 import os
 
-if not "SKIFT_SYSROOT" in os.environ:
+if not "PRANAOS_SYSROOT" in os.environ:
     print("Please run use-it.sh first")
     exit(1)
 
@@ -12,9 +12,9 @@ def usage():
 if len(sys.argv) < 2:
     usage()
 
-sysroot = os.environ["SKIFT_SYSROOT"]
-contrib = os.environ["SKIFT_CONTRIBROOT"]
-skift = os.path.join(contrib, "..")
+sysroot = os.environ["PRANAOS_SYSROOT"]
+contrib = os.environ["PRANAOS_CONTRIBROOT"]
+PRANAOS = os.path.join(contrib, "..")
 
 for module in sys.argv[1:]:
     path = os.path.join(contrib, module)
@@ -34,6 +34,6 @@ for module in sys.argv[1:]:
     if not os.system("./install-it.sh") == 0:
         print(f"Error while installing {module}")
         continue
-    os.chdir(skift)
+    os.chdir(PRANAOS)
 os.chdir(contrib)
 os.system("git checkout -- *")
