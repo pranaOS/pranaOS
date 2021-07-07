@@ -32,3 +32,33 @@ int snprintf(char *s, size_t n, const char *fmt, ...)
 
     return result;
 }
+
+int vsnprintf(char *s, size_t n, const char *fmt, va_list va)
+{
+    if (n == 0)
+    {
+        return 0;
+    }
+
+    printf_info_t info = {};
+
+    info.format = fmt;
+    info.append = string_printf_append;
+    info.output = s;
+    info.allocated = n;
+
+    s[0] = '\0';
+    return __printf(&info, va);
+}
+
+int sprintf(char *s, const char *fmt, ...)
+{
+    va_list va;
+    va_start(va, fmt);
+
+    int result = vsnprintf(s, 65535, fmt, va);
+
+    va_end(va);
+
+    return result;
+}
