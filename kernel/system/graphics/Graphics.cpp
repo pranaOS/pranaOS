@@ -35,7 +35,6 @@ void graphic_initialize(Handover *handover)
     framebuffer_initialize(handover);
 }
 
-
 void graphic_did_find_framebuffer(uintptr_t address, int width, int height, int pitch, int bpp)
 {
     InterruptsRetainer retainer;
@@ -48,7 +47,6 @@ void graphic_did_find_framebuffer(uintptr_t address, int width, int height, int 
 
     Kernel::logln("Framebuffer: w:{} h:{} p:{} bpp:{}", width, height, pitch, bpp);
 }
-
 
 bool graphic_has_framebuffer()
 {
@@ -65,7 +63,35 @@ int graphic_framebuffer_width()
     return _framebuffer_width;
 }
 
+int graphic_framebuffer_height()
+{
+    return _framebuffer_height;
+}
+
 int graphic_framebuffer_pitch()
 {
     return _framebuffer_pitch;
+}
+
+void graphic_framebuffer_plot(int x, int y, uint32_t color)
+{
+    if ((x >= 0 && x <= graphic_framebuffer_width()) &&
+        (y >= 0 && y <= graphic_framebuffer_height()))
+    {
+        uint8_t *pixel = (reinterpret_cast<uint8_t *>(_framebuffer_address)) + (y * (_framebuffer_pitch)) + (x * _framebuffer_bpp);
+
+        if (_framebuffer_bpp == 4)
+        {
+            pixel[0] = (color >> 0) & 0xff;
+            pixel[1] = (color >> 8) & 0xff;
+            pixel[2] = (color >> 16) & 0xff;
+            pixel[4] = 0x00;
+        }
+        else if (_framebuffer_bpp == 3)
+        {
+            pixel[0] = color & 0xff;
+            pixel[1] = (color >> 8) & 0xff;
+            pixel[2] = (color >> 16) & 0xff;
+        }
+    }
 }
