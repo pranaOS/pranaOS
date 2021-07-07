@@ -97,7 +97,7 @@ int whence_to_posix(JWhence whence)
     return -1;
 }
 
-JFileType mode_to_skift_file_type(mode_t mode)
+JFileType mode_to_pranaos_file_type(mode_t mode)
 {
     if (S_ISDIR(mode))
     {
@@ -112,17 +112,17 @@ JFileType mode_to_skift_file_type(mode_t mode)
     return J_FILE_TYPE_REGULAR;
 }
 
-JStat stat_to_skift(struct stat sb)
+JStat stat_to_pranaos(struct stat sb)
 {
     JStat result;
 
     result.size = sb.st_size;
-    result.type = mode_to_skift_file_type(sb.st_mode);
+    result.type = mode_to_pranaos_file_type(sb.st_mode);
 
     return result;
 }
 
-JResult errno_to_skift_result()
+JResult errno_to_pranaos_result()
 {
     JResult result = SUCCESS;
 
@@ -143,35 +143,35 @@ JResult j_handle_open(int *handle, const char *raw_path, size_t size, JOpenFlag 
     strlcpy(buffer, raw_path, MIN(256, size + 1));
     *handle = open(buffer, open_flags_to_posix(flags));
 
-    return errno_to_skift_result();
+    return errno_to_pranaos_result();
 }
 
 JResult j_handle_close(int handle)
 {
     close(handle);
 
-    return errno_to_skift_result();
+    return errno_to_pranaos_result();
 }
 
 JResult j_handle_read(int handle, void *buffer, size_t size, size_t *amount_read)
 {
     *amount_read = read(handle, buffer, size);
 
-    return errno_to_skift_result();
+    return errno_to_pranaos_result();
 }
 
 JResult j_handle_write(int handle, const void *buffer, size_t size, size_t *amount_written)
 {
     *amount_written = write(handle, buffer, size);
 
-    return errno_to_skift_result();
+    return errno_to_pranaos_result();
 }
 
 JResult j_handle_seek(int handle, ssize64_t *offset, JWhence whence, ssize64_t *result)
 {
     *result = lseek(handle, *offset, whence_to_posix(whence));
 
-    return errno_to_skift_result();
+    return errno_to_pranaos_result();
 }
 
 JResult j_handle_stat(int handle, JStat *state)
@@ -179,9 +179,9 @@ JResult j_handle_stat(int handle, JStat *state)
     struct stat sb;
     fstat(handle, &sb);
 
-    *state = stat_to_skift(sb);
+    *state = stat_to_pranaos(sb);
 
-    return errno_to_skift_result();
+    return errno_to_pranaos_result();
 }
 
 JResult j_handle_call(int handle, IOCall call, void *args)
