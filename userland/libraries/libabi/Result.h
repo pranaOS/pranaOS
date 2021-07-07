@@ -45,3 +45,12 @@
     __ENTRY(ERR_EXTENSION, "Unrecognized file extension")                         \
     __ENTRY(ERR_ACCESS_DENIED, "Access denied")                                   \
     __ENTRY(ERR_UNKNOWN, "Unknown failure")
+
+
+enum JResult
+{
+#define RESULT_ENUM_ENTRY(__name, __description) __name,
+    RESULT_ENUM(RESULT_ENUM_ENTRY)
+#undef RESULT_ENUM_ENTRY
+        __RESULT_COUNT
+};
