@@ -10,7 +10,7 @@
 // includes
 #include <libutils/Prelude.h>
 
-struct Mac
+struct MacAddress
 {
     uint8_t bytes[6];
 
