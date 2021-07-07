@@ -48,3 +48,24 @@ void graphic_did_find_framebuffer(uintptr_t address, int width, int height, int 
 
     Kernel::logln("Framebuffer: w:{} h:{} p:{} bpp:{}", width, height, pitch, bpp);
 }
+
+
+bool graphic_has_framebuffer()
+{
+    return _framebuffer_address != 0;
+}
+
+uint32_t *graphic_framebuffer()
+{
+    return reinterpret_cast<uint32_t *>(_framebuffer_address);
+}
+
+int graphic_framebuffer_width()
+{
+    return _framebuffer_width;
+}
+
+int graphic_framebuffer_pitch()
+{
+    return _framebuffer_pitch;
+}
