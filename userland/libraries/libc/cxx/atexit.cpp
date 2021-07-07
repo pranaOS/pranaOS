@@ -30,5 +30,22 @@ extern "C"
 
         return 0;
     }
-    
-}
+
+    void __cxa_finalize(void *dso_handle)
+    {
+
+        int entry_index = __exit_entry_count;
+
+        while (--entry_index >= 0)
+        {
+            auto &exit_entry = __exit_entries[entry_index];
+            bool needs_calling = !exit_entry.has_been_called && (!dso_handle || dso_handle == exit_entry.dso_handle);
+            if (needs_calling)
+            {
+                exit_entry.method(exit_entry.parameter);
+                exit_entry.has_been_called = true;
+            }
+        }
+    }
+
+}  
