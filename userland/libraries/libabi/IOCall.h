@@ -1,6 +1,13 @@
+/*
+ * Copyright (c) 2021, Krisna Pranav
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+*/
+
 #pragma once
 
-#include <libabi/Network.h>
+// includes
+#include <abi/Network.h>
 
 struct IOCallTerminalSizeArgs
 {
@@ -43,4 +50,24 @@ struct IOCallTextModeStateArgs
 struct IOCallNetworkSateAgs
 {
     MacAddress mac_address;
+};
+
+enum IOCall
+{
+    IOCALL_TERMINAL_GET_SIZE,
+    IOCALL_TERMINAL_SET_SIZE,
+
+    IOCALL_DISPLAY_GET_MODE,
+    IOCALL_DISPLAY_SET_MODE,
+    IOCALL_DISPLAY_BLIT,
+
+    IOCALL_KEYBOARD_SET_KEYMAP,
+    IOCALL_KEYBOARD_GET_KEYMAP,
+
+    IOCALL_TEXTMODE_GET_STATE,
+    IOCALL_TEXTMODE_SET_STATE,
+
+    IOCALL_NETWORK_GET_STATE,
+
+    __IOCALL_COUNT,
 };
