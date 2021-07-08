@@ -1,0 +1,18 @@
+/*
+ * Copyright (c) 2021, krishpranav
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+*/
+
+// includes
+#include <ctype.h>
+#include <strings.h>
+
+int strcasecmp(const char *s1, const char *s2)
+{
+    for (; tolower(*s1) == tolower(*s2) && *s1; s1++, s2++)
+    {
+        ;
+    }
+    return *(unsigned char *)s1 - *(unsigned char *)s2;
+}
