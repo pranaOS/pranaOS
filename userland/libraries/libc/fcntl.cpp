@@ -13,7 +13,6 @@ JOpenFlag fcntl_parse_mode(int mode)
 {
     JOpenFlag flags = J_OPEN_STREAM;
 
-    // Open Mode
     if (mode == O_RDONLY)
     {
         flags |= J_OPEN_READ;
@@ -27,7 +26,6 @@ JOpenFlag fcntl_parse_mode(int mode)
         flags |= J_OPEN_READ | J_OPEN_WRITE;
     }
 
-    // Flags
     if (mode & O_CREAT)
     {
         flags |= J_OPEN_CREATE;
@@ -42,4 +40,18 @@ JOpenFlag fcntl_parse_mode(int mode)
     }
 
     return flags;
+}
+
+int open(const char *path, int mode, ...)
+{
+    int flags = fcntl_parse_mode(mode);
+    int handle = 0;
+    JResult result = J_handle_open(&handle, path, strlen(path), flags);
+
+    if (result != JResult::SUCCESS)
+    {
+        return -1;
+    }
+
+    return handle;
 }
