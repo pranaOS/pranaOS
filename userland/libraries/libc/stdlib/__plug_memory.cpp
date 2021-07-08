@@ -25,12 +25,12 @@ void __plug_memory_unlock()
 void *__plug_memory_alloc(size_t size)
 {
     uintptr_t address = 0;
-    assert(J_memory_alloc(size, &address) == JResult::SUCCESS);
+    assert(j_memory_alloc(size, &address) == JResult::SUCCESS);
     return (void *)address;
 }
 
 void __plug_memory_free(void *address, size_t size)
 {
     UNUSED(size);
-    J_memory_free((uintptr_t)address);
+    j_memory_free((uintptr_t)address);
 }
