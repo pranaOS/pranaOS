@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021, krishpranav
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+*/
+
+// includes
 #include <limits.h>
 #include <locale.h>
 
@@ -27,3 +34,8 @@ static struct lconv _locale_defaults = {
     .int_p_sign_posn = CHAR_MAX,
     .int_n_sign_posn = CHAR_MAX,
 };
+
+struct lconv *localeconv(void)
+{
+    return &_locale_defaults;
+}
