@@ -30,3 +30,28 @@ void file_state_to_stat(JStat *in, struct stat *out)
     out->st_size = in->size;
     out->st_mode = file_type_to_stat(in->type);
 }
+
+int stat(const char *path, struct stat *buf)
+{
+    int handle = open(path, J_OPEN_READ);
+
+    if (handle == -1)
+        return 1;
+
+    int result = fstat(handle, buf);
+
+    if (result == -1)
+        return -1;
+
+    close(handle);
+
+    return 0;
+}
+
+int fstat(int fd, struct stat *buf)
+{
+    JStat state;
+    JResult result = J_handle_stat(fd, &state);
+    file_state_to_stat(&state, buf);
+    return result == JResult::SUCCESS ? -1 : 0;
+}
