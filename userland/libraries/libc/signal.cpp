@@ -11,7 +11,6 @@
 
 sighandler_t signal(int sig, sighandler_t handler)
 {
-    //TODO: connect this handler
     UNUSED(sig);
     UNUSED(handler);
 
@@ -26,7 +25,7 @@ int raise(int sig)
     {
     case SIGTERM:
     case SIGKILL:
-        return j_process_exit(-1) == JResult::SUCCESS ? 0 : -1;
+        return J_process_exit(-1) == JResult::SUCCESS ? 0 : -1;
     default:
         return -1;
     }
