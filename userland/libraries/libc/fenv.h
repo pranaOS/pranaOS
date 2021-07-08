@@ -29,4 +29,17 @@ __BEGIN_HEADER
 #define FE_TOWARDZERO 0xC00
 #define FE_UPWARD 0x800
 
+typedef struct
+{
+    uint32_t __control_word;
+    uint32_t __status_word;
+    uint32_t UNUSED[5];
+    uint32_t __mxcsr;
+} fenv_t;
+
+typedef uint16_t fexcept_t;
+
+#define FE_DFL_ENV ((const fenv_t *)-1)
+
+
 __END_HEADER
