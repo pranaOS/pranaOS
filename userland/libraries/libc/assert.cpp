@@ -7,7 +7,7 @@
 // includes
 #include <assert.h>
 #include <stdlib.h>
-#include <pranaos/Plugs.h>
+#include <skift/Plugs.h>
 
 static bool _nested = false;
 
@@ -25,4 +25,5 @@ void assert_failed(const char *expr, const char *file, const char *function, int
     }
 
     abort();
+    __builtin_unreachable();
 }
