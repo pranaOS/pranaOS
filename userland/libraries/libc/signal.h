@@ -6,7 +6,7 @@
 
 #pragma once
 
-// includes
+// incldues
 #include <__libc__.h>
 
 __BEGIN_HEADER
@@ -48,5 +48,12 @@ __BEGIN_HEADER
 #define SIGXFSZ 27
 #define SIGWINCH 28
 #define SIGUNUSED SIGSYS
+
+typedef int sig_atomic_t;
+
+typedef void (*sighandler_t)(int);
+sighandler_t signal(int sig, sighandler_t handler);
+
+int raise(int sig);
 
 __END_HEADER
