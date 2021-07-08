@@ -39,7 +39,18 @@ typedef struct
 
 typedef uint16_t fexcept_t;
 
-#define FE_DFL_ENV ((const fenv_t *)-1)
+int feclearexcept(int);
+int fegetenv(fenv_t *);
+int fegetexceptflag(fexcept_t *, int);
+int fegetround(void);
+int feholdexcept(fenv_t *);
+int feraiseexcept(int);
+int fesetenv(const fenv_t *);
+int fesetexceptflag(const fexcept_t *, int);
+int fesetround(int);
+int fetestexcept(int);
+int feupdateenv(const fenv_t *);
 
+#define FE_DFL_ENV ((const fenv_t *)-1)
 
 __END_HEADER
