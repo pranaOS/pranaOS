@@ -38,4 +38,16 @@ __BEGIN_HEADER
 #define F_WRLCK 1
 #define F_UNLCK 2
 
+struct flock
+{
+    short l_type;
+    short l_whence;
+    off_t l_start;
+    off_t l_len;
+    pid_t l_pid;
+};
+
+#define FD_CLOEXEC (1 << 0)
+
+
 __END_HEADER
