@@ -55,3 +55,49 @@ struct MinorBlock
 
     MajorBlock *block;
 };
+
+#define MINOR_BLOCK_HEADER_SIZE (ALIGN_UP(sizeof(MinorBlock), 16))
+
+static MajorBlock *_heap_root = nullptr;
+
+static MajorBlock *_best_bet = nullptr;
+
+static constexpr size_t _page_size = 4096;
+
+static constexpr size_t _page_count = 16;
+
+static MajorBlock *heap_major_block_create(size_t size)
+{
+    // This is how much space is required.
+    size_t st = size + MAJOR_BLOCK_HEADER_SIZE;
+    st += MINOR_BLOCK_HEADER_SIZE;
+
+    // Perfect amount of space?
+    if ((st % _page_size) == 0)
+    {
+        st = st / (_page_size);
+    }
+    else
+    {
+        st = st / (_page_size) + 1;
+    }
+
+    // Make sure it's >= the minimum size.
+    st = MAX(st, _page_count);
+
+    MajorBlock *maj = (MajorBlock *)__plug_memory_alloc(st * _page_size);
+
+    if (maj == nullptr)
+    {
+        return nullptr;
+    }
+
+    maj->prev = nullptr;
+    maj->next = nullptr;
+    maj->pages = st;
+    maj->size = st * _page_size;
+    maj->usage = MAJOR_BLOCK_HEADER_SIZE;
+    maj->first = nullptr;
+
+    return maj;
+}
