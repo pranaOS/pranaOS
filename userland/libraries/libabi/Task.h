@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include <abi/Filesystem.h>
-#include <abi/Process.h>
+#include <libabi/Filesystem.h>
+#include <libabi/Process.h>
 
 #define TASK_STATE_LIST(__ENTRY) \
     __ENTRY(NONE)                \
