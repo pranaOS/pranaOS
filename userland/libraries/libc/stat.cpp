@@ -10,7 +10,8 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include <libabi/Syscalls.h>
+
+#include <abi/Syscalls.h>
 
 int file_type_to_stat(JFileType type)
 {
@@ -21,6 +22,7 @@ int file_type_to_stat(JFileType type)
     case J_FILE_TYPE_DIRECTORY:
         return _IFDIR;
     default:
+        // Log this
         return 0;
     }
 }
@@ -36,7 +38,7 @@ int stat(const char *path, struct stat *buf)
     int handle = open(path, J_OPEN_READ);
 
     if (handle == -1)
-        return 1;
+        return -1;
 
     int result = fstat(handle, buf);
 
@@ -54,4 +56,11 @@ int fstat(int fd, struct stat *buf)
     JResult result = J_handle_stat(fd, &state);
     file_state_to_stat(&state, buf);
     return result == JResult::SUCCESS ? -1 : 0;
+}
+
+int mkdir(const char *pathname, mode_t mode)
+{
+    UNUSED(mode);
+
+    return J_filesystem_mkdir(pathname, strlen(pathname)) == JResult::SUCCESS ? 0 : -1;
 }
