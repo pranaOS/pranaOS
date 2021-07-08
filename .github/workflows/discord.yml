@@ -1,4 +1,4 @@
-name: discord notification
+name: discord
 
 on: [push, pull_request_target]
 
