@@ -81,7 +81,6 @@ typedef struct
 div_t div(int numerator, int denominator);
 ldiv_t ldiv(long numerator, long denominator);
 
-/* These are supposed to be in limits, but gcc screwed us */
 #define PATH_MAX 4096
 #define NAME_MAX 255
 char *realpath(const char *path, char *resolved_path);
