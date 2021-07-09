@@ -10,9 +10,9 @@
 namespace IO
 {
 
-JResult Directory::read_entries()
+HjResult Directory::read_entries()
 {
-    JDirEntry entry;
+    HjDirEntry entry;
 
     auto read = TRY(_handle->read(&entry, sizeof(entry)));
 
@@ -54,6 +54,11 @@ Directory::Directory(RefPtr<Handle> handle)
     : _handle{handle}
 {
     read_entries();
+}
+
+bool Directory::exist()
+{
+    return _handle->valid();
 }
 
 }
