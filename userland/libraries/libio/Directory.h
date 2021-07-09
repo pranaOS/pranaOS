@@ -24,7 +24,12 @@ public:
         JStat stat;
     };
 
+private:
+    RefPtr<Handle> _handle;
+    Optional<IO::Path> _path = NONE;
+    Vector<Entry> _entries;
 
+    JResult read_entries();
 
 };
 
