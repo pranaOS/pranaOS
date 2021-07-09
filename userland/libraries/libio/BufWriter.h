@@ -31,6 +31,13 @@ public:
         flush();
     }
 
+    inline void puts_bits(unsigned int v, const size_t num_bits)
+    {
+        _bit_buffer |= v << _bit_count;
+        _bit_count += num_bits;
+    }
+    
+
 };
 
 }
