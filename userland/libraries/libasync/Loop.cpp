@@ -13,9 +13,9 @@
 #include <libutils/Assert.h>
 #include <libutils/Vector.h>
 
-
 namespace Async
 {
+
 
 static RefPtr<Loop> _instance = nullptr;
 
@@ -55,19 +55,21 @@ void Loop::update_polling_list()
     }
 }
 
-void Loop::register_notifer(Notifier *notifer)
+void Loop::register_notifier(Notifier *notifier)
 {
-    _notifiers.push_back(notifer);
+
+    _notifiers.push_back(notifier);
 
     update_polling_list();
 }
 
-void Loop::unregister_notifier(Notifer *notifier)
+void Loop::unregister_notifier(Notifier *notifier)
 {
-    _notifers.remove_all_value(notifer);
+    _notifiers.remove_all_value(notifier);
 
     update_polling_list();
 }
+
 
 void Loop::register_timer(Timer *timer)
 {
@@ -96,7 +98,8 @@ void Loop::update_timers()
     });
 }
 
-void Loop::registers_invoker(Invoker *invoker)
+
+void Loop::register_invoker(Invoker *invoker)
 {
     _invoker.push_back(invoker);
 }
@@ -118,4 +121,126 @@ void Loop::update_invoker()
     });
 }
 
+
+static Vector<AtExitHook> _atexit_hooks;
+
+Loop::Loop()
+{
 }
+
+Loop::~Loop()
+{
+    for (size_t i = 0; i < _atexit_hooks.count(); i++)
+    {
+        _atexit_hooks[i]();
+    }
+}
+
+Timeout Loop::get_timeout()
+{
+    Timeout timeout = UINT32_MAX;
+
+    TimeStamp current_tick = system_get_ticks();
+
+    _timers.foreach([&](auto timer) {
+        if (!timer->running() || timer->interval() == 0)
+        {
+            return Iteration::CONTINUE;
+        }
+
+        if (timer->scheduled() < current_tick)
+        {
+            timeout = 0;
+            return Iteration::CONTINUE;
+        }
+
+        Timeout remaining = timer->scheduled() - current_tick;
+
+        if (remaining <= timeout)
+        {
+            timeout = remaining;
+        }
+
+        return Iteration::CONTINUE;
+    });
+
+    return timeout;
+}
+
+void Loop::atexit(AtExitHook hook)
+{
+    _atexit_hooks.push_back(hook);
+}
+
+void Loop::pump(bool pool)
+{
+
+    Timeout timeout = 0;
+
+    if (!pool)
+    {
+        timeout = get_timeout();
+    }
+
+    HjResult result = hj_handle_poll(_polls.raw_storage(), _polls.count(), timeout);
+
+    if (result_is_error(result))
+    {
+        exit(PROCESS_FAILURE);
+    }
+
+    for (const HandlePoll &poll : _polls)
+    {
+        update_notifier(poll.handle, poll.result);
+    }
+
+    update_timers();
+
+    update_invoker();
+}
+
+int Loop::run()
+{
+    Assert::falsity(_is_running);
+
+    _is_running = true;
+
+    while (_is_running)
+    {
+        pump(false);
+    }
+
+    return _exit_value;
+}
+
+void Loop::exit(int exit_value)
+{
+
+    _is_running = false;
+    _exit_value = exit_value;
+}
+
+int Loop::run_nested()
+{
+    Assert::truth(_is_running);
+    Assert::falsity(_nested_is_running);
+
+    _nested_is_running = true;
+
+    while (_nested_is_running)
+    {
+        pump(false);
+    }
+
+    return _nested_exit_value;
+}
+
+void Loop::exit_nested(int exit_value)
+{
+    Assert::truth(_nested_is_running);
+
+    _nested_is_running = false;
+    _nested_exit_value = exit_value;
+}
+
+} 
