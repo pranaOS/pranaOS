@@ -46,5 +46,30 @@ static inline JResult copy(Reader &from, Writer &to, size_t n)
     } while (1);
 }
 
+static inline JResult copy(Reader &from, Writer &to)
+{
+    do
+    {
+        Array<uint8_t, COPY_CHUNK_SIZE> copy_chunk;
+
+        auto read = TRY(from.read(copy_chunk.raw_storage(), copy_chunk.count()));
+
+        if (read == 0)
+        {
+            to.flush();
+            return SUCCESS;
+        }
+
+        auto written = TRY(to.write(copy_chunk.raw_storage(), read));
+
+        if (written == 0)
+        {
+            to.flush();
+            return SUCCESS;
+        }
+    } while (1);
+}
+
+
     
 }
