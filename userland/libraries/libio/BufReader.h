@@ -46,8 +46,43 @@ public:
     {
         delete _buffer;
     }
-    
 
+    ResultOr<size_t> buffered()
+    {
+        return _used;
+    }
+
+    ResultOr<size_t> read(void *buffer, size_t size) override
+    {
+        size_t data_left = size;
+        uint8_t *data_to_read = (uint8_t *)buffer;
+
+        while (data_left != 0)
+        {
+
+            if (_head == _used)
+            {
+                if (TRY(fill()) == 0)
+                {
+                    return size - data_left;
+                }
+            }
+
+            size_t used_space = _used - _head;
+            size_t data_added = MIN(used_space, data_left);
+
+            memcpy(
+                data_to_read,
+                ((uint8_t *)_buffer) + _head,
+                data_added);
+
+            data_left -= data_added;
+            _head += data_added;
+            data_to_read += data_added;
+        }
+
+        return size - data_left;
+    }
 };
 
 }
