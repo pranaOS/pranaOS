@@ -45,6 +45,15 @@ public:
         return _handle->write(buffer, size);
     }
 
+    bool closed()
+    {
+        return _handle == nullptr;
+    }
+
+    void close()
+    {
+        _handle = nullptr;
+    }
 };
 
 }
