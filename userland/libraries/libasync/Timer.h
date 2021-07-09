@@ -36,6 +36,31 @@ public:
 
     void schedule(TimeStamp when) { _scheduled = when; }
 
+    void trigger()
+    {
+        _callback();
+    }
+
+    Timer(Timeout interval, Func<void()> callback)
+        : _interval(interval),
+        _callback(callback)
+    {
+    }
+
+    ~Timer()
+    {
+        stop();
+    }
+
+    void start()
+    {
+        if (!_running)
+        {
+            running = true;
+            loop().register_timer(this);
+        }
+    }
+
 };
 
 }
