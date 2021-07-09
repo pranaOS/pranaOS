@@ -37,6 +37,10 @@ public:
         _bit_count += num_bits;
     }
     
+    inline void put_data(const uint8_t *data, size_t len)
+    {
+        _writer.write(data, len);
+    }
 
 };
 
