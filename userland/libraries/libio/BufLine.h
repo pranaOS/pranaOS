@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: BSD-2-Clause
 */
 
-
 #pragma once
 
 // includes
@@ -21,8 +20,35 @@ private:
     Array<uint8_t, 512> _buffer;
     size_t _used = 0;
 
+public:
+    BufLine(IO::Writer &writer) : _writer{writer} {}
 
+    ~BufLine() { flush(); }
+
+    ResultOr<size_t> write(const void *buffer, size_t size) override
+    {
+        for (size_t i = 0; i < size; i++)
+        {
+            uint8_t byte = static_cast<const uint8_t *>(buffer)[i];
+
+            _buffer[_used] = byte;
+            _used++;
+
+            if (byte == '\n' || _used == _buffer.count())
+            {
+                TRY(flush());
+            }
+        }
+
+        return size;
+    }
+
+    JResult flush() override
+    {
+        auto result = _writer.write(_buffer.raw_storage(), _used).result();
+        _used = 0;
+        return result;
+    }
 };
-
 
 }
