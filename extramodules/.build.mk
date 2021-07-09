@@ -1,10 +1,10 @@
-ECHFS:=thirdparty/echfs/echfs-utils
-LIMINE:=thirdparty/limine/limine-install
-LIMINE_LOADER:=thirdparty/limine/limine.bin
+ECHFS:=extramodules/echfs/echfs-utils
+LIMINE:=extramodules/limine/limine-install
+LIMINE_LOADER:=extramodules/limine/limine.bin
 
 $(ECHFS):
-	cd thirdparty/echfs/ && $(MAKE) all
+	cd extramodules/echfs/ && $(MAKE) all
 
 $(LIMINE):
-	cd thirdparty/limine/ && $(MAKE) all
+	cd extramodules/limine/ && $(MAKE) all
 
