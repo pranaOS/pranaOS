@@ -22,5 +22,21 @@ private:
     
 };
 
+public:
+    Invoker(Func<void()> callback) : _callback(callback)
+    {
+        loop().register_invoker(this);
+    }
+
+    ~Invoker()
+    {
+        loop().unregister_invoker(this);
+    }
+
+    [[nodiscard]] bool should_be_invoke_later()
+    {
+        return _invoker_later;
+    }
+
 
 }
