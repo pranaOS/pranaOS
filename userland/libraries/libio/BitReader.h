@@ -46,7 +46,34 @@ public:
 
         return SUCCESS;
     }
-    
+
+    inline void flush()
+    {
+        _head = 0;
+        _buffer.flush();
+    }
+
+    template <typename T>
+    inline T grab()
+    {
+        hint(sizeof(T) * 8);
+
+        T value;
+
+        for (size_t i = 0; i < sizeof(T); i++)
+        {
+            (reinterpret_cast<uint8_t *>(&value))[i] = grab_bits(8);
+        }
+
+        return value;
+    }
+
+    template <typename T>
+    inline T grab_aligned()
+    {
+        flush();
+        return grab<T>();
+    }
 
 };
 }
