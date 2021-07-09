@@ -25,7 +25,16 @@ private:
     Timeout _interval = 0;
     Func<void()> _callback;
 
+public:
+    auto running() { return _running; }
 
+    auto interval() { return _interval; }
+
+    void interval(Timeout interval) { _interval = interval; }
+
+    auto scheduled() { return _scheduled; }
+
+    void schedule(TimeStamp when) { _scheduled = when; }
 
 };
 
