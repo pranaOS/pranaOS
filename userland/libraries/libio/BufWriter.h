@@ -42,6 +42,18 @@ public:
         _writer.write(data, len);
     }
 
+    inline void put_uint16(uint16_t v)
+    {
+        IO::write(_writer, v);
+    }
+
+    inline void align()
+    {
+        _bit_count += -_bit_count & 7;
+        flush();
+    }
+
+
 };
 
 }
