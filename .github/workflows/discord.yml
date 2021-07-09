@@ -1,27 +1,25 @@
-name: discord
+name: Notification on push
 
-on: push 
+on:
+  push:
+    branches:
+    - master
 
 jobs:
-  build_and_push:
+  build:
+
     runs-on: ubuntu-latest
 
     steps:
-    - name: Setup node.js
-      uses: actions/setup-node@v1
+    - name: Discord notification
+      env:
+        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        DISCORD_USERNAME: OSS 117
+        DISCORD_AVATAR: https://resize.programme-television.ladmedia.fr/r/670,670/img/var/premiere/storage/images/tele-7-jours/news-tv/oss-117-le-caire-nid-d-espions-c8-le-show-de-jean-dujardin-4484285/90175763-1-fre-FR/OSS-117-Le-Caire-nid-d-espions-C8-Le-show-de-Jean-Dujardin.jpg
+      uses: Ilshidur/action-discord@master
       with:
-        node-version: 12.x
-
-    - name: Checkout
-      uses: actions/checkout@v2
-
-    - name: Output branch name
-      id: name
-      run: |
-        echo "##[set-output name=branch;]${GITHUB_REF#refs/heads/}"
-
-    - name: Push
-      # To use latest action, specify "release-master" instead of "v0.0.4"
-      uses: satackey/push-prebuilt-action@v0.0.4
-      with:
-        push-branch: release-${{ steps.name.outputs.branch }}
+        args: 'A new commit has been pushed to pranaOS/pranaOS'
+    - name: Discord notification
+      env:
+        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+      uses: Ilshidur/action-discord@master
