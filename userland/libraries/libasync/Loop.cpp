@@ -41,5 +41,32 @@ void Loop::update_notifier(int id, PollEvent event)
     }
 }
 
+void Loop::update_polling_list()
+{
+    _polls.clear();
+
+    for (Notifier *notifier : _notifiers)
+    {
+        _polls.push_back({
+            notifier->handle()->id(),
+            notifier->events(),
+            0,
+        });
+    }
+}
+
+void Loop::register_notifer(Notifier *notifer)
+{
+    _notifiers.push_back(notifer);
+
+    update_polling_list();
+}
+
+void Loop::unregister_notifier(Notifer *notifier)
+{
+    _notifers.remove_all_value(notifer);
+
+    update_polling_list();
+}
 
 }
