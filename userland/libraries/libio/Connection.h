@@ -23,6 +23,19 @@ struct Connection final :
 private:
     RefPtr<Handle> _handle;
 
+public:
+    RefPtr<Handle> handle() override { return _handle; }
+
+    Connection() {}
+    Connection(RefPtr<Handle> handle) : _handle{handle} {}
+
+    ResultOr<size_t> read(void *buffer, size_t size) override
+    {
+        if (!_handle)
+            return ERR_STREAM_CLOSED;
+
+        return _handle->read(buffer, size);
+    }
 
 }
 
