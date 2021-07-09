@@ -6,6 +6,7 @@
 
 #pragma once
 
+// includes
 #include <libutils/Func.h>
 #include <libutils/OwnPtr.h>
 #include <libutils/Vector.h>
@@ -54,5 +55,56 @@ public:
             }
         }
     };
+
+private:
+    NONCOPYABLE(Observable);
+    NONMOVABLE(Observable);
+
+    Vector<_Observer *> _observers{};
+
+    void register_observer(_Observer *ob)
+    {
+        if (!_observers.contains(ob))
+        {
+            _observers.push_back(ob);
+        }
+    }
+
+    void unregister_observer(_Observer *ob)
+    {
+        _observers.remove_value(ob);
+    }
+
+public:
+    Observable()
+    {
+    }
+
+    virtual ~Observable()
+    {
+        for (size_t i = 0; i < _observers.count(); i++)
+        {
+            _observers[i]->detach();
+        }
+    }
+
+    void did_update()
+    {
+        Vector<_Observer *> observers_copy{_observers};
+
+        for (size_t i = 0; i < observers_copy.count(); i++)
+        {
+            observers_copy[i]->notify(*static_cast<T *>(this));
+        }
+    }
+
+    OwnPtr<_Observer> observe(Func<void(T &)> callback)
+    {
+        return own<_Observer>(this, callback);
+    }
+};
+
+template <typename T>
+using Observer = typename Observable<T>::_Observer;
 
 }
