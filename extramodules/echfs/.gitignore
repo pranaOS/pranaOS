@@ -1,0 +1,6 @@
+echfs-utils
+echfs-fuse
+mkfs.echfs
+*.o
+*.bin
+mnt/
