@@ -15,7 +15,6 @@ namespace IO
 
 struct BitWriter
 {
-
 private:
     uint_fast32_t _bit_buffer;
     uint8_t _bit_count;
@@ -31,12 +30,12 @@ public:
         flush();
     }
 
-    inline void puts_bits(unsigned int v, const size_t num_bits)
+    inline void put_bits(unsigned int v, const size_t num_bits)
     {
         _bit_buffer |= v << _bit_count;
         _bit_count += num_bits;
     }
-    
+
     inline void put_data(const uint8_t *data, size_t len)
     {
         _writer.write(data, len);
@@ -53,7 +52,16 @@ public:
         flush();
     }
 
+    inline void flush()
+    {
 
+        while (_bit_count >= 8)
+        {
+            IO::write(_writer, (uint8_t)_bit_buffer);
+            _bit_count -= 8;
+            _bit_buffer >>= 8;
+        }
+    }
 };
 
 }
