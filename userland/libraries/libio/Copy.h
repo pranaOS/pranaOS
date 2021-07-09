@@ -70,6 +70,26 @@ static inline JResult copy(Reader &from, Writer &to)
     } while (1);
 }
 
+static inline ResultOr<Slice> read_all(Reader &reader)
+{
+    MemoryWriter memory;
+
+    TRY(copy(reader, memory));
+
+    return Slice{memory.slice()};
+}
+
+static inline ResultOr<Slice> read_all(MemoryReader &reader)
+{
+    if (TRY(reader.tell()) == 0)
+    {
+        return reader.memory();
+    }
+    else
+    {
+        return read_all((Reader &)reader);
+    }
+}
 
     
 }
