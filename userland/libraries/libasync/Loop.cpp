@@ -69,4 +69,31 @@ void Loop::unregister_notifier(Notifer *notifier)
     update_polling_list();
 }
 
+void Loop::register_timer(Timer *timer)
+{
+    _timers.push_back(timer);
+}
+
+void Loop::unregister_timer(Timer *timer)
+{
+    _timers.remove_value(timer);
+}
+
+void Loop::update_timers()
+{
+    TimeStamp current_fire = system_get_ticks();
+
+    auto timers_list_copy = _timers;
+
+    timers_list_copy.foreach([&](auto timer) {
+        if (timer->running() && timer->scheduled() <= current_fire)
+        {
+            timer->trigger();
+            timer->schedule(current_fire + timer->interval());
+        }
+
+        return Iteration::CONTINUE;
+    });
+}
+
 }
