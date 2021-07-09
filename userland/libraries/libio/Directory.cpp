@@ -29,4 +29,18 @@ JResult Directory::read_entries()
     return SUCCESS;
 }
 
+Directory::Directory(const char *path)
+    : _handle{make<Handle>(path, HJ_OPEN_READ | HJ_OPEN_DIRECTORY)},
+      _path{IO::Path::parse(path)}
+{
+    read_entries();
+}
+
+Directory::Directory(String path)
+    : _handle{make<Handle>(path, HJ_OPEN_READ | HJ_OPEN_DIRECTORY)},
+      _path{IO::Path::parse(path)}
+{
+    read_entries();
+}
+
 }
