@@ -19,8 +19,6 @@ private:
     bool _invoke_later = false;
     Func<void()> _callback;
     RefPtr<Loop> _eventloop;
-    
-};
 
 public:
     Invoker(Func<void()> callback) : _callback(callback)
@@ -35,8 +33,24 @@ public:
 
     [[nodiscard]] bool should_be_invoke_later()
     {
-        return _invoker_later;
+        return _invoke_later;
     }
 
+    void invoke()
+    {
+        _invoke_later = false;
+        _callback();
+    }
+
+    void invoke_later()
+    {
+        _invoke_later = true;
+    }
+
+    void cancel()
+    {
+        _invoke_later = false;
+    }
+};
 
 }
