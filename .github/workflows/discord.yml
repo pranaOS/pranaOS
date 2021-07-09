@@ -1,1 +1,27 @@
-d
+name: discord
+
+on: push 
+
+jobs:
+  build_and_push:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Setup node.js
+      uses: actions/setup-node@v1
+      with:
+        node-version: 12.x
+
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Output branch name
+      id: name
+      run: |
+        echo "##[set-output name=branch;]${GITHUB_REF#refs/heads/}"
+
+    - name: Push
+      # To use latest action, specify "release-master" instead of "v0.0.4"
+      uses: satackey/push-prebuilt-action@v0.0.4
+      with:
+        push-branch: release-${{ steps.name.outputs.branch }}
