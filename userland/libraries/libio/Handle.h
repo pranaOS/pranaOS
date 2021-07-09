@@ -25,7 +25,21 @@ private:
     NONCOPYABLE(Handle);
 
 public:
-        
+    public:
+    int id() const { return _handle; }
+
+    Handle(int handle) : _handle(handle), _result(handle != HANDLE_INVALID_ID ? SUCCESS : ERR_BAD_HANDLE)
+    {
+    }
+
+    Handle(const String path, JOpenFlag flags)
+    {
+        auto resolved_path = process_resolve(path);
+        _result = J_handle_open(&_handle, resolved_path.cstring(), resolved_path.length(), flags);
+    }
+
+
+
 };
 
 }
