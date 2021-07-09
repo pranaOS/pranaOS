@@ -12,7 +12,6 @@
 #include <libutils/Vector.h>
 
 namespace Async
-
 {
 
 using AtExitHook = void (*)(void);
@@ -39,7 +38,7 @@ private:
     Vector<Invoker *> _invoker;
 
     void update_polling_list();
-    
+
     void update_notifier(int id, PollEvent event);
 
     void update_timers();
@@ -48,6 +47,36 @@ private:
 
     Timeout get_timeout();
 
+public:
+    static RefPtr<Loop> the();
 
+    Loop();
+
+    ~Loop();
+
+    void register_notifier(Notifier *notifier);
+
+    void unregister_notifier(Notifier *notifier);
+
+    void register_timer(Timer *timer);
+
+    void unregister_timer(Timer *timer);
+
+    void register_invoker(Invoker *timer);
+
+    void unregister_invoker(Invoker *timer);
+
+    void atexit(AtExitHook hook);
+
+    void pump(bool pool);
+
+    int run();
+
+    void exit(int exit_value);
+
+    int run_nested();
+
+    void exit_nested(int exit_value);
 };
+
 }
