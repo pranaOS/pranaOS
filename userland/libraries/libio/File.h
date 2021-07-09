@@ -11,3 +11,17 @@
 #include <libio/Handle.h>
 #include <libio/Reader.h>
 #include <libio/Writer.h>
+
+namespace IO
+{
+
+struct File final :
+    public Reader,
+    public Writer,
+    public Seek,
+    public RawHandle
+{
+
+};
+
+}
