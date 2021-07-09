@@ -37,6 +37,14 @@ public:
         return _handle->read(buffer, size);
     }
 
-}
+    ResultOr<size_t> write(const void *buffer, size_t size) override
+    {
+        if (!_handle)
+            return ERR_STREAM_CLOSED;
+
+        return _handle->write(buffer, size);
+    }
+
+};
 
 }
