@@ -30,15 +30,41 @@ public:
 
     File() {}
 
-    File(const char *path, JOpenFlags flags = 0);
+    File(const char *path, HjOpenFlag flags = 0);
 
-    File(String path, JOpenFlag flags = 0);
+    File(String path, HjOpenFlag flags = 0);
 
-    File(IO::Path &path, JOpenFlag flags = 0);
+    File(IO::Path &path, HjOpenFlag flags = 0);
 
     File(RefPtr<Handle> handle);
-    
 
+    ResultOr<size_t> read(void *buffer, size_t size) override;
+
+    ResultOr<size_t> write(const void *buffer, size_t size) override;
+
+    ResultOr<size_t> call(IOCall call, void *args);
+
+    ResultOr<size_t> seek(SeekFrom from) override;
+
+    ResultOr<size_t> tell() override;
+
+    ResultOr<size_t> length() override;
+
+    ResultOr<HjFileType> type();
+
+    virtual RefPtr<Handle> handle() override { return _handle; }
+
+    bool exist();
+
+    HjResult result()
+    {
+        if (!_handle)
+        {
+            return ERR_BAD_HANDLE;
+        }
+
+        return _handle->result();
+    }
 };
 
 }
