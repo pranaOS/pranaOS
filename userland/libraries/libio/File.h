@@ -21,6 +21,9 @@ struct File final :
     public Seek,
     public RawHandle
 {
+private:
+    RefPtr<Handle> _handle;
+    Optional<IO::Path> _path = NONE;
 
 };
 
