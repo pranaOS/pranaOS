@@ -96,4 +96,26 @@ void Loop::update_timers()
     });
 }
 
+void Loop::registers_invoker(Invoker *invoker)
+{
+    _invoker.push_back(invoker);
+}
+
+void Loop::unregister_invoker(Invoker *invoker)
+{
+    _invoker.remove_value(invoker);
+}
+
+void Loop::update_invoker()
+{
+    _invoker.foreach([](Invoker *invoker) {
+        if (invoker->should_be_invoke_later())
+        {
+            invoker->invoke();
+        }
+
+        return Iteration::CONTINUE;
+    });
+}
+
 }
