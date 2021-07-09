@@ -21,6 +21,15 @@ private:
     uint8_t _bit_count;
     Writer &_writer;
 
+public:
+    BitWriter(Writer &writer) : _writer(writer)
+    {
+    }
+
+    ~BitWriter()
+    {
+        flush();
+    }
 
 };
 
