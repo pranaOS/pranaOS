@@ -35,7 +35,18 @@ private:
     NONCOPYABLE(BufReader);
     NONMOVABLE(BufReader);
 
+public:
+    BufReader(Reader &reader, size_t size)
+        : _reader{reader}, _size{size}
+    {
+        _buffer = new uint8_t[_size];
+    }
 
+    ~BufReader()
+    {
+        delete _buffer;
+    }
+    
 
 };
 
