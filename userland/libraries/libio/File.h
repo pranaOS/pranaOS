@@ -30,6 +30,15 @@ public:
 
     File() {}
 
+    File(const char *path, JOpenFlags flags = 0);
+
+    File(String path, JOpenFlag flags = 0);
+
+    File(IO::Path &path, JOpenFlag flags = 0);
+
+    File(RefPtr<Handle> handle);
+    
+
 };
 
 }
