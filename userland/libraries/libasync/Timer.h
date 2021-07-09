@@ -6,7 +6,7 @@
 
 #pragma once
 
-// includes
+// incldues
 #include <pranaos/Time.h>
 #include <libasync/Source.h>
 #include <libutils/Func.h>
@@ -14,7 +14,6 @@
 
 namespace Async
 {
-
 
 struct Timer :
     public Source
@@ -43,7 +42,7 @@ public:
 
     Timer(Timeout interval, Func<void()> callback)
         : _interval(interval),
-        _callback(callback)
+          _callback(callback)
     {
     }
 
@@ -56,11 +55,19 @@ public:
     {
         if (!_running)
         {
-            running = true;
+            _running = true;
             loop().register_timer(this);
         }
     }
 
+    void stop()
+    {
+        if (_running)
+        {
+            _running = false;
+            loop().unregister_timer(this);
+        }
+    }
 };
 
 }
