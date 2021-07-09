@@ -23,7 +23,19 @@ private:
     size_t _used = 0;
     size_t _head = 0;
     size_t _size = 0;
-    
+
+    ResultOr<size_t> fill()
+    {
+        _used = TRY(_reader.read(_buffer, _size));
+        _head = 0;
+
+        return _used;
+    }
+
+    NONCOPYABLE(BufReader);
+    NONMOVABLE(BufReader);
+
+
 
 };
 
