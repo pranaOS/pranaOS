@@ -43,4 +43,17 @@ Directory::Directory(String path)
     read_entries();
 }
 
+Directory::Directory(const IO::Path &path)
+    : _handle{make<Handle>(path.string(), HJ_OPEN_READ | HJ_OPEN_DIRECTORY)},
+      _path{path}
+{
+    read_entries();
+}
+
+Directory::Directory(RefPtr<Handle> handle)
+    : _handle{handle}
+{
+    read_entries();
+}
+
 }
