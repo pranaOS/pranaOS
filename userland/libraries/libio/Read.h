@@ -34,4 +34,13 @@ ResultOr<size_t> read_vector(Reader &reader, Vector<T> &vector)
 
 }
 
+inline ResultOr<String> read_string(Reader &reader, size_t len)
+{
+    IO::MemoryWriter memory;
+    TRY(IO::copy(reader, memory, len));
+    return String{memory.string()};
+}
+
+
+
 }
