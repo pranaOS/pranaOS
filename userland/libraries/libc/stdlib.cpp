@@ -16,7 +16,7 @@
 
 void abort()
 {
-    hj_process_exit(PROCESS_FAILURE);
+    J_process_exit(PROCESS_FAILURE);
     ASSERT_NOT_REACHED();
 }
 
@@ -97,7 +97,7 @@ char *getenv(const char *name)
 
 void exit(int status)
 {
-    hj_process_exit(status);
+    J_process_exit(status);
     __builtin_unreachable();
 }
 

@@ -25,6 +25,6 @@ void __plug_assert_failed(const char *expr, const char *file, const char *functi
 TimeStamp __plug_system_get_time()
 {
     TimeStamp timestamp = 0;
-    assert(hj_system_time(&timestamp) == SUCCESS);
+    assert(J_system_time(&timestamp) == SUCCESS);
     return timestamp;
 }

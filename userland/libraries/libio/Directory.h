@@ -20,7 +20,7 @@ public:
     struct Entry
     {
         String name;
-        HjStat stat;
+        JStat stat;
     };
 
 private:
@@ -28,7 +28,7 @@ private:
     Optional<IO::Path> _path = NONE;
     Vector<Entry> _entries;
 
-    HjResult read_entries();
+    JResult read_entries();
 
 public:
     const Optional<IO::Path> &path() { return _path; }

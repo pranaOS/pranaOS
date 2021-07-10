@@ -20,8 +20,8 @@ typedef unsigned int PollEvent;
 struct Handle
 {
     int id;
-    HjOpenFlag flags;
-    HjResult result;
+    JOpenFlag flags;
+    JResult result;
 };
 
 struct HandlePoll

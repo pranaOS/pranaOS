@@ -182,7 +182,7 @@ void Loop::pump(bool pool)
         timeout = get_timeout();
     }
 
-    HjResult result = hj_handle_poll(_polls.raw_storage(), _polls.count(), timeout);
+    JResult result = J_handle_poll(_polls.raw_storage(), _polls.count(), timeout);
 
     if (result_is_error(result))
     {
