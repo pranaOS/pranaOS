@@ -30,11 +30,11 @@ public:
 
     File() {}
 
-    File(const char *path, HjOpenFlag flags = 0);
+    File(const char *path, JOpenFlag flags = 0);
 
-    File(String path, HjOpenFlag flags = 0);
+    File(String path, JOpenFlag flags = 0);
 
-    File(IO::Path &path, HjOpenFlag flags = 0);
+    File(IO::Path &path, JOpenFlag flags = 0);
 
     File(RefPtr<Handle> handle);
 
@@ -50,13 +50,13 @@ public:
 
     ResultOr<size_t> length() override;
 
-    ResultOr<HjFileType> type();
+    ResultOr<JFileType> type();
 
     virtual RefPtr<Handle> handle() override { return _handle; }
 
     bool exist();
 
-    HjResult result()
+    JResult result()
     {
         if (!_handle)
         {
