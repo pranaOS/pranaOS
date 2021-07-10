@@ -58,3 +58,24 @@ String __plug_process_resolve(String raw_path)
     return path.normalized().string();
 
 }
+
+JResult filesystem_link(const char *raw_old_path, const char *raw_new_path)
+{
+    auto old_path = process_resolve(raw_old_path);
+    auto new_path = process_resolve(raw_new_path);
+
+    return J_filesystem_link(
+        old_path.cstring(), old_path.lenght(),
+        new_path.cstring(), new_path.lenght());
+}
+
+
+JResult filesystem_rename(const char *raw_old_path, const char *raw_new_path)
+{
+    auto old_path = process_resolve(raw_old_path);
+    auto new_path = process_resolve(raw_new_path);
+
+    return J_filesystem_rename(
+        old_path.cstring(), old_path.length(),
+        new_path.cstring(), new_path.length());
+}
