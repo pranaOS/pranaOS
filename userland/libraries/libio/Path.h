@@ -8,7 +8,7 @@
 #pragma once
 
 // includes
-#include <libabi/Filesystem.h>
+#include <abi/Filesystem.h>
 #include <libio/MemoryReader.h>
 #include <libio/MemoryWriter.h>
 #include <libio/Scanner.h>
@@ -18,7 +18,6 @@
 
 namespace IO
 {
-
 struct Path
 {
 private:
@@ -26,9 +25,10 @@ private:
     Vector<String> _elements{};
 
 public:
-    static constexpr int PARENT_SHORTHAND = 1;
+    static constexpr int PARENT_SHORTHAND = 1; 
 
     bool absolute() const { return _absolute; }
+
     bool relative() const { return !_absolute; }
 
     size_t length() const { return _elements.count(); }
@@ -184,7 +184,7 @@ public:
         return *this;
     }
 
-    Path *operator=(Path &&other)
+    Path &operator=(Path &&other)
     {
         if (this != &other)
         {
@@ -194,8 +194,203 @@ public:
 
         return *this;
     }
-    
 
+    String operator[](size_t index) const
+    {
+        return _elements[index];
+    }
+
+    bool operator!=(const Path &other) const
+    {
+        return !(*this == other);
+    }
+
+    bool operator==(const Path &other) const
+    {
+        if (this == &other)
+        {
+            return true;
+        }
+
+        if (_absolute != other._absolute)
+        {
+            return false;
+        }
+
+        return _elements == other._elements;
+    }
+
+    Path normalized()
+    {
+        Vector<String> stack{};
+
+        _elements.foreach([&](auto &element) {
+            if (element == ".." && stack.count() > 0)
+            {
+                stack.pop_back();
+            }
+            else if (_absolute && element == "..")
+            {
+                if (stack.count() > 0)
+                {
+                    stack.pop_back();
+                }
+            }
+            else if (element != ".")
+            {
+                stack.push_back(element);
+            }
+
+            return Iteration::CONTINUE;
+        });
+
+        return {_absolute, std::move(stack)};
+    }
+
+    String basename() const
+    {
+        if (length() > 0)
+        {
+            return _elements.peek_back();
+        }
+        else
+        {
+            if (_absolute)
+            {
+                return "/";
+            }
+            else
+            {
+                return "";
+            }
+        }
+    }
+
+    String basename_without_extension() const
+    {
+        IO::MemoryWriter builder{basename().length()};
+        IO::MemoryReader reader{basename().slice()};
+        IO::Scanner scan{reader};
+
+        if (scan.peek() == '.')
+        {
+            IO::write(builder, scan.next());
+        }
+
+        while (scan.peek() != '.' &&
+               !scan.ended())
+        {
+            IO::write(builder, scan.next());
+        }
+
+        return builder.string();
+    }
+
+    String dirname() const
+    {
+        IO::MemoryWriter builder{};
+
+        if (_absolute)
+        {
+            IO::write(builder, PATH_SEPARATOR);
+        }
+        else if (_elements.count() <= 1)
+        {
+            IO::write(builder, '.');
+        }
+
+        if (_elements.count() >= 2)
+        {
+            for (size_t i = 0; i < _elements.count() - 1; i++)
+            {
+                IO::write(builder, _elements[i]);
+
+                if (i != _elements.count() - 2)
+                {
+                    IO::write(builder, PATH_SEPARATOR);
+                }
+            }
+        }
+
+        return builder.string();
+    }
+
+    Path dirpath() const
+    {
+        Vector<String> stack{};
+
+        if (length() > 0)
+        {
+            for (size_t i = 0; i < length() - 1; i++)
+            {
+                stack.push_back(_elements[i]);
+            }
+        }
+
+        return {_absolute, std::move(stack)};
+    }
+
+    String extension() const
+    {
+        auto filename = basename();
+
+        IO::MemoryWriter builder{basename().length()};
+        IO::MemoryReader reader{basename().slice()};
+        IO::Scanner scan{reader};
+
+    
+        scan.skip('.');
+
+        while (scan.peek() != '.' &&
+               !scan.ended())
+        {
+            scan.next();
+        }
+
+        while (!scan.ended())
+        {
+            IO::write(builder, scan.next());
+        }
+
+        return builder.string();
+    }
+
+    Path parent(size_t index) const
+    {
+        Vector<String> stack{};
+
+        if (index <= length())
+        {
+            for (size_t i = 0; i <= index; i++)
+            {
+                stack.push_back(_elements[i]);
+            }
+        }
+
+        return {_absolute, std::move(stack)};
+    }
+
+    String string() const
+    {
+        IO::MemoryWriter builder{basename().length()};
+
+        if (_absolute)
+        {
+            IO::write(builder, PATH_SEPARATOR);
+        }
+
+        for (size_t i = 0; i < _elements.count(); i++)
+        {
+            IO::write(builder, _elements[i]);
+
+            if (i != _elements.count() - 1)
+            {
+                IO::write(builder, PATH_SEPARATOR);
+            }
+        }
+
+        return builder.string();
+    }
 };
 
-}
+} 
