@@ -12,6 +12,6 @@
 Tick __plug_system_get_ticks()
 {
     Tick result = 0;
-    assert(hj_system_tick(&result) == SUCCESS);
+    assert(J_system_tick(&result) == SUCCESS);
     return result;
 }
