@@ -30,6 +30,12 @@ public:
         return _crc.checksum();
     }
 
+    ResultOr<size_t> read(void *buffer, size_t size) override
+    {
+        auto result = TRY(_reader.read(buffer, size));
+        _crc.add((uint8_t *)buffer, result);
+        return result;
+    }
 };
 
 }
