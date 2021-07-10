@@ -34,4 +34,22 @@ public:
 
 };
 
+
+struct OutStream :
+    public Writer,
+    public RawHandle
+{
+private:
+    RefPtr<Handle> _handle;
+
+public:
+    using Writer::write;
+
+    OutStream() : _handle{make<Handle>(1)} {}
+
+    ResultOr<size_t> write(const void *buffer, size_t size) override { return _handle->write(buffer, size); }
+    RefPtr<Handle> handle() override { return _handle; }
+};
+
+
 }
