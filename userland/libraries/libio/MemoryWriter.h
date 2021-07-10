@@ -26,6 +26,32 @@ private:
     size_t _position = 0;
     uint8_t *_buffer = nullptr;
 
+public:
+    using Writer::flush;
+
+    MemoryWriter() : MemoryWriter(16)
+    {
+    }
+
+    MemoryWriter(size_t preallocated)
+    {
+        preallocated = MAX(preallocated, 16);
+
+        _buffer = new uint8_t[preallocated];
+        _buffer[0] = '\0';
+        _size = preallocated;
+        _used = 0;
+        _position = 0;
+    }
+
+    ~MemoryWriter()
+    {
+        if (_buffer)
+        {
+            delete[] _buffer;
+        }
+    }
+
 };
 
 }
