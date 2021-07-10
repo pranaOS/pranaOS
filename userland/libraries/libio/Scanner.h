@@ -61,6 +61,44 @@ public:
         return _is_end_of_file;
     }
 
+    char next()
+    {
+        if (_peek.empty())
+        {
+            refill();
+        }
+
+        if (ended())
+        {
+            return '\0';
+        }
+
+        return _peek.get();
+    }
+
+    void next(size_t n)
+    {
+        for (size_t i = 0; i < n; i++)
+        {
+            next();
+        }
+    }
+
+    char peek(size_t peek = 0)
+    {
+        while (!ended() && peek >= _peek.used())
+        {
+            refill();
+        }
+
+        if (ended())
+        {
+            return '\0';
+        }
+
+        return _peek.peak(peek);
+    }
+
 };
 
 }
