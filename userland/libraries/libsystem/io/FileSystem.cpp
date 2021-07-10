@@ -5,7 +5,7 @@
 */
 
 // includes
-#include <libsystem/io/FileSystem.h>
+#include <libsystem/io/Filesystem.h>
 #include <libsystem/core/Plugs.h>
 
 bool filesystem_exist(const char *path, JFileType type)
@@ -27,4 +27,12 @@ bool filesystem_exist(const char *path, JFileType type)
         return false;
     }
 
+    if (state.type != type)
+    {
+        __plug_handle_close(&handle);
+        return false;
+    }
+
+    __plug_handle_close(&handle);
+    return true;
 }
