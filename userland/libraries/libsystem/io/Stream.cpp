@@ -21,3 +21,21 @@ Stream *stream_open(const char *path, JOpenFlag flags)
 
     return stream;
 }
+
+Stream *stream_open_handle(int handle_id, JOpenFlag flags)
+{
+    Stream *stream = CREATE(Stream);
+
+    HANDLE(stream)->id = handle_id;
+    HANDLE(stream)->flags = flags | J_OPEN_STREAM;
+    HANDLE(stream)->result = SUCCESS;
+
+    return stream;
+}
+
+void stream_close(Stream *stream)
+{
+    __plug_handle_close(HANDLE(stream));
+
+    free(stream);
+}
