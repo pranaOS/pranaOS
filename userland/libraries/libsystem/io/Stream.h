@@ -18,3 +18,10 @@ struct Stream
 
     bool is_end_of_file
 };
+
+Stream *stream_open(const char *path, JOpenFlag flags);
+Stream *stream_open_handle(int handle_id, JOpenFlag flags);
+
+void stream_close(Stream *stream);
+void stream_cleanup(Stream *stream)
+
