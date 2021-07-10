@@ -99,6 +99,34 @@ public:
         return _peek.peak(peek);
     }
 
+    bool peek_is_any(const char *what)
+    {
+        return peek_is_any(0, what, strlen(what));
+    }
+
+    bool peek_is_any(const char *what, size_t size)
+    {
+        return peek_is_any(0, what, size);
+    }
+
+    bool peek_is_any(size_t offset, const char *what)
+    {
+        return peek_is_any(offset, what, strlen(what));
+    }
+
+    bool peek_is_any(size_t offset, const char *what, size_t size)
+    {
+        for (size_t i = 0; i < size; i++)
+        {
+            if (peek(offset) == what[i])
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
 };
 
 }
