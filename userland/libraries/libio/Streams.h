@@ -24,7 +24,13 @@ struct InStream :
 private:
     RefPtr<Handle> _handle;
 
-    
+public:
+    using Reader::read;
+
+    InStream() : _handle{make<Handle>{0}} {}
+
+    ResultOr<size_t> read(void *buffer, size_t size) override { return _handle->read(buffer, size); }
+    RefPtr<Handle> handle() override { return _handle; }
 
 };
 
