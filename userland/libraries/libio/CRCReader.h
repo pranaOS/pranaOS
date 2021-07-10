@@ -20,7 +20,15 @@ private:
     Reader &_reader;
     Compression::CRC _crc;
 
+public:
+    CRCReader(Reader &reader, uint32_t crc = 0) : _reader{reader}, _crc{crc}
+    {
+    }
 
+    inline uint32_t checksum()
+    {
+        return _crc.checksum();
+    }
 
 };
 
