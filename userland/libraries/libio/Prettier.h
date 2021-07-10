@@ -21,6 +21,17 @@ private:
     int _depth = 0;
     int _flags;
 
+public:
+    static constexpr auto NONE = 0;
+    static constexpr auto COLORS = 1 << 0;
+    static constexpr auto INDENTS = 1 << 1;
+    static constexpr auto USETAB = 1 << 2;
+
+    Prettier(IO::Writer &writer, int flags = NONE)
+        : _writer{writer},
+          _flags{flags}
+    {
+    }
 
 };
 
