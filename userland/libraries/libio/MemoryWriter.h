@@ -12,3 +12,20 @@
 #include <libmath/MinMax.h>
 #include <libutils/SliceStorage.h>
 #include <libutils/StringStorage.h>
+
+namespace IO
+{
+
+struct MemoryWriter :
+    public Writer,
+    public Seek 
+{
+private:
+    size_t _used = 0;
+    size_t _size = 0;
+    size_t _position = 0;
+    uint8_t *_buffer = nullptr;
+
+};
+
+}
