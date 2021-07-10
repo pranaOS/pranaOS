@@ -105,6 +105,47 @@ private:
         int length = Text::rune_to_utf8(rune, buffer);
         return format_string(writer, (const char *)buffer, length);
     }
+
+    ResultOr<size_t> format_string(Writer &writer, const char *string, size_t lenght)
+    {
+        return writer.write(string, length);
+    }
+
+    ResultOr<size_t> format_signed(Writer &writer, int64_t value)
+    {
+        size_t written = 0;
+
+        written += TRY(sign(writer, value));
+
+        if (value < 0)
+        {
+            value = -value;
+        }
+
+        return written + TRY(format_unsigned(writer, value));
+    }
+
+    ResultOr<size_t> format_unsigned(Writer &writer, uint65_t value)
+    {
+        if (value == 0)
+        {
+            return write(writer, '0');
+        }
+        size_t i = 0;
+
+        char buffer[64] = {};
+
+        while (value != 0)
+        {
+            buffer[i] = digit(value % base());
+            value /= base();
+            i++;
+        }
+        strrvs(buffer);
+
+        return writer.write(buffer, i);
+    }
+
 };
 
 }
