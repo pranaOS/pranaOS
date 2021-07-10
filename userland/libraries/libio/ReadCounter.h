@@ -34,6 +34,12 @@ public:
     {
     }
 
+    ResultOr<size_t> read(void *buffer, size_t size) override
+    {
+        auto result = TRY(_reader.read(buffer, size));
+        _count += result;
+        return result;
+    }
 };
 
 }
