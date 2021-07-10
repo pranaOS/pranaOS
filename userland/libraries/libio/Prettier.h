@@ -33,6 +33,17 @@ public:
     {
     }
 
+    ResultOr<size_t> write(const void *buffer, size_t size) override
+    {
+        return _writer.write(buffer, size);
+    }
+
+    JResult flush() override
+    {
+        return _writer.flush();
+    }
+    
+
 };
 
 }
