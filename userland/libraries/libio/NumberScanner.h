@@ -26,6 +26,40 @@ public:
     static NumberScanner decimal() { return {10}; }
 
     static NumberScanner hexadecimal() { return {16}; }
-}
+
+    bool is_digit(Scanner &scan)
+    {
+        char c = scan.peek();
+
+        for (int i = 0; i < _base; i++)
+        {
+            if ((Strings::LOWERCASE_XDIGITS[i] == c) ||
+                (Strings::UPPERCASE_XDIGITS[i] == c))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+        Optional<uint8_t> scan_digit(Scanner &scan)
+    {
+        char c = scan.peek();
+
+        for (int i = 0; i < _base; i++)
+        {
+            if ((Strings::LOWERCASE_XDIGITS[i] == c) ||
+                (Strings::UPPERCASE_XDIGITS[i] == c))
+            {
+                scan.next();
+                return i;
+            }
+        }
+
+        return NONE;
+    }
+
+};
 
 }
