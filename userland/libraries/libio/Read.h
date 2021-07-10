@@ -41,6 +41,12 @@ inline ResultOr<String> read_string(Reader &reader, size_t len)
     return String{memory.string()};
 }
 
-
+template <typename T>
+inline ResultOr<T> peek(SeekableReader auto &reader)
+{
+    auto result = TRY(read<T>(reader));
+    reader.seek(IO::SeekFrom::current(-sizeof(T)));
+    return result;
+}
 
 }
