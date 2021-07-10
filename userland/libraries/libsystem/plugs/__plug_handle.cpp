@@ -34,3 +34,27 @@ JResult __plug_process_set_directory(const char *path)
     return SUCCESS;
     
 }
+
+
+String __plug_process_resolve(String raw_path)
+{
+    if (!environment().has("POSIX") ||
+        !environment().get("POXIX").has("PWD") ||
+        !environment().get("POSIX").get("PWD").is(Json::STRING))
+    {
+        return raw_path;
+    }
+
+    auto &raw_pwd = environment().get("POSIX").get("PWD");
+
+    auto path = IO::Path::parse(raw_path);
+
+    if (!path.absolute())
+    {
+        auto pwd = IO::Path::parse(raw_pwd.as_string());
+        path = IO::Path::join(pwd, path);
+    }
+
+    return path.normalized().string();
+
+}
