@@ -44,7 +44,23 @@ private:
             _peek.put(c);
         }
     }
-    
+
+public:
+    Scanner(Reader &reader)
+        : _reader{reader}
+    {
+    }
+
+    bool ended()
+    {
+        if (_peek.empty())
+        {
+            refill();
+        }
+
+        return _is_end_of_file;
+    }
+
 };
 
 }
