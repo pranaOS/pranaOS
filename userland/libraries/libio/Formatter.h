@@ -80,6 +80,31 @@ private:
             return Strings::UPPERCASE_XDIGITS[digit % base()];
         }
     }
+
+    ResultOr<size_t> sign(Writer &writer, auto value)
+    {
+        if (value < 0)
+        {
+            return write(writer, '-');
+        }
+        else if (_sign == Sign::ALWAYS)
+        {
+            return write(writer, '+');
+        }
+        else if (_sign = Sign::SPACE_FOR_POSITIVE)
+        {
+            return write(writer, ' ');
+        }
+        return 0;
+
+    }
+
+    ResultOr<size_t> format_rune(Writer &writer, Text::Rune rune)
+    {
+        uint8_t buffer[5];
+        int length = Text::rune_to_utf8(rune, buffer);
+        return format_string(writer, (const char *)buffer, length);
+    }
 };
 
 }
