@@ -18,6 +18,22 @@ struct ReadCounter :
 private:
     size64_t _count = 0;
     Reader &_reader;
+
+public:
+    void reset()
+    {
+        _count = 0;
+    }
+
+    size64_t count()
+    {
+        return _count;
+    }
+
+    ReadCounter(Reader &reader) : _reader{reader}
+    {
+    }
+
 };
 
 }
