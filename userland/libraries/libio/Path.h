@@ -173,6 +173,28 @@ public:
         std::swap(_elements, other._elements);
     }
 
+    Path &operator=(const Path &other)
+    {
+        if (this != &other)
+        {
+            _absolute = other.absolute();
+            _elements = other._elements;
+        }
+
+        return *this;
+    }
+
+    Path *operator=(Path &&other)
+    {
+        if (this != &other)
+        {
+            std::swap(_absolute, other._absolute);
+            std::swap(_elements, other._elements);
+        }
+
+        return *this;
+    }
+    
 
 };
 
