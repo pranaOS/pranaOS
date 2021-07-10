@@ -155,6 +155,24 @@ public:
         return {left.absolute(), std::move(combined_elements)};
     }
 
+    Path()
+    {
+    }
+
+    Path(const Path &other) : _absolute{other.absolute()}, _elements{other._elements}
+    {
+    }
+
+    Path(bool absolute, Vector<String> &&elements) : _absolute(absolute), _elements(elements)
+    {
+    }
+
+    Path(Path &&other)
+    {
+        std::swap(_absolute, other._absolute);
+        std::swap(_elements, other._elements);
+    }
+
 
 };
 
