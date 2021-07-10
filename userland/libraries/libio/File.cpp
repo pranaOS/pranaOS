@@ -32,5 +32,20 @@ File::File(RefPtr<Handle> handle)
     : _handle{handle}
 {
 }
-    
+
+ResultOr<size_t> File::read(void *buffer, size_t size)
+{
+    return _handle->read(buffer, size);
+}
+
+ResultOr<size_t> File::write(const void *buffer, size_t size)
+{
+    return _handle->write(buffer ,size);
+}
+
+ResultOr<size_t> File::call(IOCall call, void *args)
+{
+    return _handle->call(call, args);
+}
+
 }
