@@ -30,3 +30,5 @@ void launchpad_handle(Launchpad *launchpad, IO::RawHandle &handle_to_pass, int d
 void launchpad_handle(Launchpad *launchpad, IO::Handle &handle, int destination);
 
 void launchpad_handle(Launchpad *launchpad, Handle *handle_to_pass, int destination);
+
+JResult launchpad_launch(Launchpad *launchpad, int *pid);
