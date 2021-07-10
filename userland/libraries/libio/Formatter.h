@@ -49,6 +49,37 @@ private:
     bool _captialized = false;
     Sign _sign = Sign::ONLY_NEGATIVE;
 
+    int base()
+    {
+        switch (_type)
+        {
+        case Type::BINARY:
+            return 2;
+        
+        case Type::OCTAL:
+            return 8;
+        
+        case Type::HEXADECIMAL:
+            return 16;
+
+        default:
+            return 10;
+        }
+    }
+
+    char digit(int digit)
+    {
+        assert(digit >= 0 && digit < base());
+
+        if (_captialized)
+        {
+            return Strings::LOWERCASE_XDIGITS[digit % base()];
+        }
+        else
+        {
+            return Strings::UPPERCASE_XDIGITS[digit % base()];
+        }
+    }
 };
 
 }
