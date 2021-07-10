@@ -19,6 +19,11 @@ struct MemoryReader final :
     public Seek
 {
 
+private:
+    Slice _memory;
+    size_t _position = 0;
+
+
 };
 
 }
