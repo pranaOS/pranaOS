@@ -26,12 +26,11 @@ ResultOr<size_t> read_vector(Reader &reader, Vector<T> &vector)
     {
         vector.push_back(std::move(object));
         read += last_read;
-        
+
         last_read = TRY(reader.read(&object, sizeof(T)));
     }
 
     return read;
-
 }
 
 inline ResultOr<String> read_string(Reader &reader, size_t len)
@@ -46,6 +45,15 @@ inline ResultOr<T> peek(SeekableReader auto &reader)
 {
     auto result = TRY(read<T>(reader));
     reader.seek(IO::SeekFrom::current(-sizeof(T)));
+    return result;
+}
+
+template <typename T>
+inline ResultOr<T> read(Reader &reader)
+{
+    T result;
+    size_t read = TRY(reader.read(&result, sizeof(T)));
+    Assert::equal(read, sizeof(T));
     return result;
 }
 
