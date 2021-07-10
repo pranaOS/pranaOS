@@ -42,8 +42,62 @@ public:
     {
         return _writer.flush();
     }
-    
 
+    void ident()
+    {
+        if (_flags & INDENTS)
+        {
+            IO::write(_writer, '\n');
+
+            for (int i = 0; i < _depth; i++)
+            {
+                if (_flags & USETAB)
+                {
+                    IO::write(_writer, "\t");
+                }
+                else
+                {
+                    IO::write(_writer, "    ");
+                }
+            }
+        }
+    }
+
+    void push_ident()
+    {
+        _depth++;
+    }
+
+    void pop_ident()
+    {
+        assert(_depth);
+        _depth--;
+    }
+
+    void color_depth()
+    {
+        if (_flags & COLORS)
+        {
+            const char *depth_color[] = {
+                "\e[91m",
+                "\e[92m",
+                "\e[93m",
+                "\e[94m",
+                "\e[95m",
+                "\e[96m",
+            };
+
+            IO::write(_writer, depth_color[_depth % 6]);
+        }
+    }
+
+    void color_clear()
+    {
+        if (_flags & COLORS)
+        {
+            IO::write(_writer, "\e[m");
+        }
+    }
 };
 
 }
