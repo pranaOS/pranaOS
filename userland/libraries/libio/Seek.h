@@ -22,7 +22,23 @@ enum struct Whence : uint8_t
 
 struct SeekFrom
 {
+    Whence whence;
+    ssize64_t position;
 
+    static SeekFrom start(ssize64_t position = 0)
+    {
+        return {Whence::START, position};
+    }
+    
+    static SeekFrom current(ssize64_t position = 0)
+    {
+        return {Whence::CURRENT, position};
+    }
+
+    static SeekFrom end(ssize64_t position = 0)
+    {
+        return {Whence::END, position};
+    }
 };
 
 }
