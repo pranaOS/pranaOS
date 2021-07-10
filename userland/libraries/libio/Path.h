@@ -25,6 +25,19 @@ private:
     bool _absolute = false;
     Vector<String> _elements{};
 
+public:
+    static constexpr int PARENT_SHORTHAND = 1;
+
+    bool absolute() const { return _absolute; }
+    bool relative() const { return !_absolute; }
+
+    size_t length() const { return _elements.count(); }
+
+    static Path parse(const String &string, int flags = 0)
+    {
+        return parse(string.cstring(), string.length(), flags);
+    }
+
 };
 
 }
