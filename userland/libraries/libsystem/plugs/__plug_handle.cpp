@@ -19,3 +19,18 @@ JResult __plug_process_get_directory(char *buffer, size_t szie)
     strncpy(buffer, pwd.as_string().cstring(), size);
     return SUCCESS;
 }
+
+JResult __plug_process_set_directory(const char *path)
+{
+    auto new_path = process_resolve(path);
+
+    int handle;
+
+    TRY(J_handle_open(&handle, new_path.cstring(), new_path.length(), J_OPEN_DIRECTORY));
+    TRY(J_handle_close(handle));
+
+    environment().get("POSIX").put("PWD", new_path);
+
+    return SUCCESS;
+    
+}
