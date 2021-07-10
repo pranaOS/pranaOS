@@ -52,6 +52,37 @@ public:
         }
     }
 
+    ResultOr<size_t> lenght()
+    {
+        return _used;
+    }
+
+    ResultOr<size_t> tall()
+    {
+        return _position;
+    }
+
+    ResultOr<size_t> seek(SeekFrom from) override
+    {
+        switch (from.whence)
+        {
+        case Whence::START:
+            assert((size64_t)from.position <= _used);
+            return _position = from.position;
+
+        case Whence::CURRENT:
+            assert(_position + from.position <= _used);
+            return _position += from.position;
+
+        case Whence::END:
+            assert(_used + from.position <= _used);
+            return _position = _used + from.position;
+
+        default:
+            ASSERT_NOT_REACHED();
+        }
+    }
+
 };
 
 }
