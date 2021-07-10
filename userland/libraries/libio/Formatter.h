@@ -39,5 +39,16 @@ enum struct Type
     HEXADECIMAL,
 };
 
+struct Formatter
+{
+private:
+    Type _type = Type::DEFAULT;
+    Optional<int> _width;
+    char _padding = ' ';
+    int _precision = 4;
+    bool _captialized = false;
+    Sign _sign = Sign::ONLY_NEGATIVE;
+
+};
 
 }
