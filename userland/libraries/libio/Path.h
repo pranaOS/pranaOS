@@ -38,6 +38,73 @@ public:
         return parse(string.cstring(), string.length(), flags);
     }
 
+    static Path parse(const char *path, int flags = 0)
+    {
+        return parse(path, strlen(path), flags);
+    }
+
+    static Path parse(const char *path, size_t size, int flags)
+    {
+        IO::MemoryReader memory{path, size};
+        IO::Scanner scan{memory};
+
+        bool absolute = false;
+
+        if (scan.skip(PATH_SEPARATOR))
+        {
+            absolute = true;
+        }
+
+        auto parse_element = [](auto &scan) {
+            IO::MemoryWriter memory;
+
+            while (!scan.skip(PATH_SEPARATOR) &&
+                   !scan.ended())
+            {
+                IO::write(memory, scan.next());
+            }
+
+            return memory.string();
+        };
+
+        auto parse_shorthand = [](auto &scan) {
+            Vector<String> elements{};
+
+            scan.skip_word("..");
+            elements.push("..");
+
+            while (scan.skip('.'))
+            {
+                elements.push("..");
+            }
+
+            scan.skip('/');
+
+            return elements;
+        };
+
+        Vector<String> elements{};
+
+        while (!scan.ended())
+        {
+            if ((flags & PARENT_SHORTHAND) && scan.peek_is_word(".."))
+            {
+                elements.push_back_many(parse_shorthand(scan));
+            }
+            else
+            {
+                auto el = parse_element(scan);
+
+                if (el->size() > 0)
+                {
+                    elements.push_back(el);
+                }
+            }
+        }
+
+        return {absolute, std::move(elements)};
+    }
+
 };
 
 }
