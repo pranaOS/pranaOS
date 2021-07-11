@@ -49,4 +49,69 @@ struct PACKED GDTDescriptor64
     uint64_t offset;
 };
 
+struct PACKED GDTEntry64
+{
+    uint16_t limit0_15;
+    uint16_t base0_15;
+    uint8_t base16_23;
+    uint8_t flags;
+    uint8_t limit16_19 : 4;
+    uint8_t granularity : 4;
+    uint8_t base24_31;
+
+    constexpr GDTEntry64()
+        : GDTEntry64(0, 0, 0, 0)
+    {
+    }
+
+    constexpr GDTEntry64(uint32_t base, uint32_t limit, uint8_t granularity, uint8_t flags)
+        : limit0_15((uint16_t)((limit)&0xffff)),
+          base0_15((uint16_t)((base)&0xffff)),
+          base16_23((uint8_t)(((base) >> 16) & 0xff)),
+          flags((flags)),
+          limit16_19(((limit) >> 16) & 0x0f),
+          granularity((granularity)),
+          base24_31((uint8_t)(((base) >> 24) & 0xff))
+    {
+    }
+
+    constexpr GDTEntry64(uint8_t flags, uint8_t granularity)
+        : GDTEntry64(0, 0, granularity, flags)
+    {
+    }
+};
+
+struct PACKED GDTTSSEntry64
+{
+    uint16_t length;
+    uint16_t base_low16;
+    uint8_t base_mid8;
+    uint8_t flags1;
+    uint8_t flags2;
+    uint8_t base_high8;
+    uint32_t base_upper32;
+    uint32_t reserved;
+
+    constexpr void address(uintptr_t addr)
+    {
+        base_low16 = (addr >> 0) & 0xffff;
+        base_mid8 = (addr >> 16) & 0xff;
+        base_high8 = (addr >> 24) & 0xff;
+        base_upper32 = (addr >> 32) & 0xffffffff;
+    }
+
+    constexpr GDTTSSEntry64(uintptr_t tss_address)
+        : length(sizeof(TSS64)),
+          base_low16(tss_address & 0xffff),
+          base_mid8((tss_address >> 16) & 0xff),
+          flags1(0b10001001),
+          flags2(0),
+          base_high8((tss_address >> 24) & 0xff),
+          base_upper32(tss_address >> 32),
+          reserved(0)
+    {
+    }
+};
+
+
 }
