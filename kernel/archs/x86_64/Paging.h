@@ -38,5 +38,33 @@ static inline size_t pml4_index(uintptr_t address)
 static_assert(sizeof(PML4Entry) == sizeof(uint64_t));
 static_assert(sizeof(PML4) == 4096);
 
+struct PACKED PML3Entry
+{
+    bool present : 1;               
+    bool writable : 1;              
+    bool user : 1;                  
+    bool write_thought : 1;         
+    bool cache : 1;                 
+    bool accessed : 1;              
+    int zero0 : 1;                  
+    int size : 1;                   
+    int zero1 : 4;                  
+    uint64_t physical_address : 36; 
+    int zero2 : 15;                 
+    bool execute_disabled : 1;      
+};
+
+struct PACKED PML3
+{
+    PML3Entry entries[512];
+};
+
+static inline size_t pml3_index(uintptr_t address)
+{
+    return (address >> 30) & 0x1FF;
+}
+
+static_assert(sizeof(PML3Entry) == sizeof(uint64_t));
+static_assert(sizeof(PML3) == 4096);
 
 }
