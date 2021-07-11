@@ -187,4 +187,40 @@ JResult virtual_map(PML4 *pml4, MemoryRange physical_range, uintptr_t virtual_ad
     return SUCCESS;
 }
 
+
+PML4 *pml4_create()
+{
+    PML4 *pml4;
+    memory_alloc_identity(kernel_pml4(), MEMORY_CLEAR, (uintptr_t *)&pml4);
+
+    PML3 *pml3;
+    memory_alloc_identity(kernel_pml4(), MEMORY_CLEAR, (uintptr_t *)&pml3);
+
+    auto &pml4_entry = pml4->entries[0];
+    pml4_entry.user = 1;
+    pml4_entry.writable = 1;
+    pml4_entry.present = 1;
+    pml4_entry.physical_address = (uint64_t)pml3 / ARCH_PAGE_SIZE;
+
+    PML2 *pml2;
+    memory_alloc_identity(kernel_pml4(), MEMORY_CLEAR, (uintptr_t *)&pml2);
+
+    auto &pml3_entry = pml3->entries[0];
+    pml3_entry.user = 1;
+    pml3_entry.writable = 1;
+    pml3_entry.present = 1;
+    pml3_entry.physical_address = (uint64_t)pml2 / ARCH_PAGE_SIZE;
+
+    for (size_t i = 0; i < 512; i++)
+    {
+        auto &pml2_entry = pml2->entries[i];
+        pml2_entry.user = 1;
+        pml2_entry.writable = 1;
+        pml2_entry.present = 1;
+        pml2_entry.physical_address = (uint64_t)&kpml1[i] / ARCH_PAGE_SIZE;
+    }
+
+    return pml4;
+}
+
 }
