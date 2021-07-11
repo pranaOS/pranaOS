@@ -14,7 +14,7 @@
 
 __BEGIN_HEADER
 
-#if defined(_XJ_OPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE) || defined(_SKIFT_SOURCE)
+#if defined(_XJ_OPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE) || defined(_PRANAOS_SOURCE)
 #    define M_E 2.7182818284590452354      
 #    define M_LOG2E 1.4426950408889634074  
 #    define M_LOG10E 0.43429448190325182765
@@ -36,7 +36,7 @@ double yn(int, double);
 
 #endif
 
-#if defined(_GNU_SOURCE) || defined(_BSD_SOURCE) || defined(_SKIFT_SOURCE)
+#if defined(_GNU_SOURCE) || defined(_BSD_SOURCE) || defined(_PRANAOS_SOURCE)
 #    define HUGE 3.40282346638528859812e+38F
 
 double drem(double, double);
