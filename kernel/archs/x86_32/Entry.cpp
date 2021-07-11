@@ -26,7 +26,7 @@ extern "C" void arch_x86_32_main(void *info, uint32_t magic)
     com_initialize(COM2);
     com_initialize(COM3);
     com_initialize(COM4);
-    
+
     auto handover = handover_initialize(info, magic);
 
     graphic_early_initialize(handover);
@@ -34,9 +34,34 @@ extern "C" void arch_x86_32_main(void *info, uint32_t magic)
     if (handover->memory_usable < 127 * 1024)
     {
         system_panic("No enough memory (%uKio)!", handover->memory_usable / 1024);
-
     }
 
+    gdt_initialize();
+    idt_initialize();
+    pic_initialize();
+    fpu_initialize();
+    pit_initialize(1000);
+
+    Acpi::initialize(handover);
+    Smbios::EntryPoint *smbios_entrypoint = Smbios::find({0xF0000, 0xFFFF});
+
+    if (smbios_entrypoint)
+    {
+        Kernel::logln("Found SMBIOS entrypoint at {08x} (Version {}.{02d})", smbios_entrypoint, smbios_entrypoint->major_version, smbios_entrypoint->major_version);
+
+        smbios_entrypoint->iterate([&](Smbios::Header *table) {
+            Kernel::logln(" - {} (Type={}, StringCount={}) ", table->name(), (int)table->type, table->string_table_lenght());
+
+            for (size_t i = 1; i < table->string_table_lenght(); i++)
+            {
+                Kernel::logln("    - {}", table->string(i));
+            }
+
+            return Iteration::CONTINUE;
+        });
+    }
+
+    system_main(handover);
 }
 
 }
