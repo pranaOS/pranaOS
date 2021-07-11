@@ -23,7 +23,7 @@ struct Terminal
         int server_handle = HANDLE_INVALID_ID;
         int client_handle = HANDLE_INVALID_ID;
 
-        TRY(hj_create_term(&server_handle, &client_handle));
+        TRY(J_create_term(&server_handle, &client_handle));
 
         return Terminal{
             make<Handle>(client_handle),

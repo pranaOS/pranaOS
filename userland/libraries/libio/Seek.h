@@ -15,9 +15,9 @@ namespace IO
 
 enum struct Whence : uint8_t
 {
-    START = HJ_WHENCE_START,
-    CURRENT = HJ_WHENCE_CURRENT,
-    END = HJ_WHENCE_END,
+    START = J_WHENCE_START,
+    CURRENT = J_WHENCE_CURRENT,
+    END = J_WHENCE_END,
 };
 
 struct SeekFrom

@@ -21,4 +21,4 @@ JResult filesystem_mkpipe(const char *path);
 
 JResult filesystem_rename(const char *old_path, const char *new_path);
 
-bool filesystem_exist(const char *path, HjFileType type);
+bool filesystem_exist(const char *path, JFileType type);

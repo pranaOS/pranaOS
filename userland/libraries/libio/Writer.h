@@ -18,7 +18,7 @@ struct Writer
 
     virtual ResultOr<size_t> write(const void *buffer, size_t size) = 0;
 
-    virtual HjResult flush() { return SUCCESS; }
+    virtual JResult flush() { return SUCCESS; }
 };
 
 template <typename T>

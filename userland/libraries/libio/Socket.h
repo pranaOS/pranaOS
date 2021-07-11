@@ -26,15 +26,15 @@ public:
     {
     }
 
-    Socket(String path, HjOpenFlag flags)
-        : _handle{make<Handle>(path, flags | HJ_OPEN_SOCKET)}
+    Socket(String path, JOpenFlag flags)
+        : _handle{make<Handle>(path, flags | J_OPEN_SOCKET)}
     {
     }
 
     static ResultOr<Connection> connect(String path)
     {
         int hnd;
-        TRY(hj_handle_connect(&hnd, path.cstring(), path.length()));
+        TRY(J_handle_connect(&hnd, path.cstring(), path.length()));
         return Connection{make<Handle>(hnd)};
     }
 
