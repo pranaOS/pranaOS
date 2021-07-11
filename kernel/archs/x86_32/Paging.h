@@ -43,5 +43,27 @@ struct PACKED PageTable
     PageTableEntry entries[PAGE_TABLE_ENTRY_COUNT];
 };
 
+union PACKED PageDirectoryEntry
+{
+    struct PACKED
+    {
+        bool Present : 1;
+        bool Write : 1;
+        bool User : 1;
+        bool PageLevelWriteThrough : 1;
+        bool PageLevelCacheDisable : 1;
+        bool Accessed : 1;
+        bool Ignored1 : 1;
+        bool LargePage : 1;
+        uint32_t Ignored2 : 4;
+        uint32_t PageFrameNumber : 20;
+    };
+    uint32_t as_uint;
+};
+
+struct PACKED PageDirectory : public Arch::AddressSpace
+{
+    PageDirectoryEntry entries[PAGE_DIRECTORY_ENTRY_COUNT];
+};
 
 }
