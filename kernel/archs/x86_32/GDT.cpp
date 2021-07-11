@@ -47,5 +47,21 @@ static GDTDescriptor gdt_descriptor = {
     .offset = (uint32_t)&gdt[0],
 };
 
+void gdt_initialize()
+{
+    gdt[0] = {0, 0, 0, 0};
+    gdt[1] = {0, 0xffffffff, GDT_PRESENT | GDT_READWRITE | GDT_EXECUTABLE, GDT_FLAGS};
+    gdt[2] = {0, 0xffffffff, GDT_PRESENT | GDT_READWRITE, GDT_FLAGS};
+    gdt[3] = {0, 0xffffffff, GDT_PRESENT | GDT_READWRITE | GDT_USER | GDT_EXECUTABLE, GDT_FLAGS};
+    gdt[4] = {0, 0xffffffff, GDT_PRESENT | GDT_READWRITE | GDT_USER, GDT_FLAGS};
+    gdt[5] = {&tss, GDT_TSS_PRESENT | GDT_ACCESSED | GDT_EXECUTABLE | GDT_USER, TSS_FLAGS};
+
+    gdt_flush((uint32_t)&gdt_descriptor);
+}
+
+void set_kernel_stack(uint32_t stack)
+{
+    tss.esp0 = stack;
+}
 
 }
