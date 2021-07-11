@@ -26,4 +26,29 @@ PML4 *kernel_pml4()
 {
     return &kpml4;
 }
+
+void virtual_initialize()
+{
+    auto &pml4_entry = kpml4.entries[0];
+    pml4_entry.user = 0;
+    pml4_entry.writable = 1;
+    pml4_entry.present = 1;
+    pml4_entry.physical_address = (uint64_t)&kpml3 / ARCH_PAGE_SIZE;
+
+    auto &pml3_entry = kpml3.entries[0];
+    pml3_entry.user = 0;
+    pml3_entry.writable = 1;
+    pml3_entry.present = 1;
+    pml3_entry.physical_address = (uint64_t)&kpml2 / ARCH_PAGE_SIZE;
+
+    for (size_t i = 0; i < 512; i++)
+    {
+        auto &pml2_entry = kpml2.entries[i];
+        pml2_entry.user = 0;
+        pml2_entry.writable = 1;
+        pml2_entry.present = 1;
+        pml2_entry.physical_address = (uint64_t)&kpml1[i] / ARCH_PAGE_SIZE;
+    }
+}
+
 }
