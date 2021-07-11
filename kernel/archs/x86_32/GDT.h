@@ -7,8 +7,8 @@
 
 #pragma once
 
+// includes
 #include <libutils/Prelude.h>
-
 #include "system/Streams.h"
 
 namespace Arch::x86_32
@@ -95,5 +95,12 @@ struct PACKED GDTEntry
     }
 };
 
+void gdt_initialize();
+
+extern "C" void gdt_flush(uint32_t);
+
+extern "C" void tss_flush(uint32_t);
+
+void set_kernel_stack(uint32_t stack);
 
 }
