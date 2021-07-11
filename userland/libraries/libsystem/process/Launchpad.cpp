@@ -30,4 +30,12 @@ Launchpad *launchpad_create(const char *name, const char *executable)
     launchpad->handles[2] = 2;
     launchpad->handles[3] = 3;
 
+    auto executable_path = IO::Path::parse(executable);
+    launchpad_argument(launchpad, executable_path.base().cstring());
+
+#ifndef __KERNEL__
+    auto env_copy = environment_copy();
+    launchpad_environment(launchpad, strdup(env_copy.cstring()));
+#endif
+    return launchpad;
 }
