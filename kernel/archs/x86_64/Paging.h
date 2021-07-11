@@ -30,4 +30,13 @@ struct PACKED PML4 : public AddressSpace
     PML4Entry entries[512];
 };
 
+static inline size_t pml4_index(uintptr_t address)
+{
+    return (address >> 39) & 0x1FF;
+}
+
+static_assert(sizeof(PML4Entry) == sizeof(uint64_t));
+static_assert(sizeof(PML4) == 4096);
+
+
 }
