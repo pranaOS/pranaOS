@@ -19,4 +19,17 @@ IDT64Descriptor idt_descriptor = {
     .offset = (uint64_t)&idt[0],
 };
 
+void idt_initialize()
+{
+    for (int i = 0; i < 48; i++)
+    {
+        idt[i] = IDT64Entry(__interrupt_vector[i], 0, INTGATE);
+    }
+
+    idt[127] = IDT64Entry(__interrupt_vector[48], 0, INTGATE);
+    idt[128] = IDT64Entry(__interrupt_vector[49], 0, INTGATE | IDT_USER);
+
+    idt_flush((uint64_t)&idt_descriptor);
 }
+
+} 
