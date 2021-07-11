@@ -34,4 +34,34 @@ void virtual_initialize()
     }
 }
 
+void virtual_memory_enable()
+{
+    paging_enable();
+}
+
+PageDirectory *kernel_page_directory()
+{
+    return &_kernel_page_directory;
+}
+
+bool virtual_present(PageDirectory *page_directory, uintptr_t virtual_address)
+{
+    ASSERT_INTERRUPTS_RETAINED();
+
+    int page_directory_index = PAGE_DIRECTORY_INDEX(virtual_address);
+    PageDirectoryEntry &page_directory_entry = page_directory->entries[page_directory_index];
+
+    if (!page_directory_entry.Present)
+    {
+        return false;
+    }
+
+    PageTable &page_table = *reinterpret_cast<PageTable *>(page_directory_entry.PageFrameNumber * ARCH_PAGE_SIZE);
+
+    int page_table_index = PAGE_TABLE_INDEX(virtual_address);
+    PageTableEntry &page_table_entry = page_table.entries[page_table_index];
+
+    return page_table_entry.Present;
+}
+
 }
