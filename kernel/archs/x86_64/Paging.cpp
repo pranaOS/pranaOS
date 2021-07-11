@@ -89,4 +89,42 @@ bool virtual_present(PML4 *pml4, uintptr_t virtual_address)
     return pml1_entry.present;
 }
 
+uintptr_t virtual_to_physical(PML4 *pml4, uintptr_t virtual_address)
+{
+    ASSERT_INTERRUPTS_RETAINED();
+
+    auto &pml4_entry = pml4->entries[pml4_index(virtual_address)];
+
+    if (!pml4_entry.present)
+    {
+        return 0;
+    }
+
+    auto pml3 = reinterpret_cast<PML3 *>(pml4_entry.physical_address * ARCH_PAGE_SIZE);
+    auto &pml3_entry = pml3->entries[pml3_index(virtual_address)];
+
+    if (!pml3_entry.present)
+    {
+        return 0;
+    }
+
+    auto pml2 = reinterpret_cast<PML2 *>(pml3_entry.physical_address * ARCH_PAGE_SIZE);
+    auto &pml2_entry = pml2->entries[pml2_index(virtual_address)];
+
+    if (!pml2_entry.present)
+    {
+        return 0;
+    }
+
+    auto pml1 = reinterpret_cast<PML1 *>(pml2_entry.physical_address * ARCH_PAGE_SIZE);
+    auto &pml1_entry = pml1->entries[pml1_index(virtual_address)];
+
+    if (!pml1_entry.present)
+    {
+        return 0;
+    }
+
+    return (pml1_entry.physical_address * ARCH_PAGE_SIZE) + (virtual_address & 0xfff);
+}
+
 }
