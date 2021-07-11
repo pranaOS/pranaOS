@@ -10,7 +10,6 @@
 #include "system/Streams.h"
 #include <libutils/Prelude.h>
 
-
 namespace Arch::x86_64
 {
 
@@ -113,5 +112,18 @@ struct PACKED GDTTSSEntry64
     }
 };
 
+struct PACKED GDT64
+{
+    GDTEntry64 entries[GDT_ENTRY_COUNT] = {};
+    GDTTSSEntry64 tss = {0};
+};
+
+void gdt_initialize();
+
+extern "C" void gdt_flush(uint64_t);
+
+extern "C" void tss_flush(uint64_t);
+
+void set_kernel_stack(uint64_t stack);
 
 }
