@@ -127,4 +127,64 @@ uintptr_t virtual_to_physical(PML4 *pml4, uintptr_t virtual_address)
     return (pml1_entry.physical_address * ARCH_PAGE_SIZE) + (virtual_address & 0xfff);
 }
 
+JResult virtual_map(PML4 *pml4, MemoryRange physical_range, uintptr_t virtual_address, MemoryFlags flags)
+{
+    ASSERT_INTERRUPTS_RETAINED();
+
+    for (size_t i = 0; i < physical_range.page_count(); i++)
+    {
+        uint64_t address = virtual_address + i * ARCH_PAGE_SIZE;
+
+        auto pml4_entry = &pml4->entries[pml4_index(address)];
+        auto pml3 = reinterpret_cast<PML3 *>(pml4_entry->physical_address * ARCH_PAGE_SIZE);
+
+        if (!pml4_entry->present)
+        {
+            TRY(memory_alloc_identity(pml4, MEMORY_CLEAR, (uintptr_t *)&pml3));
+
+            pml4_entry->present = 1;
+            pml4_entry->writable = 1;
+            pml4_entry->user = 1;
+            pml4_entry->physical_address = (uint64_t)(pml3) / ARCH_PAGE_SIZE;
+        }
+
+        auto pml3_entry = &pml3->entries[pml3_index(address)];
+        auto pml2 = reinterpret_cast<PML2 *>(pml3_entry->physical_address * ARCH_PAGE_SIZE);
+
+        if (!pml3_entry->present)
+        {
+            TRY(memory_alloc_identity(pml4, MEMORY_CLEAR, (uintptr_t *)&pml2));
+
+            pml3_entry->present = 1;
+            pml3_entry->writable = 1;
+            pml3_entry->user = 1;
+            pml3_entry->physical_address = (uint64_t)(pml2) / ARCH_PAGE_SIZE;
+        }
+
+        auto pml2_entry = &pml2->entries[pml2_index(address)];
+        auto pml1 = reinterpret_cast<PML1 *>(pml2_entry->physical_address * ARCH_PAGE_SIZE);
+
+        if (!pml2_entry->present)
+        {
+            TRY(memory_alloc_identity(pml4, MEMORY_CLEAR, (uintptr_t *)&pml1));
+
+            pml2_entry->present = 1;
+            pml2_entry->writable = 1;
+            pml2_entry->user = 1;
+            pml2_entry->physical_address = (uint64_t)(pml1) / ARCH_PAGE_SIZE;
+        }
+
+        auto pml1_entry = &pml1->entries[pml1_index(address)];
+
+        pml1_entry->present = 1;
+        pml1_entry->writable = 1;
+        pml1_entry->user = flags & MEMORY_USER;
+        pml1_entry->physical_address = (physical_range.base() + i * ARCH_PAGE_SIZE) / ARCH_PAGE_SIZE;
+    }
+
+    paging_invalidate_tlb();
+
+    return SUCCESS;
+}
+
 }
