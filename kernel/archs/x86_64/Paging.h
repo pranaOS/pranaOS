@@ -67,4 +67,33 @@ static inline size_t pml3_index(uintptr_t address)
 static_assert(sizeof(PML3Entry) == sizeof(uint64_t));
 static_assert(sizeof(PML3) == 4096);
 
+struct PACKED PML2Entry
+{
+    bool present : 1;               // Must be 1 to reference a PML-1
+    bool writable : 1;              // If 0, writes may not be allowed.
+    bool user : 1;                  // If 0, user-mode accesses are not allowed
+    bool write_thought : 1;         // Page-level write-through
+    bool cache : 1;                 // Page-level cache disable
+    bool accessed : 1;              // Indicates whether this entry has been used
+    int zero0 : 1;                  // Ignored
+    int size : 1;                   // Must be 0 otherwise, this entry maps a 2-MByte page.
+    int zero1 : 4;                  // Ignored
+    uint64_t physical_address : 36; // Physical address of a 4-KByte aligned PLM-1
+    int zero2 : 15;                 // Ignored
+    bool execute_disabled : 1;      // If IA32_EFER.NXE = 1, Execute-disable
+};
+
+struct PACKED PML2
+{
+    PML3Entry entries[512];
+};
+
+static inline size_t pml2_index(uintptr_t address)
+{
+    return (address >> 21) & 0x1FF;
+}
+
+static_assert(sizeof(PML2Entry) == sizeof(uint64_t));
+static_assert(sizeof(PML2) == 4096);
+
 }
