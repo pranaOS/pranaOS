@@ -64,4 +64,66 @@ bool virtual_present(PageDirectory *page_directory, uintptr_t virtual_address)
     return page_table_entry.Present;
 }
 
+
+uintptr_t virtual_to_physical(PageDirectory *page_directory, uintptr_t virtual_address)
+{
+    ASSERT_INTERRUPTS_RETAINED();
+
+    int page_directory_index = PAGE_DIRECTORY_INDEX(virtual_address);
+    PageDirectoryEntry &page_directory_entry = page_directory->entries[page_directory_index];
+
+    if (!page_directory_entry.Present)
+    {
+        return 0;
+    }
+
+    PageTable &page_table = *reinterpret_cast<PageTable *>(page_directory_entry.PageFrameNumber * ARCH_PAGE_SIZE);
+
+    int page_table_index = PAGE_TABLE_INDEX(virtual_address);
+    PageTableEntry &page_table_entry = page_table.entries[page_table_index];
+
+    if (!page_table_entry.Present)
+    {
+        return 0;
+    }
+
+    return (page_table_entry.PageFrameNumber * ARCH_PAGE_SIZE) + (virtual_address & 0xfff);
+}
+
+JResult virtual_map(PageDirectory *page_directory, MemoryRange physical_range, uintptr_t virtual_address, MemoryFlags flags)
+{
+    ASSERT_INTERRUPTS_RETAINED();
+
+    for (size_t i = 0; i < physical_range.size() / ARCH_PAGE_SIZE; i++)
+    {
+        size_t offset = i * ARCH_PAGE_SIZE;
+
+        int page_directory_index = PAGE_DIRECTORY_INDEX(virtual_address + offset);
+        PageDirectoryEntry &page_directory_entry = page_directory->entries[page_directory_index];
+        PageTable *page_table = reinterpret_cast<PageTable *>(page_directory_entry.PageFrameNumber * ARCH_PAGE_SIZE);
+
+        if (!page_directory_entry.Present)
+        {
+            TRY(memory_alloc_identity(page_directory, MEMORY_CLEAR, (uintptr_t *)&page_table));
+
+            page_directory_entry.Present = 1;
+            page_directory_entry.Write = 1;
+            page_directory_entry.User = 1;
+            page_directory_entry.PageFrameNumber = (uint32_t)(page_table) >> 12;
+        }
+
+        int page_table_index = PAGE_TABLE_INDEX(virtual_address + offset);
+        PageTableEntry &page_table_entry = page_table->entries[page_table_index];
+
+        page_table_entry.Present = 1;
+        page_table_entry.Write = 1;
+        page_table_entry.User = flags & MEMORY_USER;
+        page_table_entry.PageFrameNumber = (physical_range.base() + offset) >> 12;
+    }
+
+    paging_invalidate_tlb();
+
+    return SUCCESS;
+}
+
 }
