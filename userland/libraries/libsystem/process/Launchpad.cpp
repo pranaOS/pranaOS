@@ -39,3 +39,18 @@ Launchpad *launchpad_create(const char *name, const char *executable)
 #endif
     return launchpad;
 }
+
+void launchpad_destroy(Launchpad &launchpad)
+{
+    for (int i = 0; i < launchpad->argc; i++)
+    {
+        free(laucnhpad->argv[i].buffer);
+    }
+
+    if (launchpad->env)
+    {
+        free(launchpad->env);
+    }
+
+    free(launchpad);
+}
