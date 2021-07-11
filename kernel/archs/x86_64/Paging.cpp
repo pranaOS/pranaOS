@@ -223,4 +223,14 @@ PML4 *pml4_create()
     return pml4;
 }
 
+void pml4_destroy(PML4 *pml4)
+{
+    return;
+    ASSERT_INTERRUPTS_RETAINED();
+
+    UNUSED(pml4);
+
+    ASSERT_NOT_REACHED();
+}
+
 }
