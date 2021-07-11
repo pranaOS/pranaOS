@@ -187,6 +187,83 @@ JResult virtual_map(PML4 *pml4, MemoryRange physical_range, uintptr_t virtual_ad
     return SUCCESS;
 }
 
+MemoryRange virtual_alloc(PML4 *pml4, MemoryRange physical_range, MemoryFlags flags)
+{
+    ASSERT_INTERRUPTS_RETAINED();
+
+    bool is_user_memory = flags & MEMORY_USER;
+
+    uintptr_t virtual_address = 0;
+    size_t current_size = 0;
+
+    for (size_t i = (is_user_memory ? 256 : 1) * 1024; i < (is_user_memory ? 1024 : 256) * 1024; i++)
+    {
+        uintptr_t current_address = i * ARCH_PAGE_SIZE;
+
+        if (!virtual_present(pml4, current_address))
+        {
+            if (current_size == 0)
+            {
+                virtual_address = current_address;
+            }
+
+            current_size += ARCH_PAGE_SIZE;
+
+            if (current_size == physical_range.size())
+            {
+                assert(SUCCESS == virtual_map(pml4, physical_range, virtual_address, flags));
+
+                return (MemoryRange){virtual_address, current_size};
+            }
+        }
+        else
+        {
+            current_size = 0;
+        }
+    }
+
+    system_panic("Out of virtual memory!");
+}
+
+void virtual_free(PML4 *pml4, MemoryRange virtual_range)
+{
+    ASSERT_INTERRUPTS_RETAINED();
+
+    for (size_t i = 0; i < virtual_range.page_count(); i++)
+    {
+        uint64_t address = virtual_range.base() + i * ARCH_PAGE_SIZE;
+
+        auto pml4_entry = &pml4->entries[pml4_index(address)];
+
+        if (!pml4_entry->present)
+        {
+            continue;
+        }
+
+        auto pml3 = reinterpret_cast<PML3 *>(pml4_entry->physical_address * ARCH_PAGE_SIZE);
+        auto pml3_entry = &pml3->entries[pml3_index(address)];
+
+        if (!pml3_entry->present)
+        {
+            continue;
+        }
+
+        auto pml2 = reinterpret_cast<PML2 *>(pml3_entry->physical_address * ARCH_PAGE_SIZE);
+        auto pml2_entry = &pml2->entries[pml2_index(address)];
+
+        if (!pml2_entry->present)
+        {
+            continue;
+        }
+
+        auto pml1 = reinterpret_cast<PML1 *>(pml2_entry->physical_address * ARCH_PAGE_SIZE);
+        auto pml1_entry = &pml1->entries[pml1_index(address)];
+
+        *pml1_entry = {};
+    }
+
+    paging_invalidate_tlb();
+}
 
 PML4 *pml4_create()
 {
@@ -231,6 +308,11 @@ void pml4_destroy(PML4 *pml4)
     UNUSED(pml4);
 
     ASSERT_NOT_REACHED();
+}
+
+void pml4_switch(PML4 *pml4)
+{
+    paging_load_directory((uintptr_t)pml4);
 }
 
 }
