@@ -40,5 +40,12 @@ static TSS tss = {
     .iomap_base = 0,
 };
 
+static GDTEntry gdt[GDT_ENTRY_COUNT];
+
+static GDTDescriptor gdt_descriptor = {
+    .size = sizeof(GDTEntry) * GDT_ENTRY_COUNT,
+    .offset = (uint32_t)&gdt[0],
+};
+
 
 }
