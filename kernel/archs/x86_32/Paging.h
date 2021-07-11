@@ -66,4 +66,18 @@ struct PACKED PageDirectory : public Arch::AddressSpace
     PageDirectoryEntry entries[PAGE_DIRECTORY_ENTRY_COUNT];
 };
 
+extern "C" void paging_enable();
+
+extern "C" void paging_disable();
+
+extern "C" void paging_load_directory(uintptr_t directory);
+
+extern "C" void paging_invalidate_tlb();
+
+PageDirectory *kernel_page_directory();
+
+void virtual_initialize();
+
+void virtual_memory_enable();
+
 }
