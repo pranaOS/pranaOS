@@ -23,7 +23,7 @@ const char *process_name()
 
 JResult process_run(const char *command, int *pid, TaskFlags flags)
 {
-    Launchpad *launchpad = launchpad_create("shell", "/Applications/shell/shell");
+    Launchpad *launchpad = launchpad_create("shell", "/Applications/shell/sh");
 
     launchpad_flags(launchpad, flags);
     launchpad_argument(launchpad, "-c");
