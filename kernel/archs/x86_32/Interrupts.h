@@ -29,5 +29,8 @@ struct PACKED UserInterruptStackFrame
     uint32_t user_esp, ss;
 };
 
+void interrupts_dump_stackframe(InterruptStackFrame *stackframe);
+
+void interrupts_initialize();
 
 }
