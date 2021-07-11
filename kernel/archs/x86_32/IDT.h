@@ -34,4 +34,18 @@ struct PACKED IDTEntry
     uint16_t offset16_31; 
 };
 
+#define IDT_ENTRY(__offset, __selector, __type)                 \
+    (IDTEntry)                                                  \
+    {                                                           \
+        .offset0_15 = (uint16_t)((__offset)&0xffff),            \
+        .selector = (__selector),                               \
+        .zero = 0,                                              \
+        .type_attr = (__type),                                  \
+        .offset16_31 = (uint16_t)(((__offset) >> 16) & 0xffff), \
+    }
+
+extern "C" void idt_flush(uint32_t);
+
+void idt_initialize();
+
 }
