@@ -6,9 +6,10 @@
 
 #pragma once
 
-// includes
-#include <pranaos/Time.h>
+#include <skift/Time.h>
+
 #include <libutils/Vector.h>
+
 #include "system/node/Handle.h"
 #include "system/system/System.h"
 
@@ -17,12 +18,12 @@ struct Task;
 struct Blocker
 {
 private:
-    JResult _result = SUCCESS;
+    HjResult _result = SUCCESS;
     TimeStamp _timeout = -1;
     bool _interrupted = false;
 
 public:
-    JResult result() { return _result; }
+    HjResult result() { return _result; }
 
     void timeout(TimeStamp ts) { _timeout = ts; }
 
@@ -40,7 +41,7 @@ public:
         on_timeout(task);
     }
 
-    void interrupt(Task &task, JResult result)
+    void interrupt(Task &task, HjResult result)
     {
         _interrupted = true;
         _result = result;
@@ -57,4 +58,40 @@ public:
         return _interrupted;
     }
 
+    virtual bool can_unblock(Task &) { return true; }
+
+    virtual void on_unblock(Task &) {}
+
+    virtual void on_timeout(Task &) {}
+
+    virtual void on_interrupt(Task &) {}
+};
+
+struct BlockerAccept : public Blocker
+{
+private:
+    RefPtr<FsNode> _node;
+
+public:
+    BlockerAccept(RefPtr<FsNode> node) : _node(node)
+    {
+    }
+
+    bool can_unblock(Task &task) override;
+
+    void on_unblock(Task &task) override;
+};
+
+struct BlockerConnect : public Blocker
+{
+private:
+    RefPtr<FsNode> _connection;
+
+public:
+    BlockerConnect(RefPtr<FsNode> connection)
+            : _connection(connection)
+    {
+    }
+
+    bool can_unblock(Task &task) override;
 };
