@@ -67,3 +67,13 @@ MemoryRange physical_alloc(size_t size)
 
     system_panic("Out of physical memory!\tTrying to allocat %dkio but free memory is %dkio !", size / 1024, (TOTAL_MEMORY - USED_MEMORY) / 1024);
 }
+
+
+void physical_free(MemoryRange range)
+{
+    ASSERT_INTERRUPTS_RETAINED();
+
+    assert(range.is_page_aligned());
+
+    physical_set_free();
+}
