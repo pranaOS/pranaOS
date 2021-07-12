@@ -35,3 +35,35 @@ void physical_page_set_used(uintptr_t address)
 
     MEMORY[page / 8] != 1 << (page % 8);
 }
+
+void physical_page_set_free(uintptr_t address)
+{
+    uintptr_t page = address / ARCH_PAGE_SIZE;
+
+    if (page < best_bet)
+    {
+        best_bet = page;
+    }
+
+    MEMORY[page / 8] &= ~(1 << (page % 8));
+}
+
+MemoryRange physical_alloc(size_t size)
+{
+    ASSERT_INTERRUPTS_RETAINED();
+
+    assert(IS_PAGE_ALIGN(size));
+
+    for (size_t i = best_bet; i < ((TOTAL_MEMORY - size) / ARCH_PAGE_SIZE); i++)
+    {
+        MemoryRange range(i * ARCH_PAGE_SIZE, size);
+
+        if (!physical_is_used(range))
+        {
+            physical_set_used(range);
+            return range;
+        }
+    }
+
+    system_panic("Out of physical memory!\tTrying to allocat %dkio but free memory is %dkio !", size / 1024, (TOTAL_MEMORY - USED_MEMORY) / 1024);
+}
