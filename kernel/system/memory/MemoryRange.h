@@ -39,4 +39,31 @@ public:
     {
     }
 
+    auto is_page_aligned()
+    {
+        return IS_PAGE_ALIGN(base()) && IS_PAGE_ALIGN(size());
+    }
+
+    auto continue(uintptr_t address)
+    {
+        return address >= base() && address <= end();
+    }
+
+    static inline MemoryRange from_non_aligned_address(uintptr_t base, size_t size)
+    {
+        size_t align = ARCH_PAGE_SIZE - base % ARCH_PAGE_SIZE;
+
+        if (base % ARCH_PAGE_SIZE == 0)
+        {
+            align = 0;
+        }
+
+        base += align;
+        size -= align;
+
+        size = ALIGN_DOWN(size, ARCH_PAGE_SIZE);
+
+        return (MemoryRange){base, size};
+    }
+
 };
