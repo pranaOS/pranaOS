@@ -116,5 +116,37 @@ struct Stackframe
     uint32_t eip;
 };
 
+void backtrace_internal(uint32_t ebp)
+{
+    bool empty = true;
+    Stackframe *stackframe = reinterpret_cast<Stackframe *>(ebp);
+
+    while (stackframe)
+    {
+        empty = false;
+        Kernel::logln("\t{08x}", stackframe->eip);
+        stackframe = stackframe->ebp;
+    }
+
+    if (empty)
+    {
+        Kernel::logln("\t[EMPTY]");
+    }
+}
+
+void dump_stack_frame(void *sf)
+{
+    auto stackframe = reinterpret_cast<x86_32::InterruptStackFrame *>(sf);
+
+    Kernel::logln("\tCS={04x} DS={04x} ES={04x} FS={04x} GS={04x}", stackframe->cs, stackframe->ds, stackframe->es, stackframe->fs, stackframe->gs);
+    Kernel::logln("\tEAX={08x} EBX={08x} ECX={08x} EDX={08x}", stackframe->eax, stackframe->ebx, stackframe->ecx, stackframe->edx);
+    Kernel::logln("\tEDI={08x} ESI={08x} EBP={08x} ESP={08x}", stackframe->edi, stackframe->esi, stackframe->ebp, stackframe->esp);
+    Kernel::logln("\tINT={08x} ERR={08x} EIP={08x} FLG={08x}", stackframe->intno, stackframe->err, stackframe->eip, stackframe->eflags);
+    Kernel::logln("\tCR0={08x} CR2={08x} CR3={08x} CR4={08x}", x86::CR0(), x86::CR2(), x86::CR3(), x86::CR4());
+    Kernel::logln("\n\tBacktrace:\n");
+
+    backtrace_internal(stackframe->ebp);
+}
+
 
 }
