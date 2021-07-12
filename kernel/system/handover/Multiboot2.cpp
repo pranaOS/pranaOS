@@ -96,3 +96,12 @@ void multiboot2_parse_module(Handover *handover, struct multiboot_tag_module *m)
     strncpy(module->command_line, (const char *)m->cmdline, HANDOVER_COMMAND_LINE_SIZE);
     handover->modules_size++;
 }
+
+void multiboot2_parse_framebuffer(Handover *handover, struct multiboot_tag_framebuffer_common *tag)
+{
+    handover->framebuffer_addr = tag->framebuffer_addr;
+    handover->framebuffer_width = tag->framebuffer_width;
+    handover->framebuffer_height = tag->framebuffer_height;
+    handover->framebuffer_pitch = tag->framebuffer_pitch;
+    handover->framebuffer_bpp = tag->framebuffer_bpp / 8;
+}
