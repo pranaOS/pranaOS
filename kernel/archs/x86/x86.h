@@ -25,3 +25,35 @@ static inline CRRegister CR0()
                  : "=r"(r));
     return r;
 }
+
+static inline CRRegister CR1()
+{
+    CRRegister r;
+    asm volatile("mov %%cr1, %0"
+                 : "=r"(r));
+    return r;
+}
+
+static inline CRRegister CR2()
+{
+    CRRegister r;
+    asm volatile("mov %%cr2, %0"
+                 : "=r"(r));
+    return r;
+}
+
+static inline CRRegister CR3()
+{
+    CRRegister r;
+    asm volatile("mov %%cr3, %0"
+                 : "=r"(r));
+    return r;
+}
+
+static inline CRRegister CR4()
+{
+    CRRegister r;
+    asm volatile("mov %%cr4, %0"
+                 : "=r"(r));
+    return r;
+}
