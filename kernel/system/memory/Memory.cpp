@@ -53,12 +53,11 @@ void memory_initialize(Handover *handover)
     Kernel::logln("Mapping kernel...");
     memory_map_identity(Arch::kernel_address_space(), kernel_memory_range(), MEMORY_NONE);
 
-    Kernel::logln("Mapping modules...");
+    Kernel::logln("Mapping Modules....Wait For SomeTime");
     for (size_t i = 0; i < handover->modules_size; i++)
     {
         memory_map_identity(Arch::kernel_address_space(), handover->modules[i].range, MEMORY_NONE);
     }
-
 
     MemoryRange page_zero{0, ARCH_PAGE_SIZE};
     Arch::virtual_free(Arch::kernel_address_space(), page_zero);
@@ -81,7 +80,7 @@ void memory_initialize(Handover *handover)
 
 void memory_dump()
 {
-    Kernel::logln("\tMemory Status: ");
+    Kernel::logln("\tMemory status:");
     Kernel::logln("\t - Used  physical Memory: {12d}kib", USED_MEMORY / 1024);
     Kernel::logln("\t - Total physical Memory: {12d}kib", TOTAL_MEMORY / 1024);
 }
@@ -100,7 +99,7 @@ size_t memory_get_total()
     return TOTAL_MEMORY;
 }
 
-JResult memory_map(Arch::AddressSpace *address_space, MemoryRange virtual_range, MemoryFlags flags)
+HjResult memory_map(Arch::AddressSpace *address_space, MemoryRange virtual_range, MemoryFlags flags)
 {
     assert(virtual_range.is_page_aligned());
 
@@ -130,7 +129,7 @@ JResult memory_map(Arch::AddressSpace *address_space, MemoryRange virtual_range,
     return SUCCESS;
 }
 
-JResult memory_map_identity(Arch::AddressSpace *address_space, MemoryRange physical_range, MemoryFlags flags)
+HjResult memory_map_identity(Arch::AddressSpace *address_space, MemoryRange physical_range, MemoryFlags flags)
 {
     assert(physical_range.is_page_aligned());
 
@@ -147,7 +146,7 @@ JResult memory_map_identity(Arch::AddressSpace *address_space, MemoryRange physi
     return SUCCESS;
 }
 
-JResult memory_alloc(Arch::AddressSpace *address_space, size_t size, MemoryFlags flags, uintptr_t *out_address)
+HjResult memory_alloc(Arch::AddressSpace *address_space, size_t size, MemoryFlags flags, uintptr_t *out_address)
 
 {
     assert(IS_PAGE_ALIGN(size));
@@ -187,5 +186,60 @@ JResult memory_alloc(Arch::AddressSpace *address_space, size_t size, MemoryFlags
     }
 
     *out_address = virtual_address;
+    return SUCCESS;
+}
+
+HjResult memory_alloc_identity(Arch::AddressSpace *address_space, MemoryFlags flags, uintptr_t *out_address)
+{
+    InterruptsRetainer retainer;
+
+    for (size_t i = 1; i < 256 * 1024; i++)
+    {
+        MemoryRange identity_range{i * ARCH_PAGE_SIZE, ARCH_PAGE_SIZE};
+
+        if (!Arch::virtual_present(address_space, identity_range.base()) &&
+            !physical_is_used(identity_range))
+        {
+            physical_set_used(identity_range);
+            assert(SUCCESS == Arch::virtual_map(address_space, identity_range, identity_range.base(), flags));
+
+            if (flags & MEMORY_CLEAR)
+            {
+                memset((void *)identity_range.base(), 0, ARCH_PAGE_SIZE);
+            }
+
+            *out_address = identity_range.base();
+
+            return SUCCESS;
+        }
+    }
+
+    Kernel::logln("Failed to allocate identity mapped page!");
+
+    *out_address = 0;
+
+    return ERR_OUT_OF_MEMORY;
+}
+
+HjResult memory_free(Arch::AddressSpace *address_space, MemoryRange virtual_range)
+{
+    assert(virtual_range.is_page_aligned());
+
+    InterruptsRetainer retainer;
+
+    for (size_t i = 0; i < virtual_range.size() / ARCH_PAGE_SIZE; i++)
+    {
+        uintptr_t virtual_address = virtual_range.base() + i * ARCH_PAGE_SIZE;
+
+        if (Arch::virtual_present(address_space, virtual_address))
+        {
+            MemoryRange page_physical_range{Arch::virtual_to_physical(address_space, virtual_address), ARCH_PAGE_SIZE};
+            MemoryRange page_virtual_range{virtual_address, ARCH_PAGE_SIZE};
+
+            physical_free(page_physical_range);
+            Arch::virtual_free(address_space, page_virtual_range);
+        }
+    }
+
     return SUCCESS;
 }
