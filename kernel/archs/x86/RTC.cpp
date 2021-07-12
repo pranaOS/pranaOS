@@ -5,6 +5,7 @@
 */
 
 
+// includes
 #include "archs/x86_32/x86_32.h"
 
 enum CMOSTimeSelector
@@ -17,14 +18,12 @@ enum CMOSTimeSelector
     T_YEAR = 0x9,
 };
 
-
 #define CMOS_ADDRESS 0x70
 #define CMOS_DATA 0x71
 
 #define from_bcd(val) (((val) / 16) * 10 + ((val)&0xf))
 
 #define CMOS_WAIT while (is_cmos_update())
-
 
 bool is_cmos_update()
 {
@@ -36,4 +35,21 @@ char get_realtime_reg(CMOSTimeSelector reg)
 {
     out8(CMOS_ADDRESS, reg);
     return in8(CMOS_DATA);
+}
+
+TimeStamp rtc_now()
+{
+    CMOS_WAIT;
+
+    DateTime datetime;
+    datetime.second = from_bcd(get_realtime_reg(T_SECOND));
+    datetime.minute = from_bcd(get_realtime_reg(T_MINUTE));
+    datetime.hour = from_bcd(get_realtime_reg(T_HOUR));
+    datetime.day = from_bcd(get_realtime_reg(T_DAY));
+    datetime.month = from_bcd(get_realtime_reg(T_MONTH));
+    datetime.year = from_bcd(get_realtime_reg(T_YEAR)) + 2000;
+
+    TimeStamp timestamp = datetime_to_timestamp(datetime);
+
+    return timestamp;
 }
