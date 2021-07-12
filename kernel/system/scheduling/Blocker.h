@@ -34,4 +34,27 @@ public:
         on_unblock(task);
     }
 
+    void timeout(Task &task)
+    {
+        _result = TIMEOUT;
+        on_timeout(task);
+    }
+
+    void interrupt(Task &task, JResult result)
+    {
+        _interrupted = true;
+        _result = result;
+        on_interrupt(task);
+    }
+
+    bool has_timeout()
+    {
+        return _timeout != (Timeout)-1 && _timeout <= system_get_tick();
+    }
+
+    bool is_interrupted()
+    {
+        return _interrupted;
+    }
+
 };
