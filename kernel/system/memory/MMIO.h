@@ -23,4 +23,16 @@ private:
 
 public:
     uintptr_t base() { return _virtual_range.base(); }
+
+    uintptr_t physical_base() { return _physical_range.base(); }
+
+    uintptr_t end() { return _virtual_range.end(); }
+
+    uintptr_t physical_end() { return _physical_range.end(); }
+
+    size_t size() { return _virtual_range.size(); }
+
+    bool empty() { return _virtual_range.empty(); }
+    
+
 };
