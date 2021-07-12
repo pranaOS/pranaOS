@@ -99,3 +99,50 @@ size_t memory_get_total()
 
     return TOTAL_MEMORY;
 }
+
+JResult memory_map(Arch::AddressSpace *address_space, MemoryRange virtual_range, MemoryFlags flags)
+{
+    assert(virtual_range.is_page_aligned());
+
+    InterruptsRetainer retainer;
+
+    for (size_t i = 0; i < virtual_range.size() / ARCH_PAGE_SIZE; i++)
+    {
+        uintptr_t virtual_address = virtual_range.base() + i * ARCH_PAGE_SIZE;
+
+        if (!Arch::virtual_present(address_space, virtual_address))
+        {
+            auto physical_range = physical_alloc(ARCH_PAGE_SIZE);
+            HjResult virtual_map_result = Arch::virtual_map(address_space, physical_range, virtual_address, flags);
+
+            if (virtual_map_result != SUCCESS)
+            {
+                return virtual_map_result;
+            }
+        }
+    }
+
+    if (flags & MEMORY_CLEAR)
+    {
+        memset((void *)virtual_range.base(), 0, virtual_range.size());
+    }
+
+    return SUCCESS;
+}
+
+JResult memory_map_identity(Arch::AddressSpace *address_space, MemoryRange physical_range, MemoryFlags flags)
+{
+    assert(physical_range.is_page_aligned());
+
+    InterruptsRetainer retainer;
+
+    physical_set_used(physical_range);
+    assert(SUCCESS == Arch::virtual_map(address_space, physical_range, physical_range.base(), flags));
+
+    if (flags & MEMORY_CLEAR)
+    {
+        memset((void *)physical_range.base(), 0, physical_range.size());
+    }
+
+    return SUCCESS;
+}
