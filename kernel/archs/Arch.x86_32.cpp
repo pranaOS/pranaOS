@@ -34,12 +34,11 @@ void save_context(Task *task)
     fpu_save_context(task);
 }
 
-void load_content(Task *task)
+void load_context(Task *task)
 {
     fpu_load_context(task);
     x86_32::set_kernel_stack((uintptr_t)task->kernel_stack + PROCESS_STACK_SIZE);
 }
-
 
 void task_go(Task *task)
 {
@@ -148,5 +147,64 @@ void dump_stack_frame(void *sf)
     backtrace_internal(stackframe->ebp);
 }
 
+void backtrace()
+{
+    backtrace_internal(x86_32::EBP());
+}
+
+AddressSpace *kernel_address_space()
+{
+    return static_cast<AddressSpace *>(x86_32::kernel_page_directory());
+}
+
+AddressSpace *address_space_create()
+{
+    return static_cast<AddressSpace *>(x86_32::page_directory_create());
+}
+
+void address_space_destroy(AddressSpace *address_space)
+{
+    return x86_32::page_directory_destroy(static_cast<x86_32::PageDirectory *>(address_space));
+}
+
+void address_space_switch(AddressSpace *address_space)
+{
+    return x86_32::page_directory_switch(static_cast<x86_32::PageDirectory *>(address_space));
+}
+
+void virtual_initialize()
+{
+    return x86_32::virtual_initialize();
+}
+
+void virtual_memory_enable()
+{
+    return x86_32::virtual_memory_enable();
+}
+
+bool virtual_present(AddressSpace *address_space, uintptr_t virtual_address)
+{
+    return x86_32::virtual_present(static_cast<x86_32::PageDirectory *>(address_space), virtual_address);
+}
+
+uintptr_t virtual_to_physical(AddressSpace *address_space, uintptr_t virtual_address)
+{
+    return x86_32::virtual_to_physical(static_cast<x86_32::PageDirectory *>(address_space), virtual_address);
+}
+
+HjResult virtual_map(AddressSpace *address_space, MemoryRange physical_range, uintptr_t virtual_address, MemoryFlags flags)
+{
+    return x86_32::virtual_map(static_cast<x86_32::PageDirectory *>(address_space), physical_range, virtual_address, flags);
+}
+
+MemoryRange virtual_alloc(AddressSpace *address_space, MemoryRange physical_range, MemoryFlags flags)
+{
+    return x86_32::virtual_alloc(static_cast<x86_32::PageDirectory *>(address_space), physical_range, flags);
+}
+
+void virtual_free(AddressSpace *address_space, MemoryRange virtual_range)
+{
+    return x86_32::virtual_free(static_cast<x86_32::PageDirectory *>(address_space), virtual_range);
+}
 
 }
