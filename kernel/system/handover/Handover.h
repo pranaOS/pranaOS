@@ -35,3 +35,25 @@ struct Module
     MemoryRange range;
     char command_line[HANDOVER_COMMAND_LINE_SIZE];
 };
+
+struct Handover
+{
+    char bootloader[HANDOVER_BOOTLOADER_NAME_SIZE];
+    char command_line[HANDOVER_COMMAND_LINE_SIZE];
+
+    size_t memory_usable;
+
+    MemoryMapEntry memory_map[HANDOVER_MEMORY_MAP_SIZE];
+    size_t memory_map_size;
+
+    Module modules[HANDOVER_MODULES_SIZE];
+    size_t modules_size;
+
+    uintptr_t framebuffer_addr;
+    size_t framebuffer_width;
+    size_t framebuffer_height;
+    size_t framebuffer_pitch;
+    size_t framebuffer_bpp;
+
+    uintptr_t acpi_rsdp_address;
+};
