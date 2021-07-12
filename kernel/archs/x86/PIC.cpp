@@ -32,6 +32,7 @@
 
 void pic_initialize()
 {
+
     out8(PIC1_COMMAND, ICW1_INIT | ICW1_ICW4);
     PIC_WAIT();
     out8(PIC2_COMMAND, ICW1_INIT | ICW1_ICW4);
@@ -56,4 +57,20 @@ void pic_initialize()
     PIC_WAIT();
     out8(PIC2_DATA, 0x00);
     PIC_WAIT();
+}
+
+void pic_ack(int intno)
+{
+    if (intno >= 40)
+    {
+        out8(0xA0, 0x20);
+    }
+
+    out8(0x20, 0x20);
+}
+
+void pic_disable()
+{
+    out8(PIC2_DATA, 0xff);
+    out8(PIC1_DATA, 0xff);
 }
