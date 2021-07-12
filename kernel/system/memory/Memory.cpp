@@ -59,7 +59,7 @@ void memory_initialize(Handover *handover)
         memory_map_identity(Arch::kernel_address_space(), handover->modules[i].range, MEMORY_NONE);
     }
 
-    // Unmap the 0 page
+
     MemoryRange page_zero{0, ARCH_PAGE_SIZE};
     Arch::virtual_free(Arch::kernel_address_space(), page_zero);
     physical_set_used(page_zero);
@@ -77,4 +77,25 @@ void memory_initialize(Handover *handover)
     _memory_initialized = true;
 
     memory_object_initialize();
+}
+
+void memory_dump()
+{
+    Kernel::logln("\tMemory Status: ");
+    Kernel::logln("\t - Used  physical Memory: {12d}kib", USED_MEMORY / 1024);
+    Kernel::logln("\t - Total physical Memory: {12d}kib", TOTAL_MEMORY / 1024);
+}
+
+size_t memory_get_used()
+{
+    InterruptsRetainer retainer;
+
+    return USED_MEMORY;
+}
+
+size_t memory_get_total()
+{
+    InterruptsRetainer retainer;
+
+    return TOTAL_MEMORY;
 }
