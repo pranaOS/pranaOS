@@ -13,15 +13,15 @@ bool BlockerAccept::can_unblock(Task &)
     return !_node->is_acquire() && _node->can_accept();
 }
 
-
-void Blocker::on_unblock(Task &task)
+void BlockerAccept::on_unblock(Task &task)
 {
     _node->acquire(task.id);
 }
 
+
 bool BlockerConnect::can_unblock(Task &)
 {
-    return _connection->is_accpeted();
+    return _connection->is_accepted();
 }
 
 bool BlockerRead::can_unblock(Task &)
@@ -60,6 +60,17 @@ bool BlockerWait::can_unblock(Task &)
 
 void BlockerWait::on_unblock(Task &)
 {
-    _task->state(TASK_STATE_CANCLED);
+    _task->state(TASK_STATE_CANCELED);
     *_exit_value = _task->exit_value;
+}
+
+bool BlockerWrite::can_unblock(Task &)
+{
+    return !_handle.node()->is_acquire() &&
+           _handle.node()->can_write(_handle);
+}
+
+void BlockerWrite::on_unblock(Task &task)
+{
+    _handle.node()->acquire(task.id);
 }
