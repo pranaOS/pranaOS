@@ -146,3 +146,46 @@ JResult memory_map_identity(Arch::AddressSpace *address_space, MemoryRange physi
 
     return SUCCESS;
 }
+
+JResult memory_alloc(Arch::AddressSpace *address_space, size_t size, MemoryFlags flags, uintptr_t *out_address)
+
+{
+    assert(IS_PAGE_ALIGN(size));
+
+    InterruptsRetainer retainer;
+
+    if (!size)
+    {
+        *out_address = 0;
+        Kernel::logln("Allocation with size=0!");
+        return SUCCESS;
+    }
+
+    *out_address = 0;
+
+    auto physical_range = physical_alloc(size);
+
+    if (physical_range.empty())
+    {
+        Kernel::logln("Failed to allocate memory: Not enough physical memory!");
+        return ERR_OUT_OF_MEMORY;
+    }
+
+    uintptr_t virtual_address = Arch::virtual_alloc(address_space, physical_range, flags).base();
+
+    if (!virtual_address)
+    {
+        physical_free(physical_range);
+
+        Kernel::logln("Failed to allocate memory: Not enough virtual memory!");
+        return ERR_OUT_OF_MEMORY;
+    }
+
+    if (flags & MEMORY_CLEAR)
+    {
+        memset((void *)virtual_address, 0, size);
+    }
+
+    *out_address = virtual_address;
+    return SUCCESS;
+}
