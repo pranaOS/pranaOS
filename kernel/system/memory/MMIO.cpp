@@ -36,3 +36,18 @@ MMIORange::MMIORange(MemoryRange range)
     Kernel::logln("Created MMIO region {08x}-{08x} mapped to {08x}-{08x}",
                   range.base(), range.end(), _virtual_range.base(), _virtual_range.end());
 }
+
+MMIORange::~MMIORange()
+{
+    if (empty())
+        return;
+
+    InterruptsRetainer retainer;
+
+    Arch::virtual_free(Arch::kernel_address_space(), _virtual_range);
+
+    if (!_own_physical_range)
+        return;
+
+    physical_free(_physical_range);
+}
