@@ -16,3 +16,11 @@ enum CMOSTimeSelector
     T_MONTH = 0x8,
     T_YEAR = 0x9,
 };
+
+
+#define CMOS_ADDRESS 0x70
+#define CMOS_DATA 0x71
+
+#define from_bcd(val) (((val) / 16) * 10 + ((val)&0xf))
+
+#define CMOS_WAIT while (is_cmos_update())
