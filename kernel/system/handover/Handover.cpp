@@ -34,3 +34,34 @@ void handover_assert(uint32_t magic)
         system_panic("Wrong bootloader please use any multiboot/stival bootloader\n\tMagic number: 0x%08x!", magic);
     }
 }
+
+void handover_dump()
+{
+    Kernel::logln("Bootloader: '{}'", _handover.bootloader);
+    Kernel::logln("Command lines: '{}'", _handover.command_line);
+
+    Kernel::logln("Memory map:");
+    for (size_t i = 0; i < _handover.memory_map_size; i++)
+    {
+        MemoryMapEntry *entry = &_handover.memory_map[i];
+
+        Kernel::logln("\t{}: {p}-{p}: {}",
+                      i,
+                      entry->range.base(),
+                      entry->range.base() + entry->range.size() - 1,
+                      entry_type_to_string[entry->type]);
+    }
+    Kernel::logln("\t -> Usable memory: {}Kio", _handover.memory_usable / 1024);
+
+    Kernel::logln("Modules:");
+    for (size_t i = 0; i < _handover.modules_size; i++)
+    {
+        Module *module = &_handover.modules[i];
+        Kernel::logln("\t{}: {p}-{p}: {}",
+                      i,
+                      module->range.base(),
+                      module->range.base() + module->range.size() - 1,
+                      module->command_line);
+    }
+    Kernel::logln("\t-> {} module found", _handover.modules_size);
+}
