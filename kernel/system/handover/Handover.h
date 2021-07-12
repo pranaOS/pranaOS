@@ -6,7 +6,7 @@
 
 #pragma once
 
-// inlcudes
+// includes
 #include "system/memory/MemoryRange.h"
 
 #define HANDOVER_BOOTLOADER_NAME_SIZE 64
@@ -64,3 +64,10 @@ void handover_assert(uint32_t magic);
 
 Handover *handover_initialize(void *header, uint32_t magic);
 
+bool is_multiboot2(uint32_t magic);
+
+bool is_stivale2(uint32_t magic);
+
+void multiboot2_parse_header(Handover *handover, void *header_ptr);
+
+void stivale2_parse_header(Handover *handover, void *header_ptr);
