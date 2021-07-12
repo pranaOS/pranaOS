@@ -6,10 +6,9 @@
 
 #pragma once
 
-#include <skift/Time.h>
-
+// includes
+#include <pranaos/Time.h>
 #include <libutils/Vector.h>
-
 #include "system/node/Handle.h"
 #include "system/system/System.h"
 
@@ -18,12 +17,12 @@ struct Task;
 struct Blocker
 {
 private:
-    HjResult _result = SUCCESS;
+    JResult _result = SUCCESS;
     TimeStamp _timeout = -1;
     bool _interrupted = false;
 
 public:
-    HjResult result() { return _result; }
+    JResult result() { return _result; }
 
     void timeout(TimeStamp ts) { _timeout = ts; }
 
@@ -41,7 +40,7 @@ public:
         on_timeout(task);
     }
 
-    void interrupt(Task &task, HjResult result)
+    void interrupt(Task &task, JResult result)
     {
         _interrupted = true;
         _result = result;
@@ -94,4 +93,83 @@ public:
     }
 
     bool can_unblock(Task &task) override;
+};
+
+struct BlockerRead : public Blocker
+{
+private:
+    FsHandle &_handle;
+
+public:
+    BlockerRead(FsHandle &handle)
+            : _handle{handle}
+    {
+    }
+
+    bool can_unblock(Task &task) override;
+
+    void on_unblock(Task &task) override;
+};
+
+struct Selected
+{
+    int handle_index;
+    RefPtr<FsHandle> handle;
+    PollEvent events;
+    PollEvent result;
+};
+
+struct BlockerSelect : public Blocker
+{
+private:
+    Vector<Selected> &_handles;
+
+public:
+    BlockerSelect(Vector<Selected> &handles)
+            : _handles{handles}
+    {
+    }
+
+    bool can_unblock(Task &task) override;
+};
+
+struct BlockerTime : public Blocker
+{
+public:
+    BlockerTime() {}
+
+    bool can_unblock(Task &) override { return false; }
+};
+
+struct BlockerWait : public Blocker
+{
+private:
+    Task *_task;
+    int *_exit_value;
+
+public:
+    BlockerWait(Task *task, int *exit_value)
+            : _task(task), _exit_value(exit_value)
+    {
+    }
+
+    bool can_unblock(Task &task) override;
+
+    void on_unblock(Task &task) override;
+};
+
+struct BlockerWrite : public Blocker
+{
+private:
+    FsHandle &_handle;
+
+public:
+    BlockerWrite(FsHandle &handle)
+            : _handle{handle}
+    {
+    }
+
+    bool can_unblock(Task &task) override;
+
+    void on_unblock(Task &task) override;
 };
