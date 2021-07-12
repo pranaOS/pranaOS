@@ -4,10 +4,10 @@
  * SPDX-License-Identifier: BSD-2-Clause
 */
 
+// includes
 #include "system/Streams.h"
 #include <assert.h>
 #include <string.h>
-
 #include <extramodules/multiboot/Multiboot2.h>
 #include "system/handover/Handover.h"
 
@@ -104,4 +104,53 @@ void multiboot2_parse_framebuffer(Handover *handover, struct multiboot_tag_frame
     handover->framebuffer_height = tag->framebuffer_height;
     handover->framebuffer_pitch = tag->framebuffer_pitch;
     handover->framebuffer_bpp = tag->framebuffer_bpp / 8;
+}
+
+void multiboot2_parse_header(Handover *handover, void *header_ptr)
+{
+    strcpy(handover->bootloader, "unknown");
+    strcpy(handover->command_line, "");
+
+    header_ptr = (void *)((uintptr_t)header_ptr + 8);
+    struct multiboot_tag *tag = (struct multiboot_tag *)header_ptr;
+
+    while (tag->type != MULTIBOOT_TAG_TYPE_END)
+    {
+        Kernel::logln("\t{08}: {}", tag, _multiboot2_tag_name[tag->type]);
+
+        switch (tag->type)
+        {
+        case MULTIBOOT_TAG_TYPE_MMAP:
+            multiboot2_parse_memory_map(handover, (struct multiboot_tag_mmap *)tag);
+            break;
+
+        case MULTIBOOT_TAG_TYPE_MODULE:
+            multiboot2_parse_module(handover, (struct multiboot_tag_module *)tag);
+            break;
+
+        case MULTIBOOT_TAG_TYPE_BOOT_LOADER_NAME:
+            strncpy(handover->bootloader, ((struct multiboot_tag_string *)tag)->string, HANDOVER_BOOTLOADER_NAME_SIZE);
+            break;
+
+        case MULTIBOOT_TAG_TYPE_CMDLINE:
+            strncpy(handover->command_line, ((struct multiboot_tag_string *)tag)->string, HANDOVER_COMMAND_LINE_SIZE);
+            break;
+
+        case MULTIBOOT_TAG_TYPE_FRAMEBUFFER:
+            multiboot2_parse_framebuffer(handover, (struct multiboot_tag_framebuffer_common *)tag);
+            break;
+
+        case MULTIBOOT_TAG_TYPE_ACPI_OLD:
+            handover->acpi_rsdp_address = (uintptr_t) & ((struct multiboot_tag_old_acpi *)tag)->rsdp;
+            break;
+
+        default:
+            Kernel::logln("\t\t-> IGNORED");
+            break;
+        }
+
+        tag = (struct multiboot_tag *)ALIGN_UP(
+            (uintptr_t)tag + tag->size,
+            MULTIBOOT_TAG_ALIGN);
+    }
 }
