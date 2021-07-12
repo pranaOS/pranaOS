@@ -27,4 +27,14 @@ uint32_t lapic_read(uint32_t reg)
     return *((volatile uint32_t *)(lapic + reg));
 }
 
+void lapic_write(uint32_t reg, uint32_t data)
+{
+    *((volatile uint32_t *)(lapic + reg)) = data;
+}
+
+void lapic_ack()
+{
+    lapic_write(LAPIC_EOI, 0);
+}
+
 }
