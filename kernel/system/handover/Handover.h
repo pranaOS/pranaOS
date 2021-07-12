@@ -23,3 +23,15 @@ enum MemoryMapEntryType
     MEMORY_MAP_ENTRY_BADRAM,
     MEMORY_MAP_ENTRY_KERNEL
 };
+
+struct MemoryMapEntry
+{
+    MemoryRange range{};
+    MemoryMapEntryType type;
+};
+
+struct Module
+{
+    MemoryRange range;
+    char command_line[HANDOVER_COMMAND_LINE_SIZE];
+};
