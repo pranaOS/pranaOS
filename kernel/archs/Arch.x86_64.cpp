@@ -79,4 +79,26 @@ void task_go(Task *task)
     }
 }
 
+size_t debug_write(const void *buffer, size_t size)
+{
+    return com_write(COM1, buffer, size);
+}
+
+TimeStamp get_time()
+{
+    return rtc_now();   
+}
+
+NO_RETURN void reboot()
+{
+    early_console_enable();
+    Kernel::logln("Rebooting...");
+
+    x86::reboot_8042();
+    x86::reboot_triple_fault();
+
+    Kernel::logln("Failed to reboot: Halting!");
+    system_stop();
+}
+
 }
