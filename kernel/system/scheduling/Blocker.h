@@ -21,4 +21,17 @@ private:
     TimeStamp _timeout = -1;
     bool _interrupted = false;
 
+public:
+    JResult result() { return _result; }
+
+    void timeout(TimeStamp ts) { _timeout = ts; }
+
+    virtual ~Blocker() {}
+
+    void unblock(Task &task)
+    {
+        _result = SUCCESS;
+        on_unblock(task);
+    }
+
 };
