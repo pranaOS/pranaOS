@@ -34,3 +34,21 @@ void BlockerRead::on_unblock(Task &task)
     _handle.node()->acquire(task.id);
 }
 
+bool BlockerSelect::can_unblock(Task &)
+{
+    bool should_be_unblock = false;
+
+    for (size_t i = 0; i < _handles.count(); i++)
+    {
+        auto &selected = _handles[i];
+
+        selected.result = selected.handle->poll(selected.events);
+
+        if (selected.result != 0)
+        {
+            should_be_unblock = true;
+        }
+    }
+
+    return should_be_unblock;
+}
