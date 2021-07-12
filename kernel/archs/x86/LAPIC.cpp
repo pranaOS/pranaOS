@@ -37,4 +37,11 @@ void lapic_ack()
     lapic_write(LAPIC_EOI, 0);
 }
 
+void lapic_initialize()
+{
+    pic_disable();
+
+    lapic_write(0xF0, lapic_read(0xF0) | 0x100);
+}
+
 }
