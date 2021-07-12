@@ -24,3 +24,16 @@ enum CMOSTimeSelector
 #define from_bcd(val) (((val) / 16) * 10 + ((val)&0xf))
 
 #define CMOS_WAIT while (is_cmos_update())
+
+
+bool is_cmos_update()
+{
+    out8(CMOS_ADDRESS, 0x0A);
+    return (in8(CMOS_DATA) & 0x80);
+}
+
+char get_realtime_reg(CMOSTimeSelector reg)
+{
+    out8(CMOS_ADDRESS, reg);
+    return in8(CMOS_DATA);
+}
