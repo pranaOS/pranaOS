@@ -65,3 +65,28 @@ void handover_dump()
     }
     Kernel::logln("\t-> {} module found", _handover.modules_size);
 }
+
+Handover *handover_initialize(void *header, uint32_t magic)
+{
+    handover_assert(magic);
+
+    Kernel::logln("Parsing handover informations...");
+    Kernel::logln("Header={08x}, Magic={08x}", header, magic);
+
+    if (is_multiboot2(magic))
+    {
+        multiboot2_parse_header(&_handover, header);
+    }
+    else if (is_stivale2(magic))
+    {
+        stivale2_parse_header(&_handover, header);
+    }
+    else
+    {
+        ASSERT_NOT_REACHED();
+    }
+
+    handover_dump();
+
+    return &_handover;
+}
