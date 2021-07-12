@@ -11,7 +11,6 @@
 #include <libutils/Prelude.h>
 #include <libutils/RefCounted.h>
 #include <string.h>
-
 #include "system/memory/MemoryRange.h"
 
 struct MMIORange : public RefCounted<MMIORange>
@@ -57,7 +56,54 @@ public:
 
     uint8_t read8(size_t offset)
     {
-        return *(volatile uint8_t *)(_virtual_range.base() + offfset);
+        return *(volatile uint8_t *)(_virtual_range.base() + offset);
     }
 
+    uint16_t read16(size_t offset)
+    {
+        return *(volatile uint16_t *)(_virtual_range.base() + offset);
+    }
+
+    uint32_t read32(size_t offset)
+    {
+        return *(volatile uint32_t *)(_virtual_range.base() + offset);
+    }
+
+    uint64_t read64(size_t offset)
+    {
+        return *(volatile uint64_t *)(_virtual_range.base() + offset);
+    }
+
+    size_t write(size_t offset, const void *buffer, size_t size)
+    {
+        size_t written = 0;
+
+        if (offset <= _virtual_range.size())
+        {
+            written = MIN(_virtual_range.size() - offset, size);
+            memcpy((char *)_virtual_range.base() + offset, buffer, written);
+        }
+
+        return written;
+    }
+
+    void write8(size_t offset, uint8_t value)
+    {
+        (*(volatile uint8_t *)(_virtual_range.base() + offset)) = value;
+    }
+
+    void write16(size_t offset, uint16_t value)
+    {
+        (*(volatile uint16_t *)(_virtual_range.base() + offset)) = value;
+    }
+
+    void write32(size_t offset, uint32_t value)
+    {
+        (*(volatile uint32_t *)(_virtual_range.base() + offset)) = value;
+    }
+
+    void write64(size_t offset, uint64_t value)
+    {
+        (*(volatile uint64_t *)(_virtual_range.base() + offset)) = value;
+    }
 };
