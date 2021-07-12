@@ -51,3 +51,29 @@ MemoryObject *memory_object_ref(MemoryObject *memory_object)
 
     return memory_object;
 }
+
+void memory_object_deref(MemoryObject *memory_object)
+{
+    InterruptsRetainer retainer;
+
+    if (__atomic_sub_fetch(&memory_object->refcount, 1, __ATOMIC_SEQ_CST) == 0)
+    {
+        memory_object_destroy(memory_object);
+    }
+}
+
+MemoryObject *memory_object_by_id(int id)
+{
+    InterruptsRetainer retainer;
+
+    for (auto *object : *_memory_objects)
+    {
+        if (object->id == id)
+        {
+            memory_object_ref(object);
+            return object;
+        }
+    }
+
+    return nullptr;
+}
