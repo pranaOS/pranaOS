@@ -57,3 +57,11 @@ static inline CRRegister CR4()
                  : "=r"(r));
     return r;
 }
+
+static inline void cli() { asm volatile("cli"); }
+
+static inline void sti() { asm volatile("sti"); }
+
+static inline void hlt() { asm volatile("hlt"); }
+
+}
