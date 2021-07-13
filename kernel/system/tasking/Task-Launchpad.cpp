@@ -9,6 +9,7 @@
 #include <libfile/ELF.h>
 #include <libsystem/io/Stream.h>
 #include <string.h>
+
 #include "system/Streams.h"
 #include "system/interrupts/Interupts.h"
 #include "system/scheduling/Scheduler.h"
@@ -99,13 +100,13 @@ void task_pass_argc_argv_env(Task *task, Launchpad *launchpad)
 
     for (int i = 0; i < launchpad->argc; i++)
     {
-        task_user_stack_push(task, "\0", 1); // null terminate the arg string
+        task_user_stack_push(task, "\0", 1); 
         argv_list[i] = task_user_stack_push(task, launchpad->argv[i].buffer, launchpad->argv[i].size);
     }
 
     uintptr_t argv_list_ref = task_user_stack_push(task, &argv_list, sizeof(argv_list));
 
-    task_user_stack_push(task, "\0", 1); // null terminate the env string
+    task_user_stack_push(task, "\0", 1); 
     uintptr_t env_ref = task_user_stack_push(task, launchpad->env, launchpad->env_size);
 
     task_user_stack_push_ptr(task, (void *)env_ref);
@@ -167,6 +168,38 @@ JResult task_launch(Task *parent_task, Launchpad *launchpad, int *pid)
     *pid = task->id;
 
     task_go(task);
+
+    return SUCCESS;
+}
+
+JResult task_exec(Task *task, Launchpad *launchpad)
+{
+    assert(task == scheduler_running());
+
+    CLEANUP(stream_cleanup)
+    Stream *elf_file = stream_open(launchpad->executable, J_OPEN_READ);
+
+    if (handle_has_error(elf_file))
+    {
+        Kernel::logln("Failed to open ELF file {}: {}!", launchpad->executable, handle_error_string(elf_file));
+        return handle_get_error(elf_file);
+    }
+
+    task_clear_userspace(task);
+
+#ifdef __x86_64__
+    JResult result = ELFLoader<ELF64>::load(task, elf_file);
+#else
+    JResult result = ELFLoader<ELF32>::load(task, elf_file);
+#endif
+
+    if (result != SUCCESS)
+    {
+        task->cancel(-1); 
+        return result;
+    }
+
+    task_pass_argc_argv_env(task, launchpad);
 
     return SUCCESS;
 }
