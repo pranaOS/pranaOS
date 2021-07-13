@@ -13,6 +13,7 @@
 #include <libutils/List.h>
 #include "system/memory/Memory.h"
 #include "system/scheduling/Blocker.h"
+
 #include "system/tasking/Domain.h"
 #include "system/tasking/Handles.h"
 
@@ -123,3 +124,13 @@ uintptr_t task_user_stack_push(Task *task, const void *value, size_t size);
 uintptr_t task_user_stack_push_long(Task *task, long value);
 
 uintptr_t task_user_stack_push_ptr(Task *task, void *ptr);
+
+void task_go(Task *task);
+
+JResult task_sleep(Task *task, int timeout);
+
+JResult task_wait(int task_id, int *exit_value);
+
+JResult task_block(Task *task, Blocker &blocker, Timeout timeout);
+
+void task_dump(Task *task);
