@@ -263,3 +263,30 @@ void task_clear_userspace(Task *task)
     task->user_stack = (void *)0xff000000;
     task_switch_address_space(scheduler_running(), parent_address_space);
 }
+
+void task_iterate(void *target, TaskIterateCallback callback)
+{
+    InterruptsRetainer retainer;
+
+    if (!_tasks)
+    {
+        return;
+    }
+
+    _tasks->foreach([&](auto *task) { callback(target, task); return Iteration::CONTINUE; });
+
+}
+
+Task *task_by_id(int id)
+{
+    for (auto *task : *_tasks)
+    {
+        if (task->id == id)
+        {
+            return task;
+        }
+    }
+
+    return nullptr;
+}
+
