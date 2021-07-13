@@ -10,7 +10,7 @@
 #include "system/interrupts/Interupts.h"
 #include "system/tasking/Task-Memory.h"
 
-static bool will_i_kill_if_i_allocate_that(Task *task, size_t size)
+static bool will_i_be_kill_if_i_allocate_that(Task *task, size_t size)
 {
     auto usage = task_memory_usage(task);
 
@@ -26,7 +26,7 @@ static bool will_i_kill_if_i_allocate_that(Task *task, size_t size)
 
 static void kill_me_if_too_greedy(Task *task, size_t size)
 {
-    if (will_i_kill_if_i_allocate_that(task, size))
+    if (will_i_be_kill_if_i_allocate_that(task, size))
     {
         task->handles().write(2, "(ulimit reached)\n", 17);
         task->cancel(PROCESS_FAILURE);
@@ -41,7 +41,7 @@ MemoryMapping *task_memory_mapping_create(Task *task, MemoryObject *memory_objec
 
     memory_mapping->object = memory_object_ref(memory_object);
     memory_mapping->address = Arch::virtual_alloc(task->address_space, memory_object->range(), MEMORY_USER).base();
-    memory_mapping->size = memory_object->range();
+    memory_mapping->size = memory_object->range().size();
 
     task->memory_mapping->push_back(memory_mapping);
 
@@ -65,7 +65,7 @@ MemoryMapping *task_memory_mapping_create_at(Task *task, MemoryObject *memory_ob
     return memory_mapping;
 }
 
-void task_memory_mapping_destry(Task *task, MemoryMapping *memory_mapping)
+void task_memory_mapping_destroy(Task *task, MemoryMapping *memory_mapping)
 {
     InterruptsRetainer retainer;
 
@@ -103,11 +103,12 @@ bool task_memory_mapping_colides(Task *task, uintptr_t address, size_t size)
     return false;
 }
 
+
 JResult task_memory_alloc(Task *task, size_t size, uintptr_t *out_address)
 {
     kill_me_if_too_greedy(task, size);
 
-    auto memory_object = memory_object_create(task, memory_object);
+    auto memory_object = memory_object_create(size);
 
     auto memory_mapping = task_memory_mapping_create(task, memory_object);
 
@@ -191,6 +192,17 @@ JResult task_memory_get_handle(Task *task, uintptr_t address, int *out_handle)
 
     *out_handle = memory_mapping->object->id;
     return SUCCESS;
+}
+
+Arch::AddressSpace *task_switch_address_space(Task *task, Arch::AddressSpace *address_space)
+{
+    auto *old_address_space = task->address_space;
+
+    task->address_space = address_space;
+
+    Arch::address_space_switch(address_space);
+
+    return old_address_space;
 }
 
 size_t task_memory_usage(Task *task)
