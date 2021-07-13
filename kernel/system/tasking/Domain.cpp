@@ -99,7 +99,7 @@ ResultOr<RefPtr<FsHandle>> Domain::open(IO::Path path, JOpenFlag flags)
         return ERR_NOT_A_DIRECTORY;
     }
 
-    if ((flags & J_OPEN_SOCKET) && node->type() != J_FILE_TYPE_SOCKET)
+    if ((flags & J_OPEN_SOCKET) && node->type() != JJ_FILE_TYPE_SOCKET)
     {
         return ERR_NOT_A_SOCKET;
     }
@@ -153,7 +153,6 @@ JResult Domain::mkdir(IO::Path path)
 {
     if (path.length() == 0)
     {
-        // We are trying to create /
         return ERR_FILE_EXISTS;
     }
 
@@ -220,6 +219,57 @@ JResult Domain::unlink(IO::Path path)
     parent->acquire(scheduler_running_id());
     auto result = parent->unlink(path.basename());
     parent->release(scheduler_running_id());
+
+    return result;
+}
+
+JResult Domain::rename(IO::Path old_path, IO::Path new_path)
+{
+    auto old_parent = find(old_path.dirpath());
+    auto new_parent = find(new_path.dirpath());
+
+    if (!old_parent || !new_parent)
+    {
+        return ERR_NO_SUCH_FILE_OR_DIRECTORY;
+    }
+
+    if (old_parent->type() != J_FILE_TYPE_DIRECTORY ||
+        new_parent->type() != J_FILE_TYPE_DIRECTORY)
+    {
+        return ERR_NOT_A_DIRECTORY;
+    }
+
+    new_parent->acquire(scheduler_running_id());
+
+    if (old_parent != new_parent)
+    {
+        old_parent->acquire(scheduler_running_id());
+    }
+
+    auto child = old_parent->find(old_path.basename());
+
+    auto result = SUCCESS;
+
+    if (child)
+    {
+        result = new_parent->link(new_path.basename(), child);
+
+        if (result == SUCCESS)
+        {
+            result = old_parent->unlink(old_path.basename());
+        }
+    }
+    else
+    {
+        result = ERR_NO_SUCH_FILE_OR_DIRECTORY;
+    }
+
+    if (old_parent != new_parent)
+    {
+        old_parent->release(scheduler_running_id());
+    }
+
+    new_parent->release(scheduler_running_id());
 
     return result;
 }
