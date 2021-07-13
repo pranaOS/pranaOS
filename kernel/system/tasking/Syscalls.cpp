@@ -18,7 +18,7 @@
 #include "system/tasking/Task-Launchpad.h"
 #include "system/tasking/Task-Memory.h"
 
-typedef HjResult (*SyscallHandler)(uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t);
+typedef JResult (*SyscallHandler)(uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t);
 
 bool syscall_validate_ptr(uintptr_t ptr, size_t size)
 {
@@ -85,4 +85,39 @@ static Launchpad copy_launchpad(Launchpad *launchpad)
     launchpad_copy.env_size = launchpad->env_size;
 
     return launchpad_copy;
+}
+
+static void free_launchpad(Launchpad *launchpad)
+{
+    free(launchpad->en);
+
+    for (int i = 0; i < launchpad->argc; i++)
+    {
+        free(launchpad->argv[i].buffer);
+    }
+}
+
+JResult J_process_launch(Launchpad *launchpad, int *pid)
+{
+    if (!valid_launchpad(launchpad) ||
+        !syscall_validate_ptr((uintptr_t)pid, sizeof(int)))
+    {
+        return ERR_BAD_ADDRESS;
+    }
+
+    auto launchpad_copy = copy_launchpad(launchpad);
+
+    launchpad_copy.flags |= TASK_USER;
+
+    JResult result = task_launch(scheduler_running(), &launchpad_copy, pid);
+
+    free_launchpad(&launchpad_copy);
+
+    return result;
+}
+
+
+JResult J_process_clone(int *, TaskFlags)
+{
+    return ERR_NOT_IMPLEMENTED;
 }
