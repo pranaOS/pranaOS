@@ -121,3 +121,30 @@ JResult J_process_clone(int *, TaskFlags)
 {
     return ERR_NOT_IMPLEMENTED;
 }
+
+JResult J_process_exec(Launchpad *launchpad)
+{
+    if (!valid_launchpad(launchpad))
+    {
+        return ERR_BAD_ADDRESS;
+    }
+
+    auto launchpad_copy = copy_launchpad(launchpad);
+
+    JResult result = task_exec(scheduler_running(), &launchpad_copy);
+
+    free_launchpad(&launchpad_copy);
+
+    return result;
+}
+
+JResult J_process_exit(int exit_code)
+{
+    if (exit_code != PROCESS_SUCCESS)
+    {
+        Kernel::logln("Process terminated with error code {}!", exit_code);
+        Arch::backtrace();
+    }
+
+    return scheduler_running()->cancel(exit_code);
+}
