@@ -64,3 +64,14 @@ MemoryMapping *task_memory_mapping_create_at(Task *task, MemoryObject *memory_ob
 
     return memory_mapping;
 }
+
+void task_memory_mapping_destry(Task *task, MemoryMapping *memory_mapping)
+{
+    InterruptsRetainer retainer;
+
+    Arch::virtual_free(task->address_space, (MemoryRange){memory_mapping->address, memory_mapping->size});
+    memory_object_deref(memory_mapping->object);
+
+    task->memory_mapping->remove(memory_mapping);
+    free(memory_mapping);
+}
