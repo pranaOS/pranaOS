@@ -40,3 +40,39 @@ JResult Handles::add_at(RefPtr<FsHandle> handle, int index)
     _handles[index] = handle;
     return SUCCESS;
 }
+
+bool Handle::is_valid_handle(int handle)
+{
+    return handle >= 0 && handle < PROCESS_HANDLE_COUNT &&
+            _handles[handle] != nullptr;
+}
+
+JResult Handles::remove(int handle_index)
+{
+    LockHolder holder(_lock);
+
+    if (!is_valid_handle(handle_index))
+    {
+        Kernel::logln("Got a bad handle {} from task {}", handle_index, scheduler_running_id());
+        return ERR_BAD_HANDLE;
+    }
+
+    _handles[handle_index] = nullptr;
+
+    return SUCCESS;
+}
+
+RefPtr<FsHandle> Handles::acquire(int handle_index)
+{
+    LockHolder holder(_lock);
+
+    if (!is_valid_handle(handle_index))
+    {
+        Kernel::logln("Got a bad handle {} from task {}", handle_index, scheduler_running_id());
+        return nullptr;
+    }
+
+    _handles[handle_index]->acquire(scheduler_running_id());
+    return _handles[handle_index];
+
+}
