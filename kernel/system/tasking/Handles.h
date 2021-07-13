@@ -6,8 +6,8 @@
 
 #pragma once
 
-// includes
 #include <libio/Path.h>
+
 #include "system/node/Handle.h"
 
 struct Handles
@@ -59,4 +59,15 @@ public:
     JResult stat(int handle_index, JStat *stat);
 
     ResultOr<int> accept(int handle_index);
+
+    JResult duplex(
+            RefPtr<FsNode> node,
+            int *server, JOpenFlag server_flags,
+            int *client, JOpenFlag client_flags);
+
+    JResult term(int *server, int *client);
+
+    JResult pipe(int *reader, int *writer);
+
+    JResult pass(Handles &handles, int source, int destination);
 };
