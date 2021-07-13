@@ -183,7 +183,7 @@ Task *task_clone(Task *parent, uintptr_t sp, uintptr_t ip, TaskFlags flags)
     {
         task->_domain = parent->_domain;
     }
-    
+
     for (int i = 0; i < PROCESS_HANDLE_COUNT; i++)
     {
         parent->handles().pass(task->handles(), i, i);
@@ -221,4 +221,45 @@ Task *task_clone(Task *parent, uintptr_t sp, uintptr_t ip, TaskFlags flags)
     task_go(task);
 
     return task;
+}
+
+void task_destroy(Task *task)
+{
+    interrupts_retain();
+
+    task->state(TASK_STATE_NONE);
+
+    interrupts_release();
+
+    while (task->memory_mapping->any())
+    {
+        MemoryMapping *mapping = task->memory_mapping->peek();
+        task_memory_mapping_destroy(task, mapping);
+    }
+
+    delete task->memory_mapping;
+
+    memory_free(task->address_space, MemoryRange{(uintptr_t)task->kernel_stack, PROCESS_STACK_SIZE});
+
+    if (task->address_space != Arch::kernel_address_space())
+    {
+        Arch::address_space_destroy(task->address_space);
+    }
+
+    delete task;
+}
+
+void task_clear_userspace(Task *task)
+{
+    while (task->memory_mapping->any())
+    {
+        MemoryMapping *mapping = task->memory_mapping->peek();
+        task_memory_mapping_destroy(task, mapping);
+    }
+
+    auto *parent_address_space = task_switch_address_space(scheduler_running(), task->address_space);
+    task_memory_map(task, 0xff000000, PROCESS_STACK_SIZE, MEMORY_CLEAR | MEMORY_USER);
+    task->user_stack_pointer = 0xff000000 + PROCESS_STACK_SIZE;
+    task->user_stack = (void *)0xff000000;
+    task_switch_address_space(scheduler_running(), parent_address_space);
 }
