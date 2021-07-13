@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, Krisna Pranav, Andrew-stew
+ * Copyright (c) 2021, Krisna Pranav, Andrew-stew, nuke123-sudo
  *
  * SPDX-License-Identifier: BSD-2-Clause
 */
@@ -208,3 +208,145 @@ ResultOr<size_t> Handles::read(int handle_index, void *buffer, size_t size)
 
     return result_or_read;
 }
+
+ResultOr<size_t> Handles::write(int handle_index, const void *buffer, size_t size)
+{
+    auto handle = acquire(handle_index);
+
+    if (!handle)
+    {
+        return ERR_BAD_HANDLE;
+    }
+
+    auto result_or_written = handle->write(buffer, size);
+
+    release(handle_index);
+
+    return result_or_written;
+}
+
+ResultOr<ssize64_t> Handles::seek(int handle_index, IO::SeekFrom from)
+{
+    auto handle = acquire(handle_index);
+
+    if (!handle)
+    {
+        return ERR_BAD_HANDLE;
+    }
+
+    auto seek_result = handle->seek(from);
+
+    release(handle_index);
+
+    return seek_result;
+}
+
+JResult Handles::call(int handle_index, IOCall request, void *args)
+{
+    auto handle = acquire(handle_index);
+
+    if (!handle)
+    {
+        return ERR_BAD_HANDLE;
+    }
+
+    auto result = handle->call(request, args);
+
+    release(handle_index);
+
+    return result;
+}
+
+JResult Handles::stat(int handle_index, JStat *stat)
+{
+    auto handle = acquire(handle_index);
+
+    if (!handle)
+    {
+        return ERR_BAD_HANDLE;
+    }
+
+    auto result = handle->stat(stat);
+
+    release(handle_index);
+
+    return result;
+}
+
+ResultOr<int> Handles::accept(int socket_handle_index)
+{
+    auto socket_handle = acquire(socket_handle_index);
+
+    if (socket_handle == nullptr)
+    {
+        return ERR_BAD_HANDLE;
+    }
+
+    auto accept_result = socket_handle->accept();
+
+    if (!accept_result.success())
+    {
+        release(socket_handle_index);
+
+        return accept_result.result();
+    }
+
+    auto add_result = add(accept_result.unwrap());
+
+    release(socket_handle_index);
+
+    return add_result;
+}
+
+JResult Handles::duplex(
+    RefPtr<FsNode> node,
+    int *server,
+    JOpenFlag server_flags,
+    int *client,
+    JOpenFlag client_flags)
+{
+    *server = HANDLE_INVALID_ID;
+    *client = HANDLE_INVALID_ID;
+
+    auto server_handle = make<FsHandle>(node, server_flags);
+    auto client_handle = make<FsHandle>(node, client_flags);
+
+    auto close_opened_handles = [&]() {
+        if (*server != HANDLE_INVALID_ID)
+        {
+            remove(*server);
+        }
+
+        if (*client != HANDLE_INVALID_ID)
+        {
+            remove(*client);
+        }
+    };
+
+    auto result_or_server = add(server_handle);
+
+    if (!result_or_server.success())
+    {
+        close_opened_handles();
+        return result_or_server.result();
+    }
+    else
+    {
+        *server = result_or_server.unwrap();
+    }
+
+    auto result_or_client = add(client_handle);
+
+    if (!result_or_client.success())
+    {
+        close_opened_handles();
+        return result_or_client.result();
+    }
+    else
+    {
+        *client = result_or_client.unwrap();
+    }
+
+    return SUCCESS;
+}
+
