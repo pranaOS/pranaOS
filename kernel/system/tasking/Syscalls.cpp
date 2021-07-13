@@ -63,3 +63,26 @@ static bool validate_launchpad_arguments(Launchpad *launchpad)
 
     return true;
 }
+
+static bool valid_launchpad(Launchpad *launchpad)
+{
+    return syscall_validate_ptr((uintptr_t)launchpad, sizeof(Launchpad)) &&
+           validate_launchpad_arguments(launchpad) &&
+           syscall_validate_ptr((uintptr_t)launchpad->env, launchpad->env_size);
+}
+
+static Launchpad copy_launchpad(Launchpad *launchpad)
+{
+    Launchpad launchpad_copy = *launchpad;
+
+    for (int i = 0; i < launchpad->argc; i++)
+    {
+        launchpad_copy.argv[i].buffer = strdup(launchpad->argv[i].buffer);
+        launchpad_copy.argv[i].size = launchpad->argv[i].size;
+    }
+
+    launchpad_copy.env = strdup(launchpad->env);
+    launchpad_copy.env_size = launchpad->env_size;
+
+    return launchpad_copy;
+}
