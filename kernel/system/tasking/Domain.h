@@ -11,7 +11,6 @@
 #include "system/node/Handle.h"
 #include "system/node/Node.h"
 
-
 struct Domain
 {
 private:
@@ -27,6 +26,22 @@ public:
     ~Domain();
 
     Domain &operator=(const Domain &other);
-    
 
-}
+    RefPtr<FsNode> find(IO::Path path);
+
+    ResultOr<RefPtr<FsHandle>> open(IO::Path path, HjOpenFlag flags);
+
+    ResultOr<RefPtr<FsHandle>> connect(IO::Path path);
+
+    JResult link(IO::Path path, RefPtr<FsNode> node);
+
+    JResult unlink(IO::Path path);
+
+    JResult rename(IO::Path old_path, IO::Path new_path);
+
+    JResult mkdir(IO::Path path);
+
+    JResult mkpipe(IO::Path path);
+
+    JResult mklink(IO::Path old_path, IO::Path new_path);
+};
