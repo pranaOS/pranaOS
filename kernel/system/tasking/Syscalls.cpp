@@ -234,3 +234,65 @@ JResult J_memory_get_handle(uintptr_t address, int *out_handle)
 
     return task_memory_get_handle(scheduler_running(), address, out_handle);
 }
+
+JResult hj_filesystem_mkdir(const char *raw_path, size_t size)
+{
+    if (!syscall_validate_ptr((uintptr_t)raw_path, size))
+    {
+        return ERR_BAD_ADDRESS;
+    }
+
+    auto path = IO::Path::parse(raw_path, size).normalized();
+
+    auto &domain = scheduler_running()->domain();
+
+    return domain.mkdir(path);
+}
+
+JResult hj_filesystem_mkpipe(const char *raw_path, size_t size)
+{
+    if (!syscall_validate_ptr((uintptr_t)raw_path, size))
+    {
+        return ERR_BAD_ADDRESS;
+    }
+
+    auto path = IO::Path::parse(raw_path, size).normalized();
+
+    auto &domain = scheduler_running()->domain();
+
+    return domain.mkpipe(path);
+}
+
+JResult hj_filesystem_link(const char *raw_old_path, size_t old_size,
+                            const char *raw_new_path, size_t new_size)
+{
+    if (!syscall_validate_ptr((uintptr_t)raw_old_path, old_size) &&
+        !syscall_validate_ptr((uintptr_t)raw_new_path, new_size))
+    {
+        return ERR_BAD_ADDRESS;
+    }
+
+    IO::Path old_path = IO::Path::parse(raw_old_path, old_size).normalized();
+
+    IO::Path new_path = IO::Path::parse(raw_new_path, new_size).normalized();
+
+    auto &domain = scheduler_running()->domain();
+
+    HjResult result = domain.mklink(old_path, new_path);
+
+    return result;
+}
+
+JResult hj_filesystem_unlink(const char *raw_path, size_t size)
+{
+    if (!syscall_validate_ptr((uintptr_t)raw_path, size))
+    {
+        return ERR_BAD_ADDRESS;
+    }
+
+    auto path = IO::Path::parse(raw_path, size).normalized();
+
+    auto &domain = scheduler_running()->domain();
+
+    return domain.unlink(path);
+}
