@@ -212,3 +212,25 @@ JResult J_memory_free(uintptr_t address)
 {
     return task_memory_free(scheduler_running(), address);
 }
+
+JResult J_memory_include(int handle, uintptr_t *out_address, size_t *out_size)
+{
+
+    if (!syscall_validate_ptr((uintptr_t)out_address, sizeof(uintptr_t)) ||
+        !syscall_validate_ptr((uintptr_t)out_size, sizeof(size_t)))
+    {
+        return ERR_BAD_ADDRESS;
+    }
+
+    return task_memory_include(scheduler_running(), handle, out_address, out_size);
+}
+
+JResult J_memory_get_handle(uintptr_t address, int *out_handle)
+{
+    if (!syscall_validate_ptr((uintptr_t)out_handle, sizeof(int)))
+    {
+        return ERR_BAD_ADDRESS;
+    }
+
+    return task_memory_get_handle(scheduler_running(), address, out_handle);
+}
