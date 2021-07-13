@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, evilbat831
+ * Copyright (c) 2021, evilbat831, krishpranav
  *
  * SPDX-License-Identifier: BSD-2-Clause
 */
@@ -35,4 +35,12 @@ bool partition_load_mbr(RefPtr<Device> disk, const MBR &mbr)
     }
 
     return true;
+}
+
+bool partition_load_gpt(RefPtr<Device> disk, const MBR &mbr)
+{
+    UNUSED(disk);
+    UNUSED(mbr);
+
+    return false;
 }
