@@ -47,3 +47,20 @@ MemoryMapping *task_memory_mapping_create(Task *task, MemoryObject *memory_objec
 
     return memory_mapping;
 }
+
+MemoryMapping *task_memory_mapping_create_at(Task *task, MemoryObject *memory_object, uintptr_t address)
+{
+    InterruptsRetainer retainer;
+
+    auto memory_mapping = CREATE(MemoryMapping);
+
+    memory_mapping->object = memory_object_ref(memory_object);
+    memory_mapping->address = address;
+    memory_mapping->size = memory_object->range().size();
+
+    assert(SUCCESS == Arch::virtual_map(task->address_space, memory_object->range(), address, MEMORY_USER));
+
+    task->memory_mapping->push_back(memory_mapping);
+
+    return memory_mapping;
+}
