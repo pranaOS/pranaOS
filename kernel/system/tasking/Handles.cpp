@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, Krisna Pranav
+ * Copyright (c) 2021, Krisna Pranav, Andrew-stew
  *
  * SPDX-License-Identifier: BSD-2-Clause
 */
@@ -131,4 +131,80 @@ JResult Handles::reopen(int handle, int *reopened)
     *reopened = TRY(add(reopened_handle));
 
     return SUCCESS;
+}
+
+JResult Handles::copy(int source, int destination)
+{
+    auto source_handle = acquire(source);
+
+    if (!source_handle)
+    {
+        return ERR_BAD_HANDLE;
+    }
+
+    auto copy_handle = make<FsHandle>(*source_handle);
+
+    return add_at(copy_handle, destination);
+}
+
+JResult Handles::poll(HandlePoll *handles, size_t count, Timeout timeout)
+{
+    Vector<Selected> selected;
+
+    auto release_handles = [&]() {
+        for (size_t i = 0; i < selected.count(); i++)
+        {
+            handles[i].result = selected[i].result;
+            release(selected[i].handle_index);
+        }
+    };
+
+    for (size_t i = 0; i < count; i++)
+    {
+        auto handle = acquire(handles[i].handle);
+
+        if (!handle)
+        {
+            release_handles();
+            return ERR_BAD_HANDLE;
+        }
+
+        selected.push_back({
+            handles[i].handle,
+            handle,
+            handles[i].events,
+            0,
+        });
+    }
+
+    {
+        BlockerSelect blocker{selected};
+        JResult block_result = task_block(scheduler_running(), blocker, timeout);
+
+        if (block_result != SUCCESS)
+        {
+            release_handles();
+            return block_result;
+        }
+    }
+
+    release_handles();
+
+    return SUCCESS;
+}
+
+ResultOr<size_t> Handles::read(int handle_index, void *buffer, size_t size)
+{
+    auto handle = acquire(handle_index);
+
+    if (!handle)
+    {
+        return ERR_BAD_HANDLE;
+    }
+
+    auto result_or_read = handle->read(buffer, size);
+
+    release(handle_index);
+
+    return result_or_read;
 }
