@@ -37,4 +37,29 @@ struct Task
     uintptr_t user_stack_pointer;
     void *user_stack;
 
+    uintptr_t kernel_stack_pointer;
+    void *kernel_stack;
+
+    TaskEntryPoint entry_point;
+    char fpu_registers[512];
+
+    List<MemoryMapping *> *memory_mapping;
+    Arch::AddressSpace *address_space;
+
+    int exit_value = 0;
+
+    Handles _handles;
+    Domain _domain;
+
+    Handles &handles() { return _handles; }
+    Domain &domain() { return _domain; }
+
+    TaskState state();
+
+    void state(TaskState state);
+
+    JResult cancel(int exit_value);
+
+
+
 };
