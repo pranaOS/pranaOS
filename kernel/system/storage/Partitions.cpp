@@ -42,8 +42,6 @@ bool partition_load_gpt(RefPtr<Device> disk, const MBR &mbr)
     UNUSED(disk);
     UNUSED(mbr);
 
-    // TODO: GPT partition support
-
     return false;
 }
 
