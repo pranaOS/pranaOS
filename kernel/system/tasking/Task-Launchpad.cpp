@@ -128,3 +128,45 @@ void task_pass_handles(Task *parent_task, Task *child_task, Launchpad *launchpad
         }
     }
 }
+
+JResult task_launch(Task *parent_task, Launchpad *launchpad, int *pid)
+{
+    assert(parent_task == scheduler_running());
+
+    *pid = -1;
+
+    CLEANUP(stream_cleanup)
+    Stream *elf_file = stream_open(launchpad->executable, J_OPEN_READ);
+
+    if (handle_has_error(elf_file))
+    {
+        Kernel::logln("Failed to open ELF file {}: {}!", launchpad->executable, handle_error_string(elf_file));
+        return handle_get_error(elf_file);
+    }
+
+    interrupts_retain();
+    Task *task = task_create(parent_task, launchpad->name, launchpad->flags);
+    interrupts_release();
+
+#ifdef __x86_64__
+    JResult result = ELFLoader<ELF64>::load(task, elf_file);
+#else
+    JResult result = ELFLoader<ELF32>::load(task, elf_file);
+#endif
+
+    if (result != SUCCESS)
+    {
+        task_destroy(task);
+        return result;
+    }
+
+    task_pass_argc_argv_env(task, launchpad);
+
+    task_pass_handles(parent_task, task, launchpad);
+
+    *pid = task->id;
+
+    task_go(task);
+
+    return SUCCESS;
+}
