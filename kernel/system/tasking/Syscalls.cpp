@@ -398,3 +398,52 @@ JResult J_create_term(int *server_handle, int *client_handle)
 
     return handles.term(server_handle, client_handle);
 }
+
+JResult J_handle_open(int *handle,
+                        const char *raw_path, size_t size,
+                        JOpenFlag flags)
+{
+    if (!syscall_validate_ptr((uintptr_t)handle, sizeof(int)) ||
+        !syscall_validate_ptr((uintptr_t)raw_path, size))
+    {
+        return ERR_BAD_ADDRESS;
+    }
+
+    auto path = IO::Path::parse(raw_path, size).normalized();
+
+    auto &handles = scheduler_running()->handles();
+
+    auto &domain = scheduler_running()->domain();
+
+    auto result_or_handle_index = handles.open(domain, path, flags);
+
+    if (result_or_handle_index.success())
+    {
+        *handle = result_or_handle_index.unwrap();
+        return SUCCESS;
+    }
+    else
+    {
+        *handle = HANDLE_INVALID_ID;
+        return result_or_handle_index.result();
+    }
+}
+
+JResult J_handle_close(int handle)
+{
+    auto &handles = scheduler_running()->handles();
+
+    return handles.close(handle);
+}
+
+JResult J_handle_reopen(int handle, int *reopened)
+{
+    if (!syscall_validate_ptr((uintptr_t)reopened, sizeof(int)))
+    {
+        return ERR_BAD_ADDRESS;
+    }
+
+    auto &handles = scheduler_running()->handles();
+
+    return handles.reopen(handle, reopened);
+}
