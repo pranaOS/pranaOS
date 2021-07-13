@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, evilbat831, krishpranav
+ * Copyright (c) 2021, evilbat831, Krisna Pranav
  *
  * SPDX-License-Identifier: BSD-2-Clause
 */

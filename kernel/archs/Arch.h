@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, krishpranav, johnsmith5c12
+ * Copyright (c) 2021, Krisna Pranav, johnsmith5c12
  *
  * SPDX-License-Identifier: BSD-2-Clause
 */
