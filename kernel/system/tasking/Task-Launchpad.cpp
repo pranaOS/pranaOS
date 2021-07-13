@@ -17,12 +17,12 @@
 #include "system/tasking/Task.h"
 
 template <typename TELFFormat>
-struct ElFLoader
+struct ELFLoader
 {
     using Header = TELFFormat::Header;
     using Section = TELFFormat::Section;
     using Program = TELFFormat::Program;
-    using Symbols = TELFFormat::Symbols;
+    using Symbole = TELFFormat::Symbole;
 
     static JResult load_program(Task *task, Stream *elf_file, Program *program_header)
     {
@@ -62,4 +62,31 @@ struct ElFLoader
         }
     }
 
+    static JResult load(Task *task, Stream *elf_file)
+    {
+        Header elf_header;
+        size_t elf_header_size = stream_read(elf_file, &elf_header, sizeof(Header));
+
+        if (elf_header_size != sizeof(Header) || !elf_header.valid())
+        {
+            return ERR_EXEC_FORMAT_ERROR;
+        }
+
+        task_set_entry(task, reinterpret_cast<TaskEntryPoint>(elf_header.entry));
+
+        for (int i = 0; i < elf_header.phnum; i++)
+        {
+            Program elf_program_header;
+            stream_seek(elf_file, IO::SeekFrom::start(elf_header.phoff + elf_header.phentsize * i));
+
+            if (stream_read(elf_file, &elf_program_header, sizeof(Program)) != sizeof(Program))
+            {
+                return ERR_EXEC_FORMAT_ERROR;
+            }
+
+            TRY(load_program(task, elf_file, &elf_program_header));
+        }
+
+        return SUCCESS;
+    }
 };
