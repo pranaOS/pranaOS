@@ -90,8 +90,45 @@ JResult Handles::release(int handle_index)
     return SUCCESS;
 }
 
-ResultOr<int> Handles::open(Domain &domain, IO::Path &path, HjOpenFlag flags)
+ResultOr<int> Handles::open(Domain &domain, IO::Path &path, JOpenFlag flags)
 {
     auto handle = TRY(domain.open(path, flags));
     return add(handle);
+}
+
+ResultOr<int> Handles::connect(Domain &domain, IO::Path &path)
+{
+    auto handle = TRY(domain.connect(path));
+    return add(handle);
+}
+
+JResult Handles::close(int handle_index)
+{
+    return remove(handle_index);
+}
+
+void Handles::close_all()
+{
+    LockHolder holder(_lock);
+
+    for (int i = 0; i < PROCESS_HANDLE_COUNT; i++)
+    {
+        _handles[i] = nullptr;
+    }
+}
+
+JResult Handles::reopen(int handle, int *reopened)
+{
+    auto original_handle = acquire(handle);
+
+    if (original_handle == nullptr)
+    {
+        return ERR_BAD_HANDLE;
+    }
+
+    auto reopened_handle = make<FsHandle>(*original_handle);
+
+    *reopened = TRY(add(reopened_handle));
+
+    return SUCCESS;
 }
