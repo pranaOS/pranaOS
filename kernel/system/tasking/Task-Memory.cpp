@@ -75,3 +75,30 @@ void task_memory_mapping_destry(Task *task, MemoryMapping *memory_mapping)
     task->memory_mapping->remove(memory_mapping);
     free(memory_mapping);
 }
+
+MemoryMapping *task_memory_mapping_by_address(Task *task, uintptr_t address)
+{
+    for (auto *memory_mapping : *task->memory_mapping)
+    {
+        if (memory_mapping->address == address)
+        {
+            return memory_mapping;
+        }
+    }
+
+    return nullptr;
+}
+
+bool task_memory_mapping_colides(Task *task, uintptr_t address, size_t size)
+{
+    for (auto *memory_mapping : *task->memory_mapping)
+    {
+        if (address < memory_mapping->address + memory_mapping->size &&
+            address + size > memory_mapping->address)
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
