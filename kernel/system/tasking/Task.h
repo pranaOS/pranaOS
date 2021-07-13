@@ -60,6 +60,25 @@ struct Task
 
     JResult cancel(int exit_value);
 
+    void try_unblock()
+    {
+        if (_blocker->can_unblock(*this))
+        {
+            _blocker->unblock(*this);
+            state(TASK_STATE_RUNNING);
+        }
+        else if (_blocker->has_timeout())
+        {
+            _blocker->timeout(*this);
+            state(TASK_STATE_RUNNING);
+        }
+        else if (_blocker->is_interrupted())
+        {
+            state(TASK_STATE_RUNNING;)
+        }
+
+    }
+
 
 
 };
