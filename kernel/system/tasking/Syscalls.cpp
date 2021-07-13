@@ -187,3 +187,28 @@ JResult J_process_wait(int tid, int *user_exit_value)
 
     return result;
 }
+
+JResult J_memory_alloc(size_t size, uintptr_t *out_address)
+{
+    if (!syscall_validate_ptr((uintptr_t)out_address, sizeof(uintptr_t)))
+    {
+        return ERR_BAD_ADDRESS;
+    }
+
+    return task_memory_alloc(scheduler_running(), size, out_address);
+}
+
+JResult J_memory_map(uintptr_t address, size_t size, int flags)
+{
+    if (!syscall_validate_ptr(address, size))
+    {
+        return ERR_BAD_ADDRESS;
+    }
+
+    return task_memory_map(scheduler_running(), address, size, flags);
+}
+
+JResult J_memory_free(uintptr_t address)
+{
+    return task_memory_free(scheduler_running(), address);
+}
