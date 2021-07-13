@@ -61,3 +61,58 @@ RefPtr<FsNode> Domain::find(IO::Path path)
 
     return current;
 }
+
+ResultOr<RefPtr<FsHandle>> Domain::open(IO::Path path, JOpenFlag flags)
+{
+    bool should_create_if_not_present = (flags & J_OPEN_CREATE) == J_OPEN_CREATE;
+
+    auto node = find(path);
+
+    if (!node && should_create_if_not_present)
+    {
+        auto parent = find(path.dirpath());
+
+        if (parent)
+        {
+            if (flags & J_OPEN_SOCKET)
+            {
+                node = make<FsSocket>();
+            }
+            else
+            {
+                node = make<FsFile>();
+            }
+
+            parent->acquire(scheduler_running_id());
+            parent->link(path.basename(), node);
+            parent->release(scheduler_running_id());
+        }
+    }
+
+    if (!node)
+    {
+        return ERR_NO_SUCH_FILE_OR_DIRECTORY;
+    }
+
+    if ((flags & J_OPEN_DIRECTORY) && node->type() != J_FILE_TYPE_DIRECTORY)
+    {
+        return ERR_NOT_A_DIRECTORY;
+    }
+
+    if ((flags & J_OPEN_SOCKET) && node->type() != J_FILE_TYPE_SOCKET)
+    {
+        return ERR_NOT_A_SOCKET;
+    }
+
+    bool is_node_stream = node->type() == J_FILE_TYPE_PIPE ||
+                          node->type() == J_FILE_TYPE_REGULAR ||
+                          node->type() == J_FILE_TYPE_DEVICE ||
+                          node->type() == J_FILE_TYPE_TERMINAL;
+
+    if ((flags & J_OPEN_STREAM) && !(is_node_stream))
+    {
+        return ERR_NOT_A_STREAM;
+    }
+
+    return make<FsHandle>(node, flags);
+}
