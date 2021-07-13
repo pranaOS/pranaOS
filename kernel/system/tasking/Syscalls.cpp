@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, Krisna Pranav, Aspect-Kraken, Alex5xt
+ * Copyright (c) 2021, Krisna Pranav, Aspect-Kraken, Alex5xt, evilbat831
  *
  * SPDX-License-Identifier: BSD-2-Clause
 */
@@ -373,4 +373,28 @@ JResult J_system_shutdown()
 {
     Arch::shutdown();
     ASSERT_NOT_REACHED();
+}
+
+JResult J_create_pipe(int *reader_handle, int *writer_handle)
+{
+    if (!syscall_validate_ptr((uintptr_t)reader_handle, sizeof(int)) ||
+        !syscall_validate_ptr((uintptr_t)writer_handle, sizeof(int)))
+    {
+        return ERR_BAD_ADDRESS;
+    }
+
+    return scheduler_running()->handles().pipe(reader_handle, writer_handle);
+}
+
+JResult J_create_term(int *server_handle, int *client_handle)
+{
+    if (!syscall_validate_ptr((uintptr_t)server_handle, sizeof(int)) ||
+        !syscall_validate_ptr((uintptr_t)client_handle, sizeof(int)))
+    {
+        return ERR_BAD_ADDRESS;
+    }
+
+    auto &handles = scheduler_running()->handles();
+
+    return handles.term(server_handle, client_handle);
 }
