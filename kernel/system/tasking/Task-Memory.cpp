@@ -102,3 +102,41 @@ bool task_memory_mapping_colides(Task *task, uintptr_t address, size_t size)
 
     return false;
 }
+
+JResult task_memory_alloc(Task *task, size_t size, uintptr_t *out_address)
+{
+    kill_me_if_too_greedy(task, size);
+
+    auto memory_object = memory_object_create(task, memory_object);
+
+    auto memory_mapping = task_memory_mapping_create(task, memory_object);
+
+    memory_object_deref(memory_object);
+
+    *out_address = memory_mapping->address;
+
+    return SUCCESS;
+}
+
+JResult task_memory_map(Task *task, uintptr_t address, size_t size, MemoryFlags flags)
+{
+    kill_me_if_too_greedy(task, size);
+
+    if (task_memory_mapping_colides(task, address, size))
+    {
+        return ERR_BAD_ADDRESS;
+    }
+
+    auto memory_object = memory_object_create(size);
+
+    task_memory_mapping_create_at(task, memory_object, address);
+
+    memory_object_deref(memory_object);
+
+    if (flags & MEMORY_CLEAR)
+    {
+        memset((void *)address, 0, size);
+    }
+
+    return SUCCESS;
+}
