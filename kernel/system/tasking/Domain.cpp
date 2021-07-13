@@ -174,10 +174,52 @@ JResult Domain::mklink(IO::Path old_path, IO::Path new_path)
         return ERR_NO_SUCH_FILE_OR_DIRECTORY;
     }
 
-    if (destination->type() == HJ_FILE_TYPE_DIRECTORY)
+    if (destination->type() == J_FILE_TYPE_DIRECTORY)
     {
         return ERR_IS_A_DIRECTORY;
     }
 
     return link(new_path, destination);
+}
+
+JResult Domain::link(IO::Path path, RefPtr<FsNode> node)
+{
+    auto parent = find(path.dirpath());
+
+    if (!parent)
+    {
+        return ERR_NO_SUCH_FILE_OR_DIRECTORY;
+    }
+
+    if (parent->type() != J_FILE_TYPE_DIRECTORY)
+    {
+        return ERR_NOT_A_DIRECTORY;
+    }
+
+    parent->acquire(scheduler_running_id());
+    auto result = parent->link(path.basename(), node);
+    parent->release(scheduler_running_id());
+
+    return result;
+}
+
+JResult Domain::unlink(IO::Path path)
+{
+    auto parent = find(path.dirpath());
+
+    if (!parent || path.length() == 0)
+    {
+        return ERR_NO_SUCH_FILE_OR_DIRECTORY;
+    }
+
+    if (parent->type() != J_FILE_TYPE_DIRECTORY)
+    {
+        return ERR_NOT_A_DIRECTORY;
+    }
+
+    parent->acquire(scheduler_running_id());
+    auto result = parent->unlink(path.basename());
+    parent->release(scheduler_running_id());
+
+    return result;
 }
