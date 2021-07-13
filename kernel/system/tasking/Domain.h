@@ -19,4 +19,14 @@ private:
 
 public:
     RefPtr<FsNode> root() { return _root; }
+
+    Domain();
+
+    Domain(const Domain &other);
+
+    ~Domain();
+
+    Domain &operator=(const Domain &other);
+    
+
 }
