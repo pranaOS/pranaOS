@@ -23,3 +23,29 @@ TaskState Task::state()
 {
     return _state;
 }
+
+void Task::state(TaskState state)
+{
+    ASSERT_INTERRUPTS_RETAINED();
+
+    scheduler_did_change_task_state(this, _state, state);
+    _state = state;
+
+    if (state == TASK_STATE_CANCELED)
+    {
+        _tasks->remove(this);
+        Kernel::finalize_task(this);
+    }
+}
+
+void Task::interrupt()
+{
+    InterruptsRetainer retainer;
+
+    _is_interrupted = true;
+
+    if (_blocker)
+    {
+        _blocker->interrupt(*this, INTERRUPTED);
+    }
+}
