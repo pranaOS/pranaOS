@@ -109,3 +109,11 @@ void task_iterate(void *target, TaskIterateCallback callback);
 Task *task_by_id(int id);
 
 int task_count();
+
+Task *task_spawn(Task *parent, const char *name, TaskEntryPoint entry, void *arg, TaskFlags flags);
+
+void task_set_entry(Task *task, TaskEntryPoint entry);
+
+void task_pass_argc_argv_env(Task *task, const char **argv, const char *env);
+
+uintptr_t task_kernel_stack_push(Task *task, const void *value, size_t size);
