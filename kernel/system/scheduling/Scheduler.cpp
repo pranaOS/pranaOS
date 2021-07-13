@@ -63,3 +63,47 @@ void scheduler_did_change_task_state(Task *task, TaskState oldstate, TaskState n
         }
     }
 }
+
+bool scheduler_is_context_switch()
+{
+    return scheduler_context_switch;
+}
+
+Task *scheduler_running()
+{
+    return running;
+}
+
+int scheduler_running_id()
+{
+    if (running == nullptr)
+    {
+        return -1;
+    }
+
+    return running->id;
+}
+
+void scheduler_yield()
+{
+    ASSERT_INTERRUPTS_NOT_RETAINED();
+    Arch::yield();
+    ASSERT_INTERRUPTS_NOT_RETAINED();
+}
+
+int scheduler_get_usage(int task_id)
+{
+    InterruptsRetainer retainer;
+
+    int count = 0;
+
+    for (int i = 0; i < SCHEDULER_RECORD_COUNT; i++)
+    {
+        if (scheduler_record[i] == task_id)
+        {
+            count++;
+        }
+    }
+
+    return (count * 100) / SCHEDULER_RECORD_COUNT;
+}
