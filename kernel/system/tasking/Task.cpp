@@ -49,3 +49,60 @@ void Task::interrupt()
         _blocker->interrupt(*this, INTERRUPTED);
     }
 }
+
+JResult Task::cancel(int exit_value)
+{
+    interrupts_retain();
+
+    if (_is_canceled)
+    {
+        interrupts_release();
+        return SUCCESS;
+    }
+
+    _is_canceled = true;
+    this->exit_value = exit_value;
+
+    if (_is_doing_syscall)
+    {
+        interrupts_release();
+        interrupt();
+        return SUCCESS;
+    }
+
+    interrupts_release();
+    kill_me_if_you_dare();
+
+    return SUCCESS;
+}
+
+void Task::kill_me_if_you_dare()
+{
+    interrupts_retain();
+
+    if (!_is_canceled)
+    {
+        interrupts_release();
+        return;
+    }
+
+    if (_flags & TASK_WAITABLE)
+    {
+        state(TASK_STATE_CANCELING);
+    }
+    else
+    {
+        state(TASK_STATE_CANCELED);
+    }
+
+    if (this == scheduler_running())
+    {
+        interrupts_release();
+        scheduler_yield();
+        ASSERT_NOT_REACHED();
+    }
+    else
+    {
+        interrupts_release();
+    }
+}
