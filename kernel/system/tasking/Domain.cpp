@@ -36,3 +36,28 @@ Domain &Domain::operator=(const Domain &other)
 
     return *this;
 }
+
+RefPtr<FsNode> Domain::find(IO::Path path)
+{
+    auto current = root();
+
+    for (size_t i = 0; i < path.length(); i++)
+    {
+        if (current && current->type() == J_FILE_TYPE_DIRECTORY)
+        {
+            auto element = path[i];
+
+            current->acquire(scheduler_running_id());
+            auto found = current->find(element);
+            current->release(scheduler_running_id());
+
+            current = found;
+        }
+        else
+        {
+            return nullptr;
+        }
+    }
+
+    return current;
+}
