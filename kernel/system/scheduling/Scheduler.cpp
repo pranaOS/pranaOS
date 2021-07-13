@@ -36,3 +36,30 @@ void scheduler_did_create_running_task(Task *task)
     running = task;
 }
 
+void scheduler_did_change_task_state(Task *task, TaskState oldstate, TaskState newstate)
+{
+    ASSERT_INTERRUPTS_RETAINED();
+
+    if (oldstate != newstate)
+    {
+        if (oldstate == TASK_STATE_RUNNING)
+        {
+            running_tasks->remove(task);
+        }
+
+        if (oldstate == TASK_STATE_BLOCKED)
+        {
+            blocked_tasks->remove(task);
+        }
+
+        if (newstate == TASK_STATE_BLOCKED)
+        {
+            blocked_tasks->push_back(task);
+        }
+
+        if (newstate == TASK_STATE_RUNNING)
+        {
+            running_tasks->push_back(task);
+        }
+    }
+}
