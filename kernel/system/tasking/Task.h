@@ -94,3 +94,18 @@ struct Task
 
     void kill_me_if_you_dare();
 };
+
+Task *task_create(Task *parent, const char *name, TaskFlags flags);
+
+Task *task_clone(Task *parent, uintptr_t sp, uintptr_t ip, TaskFlags flags);
+
+void task_destroy(Task *task);
+
+void task_clear_userspace(Task *task);
+
+typedef Iteration (*TaskIterateCallback)(void *target, Task *task);
+void task_iterate(void *target, TaskIterateCallback callback);
+
+Task *task_by_id(int id);
+
+int task_count();
