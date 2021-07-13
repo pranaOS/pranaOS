@@ -116,3 +116,51 @@ ResultOr<RefPtr<FsHandle>> Domain::open(IO::Path path, JOpenFlag flags)
 
     return make<FsHandle>(node, flags);
 }
+
+ResultOr<RefPtr<FsHandle>> Domain::connect(IO::Path path)
+{
+    auto node = find(path);
+
+    if (!node)
+    {
+        return ERR_NO_SUCH_FILE_OR_DIRECTORY;
+    }
+
+    if (node->type() != J_FILE_TYPE_SOCKET)
+    {
+        return ERR_SOCKET_OPERATION_ON_NON_SOCKET;
+    }
+
+    node->acquire(scheduler_running_id());
+    auto connection_or_result = node->connect();
+    node->release(scheduler_running_id());
+
+    if (!connection_or_result.success())
+    {
+        return connection_or_result.result();
+    }
+
+    auto connection = connection_or_result.unwrap();
+    auto connection_handle = make<FsHandle>(connection, J_OPEN_CLIENT);
+
+    BlockerConnect blocker{connection};
+    TRY(task_block(scheduler_running(), blocker, -1));
+
+    return connection_handle;
+}
+
+JResult Domain::mkdir(IO::Path path)
+{
+    if (path.length() == 0)
+    {
+        // We are trying to create /
+        return ERR_FILE_EXISTS;
+    }
+
+    return link(path, make<FsDirectory>());
+}
+
+JResult Domain::mkpipe(IO::Path path)
+{
+    return link(path, make<FsPipe>());
+}
