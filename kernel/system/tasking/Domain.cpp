@@ -164,3 +164,20 @@ JResult Domain::mkpipe(IO::Path path)
 {
     return link(path, make<FsPipe>());
 }
+
+JResult Domain::mklink(IO::Path old_path, IO::Path new_path)
+{
+    auto destination = find(old_path);
+
+    if (!destination)
+    {
+        return ERR_NO_SUCH_FILE_OR_DIRECTORY;
+    }
+
+    if (destination->type() == HJ_FILE_TYPE_DIRECTORY)
+    {
+        return ERR_IS_A_DIRECTORY;
+    }
+
+    return link(new_path, destination);
+}
