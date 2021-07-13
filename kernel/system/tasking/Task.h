@@ -117,3 +117,9 @@ void task_set_entry(Task *task, TaskEntryPoint entry);
 void task_pass_argc_argv_env(Task *task, const char **argv, const char *env);
 
 uintptr_t task_kernel_stack_push(Task *task, const void *value, size_t size);
+
+uintptr_t task_user_stack_push(Task *task, const void *value, size_t size);
+
+uintptr_t task_user_stack_push_long(Task *task, long value);
+
+uintptr_t task_user_stack_push_ptr(Task *task, void *ptr);
