@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
 */
 
-// incldues
+// includes
 #include <libutils/List.h>
 #include "archs/Arch.h"
 #include "system/interrupts/Interupts.h"
@@ -106,4 +106,28 @@ int scheduler_get_usage(int task_id)
     }
 
     return (count * 100) / SCHEDULER_RECORD_COUNT;
+}
+
+uintptr_t schedule(uintptr_t current_stack_pointer)
+{
+    scheduler_context_switch = true;
+
+    running->kernel_stack_pointer = current_stack_pointer;
+    Arch::save_context(running);
+
+    scheduler_record[system_get_tick() % SCHEDULER_RECORD_COUNT] = running->id;
+
+    blocked_tasks->foreach([](auto &task) {
+        task->try_unblock();
+        return Iteration::CONTINUE;
+    });
+
+    running = running_tasks->requeue().unwrap_or(idle);
+
+    Arch::address_space_switch(running->address_space);
+    Arch::load_context(running);
+
+    scheduler_context_switch = false;
+
+    return running->kernel_stack_pointer;
 }
