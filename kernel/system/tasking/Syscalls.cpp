@@ -36,3 +36,30 @@ JResult J_process_this(int *pid)
 
     return SUCCESS;
 }
+
+JResult J_process_name(char *name, size_t size)
+{
+    if (!syscall_validate_ptr((uintptr_t)name, size))
+    {
+        return ERR_BAD_ADDRESS;
+    }
+
+    strlcpy(name, scheduler_running()->name, size);
+
+    return SUCCESS;
+}
+
+static bool validate_launchpad_arguments(Launchpad *launchpad)
+{
+    for (int i = 0; i < launchpad->argc; i++)
+    {
+        auto &arg = launchpad->argv[i];
+
+        if (!syscall_validate_ptr((uintptr_t)arg.buffer, arg.size))
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
