@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, Krisna Pranav, Aspect-Kraken
+ * Copyright (c) 2021, Krisna Pranav, Aspect-Kraken, Alex5xt
  *
  * SPDX-License-Identifier: BSD-2-Clause
 */
@@ -313,4 +313,64 @@ JResult J_filesystem_rename(const char *raw_old_path, size_t old_size,
     auto &domain = scheduler_running()->domain();
 
     return domain.rename(old_path, new_path);
+}
+
+JResult J_system_info(SystemInfo *info)
+{
+    strncpy(info->kernel_name, "Jert", SYSTEM_INFO_FIELD_SIZE);
+
+    strncpy(info->kernel_release, __BUILD_VERSION__, SYSTEM_INFO_FIELD_SIZE);
+
+    strncpy(info->kernel_build, __BUILD_GITREF__, SYSTEM_INFO_FIELD_SIZE);
+
+    strlcpy(info->system_name, "pranaOS", SYSTEM_INFO_FIELD_SIZE);
+
+    strlcpy(info->machine, "machine", SYSTEM_INFO_FIELD_SIZE);
+
+    return SUCCESS;
+}
+
+ElapsedTime system_get_uptime();
+
+JResult J_system_status(SystemStatus *status)
+{
+    status->uptime = system_get_uptime();
+
+    status->total_ram = memory_get_total();
+    status->used_ram = memory_get_used();
+
+    status->running_tasks = task_count();
+    status->cpu_usage = 100 - scheduler_get_usage(0);
+
+    return SUCCESS;
+}
+
+JResult J_system_get_time(TimeStamp *timestamp)
+{
+    *timestamp = Arch::get_time();
+
+    return SUCCESS;
+}
+
+JResult J_system_get_ticks(uint32_t *tick)
+{
+    if (!syscall_validate_ptr((uintptr_t)tick, sizeof(uintptr_t)))
+    {
+        return ERR_BAD_ADDRESS;
+    }
+
+    *tick = system_get_tick();
+    return SUCCESS;
+}
+
+JResult J_system_reboot()
+{
+    Arch::reboot();
+    ASSERT_NOT_REACHED();
+}
+
+JResult J_system_shutdown()
+{
+    Arch::shutdown();
+    ASSERT_NOT_REACHED();
 }
