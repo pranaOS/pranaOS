@@ -140,3 +140,42 @@ JResult task_memory_map(Task *task, uintptr_t address, size_t size, MemoryFlags 
 
     return SUCCESS;
 }
+
+JResult task_memory_free(Task *task, uintptr_t address)
+{
+    auto memory_mapping = task_memory_mapping_by_address(task, address);
+
+    if (!memory_mapping)
+    {
+        return ERR_BAD_ADDRESS;
+    }
+
+    task_memory_mapping_destroy(task, memory_mapping);
+
+    return SUCCESS;
+}
+
+JResult task_memory_include(Task *task, int handle, uintptr_t *out_address, size_t *out_size)
+{
+    auto memory_object = memory_object_by_id(handle);
+
+    if (!memory_object)
+    {
+        return ERR_BAD_ADDRESS;
+    }
+
+    if (will_i_be_kill_if_i_allocate_that(task, memory_object->range().size()))
+    {
+        memory_object_deref(memory_object);
+        kill_me_if_too_greedy(task, memory_object->range().size());
+    }
+
+    auto memory_mapping = task_memory_mapping_create(task, memory_object);
+
+    memory_object_deref(memory_object);
+
+    *out_address = memory_mapping->address;
+    *out_size = memory_mapping->size;
+
+    return SUCCESS;
+}
