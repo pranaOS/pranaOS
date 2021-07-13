@@ -29,4 +29,34 @@ private:
 
     JResult release(int handle_index);
 
+public:
+    Handles() {}
+
+    ~Handles() { close_all(); }
+
+    ResultOr<int> open(Domain &domain, IO::Path &path, JOpenFlag flags);
+
+    ResultOr<int> connect(Domain &domain, IO::Path &socket_path);
+
+    JResult close(int handle_index);
+
+    void close_all();
+
+    JResult reopen(int handle, int *reopened);
+
+    JResult copy(int source, int destination);
+
+    JResult poll(HandlePoll *handles, size_t count, Timeout timeout);
+
+    ResultOr<size_t> read(int handle_index, void *buffer, size_t size);
+
+    ResultOr<size_t> write(int handle_index, const void *buffer, size_t size);
+
+    ResultOr<ssize64_t> seek(int handle_index, IO::SeekFrom from);
+
+    JResult call(int handle_index, IOCall request, void *args);
+
+    JResult stat(int handle_index, JStat *stat);
+
+    ResultOr<int> accept(int handle_index);
 };
