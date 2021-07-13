@@ -148,3 +148,42 @@ JResult J_process_exit(int exit_code)
 
     return scheduler_running()->cancel(exit_code);
 }
+
+JResult J_process_cancel(int pid)
+{
+    InterruptsRetainer retainer;
+
+    Task *task = task_by_id(pid);
+
+    if (task == nullptr)
+    {
+        return ERR_NO_SUCH_TASK;
+    }
+    else if (!(task->_flags & TASK_USER))
+    {
+        return ERR_ACCESS_DENIED;
+    }
+    else
+    {
+        return task->cancel(PROCESS_FAILURE);
+    }
+}
+
+JResult J_process_sleep(int time)
+{
+    return task_sleep(scheduler_running(), time);
+}
+
+JResult J_process_wait(int tid, int *user_exit_value)
+{
+    int exit_value;
+
+    JResult result = task_wait(tid, &exit_value);
+
+    if (syscall_validate_ptr((uintptr_t)user_exit_value, sizeof(int)))
+    {
+        *user_exit_value = exit_value;
+    }
+
+    return result;
+}
