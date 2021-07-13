@@ -350,3 +350,25 @@ JResult Handles::duplex(
     return SUCCESS;
 }
 
+JResult Handles::term(int *server, int *client)
+{
+    return duplex(
+            make<FsTerminal>(),
+
+            server,
+            J_OPEN_SERVER | J_OPEN_READ | J_OPEN_WRITE,
+
+            client,
+            J_OPEN_CLIENT | J_OPEN_READ | J_OPEN_WRITE);
+}
+
+JResult Handles::pipe(int *reader, int *writer)
+{
+    return duplex(
+            make<FsPipe>(),
+
+            reader,
+            J_OPEN_READ,
+            writer,
+            J_OPEN_WRITE);
+}
