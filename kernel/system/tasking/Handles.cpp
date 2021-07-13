@@ -16,7 +16,7 @@ ResultOr<int> Handles::add(RefPtr<FsHandle> handle)
 {
     LockHolder holder(_lock);
 
-    for (int i = 0; < PROCESS_HANDLE_COUNT; i++)
+    for (int i = 0; i < PROCESS_HANDLE_COUNT; i++)
     {
         if (_handles[i] == nullptr)
         {
@@ -26,7 +26,7 @@ ResultOr<int> Handles::add(RefPtr<FsHandle> handle)
         }
     }
 
-    return ERR_TO_MANY_HANDLE;
+    return ERR_TOO_MANY_HANDLE;
 }
 
 JResult Handles::add_at(RefPtr<FsHandle> handle, int index)
@@ -41,10 +41,10 @@ JResult Handles::add_at(RefPtr<FsHandle> handle, int index)
     return SUCCESS;
 }
 
-bool Handle::is_valid_handle(int handle)
+bool Handles::is_valid_handle(int handle)
 {
     return handle >= 0 && handle < PROCESS_HANDLE_COUNT &&
-            _handles[handle] != nullptr;
+           _handles[handle] != nullptr;
 }
 
 JResult Handles::remove(int handle_index)
@@ -353,22 +353,47 @@ JResult Handles::duplex(
 JResult Handles::term(int *server, int *client)
 {
     return duplex(
-            make<FsTerminal>(),
+        make<FsTerminal>(),
 
-            server,
-            J_OPEN_SERVER | J_OPEN_READ | J_OPEN_WRITE,
+        server,
+        J_OPEN_SERVER | J_OPEN_READ | J_OPEN_WRITE,
 
-            client,
-            J_OPEN_CLIENT | J_OPEN_READ | J_OPEN_WRITE);
+        client,
+        J_OPEN_CLIENT | J_OPEN_READ | J_OPEN_WRITE);
 }
 
 JResult Handles::pipe(int *reader, int *writer)
 {
     return duplex(
-            make<FsPipe>(),
+        make<FsPipe>(),
 
-            reader,
-            J_OPEN_READ,
-            writer,
-            J_OPEN_WRITE);
+        reader,
+        J_OPEN_READ,
+        writer,
+        J_OPEN_WRITE);
+}
+
+JResult Handles::pass(Handles &handles, int source, int destination)
+{
+    {
+        LockHolder holder(_lock);
+
+        if (!is_valid_handle(source))
+        {
+            return ERR_BAD_HANDLE;
+        }
+    }
+
+    auto handle = acquire(source);
+
+    if (!handle)
+    {
+        return ERR_BAD_HANDLE;
+    }
+
+    auto add_result = handles.add_at(make<FsHandle>(*handle), destination);
+
+    release(source);
+
+    return add_result;
 }
