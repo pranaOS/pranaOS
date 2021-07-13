@@ -179,3 +179,28 @@ JResult task_memory_include(Task *task, int handle, uintptr_t *out_address, size
 
     return SUCCESS;
 }
+
+JResult task_memory_get_handle(Task *task, uintptr_t address, int *out_handle)
+{
+    auto memory_mapping = task_memory_mapping_by_address(task, address);
+
+    if (!memory_mapping)
+    {
+        return ERR_BAD_ADDRESS;
+    }
+
+    *out_handle = memory_mapping->object->id;
+    return SUCCESS;
+}
+
+size_t task_memory_usage(Task *task)
+{
+    size_t total = 0;
+
+    for (auto *memory_mapping : *task->memory_mapping)
+    {
+        total += memory_mapping->size;
+    }
+
+    return total;
+}
