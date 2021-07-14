@@ -58,3 +58,13 @@ void __plug_memory_free(void *address, size_t size)
 {
     memory_free(Arch::kernel_address_space(), (MemoryRange){(uintptr_t)address, size});
 }
+
+void __plug_logger_lock()
+{
+    interrupts_retain();
+}
+
+void __plug_logger_unlock()
+{
+    interrupts_release();
+}
