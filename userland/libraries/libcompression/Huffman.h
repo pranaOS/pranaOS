@@ -34,10 +34,16 @@ public:
             }
 
             unsigned int code = input.peek_bits_reverse(cbl);
+
+            if (_alphabet[i] == code)
+            {
+                input.grab_bits(cbl);
+                return i;
+            }
         }
 
+        return 0;
     }
-
 };
 
 }
