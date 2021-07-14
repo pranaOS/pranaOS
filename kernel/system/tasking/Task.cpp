@@ -318,3 +318,18 @@ void task_set_entry(Task *task, TaskEntryPoint entry)
 {
     task->entry_point = entry;
 }
+
+uintptr_t task_kernel_stack_push(Task *task, const void *value, size_t size)
+{
+    task->kernel_stack_pointer -= size;
+    memcpy((void *)task->kernel_stack_pointer, value, size);
+
+    return task->kernel_stack_pointer;
+}
+
+uintptr_t task_user_stack_push(Task *task, const void *value, size_t size)
+{
+    task->user_stack_pointer -= size;
+    memcpy((void *)task->user_stack_pointer, value, size);
+    return task->user_stack_pointer;
+}
