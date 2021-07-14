@@ -39,7 +39,14 @@ public:
     {
         return _entries;
     }
-    
+
+    virtual JResult extract(unsigned int entry_index, IO::Writer &writer) = 0;
+    virtual JResult insert(const char *entry_name, IO::Reader &reader) = 0;
+
+    inline const IO::Path &get_path()
+    {
+        return _path;
+    }
 
 
 };
