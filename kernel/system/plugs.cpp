@@ -201,3 +201,17 @@ int __plug_handle_tell(Handle *handle)
         return 0;
     }
 }
+
+int __plug_handle_stat(Handle *handle, JStat *stat)
+{
+    auto &handles = scheduler_running()->handles();
+
+    handle->result = handles.stat(handle->id, stat);
+
+    return 0;
+}
+
+void __plug_process_exit(int)
+{
+    ASSERT_NOT_REACHED();
+}
