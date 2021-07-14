@@ -52,4 +52,10 @@ JResult Deflate::write_uncompressed_blocks(IO::Reader &in_data, IO::BitWriter &o
     return JResult::SUCCESS;
 }
 
+JResult Deflate::compress_none(IO::Reader &uncompressed, IO::Writer &compressed)
+{
+    IO::BitWriter bit_writer(compressed);
+    return write_uncompressed_blocks(uncompressed, bit_writer, true);
+}
+
 }
