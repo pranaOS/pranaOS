@@ -229,3 +229,19 @@ JResult ZipArchive::read_archive()
     _valid = true;
     return JResult::SUCCESS;
 }
+
+JResult write_entry(const Archive::Entry &entry, IO::Writer &writer, IO::Reader &compressed, size_t compressed_size)
+{
+    LocalHeader header;
+    header.flags = EF_NONE;
+    header.compressed_size = compressed_size;
+    header.compression = CM_DEFLATED;
+    header.uncompressed_size = entry.uncompressed_size;
+    header.len_filename = entry.name.length();
+    header.len_extrafield = 0;
+    header.signature = ZIP_LOCAL_DIR_HEADER_SIG;
+ 
+    TRY(IO::write_struct(writer, header));
+    TRY(IO::write(writer, entry.name));
+    return IO::copy(compressed, writer);
+}
