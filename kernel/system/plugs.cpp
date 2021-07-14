@@ -129,3 +129,39 @@ void __plug_handle_close(Handle *handle)
         handles.close(handle->id);
     }
 }
+
+size_t __plug_handle_read(Handle *handle, void *buffer, size_t size)
+{
+    auto &handles = scheduler_running()->handles();
+
+    auto result_or_read = handles.read(handle->id, buffer, size);
+
+    handle->result = result_or_read.result();
+
+    if (result_or_read.success())
+    {
+        return result_or_read.unwrap();
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+size_t __plug_handle_write(Handle *handle, const void *buffer, size_t size)
+{
+    auto &handles = scheduler_running()->handles();
+
+    auto result_or_write = handles.write(handle->id, buffer, size);
+
+    handle->result = result_or_write.result();
+
+    if (result_or_write.success())
+    {
+        return result_or_write.unwrap();
+    }
+    else
+    {
+        return 0;
+    }
+}
