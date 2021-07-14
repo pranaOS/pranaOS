@@ -380,3 +380,36 @@ JResult task_wait(int task_id, int *exit_value)
     BlockerWait blocker{task, exit_value};
     return task_block(scheduler_running(), blocker, -1);
 }
+
+JResult task_block(Task *task, Blocker &blocker, Timeout timeout)
+{
+    assert(!task->_blocker);
+
+    interrupts_retain();
+    if (task->_is_interrupted)
+    {
+        interrupts_release();
+        return INTERRUPTED;
+    }
+
+    if (blocker.can_unblock(*task))
+    {
+        blocker.unblock(*task);
+        interrupts_release();
+
+        return blocker.result();
+    }
+
+    blocker.timeout(timeout == (Timeout)-1 ? -1 : system_get_tick() + timeout);
+
+    task->_blocker = &blocker;
+    task->state(TASK_STATE_BLOCKED);
+
+    interrupts_release();
+
+    scheduler_yield();
+
+    task->_blocker = nullptr;
+
+    return blocker.result();
+}
