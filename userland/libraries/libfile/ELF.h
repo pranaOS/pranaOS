@@ -77,6 +77,7 @@
 #define ELF_SECTION_TYPE_DYNSYM 11
 #define ELF_SECTION_TYPE_COUNT 12
 
+
 struct PACKED ELF32Header
 {
     uint8_t ident[ELF_IDENT_COUNT];
@@ -213,4 +214,22 @@ struct PACKED ELF64Program
     uint64_t filesz;
     uint64_t memsz;
     uint64_t align;
+};
+
+struct PACKED ELF64Symbole
+{
+    uint32_t name;
+    uint8_t info;
+    uint8_t other;
+    uint16_t shndx;
+    uint64_t value;
+    uint64_t size;
+};
+
+struct ELF64
+{
+    using Header = ELF64Header;
+    using Section = ELF64Section;
+    using Program = ELF64Program;
+    using Symbole = ELF64Symbole;
 };
