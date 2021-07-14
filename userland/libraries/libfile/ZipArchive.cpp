@@ -77,3 +77,30 @@ struct PACKED CentralDirectoryFileHeader
     le_uint32_t external_attr;
     le_uint32_t local_header_offset;
 };
+
+struct PACKED CentralDirectoryEndRecord
+{
+    le_uint32_t signature;
+    le_uint16_t disk1;
+    le_uint16_t disk2;
+    le_uint16_t disk_entries;
+    le_uint16_t total_entries;
+    le_uint32_t central_dir_size;
+    le_uint32_t central_dir_offset;
+    le_uint16_t len_comment;
+};
+
+struct PACKED LocalHeader
+{
+    le_uint32_t signature;
+    le_uint16_t version;
+    le_flags flags;
+    le_compression compression;
+    le_uint16_t mod_time;
+    le_uint16_t mod_date;
+    le_uint32_t crc;
+    le_uint32_t compressed_size;
+    le_uint32_t uncompressed_size;
+    le_uint16_t len_filename;
+    le_uint16_t len_extrafield;
+};
