@@ -34,3 +34,25 @@ enum ExtraFieldType : uint16_t
 };
 
 using le_eft = LittleEndian<ExtraFieldType>;
+
+using le_eft = LittleEndian<ExtraFieldType>;
+
+enum EntryFlags : uint16_t
+{
+    EF_NONE = 0,
+    EF_ENCRYPTED = 1 << 0,
+    EF_COMPRESSION_OPTION = 1 << 1,
+    EF_COMPRESSION_OPTION2 = 1 << 2,
+    EF_DATA_DESCRIPTOR = 1 << 3,
+};
+
+using le_flags = LittleEndian<EntryFlags>;
+
+enum CompressionMethod : uint16_t
+{
+    CM_UNCOMPRESSED = 0,
+    CM_SHRUNK = 1,
+    CM_DEFLATED = 8,
+};
+
+using le_compression = LittleEndian<CompressionMethod>;
