@@ -68,3 +68,26 @@ void __plug_logger_unlock()
 {
     interrupts_release();
 }
+
+
+int __plug_process_this()
+{
+    return scheduler_running_id();
+}
+
+const char *__plug_process_name()
+{
+    if (scheduler_running()n)
+    {
+        return scheduler_running()->name;
+    }
+    else
+    {
+        return "early";
+    }
+}
+
+JResult __plug_process_launch(Launchpad *launchpad, int *pid)
+{
+    return task_launch(scheduler_running(), launchpad, pid);
+}
