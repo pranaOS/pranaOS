@@ -14,8 +14,10 @@ struct ZipArchive : public Archive
 public:
     ZipArchive(IO::Path path, bool read = true);
 
-    JResult extract(unsigned int entry_indekx, IO::Writer &writer) override;
+    JResult extract(unsigned int entry_index, IO::Writer &writer) override;
     JResult insert(const char *entry_name, IO::Reader &reader) override;
 
-
-}
+private:
+    JResult read_archive();
+    void write_archive();
+};
