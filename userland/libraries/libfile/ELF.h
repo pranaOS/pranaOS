@@ -79,8 +79,6 @@
 
 struct PACKED ELF32Header
 {
-
-
     uint8_t ident[ELF_IDENT_COUNT];
     uint16_t type;
     uint16_t machine;
@@ -96,5 +94,18 @@ struct PACKED ELF32Header
     uint16_t shnum;
     uint16_t shstrndx;
 
+    bool valid()
+    {
+        char *magic = (char *)&ident;
 
+        bool is_magic_ok = magic[ELF_IDENT_MAG0] == ELF_MAG0 &&
+                           magic[ELF_IDENT_MAG1] == ELF_MAG1 &&
+                           magic[ELF_IDENT_MAG2] == ELF_MAG2 &&
+                           magic[ELF_IDENT_MAG3] == ELF_MAG3 &&
+                           magic[ELF_IDENT_CLASS] == ELF_IDENT_CLASS_32 &&
+                           magic[ELF_IDENT_DATA] == ELF_IDENT_DATA_LSB;
+
+        return is_magic_ok && (type == ELF_ETYPE_REL || ELF_ETYPE_EXEC) &&
+               version == 1 && machine == ELF_MACHINE_386;
+    }
 };
