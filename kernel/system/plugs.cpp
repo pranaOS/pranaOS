@@ -36,3 +36,20 @@ Tick __plug_system_get_ticks()
 {
     return system_get_ticks();
 }
+
+void __plug_memory_lock()
+{
+    interrupts_retain();
+}
+
+void __plug_memory_unlock()
+{
+    interrupts_release();
+}
+
+void *__plug_memory_alloc(size_t size)
+{
+    uintptr_t address = 0;
+    assert(memory_alloc(Arch::kernel_address_space(), size, MEMORY_CLEAR, &address) == SUCCESS);
+    return (void *)address;
+}
