@@ -158,7 +158,6 @@ Task *task_create(Task *parent, const char *name, TaskFlags flags)
     return task;
 }
 
-
 Task *task_clone(Task *parent, uintptr_t sp, uintptr_t ip, TaskFlags flags)
 {
     ASSERT_INTERRUPTS_RETAINED();
@@ -274,7 +273,6 @@ void task_iterate(void *target, TaskIterateCallback callback)
     }
 
     _tasks->foreach([&](auto *task) { callback(target, task); return Iteration::CONTINUE; });
-
 }
 
 Task *task_by_id(int id)
@@ -301,7 +299,6 @@ int task_count()
 
     return _tasks->count();
 }
-
 
 Task *task_spawn(Task *parent, const char *name, TaskEntryPoint entry, void *arg, TaskFlags flags)
 {
@@ -334,7 +331,7 @@ uintptr_t task_user_stack_push(Task *task, const void *value, size_t size)
     return task->user_stack_pointer;
 }
 
-uintptr_t task_user_stack_push_log(Task *task, long value)
+uintptr_t task_user_stack_push_long(Task *task, long value)
 {
     return task_user_stack_push(task, &value, sizeof(value));
 }
@@ -412,4 +409,35 @@ JResult task_block(Task *task, Blocker &blocker, Timeout timeout)
     task->_blocker = nullptr;
 
     return blocker.result();
+}
+
+void task_dump(Task *task)
+{
+    if (!task)
+    {
+        return;
+    }
+
+    InterruptsRetainer retainer;
+
+    Kernel::logln("\t - Task {} {}", task->id, task->name);
+    Kernel::logln("\t   State: {}", task_state_string(task->state()));
+    Kernel::logln("\t   Memory: ");
+
+    for (auto *mapping : *task->memory_mapping)
+    {
+        auto virtual_range = mapping->range();
+        Kernel::logln("\t   - {08x} - {08x} ({08x})", virtual_range.base(), virtual_range.end(), virtual_range.size());
+    }
+
+    if (task->address_space == Arch::kernel_address_space())
+    {
+        Kernel::logln("\t   Address Space: {08x} (kpdir)", task->address_space);
+    }
+    else
+    {
+        Kernel::logln("\t   Address Space: {08x}", task->address_space);
+    }
+
+    Kernel::logln("\n");
 }
