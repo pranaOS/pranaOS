@@ -19,6 +19,7 @@
 #include <libio/Write.h>
 #include <libutils/Endian.h>
 
+
 constexpr uint32_t ZIP_END_OF_CENTRAL_DIR_HEADER_SIG = 0x06054b50;
 constexpr uint32_t ZIP_CENTRAL_DIR_HEADER_SIG = 0x02014b50;
 
@@ -32,8 +33,6 @@ enum ExtraFieldType : uint16_t
     EFT_EXTENDED_TIMESTAMP = 0x5455,
     EFT_NEW_UNIX = 0x7875,
 };
-
-using le_eft = LittleEndian<ExtraFieldType>;
 
 using le_eft = LittleEndian<ExtraFieldType>;
 
@@ -138,15 +137,12 @@ JResult read_local_headers(IO::SeekableReader auto &reader, Vector<Archive::Entr
         auto &entry = entries.emplace_back();
         Assert::equal(IO::skip(reader, sizeof(LocalHeader)), SUCCESS);
 
-        // Get the uncompressed & compressed sizes
         entry.uncompressed_size = local_header.uncompressed_size();
         entry.compressed_size = local_header.compressed_size();
         entry.compression = local_header.compression();
 
-        // Read the filename of this entry
         entry.name = TRY(IO::read_string(reader, local_header.len_filename()));
 
-        // Read extra fields
         auto end_position = TRY(reader.tell()) + local_header.len_extrafield();
         while (TRY(reader.tell()) < end_position)
         {
@@ -184,6 +180,7 @@ JResult read_central_directory(IO::SeekableReader auto &reader)
             break;
         }
 
+
         TRY(IO::skip(reader, sizeof(CentralDirectoryFileHeader)));
 
         String name = TRY(IO::read_string(reader, cd_file_header.len_filename()));
@@ -192,6 +189,7 @@ JResult read_central_directory(IO::SeekableReader auto &reader)
         TRY(IO::skip(reader, cd_file_header.len_extrafield()));
         TRY(IO::skip(reader, cd_file_header.len_comment()));
     }
+
 
     le_uint32_t central_dir_end_sig = TRY(IO::read<uint32_t>(reader));
     if (central_dir_end_sig() != ZIP_END_OF_CENTRAL_DIR_HEADER_SIG)
@@ -240,12 +238,11 @@ JResult write_entry(const Archive::Entry &entry, IO::Writer &writer, IO::Reader 
     header.len_filename = entry.name.length();
     header.len_extrafield = 0;
     header.signature = ZIP_LOCAL_DIR_HEADER_SIG;
- 
+
     TRY(IO::write_struct(writer, header));
     TRY(IO::write(writer, entry.name));
     return IO::copy(compressed, writer);
 }
-
 
 JResult write_central_directory(IO::SeekableWriter auto &writer, Vector<Archive::Entry> &entries)
 {
@@ -278,7 +275,6 @@ JResult write_central_directory(IO::SeekableWriter auto &writer, Vector<Archive:
     return IO::write_struct(writer, end_record).result();
 }
 
-
 JResult ZipArchive::extract(unsigned int entry_index, IO::Writer &writer)
 {
 
@@ -296,4 +292,43 @@ JResult ZipArchive::extract(unsigned int entry_index, IO::Writer &writer)
 
     Compression::Inflate inf;
     return inf.perform(scoped_reader, writer).result();
+}
+
+JResult ZipArchive::insert(const char *entry_name, IO::Reader &reader)
+{
+    IO::MemoryWriter memory_writer;
+
+    for (const auto &entry : _entries)
+    {
+        IO::File file_reader(_path, J_OPEN_READ);
+        file_reader.seek(IO::SeekFrom::start(entry.archive_offset));
+
+        IO::ScopedReader scoped_reader(file_reader, entry.compressed_size);
+        IO::logln("Write existing local header: '{}'", entry.name);
+        TRY(write_entry(entry, memory_writer, scoped_reader, entry.compressed_size));
+    }
+
+    IO::MemoryWriter compressed_writer;
+
+    Compression::Deflate def(5);
+    IO::ReadCounter counter{reader};
+    TRY(def.perform(counter, compressed_writer));
+
+    IO::logln("Write new local header: '{}'", entry_name);
+
+    auto &new_entry = _entries.emplace_back();
+    new_entry.name = String(entry_name);
+    new_entry.compressed_size = TRY(compressed_writer.length());
+    new_entry.compression = CM_DEFLATED;
+    new_entry.uncompressed_size = counter.count();
+    new_entry.archive_offset = TRY(memory_writer.length()) + sizeof(LocalHeader) + new_entry.name.length();
+
+    auto compressed_data = compressed_writer.slice();
+    IO::MemoryReader compressed_reader(compressed_data->start(), compressed_data->size());
+    TRY(write_entry(new_entry, memory_writer, compressed_reader, compressed_data->size()));
+
+    TRY(write_central_directory(memory_writer, _entries));
+
+    IO::File file_writer(_path, J_OPEN_WRITE | J_OPEN_CREATE);
+    return IO::write_all(file_writer, Slice(memory_writer.slice()));
 }
