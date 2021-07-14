@@ -56,3 +56,24 @@ enum CompressionMethod : uint16_t
 };
 
 using le_compression = LittleEndian<CompressionMethod>;
+
+struct PACKED CentralDirectoryFileHeader
+{
+    le_uint32_t signature;
+    le_uint16_t version;
+    le_uint16_t version_required;
+    le_flags flags;
+    le_compression compression;
+    le_uint16_t mod_time;
+    le_uint16_t mod_date;
+    le_uint32_t crc;
+    le_uint32_t compressed_size;
+    le_uint32_t uncompressed_size;
+    le_uint16_t len_filename;
+    le_uint16_t len_extrafield;
+    le_uint16_t len_comment;
+    le_uint16_t disk_start;
+    le_uint16_t internal_attr;
+    le_uint32_t external_attr;
+    le_uint32_t local_header_offset;
+};
