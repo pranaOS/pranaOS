@@ -48,3 +48,38 @@ struct PACKED TARRawBlock
         return size;
     }
 };
+
+bool tar_read(void *tarfile, TARBlock *block, size_t index)
+{
+    TARRawBlock *header = (TARRawBlock *)tarfile;
+
+    for (size_t i = 0; i < index; i++)
+    {
+        if (header->name[0] == '\0')
+        {
+            return false;
+        }
+
+        size_t size = header->file_size();
+
+        header = (TARRawBlock *)((char *)header + ((size / 512) + 1) * 512);
+
+        if (size % 512)
+        {
+            header = (TARRawBlock *)((char *)header + 512);
+        }
+    }
+
+    if (header->name[0] == '\0')
+    {
+        return false;
+    }
+
+    memcpy(block->name, header->name, 100);
+    block->size = header->file_size();
+    block->typeflag = header->typeflag;
+    memcpy(block->linkname, header->linkname, 100);
+    block->data = (char *)header + 512;
+
+    return true;
+}
