@@ -11,18 +11,18 @@
 #include <libio/Path.h>
 #include <libio/Reader.h>
 #include <libio/Writer.h>
-
 struct Archive : public RefCounted<Archive>
 {
 public:
     struct Entry
     {
-        String nanme;
+        String name;
         size_t uncompressed_size;
         size_t compressed_size;
         size_t archive_offset;
         unsigned int compression;
     };
+
 protected:
     Vector<Entry> _entries;
     IO::Path _path;
@@ -48,5 +48,8 @@ public:
         return _path;
     }
 
-
+    inline bool valid()
+    {
+        return _valid;
+    }
 };
