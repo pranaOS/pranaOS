@@ -25,4 +25,31 @@ void Deflate::write_block_header(IO::BitWriter &out_writer, BlockType block_type
     out_writer.put_bits(block_type, 2);
 }
 
+void Deflate::write_uncompressed_block(const uint8_t *block_data, size_t block_len, IO::BitWriter &out_writer, bool final)
+{
+
+    write_block_header(out_writer, BlockType::BT_UNCOMPRESSED, final);
+    out_writer.align();
+    out_writer.put_uint16(block_len);
+    out_writer.put_uint16(~block_len);
+    out_writer.put_data(block_data, block_len);
+}
+
+JResult Deflate::write_uncompressed_blocks(IO::Reader &in_data, IO::BitWriter &out_writer, bool write_final)
+{
+    Vector<uint8_t> block_data;
+    block_data.resize(UINT16_MAX);
+    bool final_block = false;
+
+    do
+    {
+        size_t len = TRY(in_data.read(block_data.raw_storage(), block_data.count()));
+
+        final_block = len < block_data.count();
+        write_uncompressed_block(block_data.raw_storage(), len, out_writer, write_final && final_block);
+    } while (!final_block);
+
+    return JResult::SUCCESS;
+}
+
 }
