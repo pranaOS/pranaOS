@@ -123,3 +123,50 @@ ZipArchive::ZipArchive(IO::Path path, bool read) : Archive(path)
         IO::logln("Did read archive, result: {}", read_archive());
     }
 }
+
+HjResult read_local_headers(IO::SeekableReader auto &reader, Vector<Archive::Entry> &entries)
+{
+    while (TRY(reader.tell()) < (TRY(reader.length()) - sizeof(LocalHeader)))
+    {
+        auto local_header = TRY(IO::peek<LocalHeader>(reader));
+
+        if (local_header.signature() != ZIP_LOCAL_DIR_HEADER_SIG)
+        {
+            break;
+        }
+
+        auto &entry = entries.emplace_back();
+        Assert::equal(IO::skip(reader, sizeof(LocalHeader)), SUCCESS);
+
+        // Get the uncompressed & compressed sizes
+        entry.uncompressed_size = local_header.uncompressed_size();
+        entry.compressed_size = local_header.compressed_size();
+        entry.compression = local_header.compression();
+
+        // Read the filename of this entry
+        entry.name = TRY(IO::read_string(reader, local_header.len_filename()));
+
+        // Read extra fields
+        auto end_position = TRY(reader.tell()) + local_header.len_extrafield();
+        while (TRY(reader.tell()) < end_position)
+        {
+            le_eft extra_field_type = TRY(IO::read<ExtraFieldType>(reader));
+            le_uint16_t extra_field_size = TRY(IO::read<uint16_t>(reader));
+
+            UNUSED(extra_field_type);
+            TRY(IO::skip(reader, extra_field_size()));
+        }
+
+        entry.archive_offset = TRY(reader.tell());
+        TRY(IO::skip(reader, entry.compressed_size));
+
+        if (local_header.flags() & EF_DATA_DESCRIPTOR)
+        {
+            auto data_descriptor = TRY(IO::read<DataDescriptor>(reader));
+            entry.uncompressed_size = data_descriptor.uncompressed_size();
+            entry.compressed_size = data_descriptor.compressed_size();
+        }
+    }
+
+    return HjResult::SUCCESS;
+}
