@@ -124,7 +124,7 @@ ZipArchive::ZipArchive(IO::Path path, bool read) : Archive(path)
     }
 }
 
-HjResult read_local_headers(IO::SeekableReader auto &reader, Vector<Archive::Entry> &entries)
+JResult read_local_headers(IO::SeekableReader auto &reader, Vector<Archive::Entry> &entries)
 {
     while (TRY(reader.tell()) < (TRY(reader.length()) - sizeof(LocalHeader)))
     {
@@ -168,5 +168,37 @@ HjResult read_local_headers(IO::SeekableReader auto &reader, Vector<Archive::Ent
         }
     }
 
-    return HjResult::SUCCESS;
+    return JResult::SUCCESS;
+}
+
+JResult read_central_directory(IO::SeekableReader auto &reader)
+{
+
+    while (TRY(reader.tell()) < (TRY(reader.length()) - sizeof(CentralDirectoryFileHeader)))
+    {
+        IO::logln("Read central directory header");
+        auto cd_file_header = TRY(IO::peek<CentralDirectoryFileHeader>(reader));
+
+        if (cd_file_header.signature() != ZIP_CENTRAL_DIR_HEADER_SIG)
+        {
+            break;
+        }
+
+        TRY(IO::skip(reader, sizeof(CentralDirectoryFileHeader)));
+
+        String name = TRY(IO::read_string(reader, cd_file_header.len_filename()));
+        IO::logln("Found central directory header: '{}'", name);
+
+        TRY(IO::skip(reader, cd_file_header.len_extrafield()));
+        TRY(IO::skip(reader, cd_file_header.len_comment()));
+    }
+
+    le_uint32_t central_dir_end_sig = TRY(IO::read<uint32_t>(reader));
+    if (central_dir_end_sig() != ZIP_END_OF_CENTRAL_DIR_HEADER_SIG)
+    {
+        IO::logln("Missing 'central directory end record' signature!");
+        return ERR_INVALID_DATA;
+    }
+
+    return JResult::SUCCESS;
 }
