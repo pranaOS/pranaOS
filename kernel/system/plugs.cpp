@@ -53,3 +53,8 @@ void *__plug_memory_alloc(size_t size)
     assert(memory_alloc(Arch::kernel_address_space(), size, MEMORY_CLEAR, &address) == SUCCESS);
     return (void *)address;
 }
+
+void __plug_memory_free(void *address, size_t size)
+{
+    memory_free(Arch::kernel_address_space(), (MemoryRange){(uintptr_t)address, size});
+}
