@@ -19,3 +19,10 @@ struct TARBlock
 };
 
 bool tar_read(void *tarfile, TARBlock *block, size_t index);
+
+struct TARArchive final : public Archive
+{
+private:
+    JResult read_archive();
+
+};
