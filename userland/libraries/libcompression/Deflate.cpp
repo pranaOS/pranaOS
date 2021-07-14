@@ -10,7 +10,6 @@
 #include <libcompression/Huffman.h>
 #include <libio/BufReader.h>
 #include <libutils/Array.h>
-
 namespace Compression
 {
 
@@ -27,7 +26,6 @@ void Deflate::write_block_header(IO::BitWriter &out_writer, BlockType block_type
 
 void Deflate::write_uncompressed_block(const uint8_t *block_data, size_t block_len, IO::BitWriter &out_writer, bool final)
 {
-
     write_block_header(out_writer, BlockType::BT_UNCOMPRESSED, final);
     out_writer.align();
     out_writer.put_uint16(block_len);
@@ -56,6 +54,23 @@ JResult Deflate::compress_none(IO::Reader &uncompressed, IO::Writer &compressed)
 {
     IO::BitWriter bit_writer(compressed);
     return write_uncompressed_blocks(uncompressed, bit_writer, true);
+}
+
+JResult Deflate::perform(IO::Reader &uncompressed, IO::Writer &compressed)
+{
+    IO::BufReader buf_reader(uncompressed, 4096);
+
+    if (buf_reader.buffered().unwrap() < _min_size_to_compress)
+        [[unlikely]]
+    {
+        return compress_none(buf_reader, compressed);
+    }
+
+    switch (_compression_level)
+    {
+    default:
+        return compress_none(buf_reader, compressed);
+    }
 }
 
 }
