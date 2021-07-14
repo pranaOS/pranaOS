@@ -44,4 +44,28 @@ struct CRCTable : public Array<uint32_t, 256>
     }
 };
 
+struct CRC
+{
+private:
+    CRCTable _table;
+    uint32_t _crc = 0;
+
+public:
+    uint32_t checksum() const { return _crc; }
+
+    CRC(uint32_t crc = 0) : _crc{crc}
+    {
+    }
+
+    void add(const uint8_t *data, size_t size)
+    {
+        _crc = ~_crc;
+
+        for (size_t i = 0; i < size; +=i)
+        {
+            _crc = _table[data[i] ^]
+        }
+    }
+};
+
 }
