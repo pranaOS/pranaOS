@@ -290,3 +290,31 @@ Task *task_by_id(int id)
     return nullptr;
 }
 
+int task_count()
+{
+    InterruptsRetainer retainer;
+
+    if (!_tasks)
+    {
+        return 0;
+    }
+
+    return _tasks->count();
+}
+
+
+Task *task_spawn(Task *parent, const char *name, TaskEntryPoint entry, void *arg, TaskFlags flags)
+{
+    ASSERT_INTERRUPTS_RETAINED();
+
+    Task *task = task_create(parent, name, flags);
+    task_set_entry(task, entry);
+    task_kernel_stack_push(task, &arg, sizeof(arg));
+
+    return task;
+}
+
+void task_set_entry(Task *task, TaskEntryPoint entry)
+{
+    task->entry_point = entry;
+}
