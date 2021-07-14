@@ -104,3 +104,14 @@ struct PACKED LocalHeader
     le_uint16_t len_filename;
     le_uint16_t len_extrafield;
 };
+
+static_assert(sizeof(LocalHeader) == 30, "LocalHeader has invalid size!");
+
+struct PACKED DataDescriptor
+{
+    le_uint32_t crc;
+    le_uint32_t compressed_size;
+    le_uint32_t uncompressed_size;
+};
+
+static_assert(sizeof(DataDescriptor) == 12, "DataDescriptor has invalid size!");
