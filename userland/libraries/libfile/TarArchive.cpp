@@ -83,3 +83,31 @@ bool tar_read(void *tarfile, TARBlock *block, size_t index)
 
     return true;
 }
+
+#ifndef __KERNEL__
+
+#    include <libfile/TARArchive.h>
+
+TARArchive::TARArchive(IO::Path path, bool read) : Archive(path)
+{
+    if (read)
+    {
+        read_archive();
+    }
+}
+
+JResult TARArchive::extract(unsigned int entry_index, IO::Writer &writer)
+{
+    UNUSED(entry_index);
+    UNUSED(writer);
+
+    return ERR_NOT_IMPLEMENTED;
+}
+
+JResult TARArchive::insert(const char *entry_name, IO::Reader &reader)
+{
+    UNUSED(entry_name);
+    UNUSED(reader);
+
+    return ERR_NOT_IMPLEMENTED;
+}
