@@ -26,3 +26,13 @@ void __plug_assert_failed(const char *expr, const char *file, const char *functi
     system_panic("Assert failed: %s in %s:%s() ln%d!", (char *)expr, (char *)file, (char *)function, line);
     ASSERT_NOT_REACHED();
 }
+
+TimeStamp __plug_system_get_time()
+{
+    return Arch::get_time();
+}
+
+Tick __plug_system_get_ticks()
+{
+    return system_get_ticks();
+}
