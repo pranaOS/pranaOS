@@ -109,3 +109,29 @@ struct PACKED ELF32Header
                version == 1 && machine == ELF_MACHINE_386;
     }
 };
+
+struct PACKED ELF32Section
+{
+    uint32_t name;
+    uint32_t type;
+    uint32_t flags;
+    uint32_t addr;
+    uint32_t offset;
+    uint32_t size;
+    uint32_t link;
+    uint32_t info;
+    uint32_t addralign;
+    uint32_t entsize;
+};
+
+struct ELF32Program
+{
+    uint32_t type;
+    uint32_t offset;
+    uint32_t vaddr;
+    uint32_t paddr;
+    uint32_t filesz;
+    uint32_t memsz;
+    uint32_t flags;
+    uint32_t align;
+};
