@@ -135,3 +135,21 @@ struct ELF32Program
     uint32_t flags;
     uint32_t align;
 };
+
+struct ELF32Symbole
+{
+    uint32_t name;
+    uint32_t value;
+    uint32_t size;
+    uint8_t info;
+    uint8_t other;
+    uint16_t shndx;
+};
+
+struct ELF32
+{
+    using Header = ELF32Header;
+    using Section = ELF32Section;
+    using Program = ELF32Program;
+    using Symbole = ELF32Symbole;
+};
