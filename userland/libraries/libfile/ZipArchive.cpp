@@ -277,3 +277,23 @@ JResult write_central_directory(IO::SeekableWriter auto &writer, Vector<Archive:
     end_record.len_comment = 0;
     return IO::write_struct(writer, end_record).result();
 }
+
+
+JResult ZipArchive::extract(unsigned int entry_index, IO::Writer &writer)
+{
+
+    const auto &entry = _entries[entry_index];
+
+    if (entry.compression != CM_DEFLATED)
+    {
+        IO::logln("ZipArchive: Unsupported compression: {}", entry.compression);
+        return ERR_NOT_IMPLEMENTED;
+    }
+
+    IO::File file_reader(_path, J_OPEN_READ);
+    file_reader.seek(IO::SeekFrom::start(entry.archive_offset));
+    IO::ScopedReader scoped_reader(file_reader, entry.compressed_size);
+
+    Compression::Inflate inf;
+    return inf.perform(scoped_reader, writer).result();
+}
