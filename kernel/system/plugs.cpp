@@ -91,3 +91,13 @@ JResult __plug_process_launch(Launchpad *launchpad, int *pid)
 {
     return task_launch(scheduler_running(), launchpad, pid);
 }
+
+JResult __plug_process_sleep(int time)
+{
+    return task_sleep(scheduler_running(), time);
+}
+
+JResult __plug_process_wait(int pid, int *exit_value)
+{
+    return task_wait(pid, exit_value);
+}
