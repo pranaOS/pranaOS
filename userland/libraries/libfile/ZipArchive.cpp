@@ -115,3 +115,11 @@ struct PACKED DataDescriptor
 };
 
 static_assert(sizeof(DataDescriptor) == 12, "DataDescriptor has invalid size!");
+
+ZipArchive::ZipArchive(IO::Path path, bool read) : Archive(path)
+{
+    if (read)
+    {
+        IO::logln("Did read archive, result: {}", read_archive());
+    }
+}
