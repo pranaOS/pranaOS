@@ -165,3 +165,39 @@ size_t __plug_handle_write(Handle *handle, const void *buffer, size_t size)
         return 0;
     }
 }
+
+JResult __plug_handle_call(Handle *handle, IOCall request, void *args)
+{
+    UNUSED(handle);
+    UNUSED(request);
+    UNUSED(args);
+
+    ASSERT_NOT_REACHED();
+}
+
+int __plug_handle_seek(Handle *handle, IO::SeekFrom from)
+{
+    auto &handles = scheduler_running()->handles();
+
+    handle->result = handles.seek(handle->id, from).result();
+
+    return 0;
+}
+
+int __plug_handle_tell(Handle *handle)
+{
+    auto &handles = scheduler_running()->handles();
+
+    auto result_or_offset = handles.seek(handle->id, IO::SeekFrom::current(0));
+
+    handle->result = result_or_offset.result();
+
+    if (result_or_offset.success())
+    {
+        return result_or_offset.unwrap();
+    }
+    else
+    {
+        return 0;
+    }
+}
