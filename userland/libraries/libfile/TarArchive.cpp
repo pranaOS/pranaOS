@@ -92,7 +92,7 @@ TARArchive::TARArchive(IO::Path path, bool read) : Archive(path)
     }
 }
 
-HjResult TARArchive::extract(unsigned int entry_index, IO::Writer &writer)
+JResult TARArchive::extract(unsigned int entry_index, IO::Writer &writer)
 {
     UNUSED(entry_index);
     UNUSED(writer);
@@ -100,7 +100,7 @@ HjResult TARArchive::extract(unsigned int entry_index, IO::Writer &writer)
     return ERR_NOT_IMPLEMENTED;
 }
 
-HjResult TARArchive::insert(const char *entry_name, IO::Reader &reader)
+JResult TARArchive::insert(const char *entry_name, IO::Reader &reader)
 {
     UNUSED(entry_name);
     UNUSED(reader);
@@ -108,11 +108,11 @@ HjResult TARArchive::insert(const char *entry_name, IO::Reader &reader)
     return ERR_NOT_IMPLEMENTED;
 }
 
-HjResult TARArchive::read_archive()
+JResult TARArchive::read_archive()
 {
     _valid = false;
 
-    IO::File archive_file{_path, HJ_OPEN_READ};
+    IO::File archive_file{_path, J_OPEN_READ};
 
     if (!archive_file.exist())
     {
