@@ -30,3 +30,24 @@ static void splash_screen()
     Kernel::logln("                              Copyright (c) 2020-2021 The pranaOS contributors ");
     Kernel::logln("");
 }
+
+void system_main(Handover *handover)
+{
+    splash_screen();
+    system_initialize();
+    memory_initialize(handover);
+    scheduler_initialize();
+    tasking_initialize();
+    interrupts_initialize();
+    modules_initialize(handover);
+    driver_initialize();
+    device_initialize();
+    partitions_initialize();
+    process_info_initialize();
+    device_info_initialize();
+    devices_filesystem_initialize();
+    graphic_initialize(handover);
+    userspace_initialize();
+
+    ASSERT_NOT_REACHED();
+}
