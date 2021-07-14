@@ -202,3 +202,30 @@ JResult read_central_directory(IO::SeekableReader auto &reader)
 
     return JResult::SUCCESS;
 }
+
+JResult ZipArchive::read_archive()
+{
+    _valid = false;
+
+    IO::File archive_file(_path, J_OPEN_READ);
+
+    if (!archive_file.exist())
+    {
+        IO::logln("Archive does not exist: {}", _path.string());
+        return ERR_NO_SUCH_FILE_OR_DIRECTORY;
+    }
+
+    IO::logln("Opening file: '{}'", _path.string());
+
+    if (TRY(archive_file.length()) < sizeof(CentralDirectoryEndRecord))
+    {
+        IO::logln("Archive is too small to be a valid .zip: {} {}", _path.string(), archive_file.length().unwrap());
+        return ERR_INVALID_DATA;
+    }
+
+    TRY(read_local_headers(archive_file, _entries));
+    TRY(read_central_directory(archive_file));
+
+    _valid = true;
+    return JResult::SUCCESS;
+}
