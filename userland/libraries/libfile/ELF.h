@@ -187,3 +187,30 @@ struct PACKED ELF64Header
                version == 1 && machine == ELF_MACHINE_AMD64;
     }
 };
+
+struct PACKED ELF64Section
+{
+    uint32_t name;
+    uint32_t type;
+    uint64_t flags;
+    uint64_t addr;
+    uint64_t offset;
+    uint64_t size;
+    uint32_t link;
+    uint32_t info;
+    uint64_t addralign;
+    uint64_t entsize;
+};
+
+struct PACKED ELF64Program
+{
+    uint32_t type;
+    uint32_t flags;
+
+    uint64_t offset;
+    uint64_t vaddr;
+    uint64_t paddr;
+    uint64_t filesz;
+    uint64_t memsz;
+    uint64_t align;
+};
