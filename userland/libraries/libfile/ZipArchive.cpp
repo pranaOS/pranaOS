@@ -245,3 +245,35 @@ JResult write_entry(const Archive::Entry &entry, IO::Writer &writer, IO::Reader 
     TRY(IO::write(writer, entry.name));
     return IO::copy(compressed, writer);
 }
+
+
+JResult write_central_directory(IO::SeekableWriter auto &writer, Vector<Archive::Entry> &entries)
+{
+    auto start = TRY(writer.tell());
+    for (const auto &entry : entries)
+    {
+        IO::logln("Write central directory header: '{}'", entry.name);
+        CentralDirectoryFileHeader header;
+        header.flags = EF_NONE;
+        header.compressed_size = entry.compressed_size;
+        header.compression = CM_DEFLATED;
+        header.uncompressed_size = entry.uncompressed_size;
+        header.local_header_offset = entry.archive_offset - sizeof(LocalHeader) - entry.name.length();
+        header.len_filename = entry.name.length();
+        header.len_extrafield = 0;
+        header.len_comment = 0;
+        header.signature = ZIP_CENTRAL_DIR_HEADER_SIG;
+        TRY(IO::write_struct(writer, header));
+        TRY(IO::write(writer, entry.name));
+    }
+    auto end = TRY(writer.tell());
+
+    CentralDirectoryEndRecord end_record;
+    end_record.signature = ZIP_END_OF_CENTRAL_DIR_HEADER_SIG;
+    end_record.central_dir_size = end - start;
+    end_record.central_dir_offset = start;
+    end_record.disk_entries = entries.count();
+    end_record.total_entries = entries.count();
+    end_record.len_comment = 0;
+    return IO::write_struct(writer, end_record).result();
+}
