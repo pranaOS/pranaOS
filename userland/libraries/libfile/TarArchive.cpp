@@ -9,29 +9,25 @@
 #include <libfile/TARArchive.h>
 #include <libio/File.h>
 #include <libio/Streams.h>
-#include <libfile/TARArchive.h>
-#include <libio/File.h>
-#include <libio/Streams.h>
 
 struct PACKED TARRawBlock
 {
     char name[100];     
-    char mode[8];       
+    char mode[8];      
     char uid[8];       
     char gid[8];       
     char size[12];     
-    char mtime[12];   
-    char chksum[8];     
-    char typeflag;      
+    char mtime[12];    
+    char chksum[8];    
+    char typeflag;     
     char linkname[100]; 
     char magic[6];      
     char version[2];    
     char uname[32];     
     char gname[32];     
     char devmajor[8];   
-    char devminor[8];  
-    char prefix[155];  
-    
+    char devminor[8];   
+    char prefix[155];   
 
     char __padding[12];
 
@@ -96,7 +92,7 @@ TARArchive::TARArchive(IO::Path path, bool read) : Archive(path)
     }
 }
 
-JResult TARArchive::extract(unsigned int entry_index, IO::Writer &writer)
+HjResult TARArchive::extract(unsigned int entry_index, IO::Writer &writer)
 {
     UNUSED(entry_index);
     UNUSED(writer);
@@ -104,10 +100,49 @@ JResult TARArchive::extract(unsigned int entry_index, IO::Writer &writer)
     return ERR_NOT_IMPLEMENTED;
 }
 
-JResult TARArchive::insert(const char *entry_name, IO::Reader &reader)
+HjResult TARArchive::insert(const char *entry_name, IO::Reader &reader)
 {
     UNUSED(entry_name);
     UNUSED(reader);
 
     return ERR_NOT_IMPLEMENTED;
 }
+
+HjResult TARArchive::read_archive()
+{
+    _valid = false;
+
+    IO::File archive_file{_path, HJ_OPEN_READ};
+
+    if (!archive_file.exist())
+    {
+        IO::logln("Archive does not exist: {}", _path.string().cstring());
+        return SUCCESS;
+    }
+
+    IO::logln("Opening file: '{}'", _path.string().cstring());
+
+    TARRawBlock block;
+    while (TRY(archive_file.read(&block, sizeof(TARRawBlock))) == sizeof(TARRawBlock))
+    {
+        if (block.name[0] == '\0')
+        {
+            _valid = true;
+            return SUCCESS;
+        }
+
+        _entries.push_back({
+            String{block.name},
+            block.file_size(),
+            block.file_size(),
+            TRY(archive_file.tell()),
+            0,
+        });
+
+        TRY(archive_file.seek(IO::SeekFrom::current(ALIGN_UP(block.file_size(), 512))));
+    }
+
+    return SUCCESS;
+}
+
+#endif
