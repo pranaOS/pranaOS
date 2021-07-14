@@ -101,3 +101,31 @@ JResult __plug_process_wait(int pid, int *exit_value)
 {
     return task_wait(pid, exit_value);
 }
+
+JResult __plug_handle_open(Handle *handle, const char *raw_path, JOpenFlag flags)
+{
+    auto path = IO::Path::parse(raw_path);
+    auto &handles = scheduler_running()->handles();
+    auto &domain = scheduler_running()->domain();
+
+    auto result_or_handle_index = handles.open(domain, path, flags);
+
+    handle->result = result_or_handle_index.result();
+
+    if (handle_or_handle_index.success())
+    {
+        handle->id = result_or_handle_index.unwrap();
+    }
+
+    return result_or_handle_index.result();
+}
+
+void __plug_handle_close(Handle *handle)
+{
+    if (handle->id != HANDLE_INVALID_ID)
+    {
+        auto &handles = scheduler_running()->handles();
+
+        handles.close(handle->id);
+    }
+}
