@@ -21,11 +21,13 @@
 #include "system/tasking/Task-Launchpad.h"
 #include "system/tasking/Task-Memory.h"
 
+
 void __plug_assert_failed(const char *expr, const char *file, const char *function, int line)
 {
     system_panic("Assert failed: %s in %s:%s() ln%d!", (char *)expr, (char *)file, (char *)function, line);
     ASSERT_NOT_REACHED();
 }
+
 
 TimeStamp __plug_system_get_time()
 {
@@ -36,6 +38,7 @@ Tick __plug_system_get_ticks()
 {
     return system_get_ticks();
 }
+
 
 void __plug_memory_lock()
 {
@@ -59,6 +62,7 @@ void __plug_memory_free(void *address, size_t size)
     memory_free(Arch::kernel_address_space(), (MemoryRange){(uintptr_t)address, size});
 }
 
+
 void __plug_logger_lock()
 {
     interrupts_retain();
@@ -69,7 +73,6 @@ void __plug_logger_unlock()
     interrupts_release();
 }
 
-
 int __plug_process_this()
 {
     return scheduler_running_id();
@@ -77,7 +80,7 @@ int __plug_process_this()
 
 const char *__plug_process_name()
 {
-    if (scheduler_running()n)
+    if (scheduler_running())
     {
         return scheduler_running()->name;
     }
@@ -112,7 +115,7 @@ JResult __plug_handle_open(Handle *handle, const char *raw_path, JOpenFlag flags
 
     handle->result = result_or_handle_index.result();
 
-    if (handle_or_handle_index.success())
+    if (result_or_handle_index.success())
     {
         handle->id = result_or_handle_index.unwrap();
     }
@@ -211,7 +214,16 @@ int __plug_handle_stat(Handle *handle, JStat *stat)
     return 0;
 }
 
+
 void __plug_process_exit(int)
 {
     ASSERT_NOT_REACHED();
 }
+
+JResult __plug_process_cancel(int) { ASSERT_NOT_REACHED(); }
+
+JResult __plug_process_get_directory(char *, size_t) { ASSERT_NOT_REACHED(); }
+
+JResult __plug_process_set_directory(const char *) { ASSERT_NOT_REACHED(); }
+
+String __plug_process_resolve(String raw_path) { return raw_path; }
