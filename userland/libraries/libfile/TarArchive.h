@@ -25,4 +25,9 @@ struct TARArchive final : public Archive
 private:
     JResult read_archive();
 
+public:
+    TARArchive(IO::Path path, bool read = true);
+
+    JResult extract(unsigned int entry_index, IO::Writer &writer) override;
+    JResult insert(const char *entry_name, IO::Reader &reader) override;
 };
