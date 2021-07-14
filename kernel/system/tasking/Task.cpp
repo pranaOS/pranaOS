@@ -343,3 +343,40 @@ uintptr_t task_user_stack_push_ptr(Task *task, void *ptr)
 {
     return task_user_stack_push(task, &ptr, sizeof(ptr));
 }
+
+void task_go(Task *task)
+{
+    InterruptsRetainer retainer;
+
+    Arch::task_go(task);
+
+    task->state(TASK_STATE_RUNNING);
+}
+
+JResult task_sleep(Task *task, int timeout)
+{
+    BlockerTime blocker{};
+    return task_block(task, blocker, timeout);
+}
+
+JResult task_wait(int task_id, int *exit_value)
+{
+    interrupts_retain();
+
+    Task *task = task_by_id(task_id);
+
+    if (!task)
+    {
+        return ERR_NO_SUCH_TASK;
+    }
+
+    if (!(task->_flags & TASK_WAITABLE))
+    {
+        return ERR_TASK_NOT_WAITABLE;
+    }
+
+    interrupts_release();
+
+    BlockerWait blocker{task, exit_value};
+    return task_block(scheduler_running(), blocker, -1);
+}
