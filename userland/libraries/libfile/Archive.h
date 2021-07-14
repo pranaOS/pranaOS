@@ -28,5 +28,18 @@ protected:
     IO::Path _path;
     bool _valid = true;
 
+public:
+    static RefPtr<Archive> open(IO::Path path, bool read = true);
+
+    Archive(IO::Path path) : _path(path)
+    {
+    }
+
+    inline const Vector<Entry> &entries()
+    {
+        return _entries;
+    }
+    
+
 
 };
