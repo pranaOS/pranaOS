@@ -19,39 +19,38 @@
 namespace Compression
 {
 
-
 static constexpr uint8_t BASE_LENGTH_EXTRA_BITS[] = {
-    0, 0, 0, 0, 0, 0, 0, 0,
-    1, 1, 1, 1,            
-    2, 2, 2, 2,            
+    0, 0, 0, 0, 0, 0, 0, 0, 
+    1, 1, 1, 1,             
+    2, 2, 2, 2,             
     3, 3, 3, 3,             
     4, 4, 4, 4,             
-    5, 5, 5, 5,             
-    0                       
+    5, 5, 5, 5,            
+    0                      
 };
 
 static constexpr uint16_t BASE_LENGTHS[] = {
-    3, 4, 5, 6, 7, 8, 9, 10,
-    11, 13, 15, 17,         
-    19, 23, 27, 31,         
-    35, 43, 51, 59,         
-    67, 83, 99, 115,        
-    131, 163, 195, 227,     
-    258                     
+    3, 4, 5, 6, 7, 8, 9, 10, 
+    11, 13, 15, 17,          
+    19, 23, 27, 31,          
+    35, 43, 51, 59,          
+    67, 83, 99, 115,         
+    131, 163, 195, 227,      
+    258                      
 };
 
 static constexpr uint16_t BASE_DISTANCE[] = {
-    1, 2, 3, 4,   
+    1, 2, 3, 4,    
     5, 7,         
-    9, 13,        
-    17, 25,       
-    33, 49,       
-    65, 97,       
-    129, 193,     
+    9, 13,         
+    17, 25,        
+    33, 49,        
+    65, 97,        
+    129, 193,      
     257, 385,     
-    513, 769,     
-    1025, 1537,   
-    2049, 3073,   
+    513, 769,      
+    1025, 1537,    
+    2049, 3073,    
     4097, 6145,    
     8193, 12289,   
     16385, 24577,  
@@ -61,16 +60,16 @@ static constexpr uint8_t BASE_DISTANCE_EXTRA_BITS[] = {
     0, 0, 0, 0,  
     1, 1,        
     2, 2,        
-    3, 3,        
-    4, 4,        
-    5, 5,        
-    6, 6,        
+    3, 3,       
+    4, 4,       
+    5, 5,      
+    6, 6,      
     7, 7,        
-    8, 8,        
+    8, 8,      
     9, 9,        
     10, 10,      
     11, 11,      
-    12, 12,      
+    12, 12,     
     13, 13,      
 };
 
@@ -167,7 +166,7 @@ void Inflate::build_fixed_huffman_alphabet()
     build_huffman_alphabet(_fixed_dist_alphabet, _fixed_dist_code_bit_lengths);
 }
 
-JResult Inflate::build_dynamic_huffman_alphabet(IO::BitReader &input)
+HjResult Inflate::build_dynamic_huffman_alphabet(IO::BitReader &input)
 {
     Vector<unsigned int> code_length_of_code_length_order = {16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15};
     Vector<unsigned int> code_length_of_code_length = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
@@ -206,7 +205,6 @@ JResult Inflate::build_dynamic_huffman_alphabet(IO::BitReader &input)
 
         switch (decoded_value)
         {
-
         case 16:
             repeat_count = input.grab_bits(2) + 3;
             code_length_to_repeat = lit_len_and_dist_trees_unpacked.peek_back();
@@ -214,7 +212,6 @@ JResult Inflate::build_dynamic_huffman_alphabet(IO::BitReader &input)
         case 17:
             repeat_count = input.grab_bits(3) + 3;
             break;
-        // 11 - 138
         case 18:
             repeat_count = input.grab_bits(7) + 11;
             break;
@@ -240,15 +237,11 @@ JResult Inflate::build_dynamic_huffman_alphabet(IO::BitReader &input)
 
     build_huffman_alphabet(_lit_len_alphabet, _lit_len_code_bit_length);
     build_huffman_alphabet(_dist_alphabet, _dist_code_bit_length);
-    return JResult::SUCCESS;
+    return HjResult::SUCCESS;
 }
 
-}
-
-FLATTEN JResult Inflate::read_blocks(IO::Reader &reader, IO::Writer &uncompressed)
+FLATTEN HjResult Inflate::read_blocks(IO::Reader &reader, IO::Writer &uncompressed)
 {
-    // We use this as our sliding window. We should write directly into "uncompressed in the future"
-    // And limit the amount of data we keep in our sliding window (Dequeue would be nice)
     IO::MemoryWriter dest_writer{32768};
 
     uint8_t bfinal;
@@ -258,34 +251,27 @@ FLATTEN JResult Inflate::read_blocks(IO::Reader &reader, IO::Writer &uncompresse
         bfinal = bits.grab_bits(1);
         uint8_t btype = bits.grab_bits(2);
 
-        // Uncompressed block
         if (btype == BT_UNCOMPRESSED)
         {
-            // Align to byte bounadries
             bits.skip_bits(5);
 
             uint16_t len = TRY(IO::read<uint16_t>(reader));
 
-            // Skip complement of LEN
             TRY(IO::skip(reader, 2));
 
-            // copy the uncompressed data
             TRY(IO::copy(reader, dest_writer, len));
         }
         else if (btype == BT_FIXED_HUFFMAN || btype == BT_DYNAMIC_HUFFMAN)
         {
-            // Use a fixed huffman alphabet
             if (btype == BT_FIXED_HUFFMAN)
             {
                 build_fixed_huffman_alphabet();
-            }
-            // Use a dynamic huffman alphabet
+            }         
             else
             {
                 TRY(build_dynamic_huffman_alphabet(bits));
             }
 
-            // Do the actual huffman decoding
             HuffmanDecoder symbol_decoder(btype == BT_FIXED_HUFFMAN ? _fixed_alphabet : _lit_len_alphabet,
                                           btype == BT_FIXED_HUFFMAN ? _fixed_code_bit_lengths : _lit_len_code_bit_length);
 
@@ -297,12 +283,10 @@ FLATTEN JResult Inflate::read_blocks(IO::Reader &reader, IO::Writer &uncompresse
                 unsigned int decoded_symbol = symbol_decoder.decode(bits);
                 if (decoded_symbol <= 255)
                 {
-                    // Literal symbol
                     IO::write(dest_writer, decoded_symbol);
                 }
                 else if (decoded_symbol >= 257 && decoded_symbol <= 285)
                 {
-                    // Length code
                     unsigned int length_index = decoded_symbol - 257;
                     unsigned int total_length = BASE_LENGTHS[length_index] + bits.grab_bits(BASE_LENGTH_EXTRA_BITS[length_index]);
                     unsigned int dist_code = dist_decoder.decode(bits);
@@ -320,7 +304,6 @@ FLATTEN JResult Inflate::read_blocks(IO::Reader &reader, IO::Writer &uncompresse
                 }
                 else if (decoded_symbol == 256)
                 {
-                    // End code
                     break;
                 }
                 else
@@ -340,3 +323,12 @@ FLATTEN JResult Inflate::read_blocks(IO::Reader &reader, IO::Writer &uncompresse
     auto final_reader = IO::MemoryReader(Slice(dest_writer.slice()));
     return IO::copy(final_reader, uncompressed);
 }
+
+FLATTEN ResultOr<size_t> Inflate::perform(IO::Reader &compressed, IO::Writer &uncompressed)
+{
+    IO::ReadCounter counter{compressed};
+    TRY(read_blocks(counter, uncompressed));
+    return counter.count();
+}
+
+} 
