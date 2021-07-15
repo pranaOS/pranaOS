@@ -32,6 +32,12 @@ private:
     Vector<unsigned int> _dist_code_bit_length;
     Vector<unsigned int> _dist_alphabet;
 
+    void build_fixed_huffman_alphabet();
+    JResult build_dynamic_huffman_alphabet(IO::BitRead &input);
+    void build_huffman_alphabet(Vector<unsigned int> &alphabet, const Vector<unsigned int> &code_bit_lengths);
+    
+
+
 };
 
 }
