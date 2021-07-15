@@ -37,6 +37,9 @@ public:
 
     Widget::Variant data(int row, int column) override;
 
+    void update() override;
+
+    const ArchiveEntryInfo &info(int index) const;
 };
 
 }
