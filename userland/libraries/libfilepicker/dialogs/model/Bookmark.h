@@ -57,6 +57,22 @@ public:
         }
     }
 
+    bool operator==(const Bookmark &other) const 
+    {
+        return _path == other._path;
+    }
+
+    Json::Value serialize()
+    {
+        Json::Value::Object obj{};
+
+        obj["name"] = _name;
+        obj["icon"] = _icon->name();
+        obj["path"] = _path.string();
+
+        return obj;
+    }
+
 };
 
 }
