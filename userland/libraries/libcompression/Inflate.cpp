@@ -128,4 +128,43 @@ void Inflate::build_huffman_alphabet(Vector<unsigned int> &alphabet, const Vecto
     assign_huffman_codes(alphabet, code_bit_lengths, first_codes);
 }
 
+void Inflate::build_fixed_huffman_alphabet()
+{
+    if (_fixed_code_bit_lengths.count())
+    {
+        return;
+    }
+
+    _fixed_code_bit_lengths.resize(288);
+    _fixed_dist_code_bit_lengths.resize(32);
+
+    for (int i = 0; i <= 287; i++)
+    {
+        if (i >= 0 && i <= 143)
+        {
+            _fixed_code_bit_lengths[i] = 8;
+        }
+        else if (i >= 144 && i <= 255)
+        {
+            _fixed_code_bit_lengths[i] = 9;
+        }
+        else if (i >= 256 && i <= 279)
+        {
+            _fixed_code_bit_lengths[i] = 7;
+        }
+        else if (i >= 280 && i <= 287)
+        {
+            _fixed_code_bit_lengths[i] = 8;
+        }
+    }
+
+    for (int i = 0; i != 32; i++)
+    {
+        _fixed_dist_code_bit_lengths[i] = 5;
+    }
+
+    build_huffman_alphabet(_fixed_alphabet, _fixed_code_bit_lengths);
+    build_huffman_alphabet(_fixed_dist_alphabet, _fixed_dist_code_bit_lengths);
+}
+
 }
