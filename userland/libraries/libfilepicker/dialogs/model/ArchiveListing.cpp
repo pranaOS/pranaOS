@@ -42,5 +42,26 @@ int ArchiveListing::columns()
     return __COLUMN_COUNT;
 }
 
+String ArchiveListing::header(int column)
+{
+    switch (column)
+    {
+    case COLUMN_NAME:
+        return "Name";
+
+    case COLUMN_TYPE:
+        return "Type";
+
+    case COLUMN_COMPRESSED_SIZE:
+        return "Compressed Size";
+
+    case COLUMN_UNCOMPRESSED_SIZE:
+        return "Uncompressed Size";
+
+    default:
+        ASSERT_NOT_REACHED();
+    }
+}
+
 
 }
