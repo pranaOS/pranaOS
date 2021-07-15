@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: BSD-2-Clause
 */
 
-// includes
 #pragma once
 
 // includes
@@ -34,7 +33,7 @@ public:
         return _icon;
     }
 
-    const IO::Path &path const
+    const IO::Path &path() const
     {
         return _path;
     }
@@ -57,7 +56,14 @@ public:
         }
     }
 
-    bool operator==(const Bookmark &other) const 
+    Bookmark(const String &name, const RefPtr<Graphic::Icon> icon, const IO::Path &path)
+        : _name(name),
+          _icon(icon),
+          _path(path)
+    {
+    }
+
+    bool operator==(const Bookmark &other) const
     {
         return _path == other._path;
     }
@@ -72,7 +78,6 @@ public:
 
         return obj;
     }
-
 };
 
 }
