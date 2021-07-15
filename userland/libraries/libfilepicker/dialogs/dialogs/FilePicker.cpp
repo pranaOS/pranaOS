@@ -22,5 +22,12 @@ Dialog::Dialog(DialogFlags flags) : _flags(flags)
     buttons(Widget::DialogButton::OK | Widget::DialogButton::CANCEL);
 }
 
+String Dialog::get_title()
+{
+    return IO::format(
+        "{} {}",
+        _flags & DialogFlags::DIALOG_FLAGS_OPEN ? "Open" : "Save",
+        _flags & DialogFlags::DIALOG_FLAGS_FOLDER ? "folder" : "document");
+}
 
 }
