@@ -17,8 +17,10 @@ namespace FilePicker
 struct ArchiveEntryInfo
 {
     String name;
-    JFileType type;
+    HjFileType type;
     RefPtr<Graphic::Icon> icon;
+    size_t compressed_size;
+    size_t uncompressed_size;
 };
 
 }
