@@ -167,4 +167,82 @@ void Inflate::build_fixed_huffman_alphabet()
     build_huffman_alphabet(_fixed_dist_alphabet, _fixed_dist_code_bit_lengths);
 }
 
+JResult Inflate::build_dynamic_huffman_alphabet(IO::BitReader &input)
+{
+    Vector<unsigned int> code_length_of_code_length_order = {16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15};
+    Vector<unsigned int> code_length_of_code_length = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+
+    unsigned int hlit = input.grab_bits(5) + 257;
+    unsigned int hdist = input.grab_bits(5) + 1;
+    unsigned int hclen = input.grab_bits(4) + 4;
+
+    if (hlit > 286 || hdist > 30)
+    {
+        return ERR_INVALID_DATA;
+    }
+
+    for (unsigned int i = 0; i < hclen; i++)
+    {
+        code_length_of_code_length[code_length_of_code_length_order[i]] = input.grab_bits(3);
+    }
+
+    Vector<unsigned int> lit_len_and_dist_alphabets;
+    build_huffman_alphabet(lit_len_and_dist_alphabets, code_length_of_code_length);
+
+    Vector<unsigned int> lit_len_and_dist_trees_unpacked;
+    HuffmanDecoder huffman(lit_len_and_dist_alphabets, code_length_of_code_length);
+    while (lit_len_and_dist_trees_unpacked.count() < (hdist + hlit))
+    {
+        unsigned int decoded_value = huffman.decode(input);
+
+        // Everything below 16 corresponds directly to a codelength. See https://tools.ietf.org/html/rfc1951#section-3.2.7
+        if (decoded_value < 16)
+        {
+            lit_len_and_dist_trees_unpacked.push_back(decoded_value);
+            continue;
+        }
+
+        unsigned int repeat_count = 0;
+        unsigned int code_length_to_repeat = 0;
+
+        switch (decoded_value)
+        {
+        // 3-6
+        case 16:
+            repeat_count = input.grab_bits(2) + 3;
+            code_length_to_repeat = lit_len_and_dist_trees_unpacked.peek_back();
+            break;
+        // 3-10
+        case 17:
+            repeat_count = input.grab_bits(3) + 3;
+            break;
+        // 11 - 138
+        case 18:
+            repeat_count = input.grab_bits(7) + 11;
+            break;
+        }
+
+        for (unsigned int i = 0; i != repeat_count; i++)
+        {
+            lit_len_and_dist_trees_unpacked.push_back(code_length_to_repeat);
+        }
+    }
+
+    _lit_len_code_bit_length.resize(hlit);
+    for (unsigned int i = 0; i < _lit_len_code_bit_length.count(); i++)
+    {
+        _lit_len_code_bit_length[i] = lit_len_and_dist_trees_unpacked[i];
+    }
+
+    _dist_code_bit_length.resize(lit_len_and_dist_trees_unpacked.count() - hlit);
+    for (unsigned int i = 0; i < _dist_code_bit_length.count(); i++)
+    {
+        _dist_code_bit_length[i] = lit_len_and_dist_trees_unpacked[hlit + i];
+    }
+
+    build_huffman_alphabet(_lit_len_alphabet, _lit_len_code_bit_length);
+    build_huffman_alphabet(_dist_alphabet, _dist_code_bit_length);
+    return JResult::SUCCESS;
+}
+
 }
