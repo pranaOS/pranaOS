@@ -97,4 +97,23 @@ Widget::Variant ArchiveListing::data(int row, int column)
 }
 
 
+void ArchiveListing::update()
+{
+    _entries.clear();
+
+    auto current = _navigation->current();
+
+    for (const auto &entry : _archive->entries())
+    {
+        auto &entry_info = _entries.emplace_back();
+        entry_info.compressed_size = entry.compressed_size;
+        entry_info.uncompressed_size = entry.uncompressed_size;
+        entry_info.type = HJ_FILE_TYPE_REGULAR;
+        entry_info.name = entry.name;
+        entry_info.icon = Graphic::Icon::get("file");
+    }
+
+    did_update();
+}
+
 }
