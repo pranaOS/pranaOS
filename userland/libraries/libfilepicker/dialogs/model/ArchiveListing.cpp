@@ -63,5 +63,38 @@ String ArchiveListing::header(int column)
     }
 }
 
+Widget::Variant ArchiveListing::data(int row, int column)
+{
+    auto &entry = _entries[row];
+
+    switch (column)
+    {
+    case COLUMN_NAME:
+        return Widget::Variant(entry.name.cstring()).with_icon(entry.icon);
+
+    case COLUMN_TYPE:
+        switch (entry.type)
+        {
+        case HJ_FILE_TYPE_REGULAR:
+            return "Regular file";
+
+        case HJ_FILE_TYPE_DIRECTORY:
+            return "Directory";
+
+        default:
+            return "Special file";
+        }
+
+    case COLUMN_COMPRESSED_SIZE:
+        return Widget::Variant((int)entry.compressed_size);
+
+    case COLUMN_UNCOMPRESSED_SIZE:
+        return Widget::Variant((int)entry.uncompressed_size);
+
+    default:
+        ASSERT_NOT_REACHED();
+    }
+}
+
 
 }
