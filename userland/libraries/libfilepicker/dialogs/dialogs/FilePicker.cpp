@@ -18,7 +18,7 @@ namespace FilePicker
 Dialog::Dialog(DialogFlags flags) : _flags(flags)
 {
     _navigation = make<Navigation>();
-    _navigation->go_home_dont_record_histroy();
+    _navigation->go_home_dont_record_history();
     buttons(Widget::DialogButton::OK | Widget::DialogButton::CANCEL);
 }
 
@@ -65,4 +65,20 @@ void Dialog::render(Widget::Window *window)
 
     create_buttons(action_container);
 }
+
+void Dialog::on_button(Widget::DialogButton btn)
+{
+    if (btn == Widget::DialogButton::OK)
+    {
+        if (_flags & DialogFlags::DIALOG_FLAGS_OPEN)
+        {
+            _selected_file = _browser->selected_path();
+        }
+        else
+        {
+            _selected_file = IO::Path::join(_navigation->current(), _text_field->text()).string();
+        }
+    }
+}
+
 }
