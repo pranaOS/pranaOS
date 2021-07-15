@@ -5,7 +5,8 @@
 */
 
 #pragma once
-// 
+
+// includes
 #include <libabi/Result.h>
 #include <libio/BitReader.h>
 #include <libio/Read.h>
@@ -22,11 +23,13 @@ namespace Compression
 struct Inflate
 {
 private:
+    // Fixed huffmann
     Vector<unsigned int> _fixed_alphabet;
     Vector<unsigned int> _fixed_code_bit_lengths;
     Vector<unsigned int> _fixed_dist_alphabet;
     Vector<unsigned int> _fixed_dist_code_bit_lengths;
 
+    // Dynamic huffmann
     Vector<unsigned int> _lit_len_alphabet;
     Vector<unsigned int> _lit_len_code_bit_length;
     Vector<unsigned int> _dist_code_bit_length;
@@ -41,4 +44,9 @@ private:
     void assign_huffman_codes(Vector<unsigned int> &assigned_codes, const Vector<unsigned int> &code_bit_lengths, HashMap<unsigned int, unsigned int> &first_codes);
 
     JResult read_blocks(IO::Reader &reader, IO::Writer &uncompressed);
+
+public:
+    ResultOr<size_t> perform(IO::Reader &compressed, IO::Writer &uncompressed);
+};
+
 }
