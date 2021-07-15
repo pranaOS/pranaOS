@@ -74,4 +74,32 @@ static constexpr uint8_t BASE_DISTANCE_EXTRA_BITS[] = {
     13, 13,      
 };
 
+void Inflate::get_bit_length_count(HashMap<unsigned int, unsigned int> &bit_length_count, const Vector<unsigned int> &code_bit_lengths)
+{
+    for (unsigned int i = 0; i != code_bit_lengths.count(); i++)
+    {
+        bit_length_count[code_bit_lengths[i]] = 0;
+    }
+
+    for (unsigned int i = 0; i != code_bit_lengths.count(); i++)
+    {
+        bit_length_count[code_bit_lengths[i]]++;
+    }
+}
+
+void Inflate::get_first_code(HashMap<unsigned int, unsigned int> &first_codes, HashMap<unsigned int, unsigned int> &bit_length_count)
+{
+    unsigned int code = 0;
+    unsigned int prev_bl_count = 0;
+    for (unsigned int i = 1; i <= (unsigned int)bit_length_count.count(); i++)
+    {
+        if (i >= 2)
+        {
+            prev_bl_count = bit_length_count[i - 1];
+        }
+        code = (code + prev_bl_count) << 1;
+        first_codes[i] = code;
+    }
+}
+
 }
