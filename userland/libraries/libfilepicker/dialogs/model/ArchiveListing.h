@@ -25,6 +25,18 @@ private:
     RefPtr<Archive> _archive;
     Vector<ArchiveEntryInfo> _entries{};
     OwnPtr<Async::Observer<Navigation>> _observer;
+
+public:
+    ArchiveListing(RefPtr<Navigation> navigation, RefPtr<Archive> archive);
+
+    int rows() override;
+
+    int columns() override;
+
+    String header(int column) override;
+
+    Widget::Variant data(int row, int column) override;
+
 };
 
 }
