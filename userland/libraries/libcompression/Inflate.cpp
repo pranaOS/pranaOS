@@ -195,7 +195,6 @@ JResult Inflate::build_dynamic_huffman_alphabet(IO::BitReader &input)
     {
         unsigned int decoded_value = huffman.decode(input);
 
-        // Everything below 16 corresponds directly to a codelength. See https://tools.ietf.org/html/rfc1951#section-3.2.7
         if (decoded_value < 16)
         {
             lit_len_and_dist_trees_unpacked.push_back(decoded_value);
@@ -207,12 +206,11 @@ JResult Inflate::build_dynamic_huffman_alphabet(IO::BitReader &input)
 
         switch (decoded_value)
         {
-        // 3-6
+
         case 16:
             repeat_count = input.grab_bits(2) + 3;
             code_length_to_repeat = lit_len_and_dist_trees_unpacked.peek_back();
             break;
-        // 3-10
         case 17:
             repeat_count = input.grab_bits(3) + 3;
             break;
@@ -245,4 +243,100 @@ JResult Inflate::build_dynamic_huffman_alphabet(IO::BitReader &input)
     return JResult::SUCCESS;
 }
 
+}
+
+FLATTEN JResult Inflate::read_blocks(IO::Reader &reader, IO::Writer &uncompressed)
+{
+    // We use this as our sliding window. We should write directly into "uncompressed in the future"
+    // And limit the amount of data we keep in our sliding window (Dequeue would be nice)
+    IO::MemoryWriter dest_writer{32768};
+
+    uint8_t bfinal;
+    IO::BitReader bits{reader};
+    do
+    {
+        bfinal = bits.grab_bits(1);
+        uint8_t btype = bits.grab_bits(2);
+
+        // Uncompressed block
+        if (btype == BT_UNCOMPRESSED)
+        {
+            // Align to byte bounadries
+            bits.skip_bits(5);
+
+            uint16_t len = TRY(IO::read<uint16_t>(reader));
+
+            // Skip complement of LEN
+            TRY(IO::skip(reader, 2));
+
+            // copy the uncompressed data
+            TRY(IO::copy(reader, dest_writer, len));
+        }
+        else if (btype == BT_FIXED_HUFFMAN || btype == BT_DYNAMIC_HUFFMAN)
+        {
+            // Use a fixed huffman alphabet
+            if (btype == BT_FIXED_HUFFMAN)
+            {
+                build_fixed_huffman_alphabet();
+            }
+            // Use a dynamic huffman alphabet
+            else
+            {
+                TRY(build_dynamic_huffman_alphabet(bits));
+            }
+
+            // Do the actual huffman decoding
+            HuffmanDecoder symbol_decoder(btype == BT_FIXED_HUFFMAN ? _fixed_alphabet : _lit_len_alphabet,
+                                          btype == BT_FIXED_HUFFMAN ? _fixed_code_bit_lengths : _lit_len_code_bit_length);
+
+            HuffmanDecoder dist_decoder(btype == BT_FIXED_HUFFMAN ? _fixed_dist_alphabet : _dist_alphabet,
+                                        btype == BT_FIXED_HUFFMAN ? _fixed_dist_code_bit_lengths : _dist_code_bit_length);
+
+            while (true)
+            {
+                unsigned int decoded_symbol = symbol_decoder.decode(bits);
+                if (decoded_symbol <= 255)
+                {
+                    // Literal symbol
+                    IO::write(dest_writer, decoded_symbol);
+                }
+                else if (decoded_symbol >= 257 && decoded_symbol <= 285)
+                {
+                    // Length code
+                    unsigned int length_index = decoded_symbol - 257;
+                    unsigned int total_length = BASE_LENGTHS[length_index] + bits.grab_bits(BASE_LENGTH_EXTRA_BITS[length_index]);
+                    unsigned int dist_code = dist_decoder.decode(bits);
+
+                    Assert::lower_than(dist_code, 30);
+
+                    unsigned int total_dist = BASE_DISTANCE[dist_code] + bits.grab_bits(BASE_DISTANCE_EXTRA_BITS[dist_code]);
+
+                    for (unsigned int i = 0; i != total_length; i++)
+                    {
+                        size_t offset = TRY(dest_writer.length()) - total_dist;
+                        uint8_t val = dest_writer.buffer()[offset];
+                        IO::write(dest_writer, val);
+                    }
+                }
+                else if (decoded_symbol == 256)
+                {
+                    // End code
+                    break;
+                }
+                else
+                {
+                    IO::logln("Invalid decoded symbol: {}", decoded_symbol);
+                    return ERR_INVALID_DATA;
+                }
+            }
+        }
+        else
+        {
+            IO::logln("Invalid block type: {}", btype);
+            return ERR_INVALID_DATA;
+        }
+    } while (!bfinal);
+
+    auto final_reader = IO::MemoryReader(Slice(dest_writer.slice()));
+    return IO::copy(final_reader, uncompressed);
 }
