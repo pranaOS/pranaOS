@@ -39,6 +39,24 @@ public:
         return _path;
     }
 
+    Bookmark(const Json::Value &value)
+    {
+        if (value.is(Json::OBJECT))
+        {
+            value.with("name", [&](auto &value) {
+                _name = value.as_string();
+            });
+
+            value.with("icon", [&](auto &value) {
+                _icon = Graphic::Icon::get(value.as_string());
+            });
+
+            value.with("path", [&](auto &value) {
+                _path = IO::Path::parse(value.as_string());
+            });
+        }
+    }
+
 };
 
 }
