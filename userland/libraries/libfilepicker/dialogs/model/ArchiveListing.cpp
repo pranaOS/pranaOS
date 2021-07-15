@@ -32,5 +32,15 @@ ArchiveListing::ArchiveListing(RefPtr<Navigation> navigation, RefPtr<Archive> ar
     update();
 }
 
+int ArchiveListing::rows()
+{
+    return _entries.count();
+}
+
+int ArchiveListing::columns()
+{
+    return __COLUMN_COUNT;
+}
+
 
 }
