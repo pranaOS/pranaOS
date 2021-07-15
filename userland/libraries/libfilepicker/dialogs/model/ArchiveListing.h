@@ -1,0 +1,30 @@
+/*
+ * Copyright (c) 2021, Krisna Pranav
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+*/
+
+
+#pragma once
+
+// includes
+#include <libio/Path.h>
+#include <libutils/Vector.h>
+#include <libwidget/model/TableModel.h>
+#include <libfilepicker/model/ArchiveEntryInfo.h>
+#include <libfilepicker/model/Navigation.h>
+#include <libfile/Archive.h>
+
+namespace FilePicker
+{
+
+struct ArchiveListing : public Widget::TableModel
+{
+private:
+    RefPtr<Navigation> _navigation;
+    RefPtr<Archive> _archive;
+    Vector<ArchiveEntryInfo> _entries{};
+    OwnPtr<Async::Observer<Navigation>> _observer;
+};
+
+}
