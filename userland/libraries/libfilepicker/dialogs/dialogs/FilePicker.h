@@ -33,6 +33,16 @@ private:
     RefPtr<Widget::TextField> _text_field;
 
     String get_title();
+
+public:
+    Dialog(DialogFlags flags = DIALOG_FLAGS_OPEN);
+
+    virtual ~Dialog() {}
+
+    Optional<String> selected_file() const { return _selected_file; }
+
+    virtual void render(Widget::Window *window) override;
+    virtual void on_button(Widget::DialogButton btn) override;
 };
 
 }
