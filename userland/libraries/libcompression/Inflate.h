@@ -33,11 +33,12 @@ private:
     Vector<unsigned int> _dist_alphabet;
 
     void build_fixed_huffman_alphabet();
-    JResult build_dynamic_huffman_alphabet(IO::BitRead &input);
+    JResult build_dynamic_huffman_alphabet(IO::BitReader &input);
     void build_huffman_alphabet(Vector<unsigned int> &alphabet, const Vector<unsigned int> &code_bit_lengths);
-    
 
+    void get_bit_length_count(HashMap<unsigned int, unsigned int> &bit_length_count, const Vector<unsigned int> &code_bit_lengths);
+    void get_first_code(HashMap<unsigned int, unsigned int> &firstCodes, HashMap<unsigned int, unsigned int> &bit_length_count);
+    void assign_huffman_codes(Vector<unsigned int> &assigned_codes, const Vector<unsigned int> &code_bit_lengths, HashMap<unsigned int, unsigned int> &first_codes);
 
-};
-
+    JResult read_blocks(IO::Reader &reader, IO::Writer &uncompressed);
 }
