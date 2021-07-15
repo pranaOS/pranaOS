@@ -21,4 +21,16 @@ enum Column
 
     __COLUMN_COUNT,
 };
+
+ArchiveListing::ArchiveListing(RefPtr<Navigation> navigation, RefPtr<Archive> archive)
+    : _navigation(navigation), _archive(archive)
+{
+    _observer = navigation->observe([this](auto &) {
+        update();
+    });
+
+    update();
+}
+
+
 }
