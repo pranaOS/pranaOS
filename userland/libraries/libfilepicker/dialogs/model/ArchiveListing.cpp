@@ -96,7 +96,6 @@ Widget::Variant ArchiveListing::data(int row, int column)
     }
 }
 
-
 void ArchiveListing::update()
 {
     _entries.clear();
@@ -114,6 +113,11 @@ void ArchiveListing::update()
     }
 
     did_update();
+}
+
+const ArchiveEntryInfo &ArchiveListing::info(int index) const
+{
+    return _entries[index];
 }
 
 }
