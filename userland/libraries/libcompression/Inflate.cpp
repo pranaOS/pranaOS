@@ -102,4 +102,21 @@ void Inflate::get_first_code(HashMap<unsigned int, unsigned int> &first_codes, H
     }
 }
 
+void Inflate::assign_huffman_codes(Vector<unsigned int> &assigned_codes, const Vector<unsigned int> &code_bit_lengths, HashMap<unsigned int, unsigned int> &first_codes)
+{
+    assigned_codes.resize(code_bit_lengths.count());
+
+    for (unsigned int i = 0; i < (unsigned int)code_bit_lengths.count(); i++)
+    {
+        if (code_bit_lengths[i])
+        {
+            assigned_codes[i] = first_codes[code_bit_lengths[i]]++;
+        }
+        else
+        {
+            assigned_codes[i] = 0;
+        }
+    }
+}
+
 }
