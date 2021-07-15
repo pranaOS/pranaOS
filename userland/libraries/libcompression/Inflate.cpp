@@ -119,4 +119,13 @@ void Inflate::assign_huffman_codes(Vector<unsigned int> &assigned_codes, const V
     }
 }
 
+void Inflate::build_huffman_alphabet(Vector<unsigned int> &alphabet, const Vector<unsigned int> &code_bit_lengths)
+{
+    HashMap<unsigned int, unsigned int> bit_length_count, first_codes;
+
+    get_bit_length_count(bit_length_count, code_bit_lengths);
+    get_first_code(first_codes, bit_length_count);
+    assign_huffman_codes(alphabet, code_bit_lengths, first_codes);
+}
+
 }
