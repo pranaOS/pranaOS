@@ -12,12 +12,12 @@
 namespace FilePicker
 {
 
-const Vector<Bookmark> &Bookmarks::all() const 
+const Vector<Bookmark> &Bookmarks::all() const
 {
     return _bookmarks;
 }
 
-void Bookmarks::add(Bookmarks &&bookmark)
+void Bookmarks::add(Bookmark &&bookmark)
 {
     _bookmarks.push_back(bookmark);
     did_update();
@@ -73,6 +73,25 @@ RefPtr<Bookmarks> Bookmarks::load()
     }
 
     return bookmarks;
+}
+
+void Bookmarks::save()
+{
+    Json::Value::Array array;
+
+    for (size_t i = 0; i < _bookmarks.count(); i++)
+    {
+        array.push_back(_bookmarks[i].serialize());
+    }
+
+    IO::File file{"/Configs/file-manager/bookmarks.json", HJ_OPEN_WRITE | HJ_OPEN_CREATE};
+
+    if (!file.exist())
+    {
+        return;
+    }
+
+    IO::write(file, Json::stringify(array));
 }
 
 }
