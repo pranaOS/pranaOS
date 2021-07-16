@@ -26,7 +26,15 @@ private:
     OnwPtr<Async::Observer<Navigation>> _observer;
     Func<bool(IO::Directory::Entry &)> _filter;
 
+public:
+    FilesystemModel(RefPtr<Navigation> navigation, Func<bool(IO::Directory::Entry &)> filter = nullptr);
 
-}
+    String header(int column) override;
+
+    Widget::Variant data(int row, int column) override;
+
+    const FileInfo &info(int index) const;
+
+};
 
 }
