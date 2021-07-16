@@ -75,4 +75,15 @@ FilesystemModel::FilesystemModel(RefPtr<Navigation> navigation, Func<bool(IO::Di
     update();
 }
 
+int FilesystemModel::rows()
+{
+    return _files.count();
+}
+
+int FilesystemModel::columns()
+{
+    return __COLUMN_COUNT;
+}
+
+
 }
