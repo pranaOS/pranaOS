@@ -11,7 +11,7 @@
 #include <libutils/Vector.h>
 #include <libfilepicker/model/Bookmark.h>
 
-namespace FilePicke 
+namespace FilePicker
 {
 
 struct Bookmarks :
@@ -19,7 +19,7 @@ struct Bookmarks :
     public RefCounted<Bookmarks>
 {
 private:
-    Vector<Bookmarks> _bookmarks{};
+    Vector<Bookmark> _bookmarks{};
 
 public:
     Bookmarks()
@@ -32,8 +32,11 @@ public:
 
     void remove(const IO::Path &path);
 
+    bool has(const IO::Path &path) const;
+
     static RefPtr<Bookmarks> load();
 
+    void save();
 };
 
 }
