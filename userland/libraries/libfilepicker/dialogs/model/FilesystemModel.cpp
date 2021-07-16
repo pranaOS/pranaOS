@@ -85,5 +85,20 @@ int FilesystemModel::columns()
     return __COLUMN_COUNT;
 }
 
+String FilesystemMode::header(int column)
+{
+    switch (column)
+    {
+    case COLUMN_NAME:
+        return "Name";
+    case COLUMN_TYPE:
+        return "Type";
+    case COLUMN_SIZE:
+        return "Size";
+    
+    default:
+        ASSERT_NOT_REACHED();
+    }
+}
 
 }
