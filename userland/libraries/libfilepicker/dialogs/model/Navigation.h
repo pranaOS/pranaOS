@@ -38,6 +38,18 @@ public:
 
     bool can_go_up();
 
+    void go_up();
+
+    bool can_go_backward();
+
+    void go_backward();
+    
+    bool can_go_forward();
+
+    void go_forward();
+    
+    void go_home();
+
 };
 
 }
