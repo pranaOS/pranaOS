@@ -20,6 +20,20 @@ struct Bookmarks :
 {
 private:
     Vector<Bookmarks> _bookmarks{};
-}
+
+public:
+    Bookmarks()
+    {
+    }
+
+    const Vector<Bookmark> &all() const;
+
+    void add(Bookmark &&bookmark);
+
+    void remove(const IO::Path &path);
+
+    static RefPtr<Bookmarks> load();
+
+};
 
 }
