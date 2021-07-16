@@ -101,4 +101,44 @@ String FilesystemMode::header(int column)
     }
 }
 
+Widget::Variant FilesystemModel::data(int row, int column)
+{
+    auto &entry = _files[row];
+
+    switch (column)
+    {
+    case COLUMN_NAME:
+        return Widget::Variant(entry.name.cstring()).with_icon(entry.icon);
+
+    case COLUMN_TYPE:
+        switch (entry.type)
+        {
+        case HJ_FILE_TYPE_REGULAR:
+            return "Regular file";
+
+        case HJ_FILE_TYPE_DIRECTORY:
+            return "Directory";
+
+        case HJ_FILE_TYPE_DEVICE:
+            return "Device";
+
+        default:
+            return "Special file";
+        }
+
+    case COLUMN_SIZE:
+        if (entry.type == HJ_FILE_TYPE_DIRECTORY)
+        {
+            return Widget::Variant(IO::format("{} Items", entry.size));
+        }
+        else
+        {
+            return Widget::Variant(IO::format("{} Bytes", entry.size));
+        }
+
+    default:
+        ASSERT_NOT_REACHED();
+    }
+}
+
 }
