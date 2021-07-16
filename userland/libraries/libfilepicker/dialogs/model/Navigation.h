@@ -25,11 +25,11 @@ private:
     Vector<IO::Path> _foreward{};
 
 public:
-    enum Directrion
+    enum Direction
     {
         NONE,
         BACKWARD,
-        FORWARD
+        FOREWARD
     };
 
     const IO::Path &current() const { return _current; }
@@ -43,13 +43,24 @@ public:
     bool can_go_backward();
 
     void go_backward();
-    
+
     bool can_go_forward();
 
     void go_forward();
-    
+
     void go_home();
 
+    void go_home_dont_record_history();
+
+    void refresh();
+
+    void navigate(String directory);
+
+    void navigate(IO::Path path);
+
+    void navigate(IO::Path path, Direction record_history);
+
+    void clear_foreward();
 };
 
-}
+} 
