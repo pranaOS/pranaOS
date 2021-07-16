@@ -24,6 +24,19 @@ private:
     IO::Path _current{};
     Vector<IO::Path> _foreward{};
 
+public:
+    enum Directrion
+    {
+        NONE,
+        BACKWARD,
+        FORWARD
+    };
+
+    const IO::Path &current() const { return _current; }
+
+    Navigation();
+
+    bool can_go_up();
 
 };
 
