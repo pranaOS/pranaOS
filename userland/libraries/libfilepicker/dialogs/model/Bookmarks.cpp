@@ -49,5 +49,30 @@ bool Bookmarks::has(const IO::Path &path) const
     return false;
 }
 
+RefPtr<Bookmarks> Bookmarks::load()
+{
+    auto bookmarks = make<Bookmarks>();
+
+    IO::File bookmarks_file{"/Configs/file-manager/bookmarks.json", HJ_OPEN_READ};
+
+    if (!bookmarks_file.exist())
+    {
+        return bookmarks;
+    }
+
+    auto raw_bookmarks = Json::parse(bookmarks_file);
+
+    if (!raw_bookmarks.is(Json::ARRAY))
+    {
+        return bookmarks;
+    }
+
+    for (size_t i = 0; i < raw_bookmarks.length(); i++)
+    {
+        bookmarks->add(raw_bookmarks.get(i));
+    }
+
+    return bookmarks;
+}
 
 }
