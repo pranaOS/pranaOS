@@ -55,4 +55,14 @@ static auto get_icon_for_node(String current_directory, IO::Directory::Entry &en
     }
 }
 
+
+enum Column
+{
+    COLUMN_NAME,
+    COLUMN_TYPE,
+    COLUMN_SIZE,
+
+    __COLUMN_COUNT,
+};
+
 }
