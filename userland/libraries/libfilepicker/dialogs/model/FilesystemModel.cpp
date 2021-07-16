@@ -6,6 +6,7 @@
 
 // includes
 #include <string.h>
+
 #include <libfilepicker/model/FilesystemModel.h>
 #include <libio/File.h>
 #include <libio/Format.h>
@@ -55,7 +56,6 @@ static auto get_icon_for_node(String current_directory, IO::Directory::Entry &en
     }
 }
 
-
 enum Column
 {
     COLUMN_NAME,
@@ -85,17 +85,19 @@ int FilesystemModel::columns()
     return __COLUMN_COUNT;
 }
 
-String FilesystemMode::header(int column)
+String FilesystemModel::header(int column)
 {
     switch (column)
     {
     case COLUMN_NAME:
         return "Name";
+
     case COLUMN_TYPE:
         return "Type";
+
     case COLUMN_SIZE:
         return "Size";
-    
+
     default:
         ASSERT_NOT_REACHED();
     }
@@ -181,5 +183,9 @@ void FilesystemModel::update()
     did_update();
 }
 
+const FileInfo &FilesystemModel::info(int index) const
+{
+    return _files[index];
+}
 
 }
