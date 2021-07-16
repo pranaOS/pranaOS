@@ -141,4 +141,45 @@ Widget::Variant FilesystemModel::data(int row, int column)
     }
 }
 
+void FilesystemModel::update()
+{
+    _files.clear();
+
+    IO::Directory directory{_navigation->current()};
+
+    if (!directory.exist())
+    {
+        return;
+    }
+
+    for (auto entry : directory.entries())
+    {
+        if (_filter && !_filter(entry))
+        {
+            continue;
+        }
+
+        size_t size = entry.stat.size;
+
+        if (entry.stat.type == HJ_FILE_TYPE_DIRECTORY)
+        {
+            auto path = IO::Path::join(_navigation->current(), entry.name);
+            IO::Directory subdirectory{path};
+            size = subdirectory.entries().count();
+        }
+
+        FileInfo node{
+            .name = entry.name,
+            .type = entry.stat.type,
+            .icon = get_icon_for_node(_navigation->current().string(), entry),
+            .size = size,
+        };
+
+        _files.push_back(node);
+    }
+
+    did_update();
+}
+
+
 }
