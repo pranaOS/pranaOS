@@ -7,9 +7,9 @@ on:
     branches: [ master ]
 
 env:
-  PRANAOS_SOURCE_DIR: ${{ github.workspace }}
+#  PRANAOS_SOURCE_DIR: ${{ github.workspace }}
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
-#  BUILD_TYPE: Release
+  BUILD_TYPE: Release
 
 jobs:
   build:
