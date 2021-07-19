@@ -31,7 +31,14 @@ public:
         return *allocated;
     }
 
+    [[nodiscard]] size_t current_offset() const
+    {
+        return m_offset;
+    }
 
+private:
+    Bytes m_target;
+    size_t m_offset { 0 };
 
 };
 
