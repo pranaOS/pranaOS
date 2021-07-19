@@ -1,8 +1,8 @@
 /*
- * Copyright (c) 2018-2020, Andreas Kling <kling@serenityos.org>
+ * Copyright (c) 2021, Krisna Pranav
  *
  * SPDX-License-Identifier: BSD-2-Clause
- */
+*/
 
 #pragma once
 
@@ -162,8 +162,6 @@ public:
 
     T exchange(T desired, MemoryOrder order = DefaultMemoryOrder) volatile noexcept
     {
-        // We use this hack to prevent unnecessary initialization, even if T has a default constructor.
-        // NOTE: Will need to investigate if it pessimizes the generated assembly.
         alignas(T) u8 buffer[sizeof(T)];
         T* ret = reinterpret_cast<T*>(buffer);
         __atomic_exchange(&m_value, &desired, ret, order);
