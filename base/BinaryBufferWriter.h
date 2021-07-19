@@ -6,15 +6,12 @@
 
 #pragma once
 
-// includes
 #include <base/Span.h>
 #include <base/StdLibExtraDetails.h>
 
-namespace Base 
-{
+namespace Base {
 
-class BinaryBufferWriter
-{
+class BinaryBufferWriter {
 public:
     BinaryBufferWriter(Bytes target)
         : m_target(target)
@@ -31,6 +28,12 @@ public:
         return *allocated;
     }
 
+    void skip_bytes(size_t num_bytes)
+    {
+        VERIFY(m_offset + num_bytes <= m_target.size());
+        m_offset += num_bytes;
+    }
+
     [[nodiscard]] size_t current_offset() const
     {
         return m_offset;
@@ -39,7 +42,6 @@ public:
 private:
     Bytes m_target;
     size_t m_offset { 0 };
-
 };
 
 }
