@@ -225,8 +225,8 @@ jobs:
     # Ignore for now, since the other step dominates
     - name: Create build environment (fuzz)
       working-directory: ${{ github.workspace }}/Meta/Lagom
+      shell: mkdir -P Build
       run: |
-        mkdir -p Build
         cd Build
         cmake -GNinja -DBUILD_LAGOM=ON -DENABLE_FUZZER_SANITIZER=ON -DENABLE_ADDRESS_SANITIZER=ON -DENABLE_PCI_IDS_DOWNLOAD=OFF -DENABLE_USB_IDS_DOWNLOAD=OFF -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ ..
       if: ${{ matrix.with-fuzzers == 'FUZZ' }}
