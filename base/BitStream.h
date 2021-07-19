@@ -146,6 +146,33 @@ private:
     InputStream& m_stream;
 };
 
+class OutputBitStream final : public OutputStream {
+public:
+    explicit OutputBitStream(OutputStream stream)
+        : m_stream(stream)
+    {
+    }
+    
+    size_t write(ReadonlyBytes bytes) override
+    {
+        if (has_any_error())
+            return 0;
+        align_to_byte_boundary();
+        if (has_fatal_error())
+            return 0;
+        return m_stream.write(bytes);
+    }
+
+    bool write_or_error(ReadonlyBytes bytes) override
+    {
+        if (write(bytes) < bytes.size()) {
+            set_fatal_error();
+            return false;
+        }
+        return true;
+    }
+}
+
 
 }
 
