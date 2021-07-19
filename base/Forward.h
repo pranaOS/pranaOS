@@ -6,6 +6,7 @@
 
 #pragma once
 
+// includes
 #include <base/Types.h>
 
 namespace Base {
@@ -118,9 +119,56 @@ template<typename T>
 class OwnPtr;
 
 template<typename T>
-class WeakPtr;
+class WeBasePtr;
 
 template<typename T, size_t inline_capacity = 0>
 requires(!IsRvalueReference<T>) class Vector;
 
 }
+
+using Base::Array;
+using Base::Atomic;
+using Base::Badge;
+using Base::Bitmap;
+using Base::ByteBuffer;
+using Base::Bytes;
+using Base::CircularDuplexStream;
+using Base::CircularQueue;
+using Base::DoublyLinkedList;
+using Base::DuplexMemoryStream;
+using Base::FixedArray;
+using Base::FlyString;
+using Base::Function;
+using Base::HashMap;
+using Base::HashTable;
+using Base::InputBitStream;
+using Base::InputMemoryStream;
+using Base::InputStream;
+using Base::IPv4Address;
+using Base::JsonArray;
+using Base::JsonObject;
+using Base::JsonValue;
+using Base::NonnullOwnPtr;
+using Base::NonnullOwnPtrVector;
+using Base::NonnullRefPtr;
+using Base::NonnullRefPtrVector;
+using Base::Optional;
+using Base::OutputBitStream;
+using Base::OutputMemoryStream;
+using Base::OutputStream;
+using Base::OwnPtr;
+using Base::ReadonlyBytes;
+using Base::RefPtr;
+using Base::SinglyLinkedList;
+using Base::Span;
+using Base::StackInfo;
+using Base::String;
+using Base::StringBuilder;
+using Base::StringImpl;
+using Base::StringView;
+using Base::Time;
+using Base::Traits;
+using Base::URL;
+using Base::Utf32View;
+using Base::Utf8View;
+using Base::Vector;
