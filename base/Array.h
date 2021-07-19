@@ -24,6 +24,18 @@ struct Array
     constexpr Span<const T> span() const { return { __data, Size}; }
     constexpr Span<T> span() { return {__data, Size }; }
 
+    constexpr const T& at(size_t index) const
+    {
+        VERIFY(index < size());
+        return __data[index];
+    }
+
+    constexpr T& at(size_t index)
+    {
+        VERIFY(index < size());
+        return __data[index];
+    }
+
     constexpr const T& front() const { return at(0); }
     constexpr T& front() { return at(0); }
 
