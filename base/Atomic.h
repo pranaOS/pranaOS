@@ -46,5 +46,22 @@ static inline V* atomic_exchange(volatile T** var, std::nullptr_t, MemoryOrder o
 return __atomic_exchange_n(const_cast<V**>(var), nullptr, order);
 }
 
+template<typename T>
+[[nodiscard]] static inline bool atomic_compare_exchange_strong(volatile T* var, T& expected, T desired, MemoryOrder order = memory_order_seq_cst) noexcept
+{
+if (order == memory_order_acq_rel || order == memory_order_release)
+return __atomic_compare_exchange_n(var, &expected, desired, false, memory_order_release, memory_order_acquire);
+else
+return __atomic_compare_exchange_n(var, &expected, desired, false, order, order);
+}
+
+template<typename T, typename V = RemoveVolatile<T>>
+[[nodiscard]] static inline bool atomic_compare_exchange_strong(volatile T** var, V*& expected, V* desired, MemoryOrder order = memory_order_seq_cst) noexcept
+{
+if (order == memory_order_acq_rel || order == memory_order_release)
+return __atomic_compare_exchange_n(var, &expected, desired, false, memory_order_release, memory_order_acquire);
+else
+return __atomic_compare_exchange_n(var, &expected, desired, false, order, order);
+}
 
 }
