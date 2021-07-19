@@ -19,6 +19,9 @@ ninja gcc compiler needed
 # Building pranaOS:
 See the [pranaOS build instructions](https://github.com/pranaOS/pranaOS/blob/master/docs/build.md)
 
+# Contributions:
+- this is an open source project so you can contribute to it :) 
+
 # Contributors:
 
 <a href="https://github.com/pranaOS/pranaOS/graphs/contributors">
