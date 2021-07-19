@@ -98,7 +98,66 @@ public:
 
     const u8* data() const { return m_data; }
 
-    
+        template<bool VALUE>
+    Optional<size_t> find_one_anywhere(size_t hint = 0) const
+    {
+        VERIFY(hint < m_size);
+        const u8* end = &m_data[m_size / 8];
+
+        for (;;) {
+            const u32* ptr32 = (const u32*)((FlatPtr)&m_data[hint / 8] & ~(sizeof(u32) - 1));
+            if ((const u8*)ptr32 < &m_data[0]) {
+                ptr32++;
+
+                size_t start_ptr32 = (const u8*)ptr32 - &m_data[0];
+                size_t i = 0;
+                u8 byte = VALUE ? 0x00 : 0xff;
+                while (i < start_ptr32 && m_data[i] == byte)
+                    i++;
+                if (i < start_ptr32) {
+                    byte = m_data[i];
+                    if constexpr (!VALUE)
+                        byte = ~byte;
+                    VERIFY(byte != 0);
+                    return i * 8 + __builtin_ffs(byte) - 1;
+                }
+            }
+
+            u32 val32 = VALUE ? 0x0 : 0xffffffff;
+            const u32* end32 = (const u32*)((FlatPtr)end & ~(sizeof(u32) - 1));
+            while (ptr32 < end32 && *ptr32 == val32)
+                ptr32++;
+
+            if (ptr32 == end32) {
+
+                u8 byte = VALUE ? 0x00 : 0xff;
+                size_t i = (const u8*)ptr32 - &m_data[0];
+                size_t byte_count = m_size / 8;
+                VERIFY(i <= byte_count);
+                while (i < byte_count && m_data[i] == byte)
+                    i++;
+                if (i == byte_count) {
+                    if (hint <= 8)
+                        return {}; 
+
+                    end = (const u8*)((FlatPtr)&m_data[hint / 8] & ~(sizeof(u32) - 1));
+                    hint = 0;
+                    continue;
+                }
+                byte = m_data[i];
+                if constexpr (!VALUE)
+                    byte = ~byte;
+                VERIFY(byte != 0);
+                return i * 8 + __builtin_ffs(byte) - 1;
+            }
+
+            val32 = *ptr32;
+            if constexpr (!VALUE)
+                val32 = ~val32;
+            VERIFY(val32 != 0);
+            return ((const u8*)ptr32 - &m_data[0]) * 8 + __builtin_ffsl(val32) - 1;
+        }
+    }
     
 };
     
