@@ -31,6 +31,34 @@ public:
     constexpr SimpleIteration operator-(ptrdiff_t delta) const { return SimpleIteration { m_container, m_index - delta }; }
 
     constexpr ptrdiff_t operator-(SimpleIteration other) const { return static_cast<ptrdiff_t>(m_index) - other.m_index; }
+
+    constexpr SimpleIteration operator++()
+    {
+        ++m_index;
+        return *this;
+    }
+    
+    constexpr SimpleIteration operator++(int)
+    {
+        ++m_index;
+        return SimpleIteration { m_container, m_index -1 };
+    }
+
+    constexpr SimpleIteration operator--()
+    {
+        --m_index;
+        return *this;
+    }
+
+    constexpr SimpleIteration operator--(int)
+    {
+        --m_index;
+        return SimpleIteration { m_container, m_index + 1};
+    }
+
+    ALWAYS_INLINE constexpr const ValueType& operator*() const { return m_container[m_index]; }
+    ALWAYS_INLINE constexpr ValueType& operator*() { return m_container[m_index]; }
+
 }
 
 }
