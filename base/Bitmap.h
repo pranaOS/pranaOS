@@ -91,6 +91,84 @@ public:
     u8* data() { return m_data; }
     const u8* data() const { return m_data; }
 
+        void grow(size_t size, bool default_value)
+    {
+        VERIFY(size > m_size);
+
+        auto previous_size_bytes = size_in_bytes();
+        auto previous_size = m_size;
+        auto previous_data = m_data;
+
+        m_size = size;
+        m_data = reinterpret_cast<u8*>(kmalloc(size_in_bytes()));
+
+        fill(default_value);
+
+        if (previous_data != nullptr) {
+            __builtin_memcpy(m_data, previous_data, previous_size_bytes);
+            if (previous_size % 8)
+                set_range(previous_size, 8 - previous_size % 8, default_value);
+            kfree_sized(previous_data, previous_size_bytes);
+        }
+    }
+
+    template<bool VALUE, bool verify_that_all_bits_flip = false>
+    void set_range(size_t start, size_t len)
+    {
+        VERIFY(start < m_size);
+        VERIFY(start + len <= m_size);
+        if (len == 0)
+            return;
+
+        u8* first = &m_data[start / 8];
+        u8* last = &m_data[(start + len) / 8];
+        u8 byte_mask = bitmask_first_byte[start % 8];
+        if (first == last) {
+            byte_mask &= bitmask_last_byte[(start + len) % 8];
+            if constexpr (verify_that_all_bits_flip) {
+                if constexpr (VALUE) {
+                    VERIFY((*first & byte_mask) == 0);
+                } else {
+                    VERIFY((*first & byte_mask) == byte_mask);
+                }
+            }
+            if constexpr (VALUE)
+                *first |= byte_mask;
+            else
+                *first &= ~byte_mask;
+        } else {
+            if constexpr (verify_that_all_bits_flip) {
+                if constexpr (VALUE) {
+                    VERIFY((*first & byte_mask) == 0);
+                } else {
+                    VERIFY((*first & byte_mask) == byte_mask);
+                }
+            }
+            if constexpr (VALUE)
+                *first |= byte_mask;
+            else
+                *first &= ~byte_mask;
+            byte_mask = bitmask_last_byte[(start + len) % 8];
+            if constexpr (verify_that_all_bits_flip) {
+                if constexpr (VALUE) {
+                    VERIFY((*last & byte_mask) == 0);
+                } else {
+                    VERIFY((*last & byte_mask) == byte_mask);
+                }
+            }
+            if constexpr (VALUE)
+                *last |= byte_mask;
+            else
+                *last &= ~byte_mask;
+            if (++first < last) {
+                if constexpr (VALUE)
+                    __builtin_memset(first, 0xFF, last - first);
+                else
+                    __builtin_memset(first, 0x0, last - first);
+            }
+        }
+    }
+
 };
 
 }
