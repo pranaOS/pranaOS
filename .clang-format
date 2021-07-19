@@ -1,19 +1,13 @@
 ---
-
-BasedOnStyle: LLVM
-UseTab: Never
-IndentWidth: 4
-TabWidth: 4
-BreakBeforeBraces: Allman
-AllowShortIfStatementsOnASingleLine: false
-IndentCaseLabels: false
-ColumnLimit: 0
-AccessModifierOffset: -4
-FixNamespaceComments: true
-SpaceBeforeInheritanceColon: true
-BreakInheritanceList: AfterColon
+Language: Cpp
+BasedOnStyle: WebKit
+SpaceAfterTemplateKeyword: false
+AlignEscapedNewlines: true
+AlignTrailingComments: true
+BreakBeforeInheritanceComma: true
+BreakConstructorInitializers: BeforeComma
 IndentPPDirectives: AfterHash
-ForEachMacros: ["__dummy_foreach"]
-SpaceBeforeParens: ControlStatementsExceptForEachMacros
-AlignAfterOpenBracket: DontAlign
-...
+BreakBeforeBraces: Custom
+BraceWrapping:
+    AfterFunction: true
+NamespaceIndentation: None
