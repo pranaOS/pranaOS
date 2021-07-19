@@ -37,11 +37,10 @@ public:
         ++m_index;
         return *this;
     }
-    
     constexpr SimpleIteration operator++(int)
     {
         ++m_index;
-        return SimpleIteration { m_container, m_index -1 };
+        return SimpleIteration { m_container, m_index - 1 };
     }
 
     constexpr SimpleIteration operator--()
@@ -49,15 +48,24 @@ public:
         --m_index;
         return *this;
     }
-
     constexpr SimpleIteration operator--(int)
     {
         --m_index;
-        return SimpleIteration { m_container, m_index + 1};
+        return SimpleIteration { m_container, m_index + 1 };
     }
 
     ALWAYS_INLINE constexpr const ValueType& operator*() const { return m_container[m_index]; }
     ALWAYS_INLINE constexpr ValueType& operator*() { return m_container[m_index]; }
+
+    constexpr auto operator->() const { return &m_container[m_index]; }
+    constexpr auto operator->() { return &m_container[m_index]; }
+
+    SimpleIteration& operator=(const SimpleIteration& other)
+    {
+        m_index = other.m_index;
+        return *this;
+    }
+    SimpleIteration(const SimpleIteration& obj) = default;
 
 }
 
