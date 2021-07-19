@@ -4,12 +4,6 @@
  * SPDX-License-Identifier: BSD-2-Clause
 */
 
-/*
- * Copyright (c) 2021, Idan Horowitz <idan.horowitz@serenityos.org>
- *
- * SPDX-License-Identifier: BSD-2-Clause
- */
-
 #pragma once
 
 namespace Base {
