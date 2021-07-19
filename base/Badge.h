@@ -19,6 +19,9 @@ private:
 
     Badge(const Badge&) = delete;
     Badge& operator=(const Badge&) = delete;
+
+    Badge(Badge&&) = delete;
+    Badge& operator=(Badge&&) = delete;
 };
 
 }
