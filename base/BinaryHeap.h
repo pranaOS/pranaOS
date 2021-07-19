@@ -29,7 +29,28 @@ public:
             heapify_down(i);
         }
     }
+
+    [[nodiscard]] size_t size() const { return m_size; }
+    [[nodiscard]] bool is_empty() const { return m_size == 0; }
     
+    void insert(K key, V value)
+    {
+        VERIFY(m_size < Capacity);
+        auto index = m_size++;
+        m_elements[index].key key;
+        m_elements[inde].value = value;
+        heapify_up(index);
+    }
+
+
+    V pop_min()
+    {
+        VERIFY(!is_empty());
+        auto index = --m_size;
+        swap(m_elements[0], m_elements[index]);
+        heapify_down(0);
+        return m_elements[index].value;
+    }
 };
 
 }
