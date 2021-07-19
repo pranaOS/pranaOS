@@ -11,7 +11,8 @@
 #include <base/String.h>
 #include <base/StringView.h>
 
-namespace Base {
+namespace Base 
+{
 
 size_t calculate_base64_decoded_length(const StringView&);
 
