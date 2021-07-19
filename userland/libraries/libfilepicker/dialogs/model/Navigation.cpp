@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, Krisna Pranav
+ * Copyright (c) 2021, Krisna Pranav, nuke123-sudo
  *
  * SPDX-License-Identifier: BSD-2-Clause
 */
@@ -81,4 +81,39 @@ void Navigation::navigate(IO::Path path)
     clear_foreward();
     navigate(path, BACKWARD);
 }
+
+void Navigation::navigate(IO::Path path, Direction record_history)
+{
+    if (path.relative())
+    {
+        path = IO::Path::join(_current, path);
+        path = path.normalized();
+    }
+
+    if (_current == path)
+    {
+        return;
+    }
+
+    if (record_history == BACKWARD)
+    {
+        _backward.push_back(_current);
+    }
+    else if (record_history == FOREWARD)
+    {
+        _foreward.push_back(_current);
+    }
+
+    _current = path;
+
+    process_set_directory(_current.string().cstring());
+
+    did_update();
+}
+
+void Navigation::clear_foreward()
+{
+    _foreward.clear();
+}
+
 }
