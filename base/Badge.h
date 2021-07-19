@@ -1,0 +1,26 @@
+/*
+ * Copyright (c) 2021, Krisna Pranav
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+*/
+
+#pragma once
+
+namespace Base {
+
+template<typename T>
+class Badge {
+public:
+    using Type = T;
+
+private:
+    friend T;
+    constexpr Badge() = default;
+
+    Badge(const Badge&) = delete;
+    Badge& operator=(const Badge&) = delete;
+};
+
+}
+
+using Base::Badge;
