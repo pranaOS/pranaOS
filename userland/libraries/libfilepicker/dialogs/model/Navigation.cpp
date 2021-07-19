@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
 */
 
+// includes
 #include <libfilepicker/model/Navigation.h>
 
 namespace FilePicker
@@ -44,5 +45,40 @@ bool Navigation::can_go_forward()
 {
     return _foreward.any();
 }
-    
+
+void Navigation::go_forward()
+{
+    if (can_go_forward())
+    {
+        navigate(_foreward.pop_back(), BACKWARD);
+    }
+}
+
+void Navigation::go_home()
+{
+    clear_foreward();
+    navigate(IO::Path::parse("/User"), BACKWARD);
+}
+
+void Navigation::go_home_dont_record_history()
+{
+    clear_foreward();
+    navigate(IO::Path::parse("/User"), NONE);
+}
+
+void Navigation::refresh()
+{
+    did_update();
+}
+
+void Navigation::navigate(String directory)
+{
+    navigate(IO::Path::parse(directory));
+}
+
+void Navigation::navigate(IO::Path path)
+{
+    clear_foreward();
+    navigate(path, BACKWARD);
+}
 }
