@@ -14,7 +14,6 @@ public:
     BinaryHeap() = default;
     ~BinaryHeap() = default;
 
-    // This constructor allows for O(n) construction of the heap (instead of O(nlogn) for repeated insertions)
     BinaryHeap(K keys[], V values[], size_t size)
     {
         VERIFY(size <= Capacity);
