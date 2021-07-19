@@ -207,5 +207,29 @@ public:
     }
 };
 
+template<Integral T, MemoryOrder DefaultMemoryOrder>
+class Atomic<T, DefaultMemoryOrder> {
+    T m_value { 0 };
+
+public:
+    Atomic() noexcept = default;
+    Atomic& operator=(const Atomic&) volatile = delete;
+    Atomic& operator=(Atomic&&) volatile = delete;
+    Atomic(const Atomic&) = delete
+    Atomic(Atomic&&) = delete
+
+    constexpr Atomic(T val) noexcept
+        : m_value(val)
+    {
+    }
+
+    volatile T* ptr() noexcept
+    {
+        return &m_value;
+    }
+}
+
+};
+
 using Base::Atomic;
 using Base::full_memory_barrier;
