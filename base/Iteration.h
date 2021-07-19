@@ -4,13 +4,17 @@
  * SPDX-License-Identifier: BSD-2-Clause
 */
 
+/*
+ * Copyright (c) 2020, the SerenityOS developers.
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+ */
+
 #pragma once
 
-// includes
 #include <base/Forward.h>
 
 namespace Base {
-
 
 template<typename Container, typename ValueType>
 class SimpleIteration {
@@ -67,20 +71,26 @@ public:
     }
     SimpleIteration(const SimpleIteration& obj) = default;
 
-public:
-    static constexpr SimpleIteration begin(Container& container) { return { container, 0}; }
+private:
+    static constexpr SimpleIteration begin(Container& container) { return { container, 0 }; }
+    static constexpr SimpleIteration end(Container& container)
+    {
+        using RawContainerType = RemoveCV<Container>;
+
+        if constexpr (IsSame<StringView, RawContainerType> || IsSame<String, RawContainerType>)
+            return { container, container.length() };
+        else
+            return { container, container.size() };
+    }
 
     constexpr SimpleIteration(Container& container, size_t index)
         : m_container(container)
         , m_index(index)
     {
-        
     }
 
     Container& m_container;
     size_t m_index;
-
 };
-
 
 }
