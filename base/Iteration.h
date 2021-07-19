@@ -67,6 +67,20 @@ public:
     }
     SimpleIteration(const SimpleIteration& obj) = default;
 
-}
+public:
+    static constexpr SimpleIteration begin(Container& container) { return { container, 0}; }
+
+    constexpr SimpleIteration(Container& container, size_t index)
+        : m_container(container)
+        , m_index(index)
+    {
+        
+    }
+
+    Container& m_container;
+    size_t m_index;
+
+};
+
 
 }
