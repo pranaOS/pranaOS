@@ -158,6 +158,38 @@ public:
             return ((const u8*)ptr32 - &m_data[0]) * 8 + __builtin_ffsl(val32) - 1;
         }
     }
+
+    Optional<size_t> find_one_anywhere_set(size_t hint = 0) const
+    {
+        return find_one_anywhere<true>(hint);
+    }
+
+    Optional<size_t> find_one_anywhere_unset(size_t hint = 0) const
+    {
+        return find_one_anywhere<false>(hint);
+    }
+
+        template<bool VALUE>
+    Optional<size_t> find_first() const
+    {
+        size_t byte_count = m_size / 8;
+        size_t i = 0;
+
+        u8 byte = VALUE ? 0x00 : 0xff;
+        while (i < byte_count && m_data[i] == byte)
+            i++;
+        if (i == byte_count)
+            return {};
+
+        byte = m_data[i];
+        if constexpr (!VALUE)
+            byte = ~byte;
+        VERIFY(byte != 0);
+        return i * 8 + __builtin_ffs(byte) - 1;
+    }
+
+    Optional<size_t> find_first_set() const { return find_first<true>(); }
+    Optional<size_t> find_first_unset() const { return find_first<false>(); }
     
 };
     
