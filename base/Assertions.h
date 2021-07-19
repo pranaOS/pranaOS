@@ -7,7 +7,7 @@
 #pragma once
 
 #if defined(KERNEL)
-#    include <Kernel/Assertions.h>
+#    include <kernel/Assertions.h>
 #else
 #    include <assert.h>
 #    define VERIFY assert
