@@ -1,13 +1,11 @@
-
 /*
- * Copyright (c) 2021, Alex5xt
+ * Copyright (c) 2021, Alex5xt, krishpranav
  *
  * SPDX-License-Identifier: BSD-2-Clause
 */
 
 #pragma once
 
-// includes
 #include <base/Array.h>
 #include <base/Optional.h>
 #include <base/Platform.h>
@@ -34,7 +32,6 @@ public:
         VERIFY(index < m_size);
         return 0 != (m_data[index / 8] & (1u << (index % 8)));
     }
-
     void set(size_t index, bool value) const
     {
         VERIFY(index < m_size);
@@ -49,7 +46,7 @@ public:
         return count_in_range(0, m_size, value);
     }
 
-        size_t count_in_range(size_t start, size_t len, bool value) const
+    size_t count_in_range(size_t start, size_t len, bool value) const
     {
         VERIFY(start < m_size);
         VERIFY(start + len <= m_size);
@@ -98,7 +95,7 @@ public:
 
     const u8* data() const { return m_data; }
 
-        template<bool VALUE>
+    template<bool VALUE>
     Optional<size_t> find_one_anywhere(size_t hint = 0) const
     {
         VERIFY(hint < m_size);
@@ -129,7 +126,6 @@ public:
                 ptr32++;
 
             if (ptr32 == end32) {
-
                 u8 byte = VALUE ? 0x00 : 0xff;
                 size_t i = (const u8*)ptr32 - &m_data[0];
                 size_t byte_count = m_size / 8;
@@ -169,7 +165,7 @@ public:
         return find_one_anywhere<false>(hint);
     }
 
-        template<bool VALUE>
+    template<bool VALUE>
     Optional<size_t> find_first() const
     {
         size_t byte_count = m_size / 8;
@@ -191,9 +187,166 @@ public:
     Optional<size_t> find_first_set() const { return find_first<true>(); }
     Optional<size_t> find_first_unset() const { return find_first<false>(); }
     
-};
-    
-}
+    inline Optional<size_t> find_next_range_of_unset_bits(size_t& from, size_t min_length = 1, size_t max_length = max_size) const
+    {
+        if (min_length > max_length) {
+            return {};
+        }
 
+        u32* bitmap32 = (u32*)m_data;
+
+        size_t start_bucket_index = from / 32;
+        size_t start_bucket_bit = from % 32;
+
+        size_t* start_of_free_chunks = &from;
+        size_t free_chunks = 0;
+
+        for (size_t bucket_index = start_bucket_index; bucket_index < m_size / 32; ++bucket_index) {
+            if (bitmap32[bucket_index] == 0xffffffff) {
+                if (free_chunks >= min_length) {
+                    return min(free_chunks, max_length);
+                }
+                free_chunks = 0;
+                start_bucket_bit = 0;
+                continue;
+            }
+            if (bitmap32[bucket_index] == 0x0) {
+
+                if (free_chunks == 0) {
+                    *start_of_free_chunks = bucket_index * 32;
+                }
+                free_chunks += 32;
+                if (free_chunks >= max_length) {
+                    return max_length;
+                }
+                start_bucket_bit = 0;
+                continue;
+            }
+
+            u32 bucket = bitmap32[bucket_index];
+            u8 viewed_bits = start_bucket_bit;
+            u32 trailing_zeroes = 0;
+
+            bucket >>= viewed_bits;
+            start_bucket_bit = 0;
+
+            while (viewed_bits < 32) {
+                if (bucket == 0) {
+                    if (free_chunks == 0) {
+                        *start_of_free_chunks = bucket_index * 32 + viewed_bits;
+                    }
+                    free_chunks += 32 - viewed_bits;
+                    viewed_bits = 32;
+                } else {
+                    trailing_zeroes = count_trailing_zeroes_32(bucket);
+                    bucket >>= trailing_zeroes;
+
+                    if (free_chunks == 0) {
+                        *start_of_free_chunks = bucket_index * 32 + viewed_bits;
+                    }
+                    free_chunks += trailing_zeroes;
+                    viewed_bits += trailing_zeroes;
+
+                    if (free_chunks >= min_length) {
+                        return min(free_chunks, max_length);
+                    }
+
+                    u32 trailing_ones = count_trailing_zeroes_32(~bucket);
+                    bucket >>= trailing_ones;
+                    viewed_bits += trailing_ones;
+                    free_chunks = 0;
+                }
+            }
+        }
+
+        if (free_chunks < min_length) {
+            size_t first_trailing_bit = (m_size / 32) * 32;
+            size_t trailing_bits = size() % 32;
+            for (size_t i = 0; i < trailing_bits; ++i) {
+                if (!get(first_trailing_bit + i)) {
+                    if (!free_chunks)
+                        *start_of_free_chunks = first_trailing_bit + i;
+                    if (++free_chunks >= min_length)
+                        return min(free_chunks, max_length);
+                } else {
+                    free_chunks = 0;
+                }
+            }
+            return {};
+        }
+
+        return min(free_chunks, max_length);
+    }
+
+    Optional<size_t> find_longest_range_of_unset_bits(size_t max_length, size_t& found_range_size) const
+    {
+        size_t start = 0;
+        size_t max_region_start = 0;
+        size_t max_region_size = 0;
+
+        while (true) {
+            auto length_of_found_range = find_next_range_of_unset_bits(start, max_region_size + 1, max_length);
+            if (length_of_found_range.has_value()) {
+                max_region_start = start;
+                max_region_size = length_of_found_range.value();
+                start += max_region_size;
+            } else {
+                break;
+            }
+        }
+
+        found_range_size = max_region_size;
+        if (max_region_size) {
+            return max_region_start;
+        }
+        return {};
+    }
+
+    Optional<size_t> find_first_fit(size_t minimum_length) const
+    {
+        size_t start = 0;
+        auto length_of_found_range = find_next_range_of_unset_bits(start, minimum_length, minimum_length);
+        if (length_of_found_range.has_value()) {
+            return start;
+        }
+        return {};
+    }
+
+    Optional<size_t> find_best_fit(size_t minimum_length) const
+    {
+        size_t start = 0;
+        size_t best_region_start = 0;
+        size_t best_region_size = max_size;
+        bool found = false;
+
+        while (true) {
+            auto length_of_found_range = find_next_range_of_unset_bits(start, minimum_length, best_region_size);
+            if (length_of_found_range.has_value()) {
+                if (best_region_size > length_of_found_range.value() || !found) {
+                    best_region_start = start;
+                    best_region_size = length_of_found_range.value();
+                    found = true;
+                }
+                start += length_of_found_range.value();
+            } else {
+
+                break;
+            }
+        }
+
+        if (found) {
+            return best_region_start;
+        }
+        return {};
+    }
+
+    static constexpr size_t max_size = 0xffffffff;
+
+private:
+    u8* m_data { nullptr };
+    size_t m_size { 0 };
+};
+
+}
 
 using Base::BitmapView;
