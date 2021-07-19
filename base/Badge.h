@@ -6,7 +6,8 @@
 
 #pragma once
 
-namespace Base {
+namespace Base 
+{
 
 template<typename T>
 class Badge {

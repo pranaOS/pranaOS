@@ -10,7 +10,8 @@
 #include <base/Platform.h>
 #include <base/Types.h>
 
-namespace Base {
+namespace Base 
+{
 
     static inline void atomic_signal_fence(MemoryOrder order) noexcept
 {

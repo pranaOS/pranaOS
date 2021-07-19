@@ -9,7 +9,8 @@
 // includes
 #include <base/Iteration.h>
 
-namespace Base {
+namespace Base 
+{
 
 template<typename Container, typename ValueType>
 constexpr bool all_of(

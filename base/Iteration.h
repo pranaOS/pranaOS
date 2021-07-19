@@ -8,7 +8,8 @@
 
 #include <base/Forward.h>
 
-namespace Base {
+namespace Base 
+{
 
 template<typename Container, typename ValueType>
 class SimpleIteration {

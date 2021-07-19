@@ -9,7 +9,8 @@
 // includes
 #include <base/Types.h>
 
-namespace Base {
+namespace Base 
+{
 
 namespace Detail {
 template<size_t inline_capacity>

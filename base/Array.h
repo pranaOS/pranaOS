@@ -9,7 +9,8 @@
 #include <base/Iterator.h>
 #include <base/Span.h>
 
-namespace Base {
+namespace Base 
+{
 
     template<typename T, size_t Size>
     struct Array {
