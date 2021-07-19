@@ -36,7 +36,33 @@ public:
         , m_is_owning(is_owning)
     {
     }
+    
+    BitmapView view() { return { m_data, m_size }; }
+    const BitmapView view() const { return { m_data, m_size }; }
 
+    Bitmap(Bitmap&& other)
+        : m_data(exchange(other.m_data, nullptr))
+        , m_size(exchange(other.m_size, 0))
+    {
+    }
+
+    Bitmap& operator=(Bitmap&& other)
+    {
+        if (this != &other) {
+            kfree_size(m_data, size_in_bytes());
+            m_data = exchange(other.m_data, nullptr);
+            m_size = exchange(other.m_size, 0);
+        }
+        return *this;
+    }
+
+    ~Bitmap()
+    {
+        if (m_is_owning) {
+            kfree_sized(m_data, size_in_bytes());
+        }
+        m_data = nullptr;
+    }
 
 };
 
