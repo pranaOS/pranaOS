@@ -64,6 +64,33 @@ public:
         m_data = nullptr;
     }
 
+
+    size_t size() const { return m_size; }
+    size_t size_in_bytes() const { return ceil_div(m_size, static_cast<size_t>(8)); }
+
+    bool get(size_t index) const
+    {
+        VERIFY(index < m_size);
+        return 0 != (m_data[index / 8] & (1u << (index % 8)));
+    }
+
+    void set(size_t index, bool value)
+    {
+        VERIFY(index < m_size);
+        if (value)
+            m_data[index / 8] |= static_cast<u8>((1u << (index % 8)));
+        else
+            m_data[index / 8] &= static_cast<u8>(~(1u << (index % 8)));
+    }
+
+    size_t count_slow(bool value) const { return count_in_range(0, m_size, value); }
+    size_t count_in_range(size_t start, size_t len, bool value) const { return view().count_in_range(start, len, value); }
+
+    bool is_null() const { return !m_data; }
+
+    u8* data() { return m_data; }
+    const u8* data() const { return m_data; }
+
 };
 
 }
