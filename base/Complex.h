@@ -38,6 +38,195 @@ public:
     }
 
     constexpr T real() const COMPLEX_NOEXCEPT { return m_real; }
-}
 
-}
+    constexpr T imag() const COMPLEX_NOEXCEPT { return m_imag; }
+
+    constexpr T magnitude_squared() const COMPLEX_NOEXCEPT { return m_real * m_real + m_imag * m_imag; }
+
+    constexpr T magnitude() const COMPLEX_NOEXCEPT
+    {
+        return hypot(m_real, m_imag);
+    }
+
+    constexpr T phase() const COMPLEX_NOEXCEPT
+    {
+        return atan2(m_imag, m_real);
+    }
+
+    template<Base::Concepts::Arithmetic U, Base::Concepts::Arithmetic V>
+    static constexpr Complex<T> from_polar(U magnitude, V phase)
+    {
+        return Complex<T>(magnitude * cos(phase), magnitude * sin(phase));
+    }
+
+    template<Base::Concepts::Arithmetic U>
+    constexpr Complex<T>& operator=(const Complex<U>& other)
+    {
+        m_real = other.real();
+        m_imag = other.imag();
+        return *this;
+    }
+
+    template<Base::Concepts::Arithmetic U>
+    constexpr Complex<T>& operator=(const U& x)
+    {
+        m_real = x;
+        m_imag = 0;
+        return *this;
+    }
+
+    template<Base::Concepts::Arithmetic U>
+    constexpr Complex<T> operator+=(const Complex<U>& x)
+    {
+        m_real += x.real();
+        m_imag += x.imag();
+        return *this;
+    }
+
+    template<Base::Concepts::Arithmetic U>
+    constexpr Complex<T> operator+=(const U& x)
+    {
+        m_real += x.real();
+        return *this;
+    }
+
+    template<Base::Concepts::Arithmetic U>
+    constexpr Complex<T> operator-=(const Complex<U>& x)
+    {
+        m_real -= x.real();
+        m_imag -= x.imag();
+        return *this;
+    }
+
+    template<Base::Concepts::Arithmetic U>
+    constexpr Complex<T> operator-=(const U& x)
+    {
+        m_real -= x.real();
+        return *this;
+    }
+
+    template<Base::Concepts::Arithmetic U>
+    constexpr Complex<T> operator*=(const Complex<U>& x)
+    {
+        const T real = m_real;
+        m_real = real * x.real() - m_imag * x.imag();
+        m_imag = real * x.imag() + m_imag * x.real();
+        return *this;
+    }
+
+    template<Base::Concepts::Arithmetic U>
+    constexpr Complex<T> operator*=(const U& x)
+    {
+        m_real *= x;
+        m_imag *= x;
+        return *this;
+    }
+
+    template<Base::Concepts::Arithmetic U>
+    constexpr Complex<T> operator/=(const Complex<U>& x)
+    {
+        const T real = m_real;
+        const T divisor = x.real() * x.real() + x.imag() * x.imag();
+        m_real = (real * x.real() + m_imag * x.imag()) / divisor;
+        m_imag = (m_imag * x.real() - x.real() * x.imag()) / divisor;
+        return *this;
+    }
+
+    template<Base::Concepts::Arithmetic U>
+    constexpr Complex<T> operator/=(const U& x)
+    {
+        m_real /= x;
+        m_imag /= x;
+        return *this;
+    }
+
+    template<Base::Concepts::Arithmetic U>
+    constexpr Complex<T> operator+(const Complex<U>& a)
+    {
+        Complex<T> x = *this;
+        x += a;
+        return x;
+    }
+
+    template<Base::Concepts::Arithmetic U>
+    constexpr Complex<T> operator+(const U& a)
+    {
+        Complex<T> x = *this;
+        x += a;
+        return x;
+    }
+
+    template<Base::Concepts::Arithmetic U>
+    constexpr Complex<T> operator-(const Complex<U>& a)
+    {
+        Complex<T> x = *this;
+        x -= a;
+        return x;
+    }
+
+    template<Base::Concepts::Arithmetic U>
+    constexpr Complex<T> operator-(const U& a)
+    {
+        Complex<T> x = *this;
+        x -= a;
+        return x;
+    }
+
+    template<Base::Concepts::Arithmetic U>
+    constexpr Complex<T> operator*(const Complex<U>& a)
+    {
+        Complex<T> x = *this;
+        x *= a;
+        return x;
+    }
+
+    template<Base::Concepts::Arithmetic U>
+    constexpr Complex<T> operator*(const U& a)
+    {
+        Complex<T> x = *this;
+        x *= a;
+        return x;
+    }
+
+    template<Base::Concepts::Arithmetic U>
+    constexpr Complex<T> operator/(const Complex<U>& a)
+    {
+        Complex<T> x = *this;
+        x /= a;
+        return x;
+    }
+
+    template<Base::Concepts::Arithmetic U>
+    constexpr Complex<T> operator/(const U& a)
+    {
+        Complex<T> x = *this;
+        x /= a;
+        return x;
+    }
+
+    template<Base::Concepts::Arithmetic U>
+    constexpr bool operator==(const Complex<U>& a) const
+    {
+        return (this->real() == a.real()) && (this->imag() == a.imag());
+    }
+
+    template<Base::Concepts::Arithmetic U>
+    constexpr bool operator!=(const Complex<U>& a) const
+    {
+        return !(*this == a);
+    }
+
+    constexpr Complex<T> operator+()
+    {
+        return *this;
+    }
+
+    constexpr Complex<T> operator-()
+    {
+        return Complex<T>(-m_real, -m_imag);
+    }
+
+private:
+    T m_real;
+    T m_imag;
+};
