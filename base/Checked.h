@@ -34,5 +34,29 @@ struct TypeBoundsChecker<Destination, Source, false, true, true> {
     }
 };
 
+template<typename Destination, typename Source>
+struct TypeBoundsChecker<Destination, Source, false, false, true> {
+    static constexpr bool is_within_range(Source value)
+    {
+        return static_cast<MakeUnsigned<Source>>(value) <= NumericLimits<Destination>::max();
+    }
+};
+
+template<typename Destination, typename Source>
+struct TypeBoundsChecker<Destination, Source, false, true, false> {
+    static constexpr bool is_within_range(Source value)
+    {
+        return value <= static_cast<Source>(NumericLimits<Destination>::max());
+    }
+};
+
+template<typename Destination, typename Source>
+struct TypeBoundsChecker<Destination, Source, true, false, false> {
+    static constexpr bool is_within_range(Source)
+    {
+        return true;
+    }
+};
+
 
 }
