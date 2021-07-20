@@ -58,5 +58,37 @@ struct TypeBoundsChecker<Destination, Source, true, false, false> {
     }
 };
 
+template<typename Destination, typename Source>
+struct TypeBoundsChecker<Destination, Source, true, true, true> {
+    static constexpr bool is_within_range(Source)
+    {
+        return true;
+    }
+};
+
+template<typename Destination, typename Source>
+struct TypeBoundsChecker<Destination, Source, true, false, true> {
+    static constexpr bool is_within_range(Source value)
+    {
+        return value >= 0;
+    }
+};
+
+template<typename Destination, typename Source>
+struct TypeBoundsChecker<Destination, Source, true, true, false> {
+    static constexpr bool is_within_range(Source value)
+    {
+        if (sizeof(Destination) > sizeof(Source))
+            return true;
+        return value <= static_cast<Source>(NumericLimits<Destination>::max());
+    }
+};
+
+template<typename Destination, typename Source>
+[[nodiscard]] constexpr bool is_within_range(Source value)
+{
+    return TypeBoundsChecker<Destination, Source>::is_within_range(value);
+}
+
 
 }
