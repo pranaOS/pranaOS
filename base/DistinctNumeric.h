@@ -85,13 +85,14 @@ public:
         static_assert(Cmp, "'a<=b' is only available for DistinctNumeric types with 'Cmp'.");
         return this->m_value <= other.m_value;
     }
+
     constexpr bool operator!() const
     {
         static_assert(Bool, "'!a' is only available for DistinctNumeric types with 'Bool'.");
         return !this->m_value;
     }
-
-     constexpr Self operator~() const
+    
+    constexpr Self operator~() const
     {
         static_assert(Flags, "'~a' is only available for DistinctNumeric types with 'Flags'.");
         return ~this->m_value;
@@ -130,8 +131,6 @@ public:
         return *this;
     }
 
-    // Only implemented when `Shift` is true:
-    // TODO: Should this take `int` instead?
     constexpr Self operator<<(const Self& other) const
     {
         static_assert(Shift, "'a<<b' is only available for DistinctNumeric types with 'Shift'.");
@@ -155,7 +154,6 @@ public:
         return *this;
     }
 
-    // Only implemented when `Arith` is true:
     constexpr Self operator+(const Self& other) const
     {
         static_assert(Arith, "'a+b' is only available for DistinctNumeric types with 'Arith'.");
@@ -222,7 +220,9 @@ public:
         return *this;
     }
 
+private:
+    T m_value {};
+};
 
-}
 
 }
