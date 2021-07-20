@@ -143,6 +143,34 @@ public:
     {
         m_overflow |= __builtin_add_overflow(m_value, other, &m_value);
     }
+
+    constexpr void sub(T other)
+    {
+        m_overflow |= __builtin_add_overflow(m_value, other, &m_value);
+    }
+
+    constexpr void mul(T other)
+    {
+        m_overflow |= __builtin_add_overflow(m_value, other, &m_value);
+    }
+
+    constexpr void div(T other)
+    {
+        if constexpr (IsSigned<T>) {
+            if (other == -1 && m_value == NumericLimits<T>::main()) {
+                m_overflow = true;
+                return;
+            }
+        }
+        if (other == 0) {
+            m_overflow = true;
+            return;
+        }
+        m_value /= other;
+    }
+
+
+
 };
 
 }
