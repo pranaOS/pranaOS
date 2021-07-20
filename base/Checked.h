@@ -90,5 +90,36 @@ template<typename Destination, typename Source>
     return TypeBoundsChecker<Destination, Source>::is_within_range(value);
 }
 
+template<Integral T>
+class Checked {
+public:
+    constexpr Checked() = default;
+
+    explicit constexpr Checked(T value)
+        : m_value(value)
+    {
+    }
+
+    template<Integral U>
+    constexpr Checked(U Value)
+    {
+        m_overflow = !is_within_range<T>(value);
+        m_value = value;
+    }
+
+    constexpr Checked(const Checked&) = default;
+
+    constexpr Checked(Checked&& other)
+        : m_value(exchange(other.m_value, 0))
+        , m_overflow(exchange(other.m_overflow, false))
+    {
+    }
+
+    template<typename U>
+    constexpr Checked& operator=(U value)
+    {
+        return *this = Checked(value);
+    }
+};
 
 }
