@@ -81,6 +81,33 @@ public:
         return true;
     }
 
+    bool unreliable_eof() const override { return m_buffered == 0 && m_stream.unreliable_eof(); }
+
+    bool eof() const
+    {
+        if (m_buffered > 0)
+            return false;
+
+        m_buffered = m_stream.read(buffer());
+
+        return m_buffered == 0;
+    }
+
+    bool discard_or_error(size_t count) override
+    {
+        size_t ndiscarded = 0;
+        while (ndiscarded < count) {
+            u8 dummy[Size];
+
+            if (!read_or_error({ dummy, min(Size, count - ndiscarded) }))
+                return false;
+
+            ndiscarded += min(Size, count - ndiscarded);
+        }
+
+        return true;
+    }
+
 };
 
 }
