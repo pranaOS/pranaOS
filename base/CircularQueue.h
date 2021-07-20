@@ -84,7 +84,32 @@ public:
 
         const T& operator*() const { return m_queue.elements()[m_index]; }
 
+    private:
+        friend class CircularQueue;
+        ConstIterator(const CircularQueue& queue, const size_t index)
+            : m_queue(queue)
+            , m_index(index)
+        {
+        }
+        const CircularQueue& m_queue;
+        size_t m_index { 0 };
     };
+
+    ConstIterator begin() const { return ConstIterator(*this, m_head); }
+    ConstIterator end() const { return ConstIterator(*this, size()); }
+
+    size_t head_index() const { return m_head; }
+
+protected:
+    T* elements() { return reinterpret_cast<T*>(m_storage); }
+    const T* elements() const { return reinterpret_cast<const T*>(m_storage); }
+
+    friend class ConstIterator;
+    alignas(T) u8 m_storage[sizeof(T) * Capacity];
+    size_t m_size { 0 };
+    size_t m_head { 0 };
 };
 
 }
+
+using Base::CircularQueue;
