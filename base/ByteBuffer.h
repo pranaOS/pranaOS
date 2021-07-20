@@ -148,6 +148,33 @@ public:
         ensure_capacity_slowpath(new_capacity);
     }
 
+    void append(ReadonlyBytes const& bytes)
+    {
+        append(bytes.data(), bytes.size());
+    }
+
+    void append(void const* data, size_t data_size)
+    {
+        if (data_size == 0)
+            return;
+        VERIFY(data != nullptr);
+        int old_size = size();
+        resize(size() + data_size);
+        __builtin_memcpy(this->data() + old_size, data, data_size);
+    }
+
+    void operator+=(ByteBuffer const& other)
+    {
+        append(other.data(), other.size());
+    }
+
+    void overwrite(size_t offset, void const* data, size_t data_size)
+    {
+        VERIFY(offset + data_size <= size());
+        __builtin_memcpy(this->data() + offset, data, data_size);
+    }
+
+
 };
 
 }
