@@ -30,12 +30,75 @@ public:
     {
         if (Capacity - m_queue.size() < bytes.size()) {
             set_recoverable_error();
-            return false
+            return false;
         }
 
         const auto nwritten = write(bytes);
         VERIFY(nwritten == bytes.size());
         return true;
     }
+
+    size_t read(Bytes bytes) override
+    {
+        if (has_any_error())
+            return 0;
+
+        const auto nread = min(bytes.size(), m_queue.size());
+
+        for (size_t idx = 0; idx < nread; ++idx)
+            bytes[idx] = m_queue.dequeue();
+
+        return nread;
+    }
+
+    size_t read(Bytes bytes, size_t seekback)
+    {
+        if (seekback > Capacity || seekback > m_total_written) {
+            set_recoverable_error();
+            return 0;
+        }
+
+        const auto nread = min(bytes.size(), seekback);
+
+        for (size_t idx = 0; idx < nread; ++idx) {
+            const auto index = (m_total_written - seekback + idx) % Capacity;
+            bytes[idx] = m_queue.m_storage[index];
+        }
+
+        return nread;
+    }
+
+    bool read_or_error(Bytes bytes) override
+    {
+        if (m_queue.size() < bytes.size()) {
+            set_recoverable_error();
+            return false;
+        }
+
+        read(bytes);
+        return true;
+    }
+
+    bool discard_or_error(size_t count) override
+    {
+        if (m_queue.size() < count) {
+            set_recoverable_error();
+            return false;
+        }
+
+        for (size_t idx = 0; idx < count; ++idx)
+            m_queue.dequeue();
+
+        return true;
+    }
+
+    bool unreliable_eof() const override { return eof(); }
+    bool eof() const { return m_queue.size() == 0; }
+
+    size_t remaining_contigous_space() const
+    {
+        return min(Capacity - m_queue.size(), m_queue.capacity() - (m_queue.head_index() + m_queue.size()) % Capacity);
+    }
+
 };
 }
