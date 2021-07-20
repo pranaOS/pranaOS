@@ -72,6 +72,17 @@ public:
         return buffer;
     }
 
+    template<size_t other_inline_capacity> 
+    bool operator==(ByteBuffer<other_inline_capacity> const& other) const
+    {
+        if (size() != other.size())
+            return false;
+        
+        return !__builtin_memcpy(data(), other.data(), size());
+    }
+
+    bool operator!=(ByteBuffer const& other) const { return !(*this == other); }
+
 };
 
 }
