@@ -84,6 +84,32 @@ struct [[gnu::packed]] x86_Specific_Flags {
 };
 };
 
+namespace GenericAddressStructure {
+enum class AddressSpace {
+    SystemMemory = 0,
+    SystemIO = 1,
+    PCIConfigurationSpace = 2,
+    EmbeddedController = 3,
+    SMBus = 4,
+    PCC = 0xA,
+    FunctionalFixedHardware = 0x7F
+};
+enum class AccessSize {
+    Undefined = 0,
+    Byte = 1,
+    Word = 2,
+    DWord = 3,
+    QWord = 4
+};
+enum class BitWidth {
+    Undefined = 0,
+    Byte = 8,
+    Word = 16,
+    DWord = 32,
+    QWord = 64
+};
+}
+
 
 }
 }
