@@ -31,6 +31,14 @@ public:
     {
     }
 
+    Buffered(Buffered&& other)
+        : m_stream(move(other.m_stream))
+    {
+        other.buffer().copy_to(buffer());
+        m_buffered = exchange(other.m_buffered, 0);
+    }
+
+    bool has_recoverable_error() const override { return m_stream.has_recoverable_error(); }
 
 
 };
