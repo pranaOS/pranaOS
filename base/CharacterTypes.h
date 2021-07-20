@@ -6,7 +6,6 @@
 
 #pragma once
 
-// includes
 #include <base/Array.h>
 #include <base/Types.h>
 
@@ -27,9 +26,14 @@ constexpr bool is_ascii_upper_alpha(u32 code_point)
     return (code_point >= 'A' && code_point <= 'Z');
 }
 
-constexpr bool is_ascii_alpha(u32 code_point)
+constexpr bool is_ascii_lower_alpha(u32 code_point)
 {
     return (code_point >= 'a' && code_point <= 'z');
+}
+
+constexpr bool is_ascii_alpha(u32 code_point)
+{
+    return is_ascii_lower_alpha(code_point) || is_ascii_upper_alpha(code_point);
 }
 
 constexpr bool is_ascii_alphanumeric(u32 code_point)
@@ -119,7 +123,7 @@ constexpr u32 to_ascii_uppercase(u32 code_point)
 constexpr u32 parse_ascii_digit(u32 code_point)
 {
     if (is_ascii_digit(code_point))
-        return code_point - '0'
+        return code_point - '0';
     VERIFY_NOT_REACHED();
 }
 
@@ -143,6 +147,13 @@ constexpr u32 parse_ascii_base36_digit(u32 code_point)
     if (code_point >= 'a' && code_point <= 'z')
         return code_point - 'a' + 10;
     VERIFY_NOT_REACHED();
+}
+
+static constexpr Array<char, 36> base36_map = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' };
+constexpr u32 to_ascii_base36_digit(u32 digit)
+{
+    VERIFY(digit < 36);
+    return base36_map[digit];
 }
 
 }
