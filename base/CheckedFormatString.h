@@ -189,7 +189,7 @@ private:
 
                 return false;
             };
-            auto references_all_arguments = AK::all_of(
+            auto references_all_arguments = Base::all_of(
                 all_parameters.begin(),
                 all_parameters.end(),
                 [&](auto& entry) {
@@ -210,7 +210,7 @@ private:
 };
 }
 
-namespace AK {
+namespace Base {
 
 template<typename... Args>
 using CheckedFormatString = Format::Detail::CheckedFormatString<IdentityType<Args>...>;
