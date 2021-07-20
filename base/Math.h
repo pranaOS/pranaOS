@@ -138,3 +138,102 @@ constexpr T cbrt(T x)
 
     return r;
 }
+
+template<FloatingPoint T>
+constexpr T fabs(T x)
+{
+    if (is_constant_evaluated())
+        return x < 0 ? -x : x;
+    asm(
+        "fabs"
+        : "+t"(x));
+    return x;
+}
+
+namespace Trigonometry {
+
+template<FloatingPoint T>
+constexpr T hypot(T x, T y)
+{
+    return sqrt(x * x + y * y);
+}
+
+template<FloatingPoint T>
+constexpr T sin(T angle)
+{
+    CONSTEXPR_STATE(sin, angle);
+    T ret;
+    asm(
+        "fsin"
+        : "=t"(ret)
+        : "0"(angle));
+    return ret;
+}
+
+template<FloatingPoint T>
+constexpr T cos(T angle)
+{
+    CONSTEXPR_STATE(cos, angle);
+    T ret;
+    asm(
+        "fcos"
+        : "=t"(ret)
+        : "0"(angle));
+    return ret;
+}
+
+template<FloatingPoint T>
+constexpr T tan(T angle)
+{
+    CONSTEXPR_STATE(tan, angle);
+    double ret, one;
+    asm(
+        "fptan"
+        : "=t"(one), "=u"(ret)
+        : "0"(angle));
+
+    return ret;
+}
+
+template<FloatingPoint T>
+constexpr T atan(T value)
+{
+    CONSTEXPR_STATE(atan, value);
+
+    T ret;
+    asm(
+        "fld1\n"
+        "fpatan\n"
+        : "=t"(ret)
+        : "0"(value));
+    return ret;
+}
+
+template<FloatingPoint T>
+constexpr T asin(T x)
+{
+    CONSTEXPR_STATE(asin, x);
+    if (x > 1 || x < -1)
+        return NaN<T>;
+    if (x > (T)0.5 || x < (T)-0.5)
+        return 2 * atan<T>(x / (1 + sqrt<T>(1 - x * x)));
+    T squared = x * x;
+    T value = x;
+    T i = x * squared;
+    value += i * Details::product_odd<1>() / Details::product_even<2>() / 3;
+    i *= squared;
+    value += i * Details::product_odd<3>() / Details::product_even<4>() / 5;
+    i *= squared;
+    value += i * Details::product_odd<5>() / Details::product_even<6>() / 7;
+    i *= squared;
+    value += i * Details::product_odd<7>() / Details::product_even<8>() / 9;
+    i *= squared;
+    value += i * Details::product_odd<9>() / Details::product_even<10>() / 11;
+    i *= squared;
+    value += i * Details::product_odd<11>() / Details::product_even<12>() / 13;
+    i *= squared;
+    value += i * Details::product_odd<13>() / Details::product_even<14>() / 15;
+    i *= squared;
+    value += i * Details::product_odd<15>() / Details::product_even<16>() / 17;
+    return value;
+}
