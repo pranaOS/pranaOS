@@ -33,7 +33,7 @@ public:
         return consume(4);
     }
     
-        Optional<StringView> consume_month()
+    Optional<StringView> consume_month()
     {
         if (tell_remaining() < 2)
             return {};
@@ -55,6 +55,46 @@ public:
 
         return consume(2);
     }
+
+
+    Optional<StringView> consume_day()
+    {
+        if (tell_remaining() < 2)
+            return {};
+
+        auto tens = peek();
+        if (tens < '0' || tens > '3')
+            return {};
+
+        auto ones = peek(1);
+        if (!is_ascii_digit(ones))
+            return {};
+
+        if (tens == '0') { 
+            if (ones == '0')
+                return {};
+        } else if (tens == '3') { 
+            if (ones != '0' && ones != '1')
+                return {};
+        } else if (!is_ascii_digit(ones)) { 
+            return {};
+        }
+
+        return consume(2);
+    }
+
+    Optional<StringView> consume_sign()
+    {
+        if (!tell_remaining())
+            return {};
+
+        if (next_is("\xE2\x88\x92"sv))
+            return consume(3);
+        else if (next_is('-') || next_is('+'))
+            return consume(1);
+        else
+            return {};
+    };
 
 };
 
