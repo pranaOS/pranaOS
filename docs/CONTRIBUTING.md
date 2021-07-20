@@ -1,7 +1,7 @@
 # Contributing pranaOS
 
 # Pull Request Rules:
-- all contributions are accepted if they are usefull 
+- all contributions are accepted
 - one person should open only one pull request till that pull request is closed or merged
 
 - opening a pull request should be like this
