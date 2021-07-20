@@ -13,7 +13,7 @@
 namespace Base {
 
 template<typename T, size_t Capacity>
-class CircularDeque : public CircularDeque<T, Capacity> {
+class CircularDeque : public CircularQueue<T, Capacity> {
 public:
     template<typename U = T>
     void enqueue_begin(U&& value)
@@ -24,9 +24,22 @@ public:
             slot.~T();
         else
             ++this->m_size;
+
         new (&slot) T(forward<U>(value));
         this->m_head = new_head;
+    }
+
+    T dequeue_end()
+    {
+        VERIFY(!this->is_empty());
+        auto& slot = this->elements()[(this->m_head + this->m_size - 1) % Capacity];
+        T value = move(slot);
+        slot.~T();
+        this->m_size--;
+        return value;
     }
 };
 
 }
+
+using Base::CircularDeque;
