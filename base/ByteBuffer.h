@@ -83,6 +83,32 @@ public:
 
     bool operator!=(ByteBuffer const& other) const { return !(*this == other); }
 
+    [[nodiscard]] u8& operator[](size_t i)
+    {
+        VERIFY(i < m_size);
+        return data()[i];
+    }
+
+    [[nodiscard]] u8 const& operator[](size_t i) const 
+    {
+        VERIFY(i < m_size);
+        return data()[i];
+    }
+
+    [[nodiscard]] bool is_empty() const { return !m_size; }
+    [[nodiscard]] size_t size() const { return m_size; }
+
+    [[nodiscard]] u8* data() { return m_inline ? m_inline_buffer : m_outline_buffer; }
+    [[nodiscard]] u8 const* data() const { return m_inline ? m_inline_buffer : m_outline_buffer; }
+
+    [[nodiscard]] Bytes bytes() { return { data(), size() }; }
+    [[nodiscard]] ReadonlyBytes bytes() const { return { data(), size() }; }
+
+    [[nodiscard]] AK::Span<u8> span() { return { data(), size() }; }
+    [[nodiscard]] AK::Span<const u8> span() const { return { data(), size() }; }
+
+    [[nodiscard]] u8* offset_pointer(int offset) { return data() + offset; }
+    [[nodiscard]] u8 const* offset_pointer(int offset) const { return data() + offset; }
 };
 
 }
