@@ -4,9 +4,9 @@
  * SPDX-License-Identifier: BSD-2-Clause
 */
 
+
 #pragma once
 
-// includes
 #include <base/Concepts.h>
 #include <base/Math.h>
 
@@ -262,3 +262,30 @@ constexpr Complex<T> operator/(const U& b, const Complex<T>& a)
     x /= b;
     return x;
 }
+
+template<Base::Concepts::Arithmetic T>
+static constinit Complex<T> complex_real_unit = Complex<T>((T)1, (T)0);
+template<Base::Concepts::Arithmetic T>
+static constinit Complex<T> complex_imag_unit = Complex<T>((T)0, (T)1);
+
+template<Base::Concepts::Arithmetic T, Base::Concepts::Arithmetic U>
+static constexpr bool approx_eq(const Complex<T>& a, const Complex<U>& b, const double margin = 0.000001)
+{
+    const auto x = const_cast<Complex<T>&>(a) - const_cast<Complex<U>&>(b);
+    return x.magnitude() <= margin;
+}
+
+template<Base::Concepts::Arithmetic T>
+static constexpr Complex<T> cexp(const Complex<T>& a)
+{
+    return exp(a.real()) * Complex<T>(cos(a.imag()), sin(a.imag()));
+}
+}
+
+using Base::approx_eq;
+using Base::cexp;
+using Base::Complex;
+using Base::complex_imag_unit;
+using Base::complex_real_unit;
+
+#endif
