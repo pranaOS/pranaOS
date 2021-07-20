@@ -123,4 +123,26 @@ constexpr u32 parse_ascii_digit(u32 code_point)
     VERIFY_NOT_REACHED();
 }
 
+constexpr u32 parse_ascii_hex_digit(u32 code_point)
+{
+    if (is_ascii_digit(code_point))
+        return parse_ascii_digit(code_point);
+    if (code_point >= 'A' && code_point <= 'F')
+        return code_point - 'A' + 10;
+    if (code_point >= 'a' && code_point <= 'f')
+        return code_point - 'a' + 10;
+    VERIFY_NOT_REACHED();
+}
+
+constexpr u32 parse_ascii_base36_digit(u32 code_point)
+{
+    if (is_ascii_digit(code_point))
+        return parse_ascii_digit(code_point);
+    if (code_point >= 'A' && code_point <= 'Z')
+        return code_point - 'A' + 10;
+    if (code_point >= 'a' && code_point <= 'z')
+        return code_point - 'a' + 10;
+    VERIFY_NOT_REACHED();
+}
+
 }
