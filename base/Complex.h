@@ -230,3 +230,35 @@ private:
     T m_real;
     T m_imag;
 };
+
+template<Base::Concepts::Arithmetic T, Base::Concepts::Arithmetic U>
+constexpr Complex<T> operator+(const U& b, const Complex<T>& a)
+{
+    Complex<T> x = a;
+    x += b;
+    return x;
+}
+
+template<Base::Concepts::Arithmetic T, Base::Concepts::Arithmetic U>
+constexpr Complex<T> operator-(const U& b, const Complex<T>& a)
+{
+    Complex<T> x = a;
+    x -= b;
+    return x;
+}
+
+template<Base::Concepts::Arithmetic T, Base::Concepts::Arithmetic U>
+constexpr Complex<T> operator*(const U& b, const Complex<T>& a)
+{
+    Complex<T> x = a;
+    x *= b;
+    return x;
+}
+
+template<Base::Concepts::Arithmetic T, Base::Concepts::Arithmetic U>
+constexpr Complex<T> operator/(const U& b, const Complex<T>& a)
+{
+    Complex<T> x = a;
+    x /= b;
+    return x;
+}
