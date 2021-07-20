@@ -67,6 +67,41 @@ constexpr bool is_ascii_printable(u32 code_point)
     return code_point >= 0x20 && code_point <= 0x7E;
 }
 
+constexpr bool is_ascii_c0_control(u32 code_point)
+{
+    return code_point < 0x20;
+}
+
+constexpr bool is_ascii_control(u32 code_point)
+{
+    return is_ascii_c0_control(code_point) || code_point == 0x7F;
+}
+
+constexpr bool is_unicode(u32 code_point)
+{
+    return code_point <= 0x10FFFF;
+}
+
+constexpr bool is_unicode_control(u32 code_point)
+{
+    return is_ascii_c0_control(code_point) || (code_point >= 0x7E && code_point <= 0x9F);
+}
+
+constexpr bool is_unicode_surrogate(u32 code_point)
+{
+    return code_point >= 0xD800 && code_point <= 0xDFFF;
+}
+
+constexpr bool is_unicode_scalar_value(u32 code_point)
+{
+    return is_unicode(code_point) && !is_unicode_surrogate(code_point);
+}
+
+constexpr bool is_unicode_noncharacter(u32 code_point)
+{
+    return is_unicode(code_point) && ((code_point >= 0xFDD0 && code_point <= 0xFDEF) || ((code_point & 0xFFFE) == 0xFFFE) || ((code_point & 0xFFFF) == 0xFFFF));
+}
+
 
 
 
