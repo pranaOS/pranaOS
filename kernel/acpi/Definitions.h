@@ -7,10 +7,10 @@
 
 #pragma once
 
-#include <AK/RefCounted.h>
-#include <AK/Types.h>
-#include <AK/Vector.h>
-#include <Kernel/PhysicalAddress.h>
+#include <base/RefCounted.h>
+#include <base/Types.h>
+#include <base/Vector.h>
+#include <kernel/PhysicalAddress.h>
 
 namespace Kernel::ACPI {
 
