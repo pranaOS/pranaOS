@@ -6,7 +6,6 @@
 
 #pragma once
 
-// includes
 #include <base/IterationDecision.h>
 #include <base/StdLibExtras.h>
 
@@ -33,4 +32,30 @@ concept Enum = IsEnum<T>;
 template<typename T, typename U>
 concept SameAs = IsSame<T, U>;
 
+template<typename Func, typename... Args>
+concept VoidFunction = requires(Func func, Args... args)
+{
+    {
+        func(args...)
+    }
+    -> SameAs<void>;
+};
+
+template<typename Func, typename... Args>
+concept IteratorFunction = requires(Func func, Args... args)
+{
+    {
+        func(args...)
+    }
+    -> SameAs<IterationDecision>;
+};
 }
+
+using Base::Concepts::Arithmetic;
+using Base::Concepts::Enum;
+using Base::Concepts::FloatingPoint;
+using Base::Concepts::Integral;
+using Base::Concepts::IteratorFunction;
+using Base::Concepts::Signed;
+using Base::Concepts::Unsigned;
+using Base::Concepts::VoidFunction;
