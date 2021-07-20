@@ -26,7 +26,7 @@ class Buffered<StreamType, Size, typename EnableIf<IsBaseOf<InputStream, StreamT
 
 public:
     template<typename... Parameters>
-    explict Buffered(Parameters&&... parameters)
+    explicit Buffered(Parameters&&... parameters)
         : m_stream(forward<Parameters>(parameters)...)
     {
     }
@@ -108,6 +108,12 @@ public:
         return true;
     }
 
+private:
+    Bytes buffer() const { return { m_buffer, Size }; }
+
+    mutable StreamType m_stream;
+    mutable u8 m_buffer[Size];
+    mutable size_t m_buffered { 0 };
 };
 
 }
