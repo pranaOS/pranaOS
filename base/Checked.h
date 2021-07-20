@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, krishpranav
+ * Copyright (c) 2021, krishpranav, Andrew-stew
  *
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -119,6 +119,29 @@ public:
     constexpr Checked& operator=(U value)
     {
         return *this = Checked(value);
+    }
+    
+    
+    [[nodiscard]] constexpr bool has_overflow() const
+    {
+        return m_overflow;
+    }
+
+    ALWAYS_INLINE constexpr bool operator!() const
+    {
+        VERIFY(!m_overflow);
+        return !m_value;
+    }
+
+    ALWAYS_INLINE constexpr T value() const
+    {
+        VERIFY(!m_overflow);
+        return m_value;
+    }
+
+    constexpr void add(T other)
+    {
+        m_overflow |= __builtin_add_overflow(m_value, other, &m_value);
     }
 };
 
