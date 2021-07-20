@@ -20,7 +20,7 @@ ninja gcc compiler needed
 See the [pranaOS build instructions](https://github.com/pranaOS/pranaOS/blob/master/docs/build.md)
 
 # Contributions:
-- pranaOS is a open source project rules and steps to contribute will be seen [here]()
+- pranaOS is a open source project rules and steps to contribute will be seen [here](https://github.com/pranaOS/pranaOS/blob/master/docs/CONTRIBUTING.md)
 
 # Contributors:
 
