@@ -102,7 +102,25 @@ constexpr bool is_unicode_noncharacter(u32 code_point)
     return is_unicode(code_point) && ((code_point >= 0xFDD0 && code_point <= 0xFDEF) || ((code_point & 0xFFFE) == 0xFFFE) || ((code_point & 0xFFFF) == 0xFFFF));
 }
 
+constexpr u32 to_ascii_lowercase(u32 code_point)
+{
+    if (is_ascii_upper_alpha(code_point))
+        return code_point + 0x20;
+    return code_point;
+}
 
+constexpr u32 to_ascii_uppercase(u32 code_point)
+{
+    if (is_ascii_lower_alpha(code_point))
+        return code_point - 0x20;
+    return code_point;
+}
 
+constexpr u32 parse_ascii_digit(u32 code_point)
+{
+    if (is_ascii_digit(code_point))
+        return code_point - '0'
+    VERIFY_NOT_REACHED();
+}
 
 }
