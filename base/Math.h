@@ -59,3 +59,82 @@ constexpr size_t product_odd() { return value * product_odd<value - 2>(); }
 INTEGER_BUILTIN(clz);
 INTEGER_BUILTIN(ctz);
 INTEGER_BUILTIN(popcnt);
+
+namespace Division {
+template<FloatingPoint T>
+constexpr T fmod(T x, T y)
+{
+    CONSTEXPR_STATE(fmod, x, y);
+    T res;
+    asm(
+        "fprem"
+        : "=t"(res)
+        : "0"(x), "u"(y));
+    return res;
+}
+template<FloatingPoint T>
+constexpr T remainder(T x, T y)
+{
+    CONSTEXPR_STATE(remainder, x, y);
+    T res;
+    asm(
+        "fprem1"
+        : "=t"(res)
+        : "0"(x), "u"(y));
+    return res;
+}
+}
+
+using Division::fmod;
+using Division::remainder;
+
+template<FloatingPoint T>
+constexpr T sqrt(T x)
+{
+    CONSTEXPR_STATE(sqrt, x);
+    T res;
+    asm("fsqrt"
+        : "=t"(res)
+        : "0"(x));
+    return res;
+}
+
+template<FloatingPoint T>
+constexpr T cbrt(T x)
+{
+    CONSTEXPR_STATE(cbrt, x);
+    if (__builtin_isinf(x) || x == 0)
+        return x;
+    if (x < 0)
+        return -cbrt(-x);
+
+    T r = x;
+    T ex = 0;
+
+    while (r < 0.125l) {
+        r *= 8;
+        ex--;
+    }
+    while (r > 1.0l) {
+        r *= 0.125l;
+        ex++;
+    }
+
+    r = (-0.46946116l * r + 1.072302l) * r + 0.3812513l;
+
+    while (ex < 0) {
+        r *= 0.5l;
+        ex++;
+    }
+    while (ex > 0) {
+        r *= 2.0l;
+        ex--;
+    }
+
+    r = (2.0l / 3.0l) * r + (1.0l / 3.0l) * x / (r * r);
+    r = (2.0l / 3.0l) * r + (1.0l / 3.0l) * x / (r * r);
+    r = (2.0l / 3.0l) * r + (1.0l / 3.0l) * x / (r * r);
+    r = (2.0l / 3.0l) * r + (1.0l / 3.0l) * x / (r * r);
+
+    return r;
+}
