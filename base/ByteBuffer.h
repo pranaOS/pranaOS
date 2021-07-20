@@ -109,6 +109,20 @@ public:
 
     [[nodiscard]] u8* offset_pointer(int offset) { return data() + offset; }
     [[nodiscard]] u8 const* offset_pointer(int offset) const { return data() + offset; }
+
+
+    [[nodiscard]] void* end_pointer() { return data() + m_size; }
+    [[nodiscard]] void const* end_pointer() const { return data() + m_size; }
+
+    [[nodiscard]] ByteBuffer slice(size_t offset, size_t size) const
+    {
+        VERIFY(offset + size <= this->size());
+
+        return copy(offset_pointer(offset), size);
+    }
+
+    
+
 };
 
 }
