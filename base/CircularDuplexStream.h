@@ -4,16 +4,21 @@
  * SPDX-License-Identifier: BSD-2-Clause
 */
 
+/*
+ * Copyright (c) 2020, the SerenityOS developers.
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+ */
+
 #pragma once
 
-// includes
 #include <base/CircularQueue.h>
 #include <base/Stream.h>
 
 namespace Base {
 
 template<size_t Capacity>
-class CircularDuplexStream : public AK::DuplexStream {
+class CircularDuplexStream : public Base::DuplexStream {
 public:
     size_t write(ReadonlyBytes bytes) override
     {
@@ -100,5 +105,23 @@ public:
         return min(Capacity - m_queue.size(), m_queue.capacity() - (m_queue.head_index() + m_queue.size()) % Capacity);
     }
 
+    Bytes reserve_contigous_space(size_t count)
+    {
+        VERIFY(count <= remaining_contigous_space());
+
+        Bytes bytes { m_queue.m_storage + (m_queue.head_index() + m_queue.size()) % Capacity, count };
+
+        m_queue.m_size += count;
+        m_total_written += count;
+
+        return bytes;
+    }
+
+private:
+    CircularQueue<u8, Capacity> m_queue;
+    size_t m_total_written { 0 };
 };
+
 }
+
+using Base::CircularDuplexStream;
