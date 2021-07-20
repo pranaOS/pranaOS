@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: BSD-2-Clause
 */
-
+ 
 #pragma once
 
 // includes
@@ -91,7 +91,7 @@ public:
         static_assert(Bool, "'!a' is only available for DistinctNumeric types with 'Bool'.");
         return !this->m_value;
     }
-    
+
     constexpr Self operator~() const
     {
         static_assert(Flags, "'~a' is only available for DistinctNumeric types with 'Flags'.");
@@ -232,8 +232,18 @@ struct Formatter<DistinctNumeric<T, X, Incr, Cmp, Bool, Flags, Shift, Arith>> : 
     }
 };
 
+
+
+}
+
 #define TYPEDEF_DISTINCT_NUMERIC_GENERAL(T, Incr, Cmp, Bool, Flags, Shift, Arith, NAME) \
     using NAME = DistinctNumeric<T, struct __##NAME##_tag, Incr, Cmp, Bool, Flags, Shift, Arith>;
 #define TYPEDEF_DISTINCT_ORDERED_ID(T, NAME) TYPEDEF_DISTINCT_NUMERIC_GENERAL(T, false, true, true, false, false, false, NAME)
 
-}
+template<typename T, typename X, auto... Args>
+struct Traits<Base::DistinctNumeric<T, X, Args...>> : public GenericTraits<Base::DistinctNumeric<T, X, Args...>> {
+    static constexpr bool is_trivial() { return true; }
+    static constexpr auto hash(const DistinctNumeric<T, X, Args...>& d) { return Traits<T>::hash(d.value()); }
+};
+
+using Base::DistinctNumeric;
