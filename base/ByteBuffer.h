@@ -174,6 +174,16 @@ public:
         __builtin_memcpy(this->data() + offset, data, data_size);
     }
 
+    void zero_fill()
+    {
+        __builtin_memset(data(), 0, m_size);
+    }
+
+    operator Bytes() { return bytes(); }
+    operator ReadonlyBytes() const { return bytes(); }
+
+    ALWAYS_INLINE size_t capacity() const { return m_inline ? inline_capacity : m_outline_capacity; }
+
 
 };
 
