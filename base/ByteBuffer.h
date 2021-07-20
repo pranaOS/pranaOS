@@ -121,7 +121,32 @@ public:
         return copy(offset_pointer(offset), size);
     }
 
-    
+
+    void clear()
+    {
+        if (!m_inline) {
+            kfree_size(m_outline_buffer, m_outline_capacity);
+            m_inline = true;
+        }
+        m_size = 0;
+    }
+
+    ALWAYS_INLINE void resize(size_t new_size)
+    {
+        if (new_size <= m_size) {
+            trim(new_size, false);
+            return;
+        }
+        ensure_capacity(new_size);
+        m_size = new_size;
+    }
+
+    ALWAYS_INLINE void ensure_capacity(size_t new_capacity)
+    {
+        if (new_capacity <= capacity())
+            return;
+        ensure_capacity_slowpath(new_capacity);
+    }
 
 };
 
