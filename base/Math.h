@@ -238,12 +238,10 @@ constexpr T asin(T x)
     return value;
 }
 
-
 template<FloatingPoint T>
 constexpr T acos(T value)
 {
     CONSTEXPR_STATE(acos, value);
-
     return Pi<T> + asin(value);
 }
 
@@ -259,5 +257,208 @@ constexpr T atan2(T y, T x)
         : "st(1)");
     return ret;
 }
+
+}
+
+using Trigonometry::acos;
+using Trigonometry::asin;
+using Trigonometry::atan;
+using Trigonometry::atan2;
+using Trigonometry::cos;
+using Trigonometry::hypot;
+using Trigonometry::sin;
+using Trigonometry::tan;
+
+namespace Exponentials {
+
+template<FloatingPoint T>
+constexpr T log(T x)
+{
+    CONSTEXPR_STATE(log, x);
+
+    T ret;
+    asm(
+        "fldln2\n"
+        "fxch %%st(1)\n"
+        "fyl2x\n"
+        : "=t"(ret)
+        : "0"(x));
+    return ret;
+}
+
+template<FloatingPoint T>
+constexpr T log2(T x)
+{
+    CONSTEXPR_STATE(log2, x);
+
+    T ret;
+    asm(
+        "fld1\n"
+        "fxch %%st(1)\n"
+        "fyl2x\n"
+        : "=t"(ret)
+        : "0"(x));
+    return ret;
+}
+
+template<Integral T>
+constexpr T log2(T x)
+{
+    return x ? 8 * sizeof(T) - clz(x) : 0;
+}
+
+template<FloatingPoint T>
+constexpr T log10(T x)
+{
+    CONSTEXPR_STATE(log10, x);
+
+    T ret;
+    asm(
+        "fldlg2\n"
+        "fxch %%st(1)\n"
+        "fyl2x\n"
+        : "=t"(ret)
+        : "0"(x));
+    return ret;
+}
+
+template<FloatingPoint T>
+constexpr T exp(T exponent)
+{
+    CONSTEXPR_STATE(exp, exponent);
+
+    T res;
+    asm("fldl2e\n"
+        "fmulp\n"
+        "fld1\n"
+        "fld %%st(1)\n"
+        "fprem\n"
+        "f2xm1\n"
+        "faddp\n"
+        "fscale\n"
+        "fstp %%st(1)"
+        : "=t"(res)
+        : "0"(exponent));
+    return res;
+}
+
+template<FloatingPoint T>
+constexpr T exp2(T exponent)
+{
+    CONSTEXPR_STATE(exp2, exponent);
+
+    T res;
+    asm("fld1\n"
+        "fld %%st(1)\n"
+        "fprem\n"
+        "f2xm1\n"
+        "faddp\n"
+        "fscale\n"
+        "fstp %%st(1)"
+        : "=t"(res)
+        : "0"(exponent));
+    return res;
+}
+template<Integral T>
+constexpr T exp2(T exponent)
+{
+    return 1u << exponent;
+}
+}
+
+using Exponentials::exp;
+using Exponentials::exp2;
+using Exponentials::log;
+using Exponentials::log10;
+using Exponentials::log2;
+
+namespace Hyperbolic {
+
+template<FloatingPoint T>
+constexpr T sinh(T x)
+{
+    T exponentiated = exp<T>(x);
+    if (x > 0)
+        return (exponentiated * exponentiated - 1) / 2 / exponentiated;
+    return (exponentiated - 1 / exponentiated) / 2;
+}
+
+template<FloatingPoint T>
+constexpr T cosh(T x)
+{
+    CONSTEXPR_STATE(cosh, x);
+
+    T exponentiated = exp(-x);
+    if (x < 0)
+        return (1 + exponentiated * exponentiated) / 2 / exponentiated;
+    return (1 / exponentiated + exponentiated) / 2;
+}
+
+template<FloatingPoint T>
+constexpr T tanh(T x)
+{
+    if (x > 0) {
+        T exponentiated = exp<T>(2 * x);
+        return (exponentiated - 1) / (exponentiated + 1);
+    }
+    T plusX = exp<T>(x);
+    T minusX = 1 / plusX;
+    return (plusX - minusX) / (plusX + minusX);
+}
+
+template<FloatingPoint T>
+constexpr T asinh(T x)
+{
+    return log<T>(x + sqrt<T>(x * x + 1));
+}
+
+template<FloatingPoint T>
+constexpr T acosh(T x)
+{
+    return log<T>(x + sqrt<T>(x * x - 1));
+}
+
+template<FloatingPoint T>
+constexpr T atanh(T x)
+{
+    return log<T>((1 + x) / (1 - x)) / (T)2.0l;
+}
+
+}
+
+using Hyperbolic::acosh;
+using Hyperbolic::asinh;
+using Hyperbolic::atanh;
+using Hyperbolic::cosh;
+using Hyperbolic::sinh;
+using Hyperbolic::tanh;
+
+template<FloatingPoint T>
+constexpr T pow(T x, T y)
+{
+    CONSTEXPR_STATE(pow, x, y);
+    if (__builtin_isnan(y))
+        return y;
+    if (y == 0)
+        return 1;
+    if (x == 0)
+        return 0;
+    if (y == 1)
+        return x;
+    int y_as_int = (int)y;
+    if (y == (T)y_as_int) {
+        T result = x;
+        for (int i = 0; i < fabs<T>(y) - 1; ++i)
+            result *= x;
+        if (y < 0)
+            result = 1.0l / result;
+        return result;
+    }
+
+    return exp2<T>(y * log2<T>(x));
+}
+
+#undef CONSTEXPR_STATE
+#undef INTEGER_BUILTIN
 
 }
