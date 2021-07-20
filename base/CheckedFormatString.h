@@ -1,8 +1,9 @@
 /*
- * Copyright (c) 2021, krishpranav, Andrew-stew
+ * Copyright (c) 2021, krishpranav
  *
  * SPDX-License-Identifier: BSD-2-Clause
  */
+
 
 #pragma once
 
@@ -17,7 +18,6 @@
 #        undef ENABLE_COMPILETIME_FORMAT_CHECK
 #    endif
 #endif
-
 
 #ifdef ENABLE_COMPILETIME_FORMAT_CHECK
 namespace Base::Format::Detail {
@@ -69,7 +69,6 @@ template<size_t N>
 consteval auto count_fmt_params(const char (&fmt)[N])
 {
     struct {
-        // FIXME: Switch to variable-sized storage whenever we can come up with one :)
         Array<size_t, 128> used_arguments { 0 };
         size_t total_used_argument_count { 0 };
         size_t next_implicit_argument_index { 0 };
@@ -92,7 +91,6 @@ consteval auto count_fmt_params(const char (&fmt)[N])
                 continue;
             }
 
-            // Note: There's no compile-time throw, so we have to abuse a compile-time string to store errors.
             if (result.total_used_last_format_specifier_start_count >= result.last_format_specifier_start.size() - 1)
                 compiletime_fail("Format-String Checker internal error: Format specifier nested too deep");
 
@@ -138,5 +136,83 @@ consteval auto count_fmt_params(const char (&fmt)[N])
 }
 
 #endif
+
+namespace Base::Format::Detail {
+template<typename... Args>
+struct CheckedFormatString {
+    template<size_t N>
+    consteval CheckedFormatString(const char (&fmt)[N])
+        : m_string { fmt }
+    {
+#ifdef ENABLE_COMPILETIME_FORMAT_CHECK
+        check_format_parameter_consistency<N, sizeof...(Args)>(fmt);
+#endif
+    }
+
+    template<typename T>
+    CheckedFormatString(const T& unchecked_fmt) requires(requires(T t) { StringView { t }; })
+        : m_string(unchecked_fmt)
+    {
+    }
+
+    auto view() const { return m_string; }
+
+private:
+#ifdef ENABLE_COMPILETIME_FORMAT_CHECK
+    template<size_t N, size_t param_count>
+    consteval static bool check_format_parameter_consistency(const char (&fmt)[N])
+    {
+        auto check = count_fmt_params<N>(fmt);
+        if (check.unclosed_braces != 0)
+            compiletime_fail("Extra unclosed braces in format string");
+        if (check.extra_closed_braces != 0)
+            compiletime_fail("Extra closing braces in format string");
+
+        {
+            auto begin = check.used_arguments.begin();
+            auto end = check.used_arguments.begin() + check.total_used_argument_count;
+            auto has_all_referenced_arguments = !Base::any_of(begin, end, [](auto& entry) { return entry >= param_count; });
+            if (!has_all_referenced_arguments)
+                compiletime_fail("Format string references nonexistent parameter");
+        }
+
+        if (!check.has_explicit_argument_references && check.total_used_argument_count != param_count)
+            compiletime_fail("Format string does not reference all passed parameters");
+
+        if (check.has_explicit_argument_references) {
+            auto all_parameters = iota_array<size_t, param_count>(0);
+            constexpr auto contains = [](auto begin, auto end, auto entry) {
+                for (; begin != end; begin++) {
+                    if (*begin == entry)
+                        return true;
+                }
+
+                return false;
+            };
+            auto references_all_arguments = AK::all_of(
+                all_parameters.begin(),
+                all_parameters.end(),
+                [&](auto& entry) {
+                    return contains(
+                        check.used_arguments.begin(),
+                        check.used_arguments.begin() + check.total_used_argument_count,
+                        entry);
+                });
+            if (!references_all_arguments)
+                compiletime_fail("Format string does not reference all passed parameters");
+        }
+
+        return true;
+    }
+#endif
+
+    StringView m_string;
+};
+}
+
+namespace AK {
+
+template<typename... Args>
+using CheckedFormatString = Format::Detail::CheckedFormatString<IdentityType<Args>...>;
 
 }
