@@ -4,12 +4,6 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-/*
- * Copyright (c) 2021, Max Wipfli <mail@maxwipfli.ch>
- *
- * SPDX-License-Identifier: BSD-2-Clause
- */
-
 #pragma once
 
 // includes
