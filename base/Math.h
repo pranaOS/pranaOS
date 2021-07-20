@@ -237,3 +237,27 @@ constexpr T asin(T x)
     value += i * Details::product_odd<15>() / Details::product_even<16>() / 17;
     return value;
 }
+
+
+template<FloatingPoint T>
+constexpr T acos(T value)
+{
+    CONSTEXPR_STATE(acos, value);
+
+    return Pi<T> + asin(value);
+}
+
+template<FloatingPoint T>
+constexpr T atan2(T y, T x)
+{
+    CONSTEXPR_STATE(atan2, y, x);
+
+    T ret;
+    asm("fpatan"
+        : "=t"(ret)
+        : "0"(x), "u"(y)
+        : "st(1)");
+    return ret;
+}
+
+}
