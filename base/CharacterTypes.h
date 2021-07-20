@@ -4,8 +4,15 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
+/*
+ * Copyright (c) 2021, Max Wipfli <mail@maxwipfli.ch>
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+ */
+
 #pragma once
 
+// includes
 #include <base/Array.h>
 #include <base/Types.h>
 
@@ -157,3 +164,29 @@ constexpr u32 to_ascii_base36_digit(u32 digit)
 }
 
 }
+
+using Base::is_ascii;
+using Base::is_ascii_alpha;
+using Base::is_ascii_alphanumeric;
+using Base::is_ascii_blank;
+using Base::is_ascii_c0_control;
+using Base::is_ascii_control;
+using Base::is_ascii_digit;
+using Base::is_ascii_graphical;
+using Base::is_ascii_hex_digit;
+using Base::is_ascii_lower_alpha;
+using Base::is_ascii_printable;
+using Base::is_ascii_punctuation;
+using Base::is_ascii_space;
+using Base::is_ascii_upper_alpha;
+using Base::is_unicode;
+using Base::is_unicode_control;
+using Base::is_unicode_noncharacter;
+using Base::is_unicode_scalar_value;
+using Base::is_unicode_surrogate;
+using Base::parse_ascii_base36_digit;
+using Base::parse_ascii_digit;
+using Base::parse_ascii_hex_digit;
+using Base::to_ascii_base36_digit;
+using Base::to_ascii_lowercase;
+using Base::to_ascii_uppercase;
