@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
 */
 
+
 #pragma once
 
 // includes
@@ -16,17 +17,16 @@ namespace Base {
 template<typename T>
 class FixedArray {
 public:
-    FixedArray() {}
+    FixedArray() { }
     explicit FixedArray(size_t size)
         : m_size(size)
     {
         if (m_size != 0) {
             m_elements = (T*)kmalloc(sizeof(T) * m_size);
             for (size_t i = 0; i < m_size; ++i)
-                new (&m_elements[i]) T()
+                new (&m_elements[i]) T();
         }
     }
-
     ~FixedArray()
     {
         clear();
@@ -36,13 +36,13 @@ public:
         : m_size(other.m_size)
     {
         if (m_size != 0) {
-            m_elements = (T*)kmalloc(sizeof(T) *m_size);
-            for (size_t i = 0; i < m_size; +i)
+            m_elements = (T*)kmalloc(sizeof(T) * m_size);
+            for (size_t i = 0; i < m_size; ++i)
                 new (&m_elements[i]) T(other[i]);
         }
     }
 
-    Fixed& operator=(FixedArray const& other)
+    FixedArray& operator=(FixedArray const& other)
     {
         FixedArray array(other);
         swap(array);
@@ -97,4 +97,20 @@ public:
     using ConstIterator = SimpleIterator<FixedArray const, T const>;
     using Iterator = SimpleIterator<FixedArray, T>;
 
+    ConstIterator begin() const { return ConstIterator::begin(*this); }
+    Iterator begin() { return Iterator::begin(*this); }
+
+    ConstIterator end() const { return ConstIterator::end(*this); }
+    Iterator end() { return Iterator::end(*this); }
+
+    Span<T const> span() const { return { data(), size() }; }
+    Span<T> span() { return { data(), size() }; }
+
+private:
+    size_t m_size { 0 };
+    T* m_elements { nullptr };
+};
+
 }
+
+using Base::FixedArray;
