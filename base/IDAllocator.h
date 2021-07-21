@@ -6,6 +6,7 @@
 
 #pragma once
 
+// includes
 #include <base/Forward.h>
 #include <base/HashTable.h>
 
@@ -32,6 +33,14 @@ public:
         VERIFY_NOT_REACHED();
     }
 
-};
+    void deallocate(int id)
+    {
+        m_allocated_ids.remove(id);
+    }
 
+private:
+    HashTable<int> m_allocated_ids;
+};
 }
+
+using Base::IDAllocator;
