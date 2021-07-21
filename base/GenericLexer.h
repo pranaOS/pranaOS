@@ -24,7 +24,6 @@ public:
     StringView remaining() const { return m_input.substring_view(m_index); }
 
     constexpr bool is_eof() const { return m_index >= m_input.length(); }
-    constexpr char peek(size_t offset = 0) const
 
     constexpr char peek(size_t offset = 0) const
     {
@@ -33,7 +32,7 @@ public:
 
     constexpr bool next_is(char expected) const
     {
-        return peek() == expeceted;
+        return peek() == expected;
     }
 
     constexpr bool next_is(StringView expected) const
@@ -41,16 +40,14 @@ public:
         for (size_t i = 0; i < expected.length(); ++i)
             if (peek(i) != expected[i])
                 return false;
-            
         return true;
     }
 
-    constexpr bool next_is(const char* expected)
+    constexpr bool next_is(const char* expected) const
     {
         for (size_t i = 0; expected[i] != '\0'; ++i)
             if (peek(i) != expected[i])
                 return false;
-            
         return true;
     }
 
@@ -60,7 +57,7 @@ public:
         --m_index;
     }
 
-        constexpr void retreat(size_t count)
+    constexpr void retreat(size_t count)
     {
         VERIFY(m_index >= count);
         m_index -= count;
@@ -111,7 +108,99 @@ public:
         return c;
     }
 
+    StringView consume(size_t count);
+    StringView consume_all();
+    StringView consume_line();
+    StringView consume_until(char);
+    StringView consume_until(const char*);
+    StringView consume_quoted_string(char escape_char = 0);
+    String consume_and_unescape_string(char escape_char = '\\');
 
+    constexpr void ignore(size_t count = 1)
+    {
+        count = min(count, m_input.length() - m_index);
+        m_index += count;
+    }
+
+    constexpr void ignore_until(char stop)
+    {
+        while (!is_eof() && peek() != stop) {
+            ++m_index;
+        }
+        ignore();
+    }
+
+    constexpr void ignore_until(const char* stop)
+    {
+        while (!is_eof() && !next_is(stop)) {
+            ++m_index;
+        }
+        ignore(__builtin_strlen(stop));
+    }
+
+    template<typename TPredicate>
+    constexpr bool next_is(TPredicate pred) const
+    {
+        return pred(peek());
+    }
+
+    template<typename TPredicate>
+    StringView consume_while(TPredicate pred)
+    {
+        size_t start = m_index;
+        while (!is_eof() && pred(peek()))
+            ++m_index;
+        size_t length = m_index - start;
+
+        if (length == 0)
+            return {};
+        return m_input.substring_view(start, length);
+    }
+
+    template<typename TPredicate>
+    StringView consume_until(TPredicate pred)
+    {
+        size_t start = m_index;
+        while (!is_eof() && !pred(peek()))
+            ++m_index;
+        size_t length = m_index - start;
+
+        if (length == 0)
+            return {};
+        return m_input.substring_view(start, length);
+    }
+
+    template<typename TPredicate>
+    constexpr void ignore_while(TPredicate pred)
+    {
+        while (!is_eof() && pred(peek()))
+            ++m_index;
+    }
+
+    
+    template<typename TPredicate>
+    constexpr void ignore_until(TPredicate pred)
+    {
+        while (!is_eof() && !pred(peek()))
+            ++m_index;
+    }
+
+protected:
+    StringView m_input;
+    size_t m_index { 0 };
 };
 
+constexpr auto is_any_of(const StringView& values)
+{
+    return [values](auto c) { return values.contains(c); };
 }
+
+constexpr auto is_path_separator = is_any_of("/\\");
+constexpr auto is_quote = is_any_of("'\"");
+
+}
+
+using Base::GenericLexer;
+using Base::is_any_of;
+using Base::is_path_separator;
+using Base::is_quote;
