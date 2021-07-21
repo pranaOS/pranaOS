@@ -136,4 +136,96 @@ public:
 
 };
 
+class FormatBuilder {
+public:
+    enum class Align {
+        Default,
+        Left,
+        Center,
+        Right,
+    };
+    enum class SignMode {
+        OnlyIfNeeded,
+        Always,
+        Reserved,
+        Default = OnlyIfNeeded,
+    };
+
+    explicit FormatBuilder(StringBuilder& builder)
+        : m_builder(builder)
+    {
+    }
+
+    void put_padding(char fill, size_t amount);
+
+    void put_literal(StringView value);
+
+    void put_string(
+        StringView value,
+        Align align = Align::Left,
+        size_t min_width = 0,
+        size_t max_width = NumericLimits<size_t>::max(),
+        char fill = ' ');
+
+    void put_u64(
+        u64 value,
+        u8 base = 10,
+        bool prefix = false,
+        bool upper_case = false,
+        bool zero_pad = false,
+        Align align = Align::Right,
+        size_t min_width = 0,
+        char fill = ' ',
+        SignMode sign_mode = SignMode::OnlyIfNeeded,
+        bool is_negative = false);
+
+    void put_i64(
+        i64 value,
+        u8 base = 10,
+        bool prefix = false,
+        bool upper_case = false,
+        bool zero_pad = false,
+        Align align = Align::Right,
+        size_t min_width = 0,
+        char fill = ' ',
+        SignMode sign_mode = SignMode::OnlyIfNeeded);
+
+#ifndef KERNEL
+    void put_f80(
+        long double value,
+        u8 base = 10,
+        bool upper_case = false,
+        Align align = Align::Right,
+        size_t min_width = 0,
+        size_t precision = 6,
+        char fill = ' ',
+        SignMode sign_mode = SignMode::OnlyIfNeeded);
+
+    void put_f64(
+        double value,
+        u8 base = 10,
+        bool upper_case = false,
+        bool zero_pad = false,
+        Align align = Align::Right,
+        size_t min_width = 0,
+        size_t precision = 6,
+        char fill = ' ',
+        SignMode sign_mode = SignMode::OnlyIfNeeded);
+#endif
+
+    void put_hexdump(
+        ReadonlyBytes,
+        size_t width,
+        char fill = ' ');
+
+    const StringBuilder& builder() const
+    {
+        return m_builder;
+    }
+    StringBuilder& builder() { return m_builder; }
+
+private:
+    StringBuilder& m_builder;
+};
+
 }
