@@ -37,4 +37,21 @@ private:
     typename ListType::Node* m_node;
 };
 
+template<typename T>
+class DoublyLinkedList {
+private:
+    struct Node {
+        template<typename U>
+        explicit Node(U&& v)
+            : value(forward<U>(v))
+        {
+            static_assert(
+                requires { T(v); }, "Conversion operator is missing.");
+        }
+        T value;
+        Node* next { nullptr };
+        Node* prev { nullptr };
+    };
+};
+
 }
