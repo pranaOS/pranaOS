@@ -36,6 +36,15 @@ public:
 
     HashMap() = default;
 
+#ifndef PRANAOS_LIBC_BUILD
+    HashMap(std::initializer_list<Entry> list)
+    {
+        ensure_capacity(list.size());
+        for (auto& item : list)
+            set(item.key, item.value);
+    }
+#endif
+
 };
 
 }
