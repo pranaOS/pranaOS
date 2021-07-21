@@ -105,5 +105,39 @@ private:
     bool m_owned { false };
 };
 
+class OutputFileStream : public OutputStream {
+public:
+    explicit OutputFileStream(int fd)
+        : m_file(fdopen(fd, "w"))
+        , m_owned(true)
+    {
+        if (!m_file)
+            set_fatal_error();
+    }
+
+    explicit OutputFileStream(FILE* fp)
+        : m_file(fp)
+    {
+        if (!m_file)
+            set_fatal_error();
+    }
+
+    ~OutputFileStream()
+    {
+        if (m_file) {
+            fflush(m_file);
+            if (m_owned)
+                fclose(m_file);
+        }
+    }
+
+    size_t write(ReadonlyBytes bytes) override
+    {
+        auto nwritten = fwrite(bytes.data(), sizeof(u8), bytes.size(), m_file);
+        m_bytes_written += nwritten;
+        return nwritten;
+    }
+
+};
 
 }
