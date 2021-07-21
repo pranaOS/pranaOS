@@ -70,6 +70,57 @@ public:
     using IteratorType = typename HashTableType::Iterator;
     using ConstIteratorType = typename HashTableType::ConstIterator;
 
+
+    IteratorType begin() { return m_table.begin(); }
+    IteratorType end() { return m_table.end(); }
+    IteratorType find(const K& key)
+    {
+        return m_table.find(KeyTraits::hash(key), [&](auto& entry) { return KeyTraits::equals(key, entry.key); });
+    }
+    template<typename TUnaryPredicate>
+    IteratorType find(unsigned hash, TUnaryPredicate predicate)
+    {
+        return m_table.find(hash, predicate);
+    }
+
+    ConstIteratorType begin() const { return m_table.begin(); }
+    ConstIteratorType end() const { return m_table.end(); }
+    ConstIteratorType find(const K& key) const
+    {
+        return m_table.find(KeyTraits::hash(key), [&](auto& entry) { return KeyTraits::equals(key, entry.key); });
+    }
+    template<typename TUnaryPredicate>
+    ConstIteratorType find(unsigned hash, TUnaryPredicate predicate) const
+    {
+        return m_table.find(hash, predicate);
+    }
+
+    void ensure_capacity(size_t capacity) { m_table.ensure_capacity(capacity); }
+
+    Optional<typename Traits<V>::PeekType> get(const K& key) const requires(!IsPointer<typename Traits<V>::PeekType>)
+    {
+        auto it = find(key);
+        if (it == end())
+            return {};
+        return (*it).value;
+    }
+
+    Optional<typename Traits<V>::ConstPeekType> get(const K& key) const requires(IsPointer<typename Traits<V>::PeekType>)
+    {
+        auto it = find(key);
+        if (it == end())
+            return {};
+        return (*it).value;
+    }
+
+    Optional<typename Traits<V>::PeekType> get(const K& key) requires(!IsConst<typename Traits<V>::PeekType>)
+    {
+        auto it = find(key);
+        if (it == end())
+            return {};
+        return (*it).value;
+    }
+
 };
 
 }
