@@ -73,4 +73,28 @@ public:
         return m_elements[index];
     }
 
+    T const& operator[](size_t index) const
+    {
+        VERIFY(index < m_size);
+        return m_elements[index];
+    }
+
+    bool contains_slow(T const& value) const
+    {
+        for (size_t i = 0; i < m_size; ++i) {
+            if (m_elements[i] == value)
+                return true;
+        }
+        return false;
+    }
+
+    void swap(FixedArray& other)
+    {
+        ::swap(m_elements, other.m_elements);
+        ::swap(m_size, other.m_size);
+    }
+
+    using ConstIterator = SimpleIterator<FixedArray const, T const>;
+    using Iterator = SimpleIterator<FixedArray, T>;
+
 }
