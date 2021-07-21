@@ -50,7 +50,7 @@ public:
         node.m_in_tree = true;
     }
 
-        template<typename ElementType>
+    template<typename ElementType>
     class BaseIterator {
     public:
         BaseIterator() = default;
@@ -60,7 +60,6 @@ public:
             if (!m_node)
                 return *this;
             m_prev = m_node;
-            // the complexity is O(logn) for each successor call, but the total complexity for all elements comes out to O(n), meaning the amortized cost for a single call is O(1)
             m_node = static_cast<TreeNode*>(BaseTree::successor(m_node));
             return *this;
         }
@@ -97,7 +96,7 @@ public:
         TreeNode* m_prev { nullptr };
     };
 
-        using Iterator = BaseIterator<V>;
+    using Iterator = BaseIterator<V>;
     Iterator begin() { return Iterator(static_cast<TreeNode*>(this->m_minimum)); }
     Iterator end() { return {}; }
     Iterator begin_from(K key) { return Iterator(static_cast<TreeNode*>(BaseTree::find(this->m_root, key))); }
@@ -122,5 +121,57 @@ public:
         return true;
     }
 
+    void clear()
+    {
+        clear_nodes(static_cast<TreeNode*>(this->m_root));
+        this->m_root = nullptr;
+        this->m_minimum = nullptr;
+        this->m_size = 0;
+    }
+
+private:
+    static void clear_nodes(TreeNode* node)
+    {
+        if (!node)
+            return;
+        clear_nodes(static_cast<TreeNode*>(node->right_child));
+        node->right_child = nullptr;
+        clear_nodes(static_cast<TreeNode*>(node->left_child));
+        node->left_child = nullptr;
+        node->m_in_tree = false;
+    }
+
+    static V* node_to_value(TreeNode& node)
+    {
+        return (V*)((u8*)&node - ((u8*)&(((V*)nullptr)->*member) - (u8*)nullptr));
+    }
+};
+
+template<Integral K>
+class IntrusiveRedBlackTreeNode : public BaseRedBlackTree<K>::Node {
+public:
+    IntrusiveRedBlackTreeNode(K key)
+        : BaseRedBlackTree<K>::Node(key)
+    {
+    }
+
+    ~IntrusiveRedBlackTreeNode()
+    {
+        VERIFY(!is_in_tree());
+    }
+
+    [[nodiscard]] bool is_in_tree() const
+    {
+        return m_in_tree;
+    }
+
+private:
+    template<Integral TK, typename V, IntrusiveRedBlackTreeNode<TK> V::*member>
+    friend class IntrusiveRedBlackTree;
+    bool m_in_tree { false };
+};
+
 }
-}
+
+using Base::IntrusiveRedBlackTree;
+using Base::IntrusiveRedBlackTreeNode;
