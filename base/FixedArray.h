@@ -49,4 +49,28 @@ public:
         return *this;
     }
 
+    FixedArray(FixedArray&&) = delete;
+    FixedArray& operator=(FixedArray&&) = delete;
+
+    void clear()
+    {
+        if (!m_elements)
+            return;
+        for (size_t i = 0; i < m_size; ++i)
+            m_elements[i].~T();
+        kfree_sized(m_elements, sizeof(T) * m_size);
+        m_elements = nullptr;
+        m_size = 0;
+    }
+
+    size_t size() const { return m_size; }
+    T* data() { return m_elements; }
+    T const* data() const { return m_elements; }
+
+    T& operator[](size_t index)
+    {
+        VERIFY(index < m_size);
+        return m_elements[index];
+    }
+
 }
