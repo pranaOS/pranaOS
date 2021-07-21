@@ -57,6 +57,53 @@ static constexpr size_t convert_unsigned_to_string(u64 value, Array<u8, 128>& bu
     return used;
 }
 
+void vformat_impl(TypeErasedFormatParams& params, FormatBuilder& builder, FormatParser& parser)
+{
+    const auto literal = parser.consume_literal();
+    builder.put_literal(literal);
+
+    FormatParser::FormatSpecifier specifier;
+    if (!parser.consume_specifier(specifier)) {
+        VERIFY(parser.is_eof());
+        return;
+    }
+
+    if (specifier.index == use_next_index)
+        specifier.index = params.take_next_index();
+
+    auto& parameter = params.parameters().at(specifier.index);
+
+    FormatParser argparser { specifier.flags };
+    parameter.formatter(params, builder, argparser, parameter.value);
+
+    vformat_impl(params, builder, parser);
+}
+
+} 
+
+FormatParser::FormatParser(StringView input)
+    : GenericLexer(input)
+{
+}
+StringView FormatParser::consume_literal()
+{
+    const auto begin = tell();
+
+    while (!is_eof()) {
+        if (consume_specific("{{"))
+            continue;
+
+        if (consume_specific("}}"))
+            continue;
+
+        if (next_is(is_any_of("{}")))
+            return m_input.substring_view(begin, tell() - begin);
+
+        consume();
+    }
+
+    return m_input.substring_view(begin);
+}
 
 }
 
