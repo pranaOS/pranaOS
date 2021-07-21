@@ -4,16 +4,16 @@
  * SPDX-License-Identifier: BSD-2-Clause
 */
 
+
 #pragma once
 
 #include <base/HashTable.h>
 #include <base/Optional.h>
 #include <base/Vector.h>
 
-#ifndef PRANAOS_LIBC_BUILD
+#ifndef SERENITY_LIBC_BUILD
 #    include <initializer_list>
 #endif
-
 
 namespace Base {
 
@@ -36,7 +36,7 @@ public:
 
     HashMap() = default;
 
-#ifndef PRANAOS_LIBC_BUILD
+#ifndef SERENITY_LIBC_BUILD
     HashMap(std::initializer_list<Entry> list)
     {
         ensure_capacity(list.size());
@@ -69,7 +69,6 @@ public:
     using HashTableType = HashTable<Entry, EntryTraits, IsOrdered>;
     using IteratorType = typename HashTableType::Iterator;
     using ConstIteratorType = typename HashTableType::ConstIterator;
-
 
     IteratorType begin() { return m_table.begin(); }
     IteratorType end() { return m_table.end(); }
@@ -121,6 +120,38 @@ public:
         return (*it).value;
     }
 
+    bool contains(const K& key) const
+    {
+        return find(key) != end();
+    }
+
+    void remove(IteratorType it)
+    {
+        m_table.remove(it);
+    }
+
+    V& ensure(const K& key)
+    {
+        auto it = find(key);
+        if (it == end())
+            set(key, V());
+        return find(key)->value;
+    }
+
+    Vector<K> keys() const
+    {
+        Vector<K> list;
+        list.ensure_capacity(size());
+        for (auto& it : *this)
+            list.unchecked_append(it.key);
+        return list;
+    }
+
+private:
+    HashTableType m_table;
 };
 
 }
+
+using Base::HashMap;
+using Base::OrderedHashMap;
