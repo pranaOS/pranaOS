@@ -45,6 +45,31 @@ public:
     }
 #endif
 
+    [[nodiscard]] bool is_empty() const
+    {
+        return m_table.is_empty();
+    }
+    [[nodiscard]] size_t size() const { return m_table.size(); }
+    [[nodiscard]] size_t capacity() const { return m_table.capacity(); }
+    void clear() { m_table.clear(); }
+
+    HashSetResult set(const K& key, const V& value) { return m_table.set({ key, value }); }
+    HashSetResult set(const K& key, V&& value) { return m_table.set({ key, move(value) }); }
+    bool remove(const K& key)
+    {
+        auto it = find(key);
+        if (it != end()) {
+            m_table.remove(it);
+            return true;
+        }
+        return false;
+    }
+    void remove_one_randomly() { m_table.remove(m_table.begin()); }
+
+    using HashTableType = HashTable<Entry, EntryTraits, IsOrdered>;
+    using IteratorType = typename HashTableType::Iterator;
+    using ConstIteratorType = typename HashTableType::ConstIterator;
+
 };
 
 }
