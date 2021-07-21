@@ -59,4 +59,20 @@ private:
     BucketType* m_bucket { nullptr };
 };
 
+
+template<typename OrderedHashTableType, typename T, typename BucketType>
+class OrderedHashTableIterator {
+    friend OrderedHashTableType;
+
+public:
+    bool operator==(const OrderedHashTableIterator& other) const { return m_bucket == other.m_bucket; }
+    bool operator!=(const OrderedHashTableIterator& other) const { return m_bucket != other.m_bucket; }
+    T& operator*() { return *m_bucket->slot(); }
+    T* operator->() { return m_bucket->slot(); }
+    void operator++() { m_bucket = m_bucket->next; }
+    void operator--() { m_bucket = m_bucket->previous; }
+
+
+}
+
 }
