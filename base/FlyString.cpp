@@ -4,6 +4,12 @@
  * SPDX-License-Identifier: BSD-2-Clause
 */
 
+/*
+ * Copyright (c) 2020, Andreas Kling <kling@serenityos.org>
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+ */
+
 #include <base/FlyString.h>
 #include <base/HashTable.h>
 #include <base/Optional.h>
@@ -11,7 +17,6 @@
 #include <base/String.h>
 #include <base/StringUtils.h>
 #include <base/StringView.h>
-
 
 namespace Base {
 
@@ -36,7 +41,6 @@ void FlyString::did_destroy_impl(Badge<StringImpl>, StringImpl& impl)
 {
     fly_impls().remove(&impl);
 }
-
 
 FlyString::FlyString(const String& string)
 {
@@ -74,7 +78,6 @@ FlyString::FlyString(StringView const& string)
         m_impl = *it;
     }
 }
-
 
 template<typename T>
 Optional<T> FlyString::to_int(TrimWhitespace trim_whitespace) const
@@ -138,6 +141,15 @@ bool FlyString::operator==(const String& other) const
 bool FlyString::operator==(const StringView& string) const
 {
     return *this == String(string);
+}
+
+bool FlyString::operator==(const char* string) const
+{
+    if (is_null())
+        return !string;
+    if (!string)
+        return false;
+    return !__builtin_strcmp(m_impl->characters(), string);
 }
 
 }
