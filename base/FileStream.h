@@ -63,7 +63,44 @@ public:
         return true;
     }
 
+    bool discard_or_error(size_t count) override
+    {
+        if (fseek(m_file, count, SEEK_CUR) == 0)
+            return true;
+        
+        if (errno != ESPIPE)
+            return false;
+
+        char buf[4];
+        size_t i = 0;
+        while (i < count) {
+            auto size = min(count - i, 4ul);
+            if (read({ buf, size }) < size) {
+                return false;
+            }
+
+            i += size;
+        }
+        return true;
+    }
+
+    bool seek(size_t offset, int whence = SEEK_SET)
+    {
+        return fseek(m_file, offset, whence) == 0;
+    }
+
+    virtual bool handle_any_error() override
+    {
+        clearerr(m_file);
+        return Stream::handle_any_error();
+    }
+
+    void make_unbuffered()
+    {
+        setbuf(m_file, nullptr, _IONBF, 0);
+    }
     
+
 };
 
 }
