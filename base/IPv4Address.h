@@ -42,7 +42,7 @@ public:
         : m_data(address)
     {
     }
-
+    
     constexpr u8 operator[](int i) const
     {
         VERIFY(i >= 0 && i < 4);
