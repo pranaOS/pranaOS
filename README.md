@@ -5,8 +5,9 @@ A unix operating system made from scratch using c++
 
 
 <p align='center'>
-  <img src='https://raw.githubusercontent.com/pranaOS/pranaOS/master/meta/res/files/pranaOS.jpg'>
+  <img src='https://raw.githubusercontent.com/pranaOS/pranaOS/gh-pages/pranaOS.jpg'>
 </p>
+
 
 # Dependencies
 ```
