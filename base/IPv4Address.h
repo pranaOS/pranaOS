@@ -6,6 +6,7 @@
 
 #pragma once
 
+// includes
 #include <base/Endian.h>
 #include <base/Optional.h>
 #include <base/String.h>
@@ -131,4 +132,14 @@ struct Traits<IPv4Address> : public GenericTraits<IPv4Address> {
     static constexpr unsigned hash(const IPv4Address& address) { return int_hash(address.to_u32()); }
 };
 
+template<>
+struct Formatter<IPv4Address> : Formatter<String> {
+    void format(FormatBuilder& builder, IPv4Address value)
+    {
+        return Formatter<String>::format(builder, value.to_string());
+    }
+};
+
 }
+
+using Base::IPv4Address;
