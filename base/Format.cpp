@@ -104,7 +104,6 @@ StringView FormatParser::consume_literal()
 
     return m_input.substring_view(begin);
 }
-    
 bool FormatParser::consume_number(size_t& value)
 {
     value = 0;
@@ -234,6 +233,7 @@ void FormatBuilder::put_u64(
 
     size_t used_by_prefix = 0;
     if (align == Align::Right && zero_pad) {
+
         used_by_prefix = 0;
     } else {
         if (is_negative || sign_mode != SignMode::OnlyIfNeeded)
@@ -326,7 +326,6 @@ void FormatBuilder::put_i64(
     put_u64(static_cast<u64>(value), base, prefix, upper_case, zero_pad, align, min_width, fill, sign_mode, is_negative);
 }
 
-
 #ifndef KERNEL
 void FormatBuilder::put_f64(
     double value,
@@ -349,7 +348,6 @@ void FormatBuilder::put_f64(
     format_builder.put_u64(static_cast<u64>(value), base, false, upper_case, false, Align::Right, 0, ' ', sign_mode, is_negative);
 
     if (precision > 0) {
-
         value -= static_cast<i64>(value);
 
         double epsilon = 0.5;
@@ -397,7 +395,6 @@ void FormatBuilder::put_f80(
     format_builder.put_u64(static_cast<u64>(value), base, false, upper_case, false, Align::Right, 0, ' ', sign_mode, is_negative);
 
     if (precision > 0) {
-
         value -= static_cast<i64>(value);
 
         long double epsilon = 0.5l;
@@ -429,7 +426,7 @@ void FormatBuilder::put_hexdump(ReadonlyBytes bytes, size_t width, char fill)
         put_padding(fill, 4);
         for (size_t j = i - width; j < i; ++j) {
             auto ch = bytes[j];
-            m_builder.append(ch >= 32 && ch <= 127 ? ch : '.'); 
+            m_builder.append(ch >= 32 && ch <= 127 ? ch : '.');
         }
     };
     for (size_t i = 0; i < bytes.size(); ++i) {
@@ -534,7 +531,285 @@ void StandardFormatter::parse(TypeErasedFormatParams& params, FormatParser& pars
     VERIFY(parser.is_eof());
 }
 
+void Formatter<StringView>::format(FormatBuilder& builder, StringView value)
+{
+    if (m_sign_mode != FormatBuilder::SignMode::Default)
+        VERIFY_NOT_REACHED();
+    if (m_alternative_form)
+        VERIFY_NOT_REACHED();
+    if (m_zero_pad)
+        VERIFY_NOT_REACHED();
+    if (m_mode != Mode::Default && m_mode != Mode::String && m_mode != Mode::Character && m_mode != Mode::HexDump)
+        VERIFY_NOT_REACHED();
 
+    m_width = m_width.value_or(0);
+    m_precision = m_precision.value_or(NumericLimits<size_t>::max());
+
+    if (m_mode == Mode::HexDump)
+        builder.put_hexdump(value.bytes(), m_width.value(), m_fill);
+    else
+        builder.put_string(value, m_align, m_width.value(), m_precision.value(), m_fill);
 }
 
+void Formatter<FormatString>::vformat(FormatBuilder& builder, StringView fmtstr, TypeErasedFormatParams params)
+{
+    return Formatter<String>::format(builder, String::vformatted(fmtstr, params));
 }
+
+template<typename T>
+void Formatter<T, typename EnableIf<IsIntegral<T>>::Type>::format(FormatBuilder& builder, T value)
+{
+    if (m_mode == Mode::Character) {
+        VERIFY(value >= 0 && value <= 127);
+
+        m_mode = Mode::String;
+
+        Formatter<StringView> formatter { *this };
+        return formatter.format(builder, StringView { reinterpret_cast<const char*>(&value), 1 });
+    }
+
+    if (m_precision.has_value())
+        VERIFY_NOT_REACHED();
+
+    if (m_mode == Mode::Pointer) {
+        if (m_sign_mode != FormatBuilder::SignMode::Default)
+            VERIFY_NOT_REACHED();
+        if (m_align != FormatBuilder::Align::Default)
+            VERIFY_NOT_REACHED();
+        if (m_alternative_form)
+            VERIFY_NOT_REACHED();
+        if (m_width.has_value())
+            VERIFY_NOT_REACHED();
+
+        m_mode = Mode::Hexadecimal;
+        m_alternative_form = true;
+        m_width = 2 * sizeof(void*);
+        m_zero_pad = true;
+    }
+
+    u8 base = 0;
+    bool upper_case = false;
+    if (m_mode == Mode::Binary) {
+        base = 2;
+    } else if (m_mode == Mode::BinaryUppercase) {
+        base = 2;
+        upper_case = true;
+    } else if (m_mode == Mode::Octal) {
+        base = 8;
+    } else if (m_mode == Mode::Decimal || m_mode == Mode::Default) {
+        base = 10;
+    } else if (m_mode == Mode::Hexadecimal) {
+        base = 16;
+    } else if (m_mode == Mode::HexadecimalUppercase) {
+        base = 16;
+        upper_case = true;
+    } else if (m_mode == Mode::HexDump) {
+        m_width = m_width.value_or(32);
+        builder.put_hexdump({ &value, sizeof(value) }, m_width.value(), m_fill);
+        return;
+    } else {
+        VERIFY_NOT_REACHED();
+    }
+
+    m_width = m_width.value_or(0);
+
+    if constexpr (IsSame<MakeUnsigned<T>, T>)
+        builder.put_u64(value, base, m_alternative_form, upper_case, m_zero_pad, m_align, m_width.value(), m_fill, m_sign_mode);
+    else
+        builder.put_i64(value, base, m_alternative_form, upper_case, m_zero_pad, m_align, m_width.value(), m_fill, m_sign_mode);
+}
+
+void Formatter<char>::format(FormatBuilder& builder, char value)
+{
+    if (m_mode == Mode::Binary || m_mode == Mode::BinaryUppercase || m_mode == Mode::Decimal || m_mode == Mode::Octal || m_mode == Mode::Hexadecimal || m_mode == Mode::HexadecimalUppercase) {
+
+        Formatter<signed char> formatter { *this };
+        return formatter.format(builder, static_cast<signed char>(value));
+    } else {
+        Formatter<StringView> formatter { *this };
+        return formatter.format(builder, { &value, 1 });
+    }
+}
+void Formatter<bool>::format(FormatBuilder& builder, bool value)
+{
+    if (m_mode == Mode::Binary || m_mode == Mode::BinaryUppercase || m_mode == Mode::Decimal || m_mode == Mode::Octal || m_mode == Mode::Hexadecimal || m_mode == Mode::HexadecimalUppercase) {
+        Formatter<u8> formatter { *this };
+        return formatter.format(builder, static_cast<u8>(value));
+    } else if (m_mode == Mode::HexDump) {
+        return builder.put_hexdump({ &value, sizeof(value) }, m_width.value_or(32), m_fill);
+    } else {
+        Formatter<StringView> formatter { *this };
+        return formatter.format(builder, value ? "true" : "false");
+    }
+}
+#ifndef KERNEL
+void Formatter<long double>::format(FormatBuilder& builder, long double value)
+{
+    u8 base;
+    bool upper_case;
+    if (m_mode == Mode::Default || m_mode == Mode::Float) {
+        base = 10;
+        upper_case = false;
+    } else if (m_mode == Mode::Hexfloat) {
+        base = 16;
+        upper_case = false;
+    } else if (m_mode == Mode::HexfloatUppercase) {
+        base = 16;
+        upper_case = true;
+    } else {
+        VERIFY_NOT_REACHED();
+    }
+
+    m_width = m_width.value_or(0);
+    m_precision = m_precision.value_or(6);
+
+    builder.put_f80(value, base, upper_case, m_align, m_width.value(), m_precision.value(), m_fill, m_sign_mode);
+}
+
+void Formatter<double>::format(FormatBuilder& builder, double value)
+{
+    u8 base;
+    bool upper_case;
+    if (m_mode == Mode::Default || m_mode == Mode::Float) {
+        base = 10;
+        upper_case = false;
+    } else if (m_mode == Mode::Hexfloat) {
+        base = 16;
+        upper_case = false;
+    } else if (m_mode == Mode::HexfloatUppercase) {
+        base = 16;
+        upper_case = true;
+    } else {
+        VERIFY_NOT_REACHED();
+    }
+
+    m_width = m_width.value_or(0);
+    m_precision = m_precision.value_or(6);
+
+    builder.put_f64(value, base, upper_case, m_zero_pad, m_align, m_width.value(), m_precision.value(), m_fill, m_sign_mode);
+}
+void Formatter<float>::format(FormatBuilder& builder, float value)
+{
+    Formatter<double> formatter { *this };
+    formatter.format(builder, value);
+}
+#endif
+
+#ifndef KERNEL
+void vout(FILE* file, StringView fmtstr, TypeErasedFormatParams params, bool newline)
+{
+    StringBuilder builder;
+    vformat(builder, fmtstr, params);
+
+    if (newline)
+        builder.append('\n');
+
+    const auto string = builder.string_view();
+    const auto retval = ::fwrite(string.characters_without_null_termination(), 1, string.length(), file);
+    if (static_cast<size_t>(retval) != string.length()) {
+        auto error = ferror(file);
+        dbgln("vout() failed ({} written out of {}), error was {} ({})", retval, string.length(), error, strerror(error));
+    }
+}
+#endif
+
+static bool is_debug_enabled = true;
+
+void set_debug_enabled(bool value)
+{
+    is_debug_enabled = value;
+}
+
+void vdbgln(StringView fmtstr, TypeErasedFormatParams params)
+{
+    if (!is_debug_enabled)
+        return;
+
+    StringBuilder builder;
+
+#ifdef __pranaos__
+#    ifdef KERNEL
+    if (Kernel::Processor::is_initialized() && Kernel::Thread::current()) {
+        auto& thread = *Kernel::Thread::current();
+        builder.appendff("\033[34;1m[#{} {}({}:{})]\033[0m: ", Kernel::Processor::id(), thread.process().name(), thread.pid().value(), thread.tid().value());
+    } else {
+        builder.appendff("\033[34;1m[#{} Kernel]\033[0m: ", Kernel::Processor::id());
+    }
+#    else
+    static TriState got_process_name = TriState::Unknown;
+    static char process_name_buffer[256];
+
+    if (got_process_name == TriState::Unknown) {
+        if (get_process_name(process_name_buffer, sizeof(process_name_buffer)) == 0)
+            got_process_name = TriState::True;
+        else
+            got_process_name = TriState::False;
+    }
+    if (got_process_name == TriState::True)
+        builder.appendff("\033[33;1m{}({}:{})\033[0m: ", process_name_buffer, getpid(), gettid());
+#    endif
+#endif
+
+    vformat(builder, fmtstr, params);
+    builder.append('\n');
+
+    const auto string = builder.string_view();
+
+    dbgputstr(string.characters_without_null_termination(), string.length());
+}
+
+#ifdef KERNEL
+void vdmesgln(StringView fmtstr, TypeErasedFormatParams params)
+{
+    StringBuilder builder;
+
+#    ifdef __pranaos__
+    if (Kernel::Processor::is_initialized() && Kernel::Thread::current()) {
+        auto& thread = *Kernel::Thread::current();
+        builder.appendff("\033[34;1m[{}({}:{})]\033[0m: ", thread.process().name(), thread.pid().value(), thread.tid().value());
+    } else {
+        builder.appendff("\033[34;1m[Kernel]\033[0m: ");
+    }
+#    endif
+
+    vformat(builder, fmtstr, params);
+    builder.append('\n');
+
+    const auto string = builder.string_view();
+    kernelputstr(string.characters_without_null_termination(), string.length());
+}
+
+void v_critical_dmesgln(StringView fmtstr, TypeErasedFormatParams params)
+{
+
+    StringBuilder builder;
+#    ifdef __pranaos__
+    if (Kernel::Processor::is_initialized() && Kernel::Thread::current()) {
+        auto& thread = *Kernel::Thread::current();
+        builder.appendff("[{}({}:{})]: ", thread.process().name(), thread.pid().value(), thread.tid().value());
+    } else {
+        builder.appendff("[Kernel]: ");
+    }
+#    endif
+
+    vformat(builder, fmtstr, params);
+    builder.append('\n');
+
+    const auto string = builder.string_view();
+    kernelcriticalputstr(string.characters_without_null_termination(), string.length());
+}
+
+#endif
+
+template struct Formatter<unsigned char, void>;
+template struct Formatter<unsigned short, void>;
+template struct Formatter<unsigned int, void>;
+template struct Formatter<unsigned long, void>;
+template struct Formatter<unsigned long long, void>;
+template struct Formatter<short, void>;
+template struct Formatter<int, void>;
+template struct Formatter<long, void>;
+template struct Formatter<long long, void>;
+template struct Formatter<signed char, void>;
+
+} 
