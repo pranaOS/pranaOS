@@ -22,6 +22,13 @@ public:
         if (!m_file)
             set_fatal_error();
     }
+    
+    explicit InputFileStream(FILE* fp)
+        : m_file(fp)
+    {
+        if (!m_file)
+            set_fatal_error();
+    }
 
     ~InputFileStream()
     {
