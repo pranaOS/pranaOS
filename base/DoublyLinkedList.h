@@ -76,6 +76,64 @@ public:
         return m_head->value;
     }
 
+        [[nodiscard]] const T& first() const
+    {
+        VERIFY(m_head);
+        return m_head->value;
+    }
+    [[nodiscard]] T& last()
+    {
+        VERIFY(m_head);
+        return m_tail->value;
+    }
+    [[nodiscard]] const T& last() const
+    {
+        VERIFY(m_head);
+        return m_tail->value;
+    }
+
+    template<typename U>
+    void append(U&& value)
+    {
+        static_assert(
+            requires { T(value); }, "Conversion operator is missing.");
+        auto* node = new Node(forward<U>(value));
+        if (!m_head) {
+            VERIFY(!m_tail);
+            m_head = node;
+            m_tail = node;
+            return;
+        }
+        VERIFY(m_tail);
+        VERIFY(!node->next);
+        m_tail->next = node;
+        node->prev = m_tail;
+        m_tail = node;
+    }
+
+    template<typename U>
+    void prepend(U&& value)
+    {
+        static_assert(IsSame<T, U>);
+        auto* node = new Node(forward<U>(value));
+        if (!m_head) {
+            VERIFY(!m_tail);
+            m_head = node;
+            m_tail = node;
+            return;
+        }
+        VERIFY(m_tail);
+        VERIFY(!node->prev);
+        m_head->prev = node;
+        node->next = m_head;
+        m_head = node;
+    }
+
+    [[nodiscard]] bool contains_slow(const T& value) const
+    {
+        return find(value) != end();
+    }
+
 };
 
 }
