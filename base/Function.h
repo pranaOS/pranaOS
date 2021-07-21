@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2021, Krisna Pranav
+ * Copyright (C) 2016 Apple Inc. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-2-Clause
 */
@@ -37,7 +38,7 @@ public:
 
     ~Function()
     {
-        clear(false)
+        clear(false);
     }
 
     template<typename CallableType>
@@ -57,6 +58,52 @@ public:
         move_from(move(other));
     }
 
+    // Note: Despite this method being const, a mutable lambda _may_ modify its own captures.
+    Out operator()(In... in) const
+    {
+        auto* wrapper = callable_wrapper();
+        VERIFY(wrapper);
+        ++m_call_nesting_level;
+        ScopeGuard guard([this] {
+            if (--m_call_nesting_level == 0 && m_deferred_clear)
+                const_cast<Function*>(this)->clear(false);
+        });
+        return wrapper->call(forward<In>(in)...);
+    }
+
+    explicit operator bool() const { return !!callable_wrapper(); }
+
+    template<typename CallableType>
+    Function& operator=(CallableType&& callable) requires((IsFunctionObject<CallableType> && IsCallableWithArguments<CallableType, In...>))
+    {
+        clear();
+        init_with_callable(forward<CallableType>(callable));
+        return *this;
+    }
+
+    template<typename FunctionType>
+    Function& operator=(FunctionType f) requires((IsFunctionPointer<FunctionType> && IsCallableWithArguments<RemovePointer<FunctionType>, In...>))
+    {
+        clear();
+        if (f)
+            init_with_callable(move(f));
+        return *this;
+    }
+
+    Function& operator=(std::nullptr_t)
+    {
+        clear();
+        return *this;
+    }
+
+    Function& operator=(Function&& other)
+    {
+        if (this != &other) {
+            clear();
+            move_from(move(other));
+        }
+        return *this;
+    }
 };
 
 }
