@@ -27,6 +27,14 @@ public:
     ElementType& operator->() { return &m_node->value; }
     [[nodiscard]] bool is_end() const { return !m_node; }
     static DoublyLinkedListIterator universal_end() { return DoublyLinkedListIterator(nullptr); }
+
+private:
+    friend ListType;
+    explicit DoublyLinkedListIterator(typename ListType::Node* node)
+        : m_node(node)
+    {
+    }
+    typename ListType::Node* m_node;
 };
 
 }
