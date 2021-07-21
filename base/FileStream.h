@@ -99,8 +99,11 @@ public:
     {
         setbuf(m_file, nullptr, _IONBF, 0);
     }
-    
 
+private:
+    FILE* m_file { nullptr };
+    bool m_owned { false };
 };
+
 
 }
