@@ -35,7 +35,6 @@
 
 namespace Base {
 
-
 template<typename T>
 ALWAYS_INLINE constexpr T convert_between_host_and_little_endian(T value)
 {
@@ -76,5 +75,67 @@ ALWAYS_INLINE T convert_between_host_and_network_endian(T value)
     return convert_between_host_and_big_endian(value);
 }
 
+template<typename T>
+class LittleEndian;
+
+template<typename T>
+InputStream& operator>>(InputStream&, LittleEndian<T>&);
+
+template<typename T>
+OutputStream& operator<<(OutputStream&, LittleEndian<T>);
+
+template<typename T>
+class [[gnu::packed]] LittleEndian {
+public:
+    friend InputStream& operator>><T>(InputStream&, LittleEndian<T>&);
+    friend OutputStream& operator<<<T>(OutputStream&, LittleEndian<T>);
+
+    constexpr LittleEndian() = default;
+
+    constexpr LittleEndian(T value)
+        : m_value(convert_between_host_and_little_endian(value))
+    {
+    }
+
+    constexpr operator T() const { return convert_between_host_and_little_endian(m_value); }
+
+private:
+    T m_value { 0 };
+};
+
+template<typename T>
+class BigEndian;
+
+template<typename T>
+InputStream& operator>>(InputStream&, BigEndian<T>&);
+
+template<typename T>
+OutputStream& operator<<(OutputStream&, BigEndian<T>);
+
+template<typename T>
+class [[gnu::packed]] BigEndian {
+public:
+    friend InputStream& operator>><T>(InputStream&, BigEndian<T>&);
+    friend OutputStream& operator<<<T>(OutputStream&, BigEndian<T>);
+
+    constexpr BigEndian() = default;
+
+    constexpr BigEndian(T value)
+        : m_value(convert_between_host_and_big_endian(value))
+    {
+    }
+
+    constexpr operator T() const { return convert_between_host_and_big_endian(m_value); }
+
+private:
+    T m_value { 0 };
+};
+
+template<typename T>
+using NetworkOrdered = BigEndian<T>;
 
 }
+
+using Base::BigEndian;
+using Base::LittleEndian;
+using Base::NetworkOrdered;
