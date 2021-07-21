@@ -234,8 +234,6 @@ void FormatBuilder::put_u64(
 
     size_t used_by_prefix = 0;
     if (align == Align::Right && zero_pad) {
-        // We want String::formatted("{:#08x}", 32) to produce '0x00000020' instead of '0x000020'. This
-        // behaviour differs from both fmtlib and printf, but is more intuitive.
         used_by_prefix = 0;
     } else {
         if (is_negative || sign_mode != SignMode::OnlyIfNeeded)
@@ -327,6 +325,215 @@ void FormatBuilder::put_i64(
 
     put_u64(static_cast<u64>(value), base, prefix, upper_case, zero_pad, align, min_width, fill, sign_mode, is_negative);
 }
+
+
+#ifndef KERNEL
+void FormatBuilder::put_f64(
+    double value,
+    u8 base,
+    bool upper_case,
+    bool zero_pad,
+    Align align,
+    size_t min_width,
+    size_t precision,
+    char fill,
+    SignMode sign_mode)
+{
+    StringBuilder string_builder;
+    FormatBuilder format_builder { string_builder };
+
+    bool is_negative = value < 0.0;
+    if (is_negative)
+        value = -value;
+
+    format_builder.put_u64(static_cast<u64>(value), base, false, upper_case, false, Align::Right, 0, ' ', sign_mode, is_negative);
+
+    if (precision > 0) {
+
+        value -= static_cast<i64>(value);
+
+        double epsilon = 0.5;
+        for (size_t i = 0; i < precision; ++i)
+            epsilon /= 10.0;
+
+        size_t visible_precision = 0;
+        for (; visible_precision < precision; ++visible_precision) {
+            if (value - static_cast<i64>(value) < epsilon)
+                break;
+            value *= 10.0;
+            epsilon *= 10.0;
+        }
+
+        if (zero_pad || visible_precision > 0)
+            string_builder.append('.');
+
+        if (visible_precision > 0)
+            format_builder.put_u64(static_cast<u64>(value), base, false, upper_case, true, Align::Right, visible_precision);
+
+        if (zero_pad && (precision - visible_precision) > 0)
+            format_builder.put_u64(0, base, false, false, true, Align::Right, precision - visible_precision);
+    }
+
+    put_string(string_builder.string_view(), align, min_width, NumericLimits<size_t>::max(), fill);
+}
+
+void FormatBuilder::put_f80(
+    long double value,
+    u8 base,
+    bool upper_case,
+    Align align,
+    size_t min_width,
+    size_t precision,
+    char fill,
+    SignMode sign_mode)
+{
+    StringBuilder string_builder;
+    FormatBuilder format_builder { string_builder };
+
+    bool is_negative = value < 0.0l;
+    if (is_negative)
+        value = -value;
+
+    format_builder.put_u64(static_cast<u64>(value), base, false, upper_case, false, Align::Right, 0, ' ', sign_mode, is_negative);
+
+    if (precision > 0) {
+
+        value -= static_cast<i64>(value);
+
+        long double epsilon = 0.5l;
+        for (size_t i = 0; i < precision; ++i)
+            epsilon /= 10.0l;
+
+        size_t visible_precision = 0;
+        for (; visible_precision < precision; ++visible_precision) {
+            if (value - static_cast<i64>(value) < epsilon)
+                break;
+            value *= 10.0l;
+            epsilon *= 10.0l;
+        }
+
+        if (visible_precision > 0) {
+            string_builder.append('.');
+            format_builder.put_u64(static_cast<u64>(value), base, false, upper_case, true, Align::Right, visible_precision);
+        }
+    }
+
+    put_string(string_builder.string_view(), align, min_width, NumericLimits<size_t>::max(), fill);
+}
+
+#endif
+
+void FormatBuilder::put_hexdump(ReadonlyBytes bytes, size_t width, char fill)
+{
+    auto put_char_view = [&](auto i) {
+        put_padding(fill, 4);
+        for (size_t j = i - width; j < i; ++j) {
+            auto ch = bytes[j];
+            m_builder.append(ch >= 32 && ch <= 127 ? ch : '.'); 
+        }
+    };
+    for (size_t i = 0; i < bytes.size(); ++i) {
+        if (width > 0) {
+            if (i % width == 0 && i) {
+                put_char_view(i);
+                put_literal("\n"sv);
+            }
+        }
+        put_u64(bytes[i], 16, false, false, true, Align::Right, 2);
+    }
+
+    if (width > 0 && bytes.size() && bytes.size() % width == 0)
+        put_char_view(bytes.size());
+}
+
+void vformat(StringBuilder& builder, StringView fmtstr, TypeErasedFormatParams params)
+{
+    FormatBuilder fmtbuilder { builder };
+    FormatParser parser { fmtstr };
+
+    vformat_impl(params, fmtbuilder, parser);
+}
+
+void StandardFormatter::parse(TypeErasedFormatParams& params, FormatParser& parser)
+{
+    if (StringView { "<^>" }.contains(parser.peek(1))) {
+        VERIFY(!parser.next_is(is_any_of("{}")));
+        m_fill = parser.consume();
+    }
+
+    if (parser.consume_specific('<'))
+        m_align = FormatBuilder::Align::Left;
+    else if (parser.consume_specific('^'))
+        m_align = FormatBuilder::Align::Center;
+    else if (parser.consume_specific('>'))
+        m_align = FormatBuilder::Align::Right;
+
+    if (parser.consume_specific('-'))
+        m_sign_mode = FormatBuilder::SignMode::OnlyIfNeeded;
+    else if (parser.consume_specific('+'))
+        m_sign_mode = FormatBuilder::SignMode::Always;
+    else if (parser.consume_specific(' '))
+        m_sign_mode = FormatBuilder::SignMode::Reserved;
+
+    if (parser.consume_specific('#'))
+        m_alternative_form = true;
+
+    if (parser.consume_specific('0'))
+        m_zero_pad = true;
+
+    if (size_t index = 0; parser.consume_replacement_field(index)) {
+        if (index == use_next_index)
+            index = params.take_next_index();
+
+        m_width = params.parameters().at(index).to_size();
+    } else if (size_t width = 0; parser.consume_number(width)) {
+        m_width = width;
+    }
+
+    if (parser.consume_specific('.')) {
+        if (size_t index = 0; parser.consume_replacement_field(index)) {
+            if (index == use_next_index)
+                index = params.take_next_index();
+
+            m_precision = params.parameters().at(index).to_size();
+        } else if (size_t precision = 0; parser.consume_number(precision)) {
+            m_precision = precision;
+        }
+    }
+
+    if (parser.consume_specific('b'))
+        m_mode = Mode::Binary;
+    else if (parser.consume_specific('B'))
+        m_mode = Mode::BinaryUppercase;
+    else if (parser.consume_specific('d'))
+        m_mode = Mode::Decimal;
+    else if (parser.consume_specific('o'))
+        m_mode = Mode::Octal;
+    else if (parser.consume_specific('x'))
+        m_mode = Mode::Hexadecimal;
+    else if (parser.consume_specific('X'))
+        m_mode = Mode::HexadecimalUppercase;
+    else if (parser.consume_specific('c'))
+        m_mode = Mode::Character;
+    else if (parser.consume_specific('s'))
+        m_mode = Mode::String;
+    else if (parser.consume_specific('p'))
+        m_mode = Mode::Pointer;
+    else if (parser.consume_specific('f'))
+        m_mode = Mode::Float;
+    else if (parser.consume_specific('a'))
+        m_mode = Mode::Hexfloat;
+    else if (parser.consume_specific('A'))
+        m_mode = Mode::HexfloatUppercase;
+    else if (parser.consume_specific("hex-dump"))
+        m_mode = Mode::HexDump;
+
+    if (!parser.is_eof())
+        dbgln("{} did not consume '{}'", __PRETTY_FUNCTION__, parser.remaining());
+
+    VERIFY(parser.is_eof());
+}
+
 
 }
 
