@@ -27,7 +27,7 @@ template<typename F>
 inline constexpr bool IsFunctionObject = (!IsFunctionPointer<F> && IsRvalueReference<F&&>);
 
 template<typename Out, typename... In>
-class Function<Out(In...)>{
+class Function<Out(In...)> {
     BASE_MAKE_NONCOPYABLE(Function);
 
 public:
@@ -58,7 +58,6 @@ public:
         move_from(move(other));
     }
 
-    // Note: Despite this method being const, a mutable lambda _may_ modify its own captures.
     Out operator()(In... in) const
     {
         auto* wrapper = callable_wrapper();
@@ -111,7 +110,7 @@ private:
         virtual ~CallableWrapperBase() = default;
         virtual Out call(In...) = 0;
         virtual void destroy() = 0;
-        virtual void init_and_swap(u8* size_t) = 0;
+        virtual void init_and_swap(u8*, size_t) = 0;
     };
 
     template<typename CallableType>
@@ -120,16 +119,113 @@ private:
         BASE_MAKE_NONCOPYABLE(CallableWrapper);
 
     public:
+        explicit CallableWrapper(CallableType&& callable)
+            : m_callable(move(callable))
+        {
+        }
 
         Out call(In... in) final override
         {
             return m_callable(forward<In>(in)...);
         }
+
         void destroy() final override
         {
             delete this;
         }
 
+        void init_and_swap(u8* destination, size_t size) final override
+        {
+            VERIFY(size >= sizeof(CallableWrapper));
+            new (destination) CallableWrapper { move(m_callable) };
+        }
+
+    private:
+        CallableType m_callable;
+    };
+
+    enum class FunctionKind {
+        NullPointer,
+        Inline,
+        Outline,
+    };
+
+    CallableWrapperBase* callable_wrapper() const
+    {
+        switch (m_kind) {
+        case FunctionKind::NullPointer:
+            return nullptr;
+        case FunctionKind::Inline:
+            return bit_cast<CallableWrapperBase*>(&m_storage);
+        case FunctionKind::Outline:
+            return *bit_cast<CallableWrapperBase**>(&m_storage);
+        default:
+            VERIFY_NOT_REACHED();
+        }
+    }
+
+    void clear(bool may_defer = true)
+    {
+        bool called_from_inside_function = m_call_nesting_level > 0;
+        VERIFY(may_defer || !called_from_inside_function);
+        if (called_from_inside_function && may_defer) {
+            m_deferred_clear = true;
+            return;
+        }
+        m_deferred_clear = false;
+        auto* wrapper = callable_wrapper();
+        if (m_kind == FunctionKind::Inline) {
+            VERIFY(wrapper);
+            wrapper->~CallableWrapperBase();
+        } else if (m_kind == FunctionKind::Outline) {
+            VERIFY(wrapper);
+            wrapper->destroy();
+        }
+        m_kind = FunctionKind::NullPointer;
+    }
+
+    template<typename Callable>
+    void init_with_callable(Callable&& callable)
+    {
+        VERIFY(m_call_nesting_level == 0);
+        using WrapperType = CallableWrapper<Callable>;
+        if constexpr (sizeof(WrapperType) > inline_capacity) {
+            *bit_cast<CallableWrapperBase**>(&m_storage) = new WrapperType(forward<Callable>(callable));
+            m_kind = FunctionKind::Outline;
+        } else {
+            new (m_storage) WrapperType(forward<Callable>(callable));
+            m_kind = FunctionKind::Inline;
+        }
+    }
+
+    void move_from(Function&& other)
+    {
+        VERIFY(m_call_nesting_level == 0 && other.m_call_nesting_level == 0);
+        auto* other_wrapper = other.callable_wrapper();
+        switch (other.m_kind) {
+        case FunctionKind::NullPointer:
+            break;
+        case FunctionKind::Inline:
+            other_wrapper->init_and_swap(m_storage, inline_capacity);
+            m_kind = FunctionKind::Inline;
+            break;
+        case FunctionKind::Outline:
+            *bit_cast<CallableWrapperBase**>(&m_storage) = other_wrapper;
+            m_kind = FunctionKind::Outline;
+            break;
+        default:
+            VERIFY_NOT_REACHED();
+        }
+        other.m_kind = FunctionKind::NullPointer;
+    }
+
+    FunctionKind m_kind { FunctionKind::NullPointer };
+    bool m_deferred_clear { false };
+    mutable Atomic<u16> m_call_nesting_level { 0 };
+    static constexpr size_t inline_capacity = 4 * sizeof(void*);
+    alignas(max(alignof(CallableWrapperBase), alignof(CallableWrapperBase*))) u8 m_storage[inline_capacity];
 };
 
 }
+
+using Base::Function;
