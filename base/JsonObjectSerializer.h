@@ -97,6 +97,27 @@ public:
     }
 #endif
 
+
+    JsonArraySerializer<Builder> add_array(const StringView& key)
+    {
+        begin_item(key);
+        return JsonArraySerializer(m_builder);
+    }
+
+    JsonObjectSerializer<Builder> add_object(const StringView& key)
+    {
+        begin_item(key);
+        return JsonObjectSerializer(m_builder);
+    }
+
+    void finish()
+    {
+        VERIFY(!m_finished);
+        m_finished = true;
+        m_builder.append('}');
+    }
+
+
 }
 
 }
