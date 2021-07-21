@@ -22,7 +22,7 @@ public:
         if (!m_file)
             set_fatal_error();
     }
-    
+
     explicit InputFileStream(FILE* fp)
         : m_file(fp)
     {
@@ -42,11 +42,10 @@ public:
     bool unreliable_eof() const override { return eof(); }
     bool eof() const { return feof(m_file); }
 
-    size_t read(Bytes bytes) override 
+    size_t read(Bytes bytes) override
     {
         if (has_any_error())
             return 0;
-        
         return fread(bytes.data(), sizeof(u8), bytes.size(), m_file);
     }
 
@@ -54,20 +53,18 @@ public:
     {
         if (has_any_error())
             return false;
-        
         auto size = read(bytes);
         if (size < bytes.size()) {
-            set_recoverable_error()
-            return false
+            set_recoverable_error();
+            return false;
         }
         return true;
     }
-
     bool discard_or_error(size_t count) override
     {
         if (fseek(m_file, count, SEEK_CUR) == 0)
             return true;
-        
+
         if (errno != ESPIPE)
             return false;
 
@@ -78,9 +75,9 @@ public:
             if (read({ buf, size }) < size) {
                 return false;
             }
-
             i += size;
         }
+
         return true;
     }
 
@@ -97,7 +94,7 @@ public:
 
     void make_unbuffered()
     {
-        setbuf(m_file, nullptr, _IONBF, 0);
+        setvbuf(m_file, nullptr, _IONBF, 0);
     }
 
 private:
@@ -138,6 +135,38 @@ public:
         return nwritten;
     }
 
+    bool write_or_error(ReadonlyBytes bytes) override
+    {
+        auto nwritten = write(bytes);
+        if (nwritten < bytes.size()) {
+            set_recoverable_error();
+            return false;
+        }
+        return true;
+    }
+
+    size_t size() const { return m_bytes_written; }
+
+    virtual bool handle_any_error() override
+    {
+        clearerr(m_file);
+        return Stream::handle_any_error();
+    }
+
+    void make_unbuffered()
+    {
+        setvbuf(m_file, nullptr, _IONBF, 0);
+    }
+
+private:
+    FILE* m_file { nullptr };
+    size_t m_bytes_written { 0 };
+    bool m_owned { false };
 };
 
 }
+
+using Base::InputFileStream;
+using Base::OutputFileStream;
+
+#endif
