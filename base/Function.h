@@ -104,6 +104,32 @@ public:
         }
         return *this;
     }
+
+private:
+    class CallableWrapperBase {
+    public:
+        virtual ~CallableWrapperBase() = default;
+        virtual Out call(In...) = 0;
+        virtual void destroy() = 0;
+        virtual void init_and_swap(u8* size_t) = 0;
+    };
+
+    template<typename CallableType>
+    class CallableWrapper final : public CallableWrapperBase {
+        BASE_MAKE_NONMOVABLE(CallableWrapper);
+        BASE_MAKE_NONCOPYABLE(CallableWrapper);
+
+    public:
+
+        Out call(In... in) final override
+        {
+            return m_callable(forward<In>(in)...);
+        }
+        void destroy() final override
+        {
+            delete this;
+        }
+
 };
 
 }
