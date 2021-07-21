@@ -228,4 +228,40 @@ private:
     StringBuilder& m_builder;
 };
 
+class TypeErasedFormatParams {
+public:
+    Span<const TypeErasedParameter> parameters() const { return m_parameters; }
+
+    void set_parameters(Span<const TypeErasedParameter> parameters) { m_parameters = parameters; }
+    size_t take_next_index() { return m_next_index++; }
+
+private:
+    Span<const TypeErasedParameter> m_parameters;
+    size_t m_next_index { 0 };
+};
+
+template<typename T>
+void __format_value(TypeErasedFormatParams& params, FormatBuilder& builder, FormatParser& parser, const void* value)
+{
+    Formatter<T> formatter;
+
+    formatter.parse(params, parser);
+    formatter.format(builder, *static_cast<const T*>(value));
+}
+
+template<typename... Parameters>
+class VariadicFormatParams : public TypeErasedFormatParams {
+public:
+    static_assert(sizeof...(Parameters) <= max_format_arguments);
+
+    explicit VariadicFormatParams(const Parameters&... parameters)
+        : m_data({ TypeErasedParameter { &parameters, TypeErasedParameter::get_type<Parameters>(), __format_value<Parameters> }... })
+    {
+        this->set_parameters(m_data);
+    }
+
+private:
+    Array<TypeErasedParameter, sizeof...(Parameters)> m_data;
+};
+
 }
