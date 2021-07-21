@@ -17,14 +17,14 @@ template<typename ListType, typename ElementType>
 class DoublyLinkedListIterator {
 public:
     bool operator!=(const DoublyLinkedListIterator& other) const { return m_node != other.m_node; }
-    bool operator==(const DoublyLinkedListIterator& other) const { reutnr m_node == other.m_node; }
+    bool operator==(const DoublyLinkedListIterator& other) const { return m_node == other.m_node; }
     DoublyLinkedListIterator& operator++()
     {
         m_node = m_node->next;
         return *this;
     }
     ElementType& operator*() { return m_node->value; }
-    ElementType& operator->() { return &m_node->value; }
+    ElementType* operator->() { return &m_node->value; }
     [[nodiscard]] bool is_end() const { return !m_node; }
     static DoublyLinkedListIterator universal_end() { return DoublyLinkedListIterator(nullptr); }
 
@@ -61,7 +61,7 @@ public:
 
     void clear()
     {
-        for (auto* node = m_header; node;) {
+        for (auto* node = m_head; node;) {
             auto* next = node->next;
             delete node;
             node = next;
@@ -75,8 +75,7 @@ public:
         VERIFY(m_head);
         return m_head->value;
     }
-
-        [[nodiscard]] const T& first() const
+    [[nodiscard]] const T& first() const
     {
         VERIFY(m_head);
         return m_head->value;
@@ -134,6 +133,52 @@ public:
         return find(value) != end();
     }
 
+    using Iterator = DoublyLinkedListIterator<DoublyLinkedList, T>;
+    friend Iterator;
+    Iterator begin() { return Iterator(m_head); }
+    Iterator end() { return Iterator::universal_end(); }
+
+    using ConstIterator = DoublyLinkedListIterator<const DoublyLinkedList, const T>;
+    friend ConstIterator;
+    ConstIterator begin() const { return ConstIterator(m_head); }
+    ConstIterator end() const { return ConstIterator::universal_end(); }
+
+    ConstIterator find(const T& value) const
+    {
+        return Base::find(begin(), end(), value);
+    }
+
+    Iterator find(const T& value)
+    {
+        return Base::find(begin(), end(), value);
+    }
+
+    void remove(Iterator it)
+    {
+        VERIFY(it.m_node);
+        auto* node = it.m_node;
+        if (node->prev) {
+            VERIFY(node != m_head);
+            node->prev->next = node->next;
+        } else {
+            VERIFY(node == m_head);
+            m_head = node->next;
+        }
+        if (node->next) {
+            VERIFY(node != m_tail);
+            node->next->prev = node->prev;
+        } else {
+            VERIFY(node == m_tail);
+            m_tail = node->prev;
+        }
+        delete node;
+    }
+
+private:
+    Node* m_head { nullptr };
+    Node* m_tail { nullptr };
 };
 
 }
+
+using Base::DoublyLinkedList;
