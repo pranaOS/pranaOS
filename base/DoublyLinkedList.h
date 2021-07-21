@@ -52,6 +52,30 @@ private:
         Node* next { nullptr };
         Node* prev { nullptr };
     };
+
+public:
+    DoublyLinkedList() = default;
+    ~DoublyLinkedList() { clear(); }
+
+    [[nodiscard]] bool is_empty() const { return !m_head; }
+
+    void clear()
+    {
+        for (auto* node = m_header; node;) {
+            auto* next = node->next;
+            delete node;
+            node = next;
+        }
+        m_head = nullptr;
+        m_tail = nullptr;
+    }
+
+    [[nodiscard]] T& first()
+    {
+        VERIFY(m_head);
+        return m_head->value;
+    }
+
 };
 
 }
