@@ -40,3 +40,16 @@ constexpr unsigned u64_hash(u64 key)
     u32 last = key >> 32;
     return pair_int_hash(first, last);
 }
+
+constexpr unsigned ptr_hash(FlatPtr ptr)
+{
+    if constexpr (sizeof(ptr) == 8)
+        return u64_hash(ptr);
+    else
+        return int_hash(ptr);
+}
+
+inline unsigned ptr_hash(const void* ptr)
+{
+    return ptr_hash(FlatPtr(ptr));
+}
