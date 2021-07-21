@@ -38,4 +38,86 @@ inline constexpr bool HasFormatter<T, typename Formatter<T>::__no_formatter_defi
 
 constexpr size_t max_format_arguments = 256;
 
+struct TypeErasedParameter {
+    enum class Type {
+        UInt8,
+        UInt16,
+        UInt32,
+        UInt64,
+        Int8,
+        Int16,
+        Int32,
+        Int64,
+        Custom
+    };
+
+    template<size_t size, bool is_unsigned>
+    static consteval Type get_type_from_size()
+    {
+        if constexpr (is_unsigned) {
+            if constexpr (size == 1)
+                return Type::UInt8;
+            if constexpr (size == 2)
+                return Type::UInt16;
+            if constexpr (size == 4)
+                return Type::UInt32;
+            if constexpr (size == 8)
+                return Type::UInt64;
+        } else {
+            if constexpr (size == 1)
+                return Type::Int8;
+            if constexpr (size == 2)
+                return Type::Int16;
+            if constexpr (size == 4)
+                return Type::Int32;
+            if constexpr (size == 8)
+                return Type::Int64;
+        }
+
+        VERIFY_NOT_REACHED();
+    }
+
+    template<typename T>
+    static consteval Type get_type()
+    {
+        if constexpr (IsIntegral<T>)
+            return get_type_from_size<sizeof(T), IsUnsigned<T>>();
+        else
+            return Type::Custom;
+    }
+
+    constexpr size_t to_size() const
+    {
+        i64 svalue;
+
+        if (type == TypeErasedParameter::Type::UInt8)
+            svalue = *static_cast<const u8*>(value);
+        else if (type == TypeErasedParameter::Type::UInt16)
+            svalue = *static_cast<const u16*>(value);
+        else if (type == TypeErasedParameter::Type::UInt32)
+            svalue = *static_cast<const u32*>(value);
+        else if (type == TypeErasedParameter::Type::UInt64)
+            svalue = *static_cast<const u64*>(value);
+        else if (type == TypeErasedParameter::Type::Int8)
+            svalue = *static_cast<const i8*>(value);
+        else if (type == TypeErasedParameter::Type::Int16)
+            svalue = *static_cast<const i16*>(value);
+        else if (type == TypeErasedParameter::Type::Int32)
+            svalue = *static_cast<const i32*>(value);
+        else if (type == TypeErasedParameter::Type::Int64)
+            svalue = *static_cast<const i64*>(value);
+        else
+            VERIFY_NOT_REACHED();
+
+        VERIFY(svalue >= 0);
+
+        return static_cast<size_t>(svalue);
+    }
+
+
+    const void* value;
+    Type type;
+    void (*formatter)(TypeErasedFormatParams&, FormatBuilder&, FormatParser&, const void* value);
+};
+
 }
