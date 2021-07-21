@@ -97,5 +97,30 @@ public:
         TreeNode* m_prev { nullptr };
     };
 
+        using Iterator = BaseIterator<V>;
+    Iterator begin() { return Iterator(static_cast<TreeNode*>(this->m_minimum)); }
+    Iterator end() { return {}; }
+    Iterator begin_from(K key) { return Iterator(static_cast<TreeNode*>(BaseTree::find(this->m_root, key))); }
+
+    using ConstIterator = BaseIterator<const V>;
+    ConstIterator begin() const { return ConstIterator(static_cast<TreeNode*>(this->m_minimum)); }
+    ConstIterator end() const { return {}; }
+    ConstIterator begin_from(K key) const { return ConstIterator(static_cast<TreeNode*>(BaseTree::find(this->m_rootF, key))); }
+
+    bool remove(K key)
+    {
+        auto* node = static_cast<TreeNode*>(BaseTree::find(this->m_root, key));
+        if (!node)
+            return false;
+
+        BaseTree::remove(node);
+
+        node->right_child = nullptr;
+        node->left_child = nullptr;
+        node->m_in_tree = false;
+
+        return true;
+    }
+
 }
 }
