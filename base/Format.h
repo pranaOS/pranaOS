@@ -264,4 +264,219 @@ private:
     Array<TypeErasedParameter, sizeof...(Parameters)> m_data;
 };
 
+struct StandardFormatter {
+    enum class Mode {
+        Default,
+        Binary,
+        BinaryUppercase,
+        Decimal,
+        Octal,
+        Hexadecimal,
+        HexadecimalUppercase,
+        Character,
+        String,
+        Pointer,
+        Float,
+        Hexfloat,
+        HexfloatUppercase,
+        HexDump,
+    };
+
+    FormatBuilder::Align m_align = FormatBuilder::Align::Default;
+    FormatBuilder::SignMode m_sign_mode = FormatBuilder::SignMode::OnlyIfNeeded;
+    Mode m_mode = Mode::Default;
+    bool m_alternative_form = false;
+    char m_fill = ' ';
+    bool m_zero_pad = false;
+    Optional<size_t> m_width;
+    Optional<size_t> m_precision;
+
+    void parse(TypeErasedFormatParams&, FormatParser&);
+};
+
+template<typename T>
+struct Formatter<T, typename EnableIf<IsIntegral<T>>::Type> : StandardFormatter {
+    Formatter() = default;
+    explicit Formatter(StandardFormatter formatter)
+        : StandardFormatter(formatter)
+    {
+    }
+
+    void format(FormatBuilder&, T value);
+};
+
+template<>
+struct Formatter<StringView> : StandardFormatter {
+    Formatter() = default;
+    explicit Formatter(StandardFormatter formatter)
+        : StandardFormatter(formatter)
+    {
+    }
+
+    void format(FormatBuilder&, StringView value);
+};
+
+template<typename T>
+requires(HasFormatter<T>) struct Formatter<Vector<T>> : StandardFormatter {
+
+    Formatter() = default;
+    explicit Formatter(StandardFormatter formatter)
+        : StandardFormatter(formatter)
+    {
+    }
+    void format(FormatBuilder& builder, Vector<T> value)
+    {
+        if (m_mode == Mode::Pointer) {
+            Formatter<FlatPtr> formatter { *this };
+            formatter.format(builder, reinterpret_cast<FlatPtr>(value.data()));
+            return;
+        }
+
+        if (m_sign_mode != FormatBuilder::SignMode::Default)
+            VERIFY_NOT_REACHED();
+        if (m_alternative_form)
+            VERIFY_NOT_REACHED();
+        if (m_zero_pad)
+            VERIFY_NOT_REACHED();
+        if (m_mode != Mode::Default)
+            VERIFY_NOT_REACHED();
+        if (m_width.has_value() && m_precision.has_value())
+            VERIFY_NOT_REACHED();
+
+        m_width = m_width.value_or(0);
+        m_precision = m_precision.value_or(NumericLimits<size_t>::max());
+
+        Formatter<T> content_fmt;
+        builder.put_literal("[ "sv);
+        bool first = true;
+        for (auto& content : value) {
+            if (!first) {
+                builder.put_literal(", "sv);
+                content_fmt = Formatter<T> {};
+            }
+            first = false;
+            content_fmt.format(builder, content);
+        }
+        builder.put_literal(" ]"sv);
+    }
+};
+
+template<>
+struct Formatter<ReadonlyBytes> : Formatter<StringView> {
+    void format(FormatBuilder& builder, ReadonlyBytes const& value)
+    {
+        if (m_mode == Mode::Pointer) {
+            Formatter<FlatPtr> formatter { *this };
+            formatter.format(builder, reinterpret_cast<FlatPtr>(value.data()));
+        } else if (m_mode == Mode::Default || m_mode == Mode::HexDump) {
+            m_mode = Mode::HexDump;
+            Formatter<StringView>::format(builder, value);
+        } else {
+            Formatter<StringView>::format(builder, value);
+        }
+    }
+};
+
+template<>
+struct Formatter<Bytes> : Formatter<ReadonlyBytes> {
+};
+
+template<>
+struct Formatter<const char*> : Formatter<StringView> {
+    void format(FormatBuilder& builder, const char* value)
+    {
+        if (m_mode == Mode::Pointer) {
+            Formatter<FlatPtr> formatter { *this };
+            formatter.format(builder, reinterpret_cast<FlatPtr>(value));
+        } else {
+            Formatter<StringView>::format(builder, value);
+        }
+    }
+};
+template<>
+struct Formatter<char*> : Formatter<const char*> {
+};
+template<size_t Size>
+struct Formatter<char[Size]> : Formatter<const char*> {
+};
+template<size_t Size>
+struct Formatter<unsigned char[Size]> : Formatter<StringView> {
+    void format(FormatBuilder& builder, const unsigned char* value)
+    {
+        if (m_mode == Mode::Pointer) {
+            Formatter<FlatPtr> formatter { *this };
+            formatter.format(builder, reinterpret_cast<FlatPtr>(value));
+        } else {
+            Formatter<StringView>::format(builder, { value, Size });
+        }
+    }
+};
+template<>
+struct Formatter<String> : Formatter<StringView> {
+};
+template<>
+struct Formatter<FlyString> : Formatter<StringView> {
+};
+
+template<typename T>
+struct Formatter<T*> : StandardFormatter {
+    void format(FormatBuilder& builder, T* value)
+    {
+        if (m_mode == Mode::Default)
+            m_mode = Mode::Pointer;
+
+        Formatter<FlatPtr> formatter { *this };
+        formatter.format(builder, reinterpret_cast<FlatPtr>(value));
+    }
+};
+
+template<>
+struct Formatter<char> : StandardFormatter {
+    void format(FormatBuilder&, char value);
+};
+template<>
+struct Formatter<bool> : StandardFormatter {
+    void format(FormatBuilder&, bool value);
+};
+
+#ifndef KERNEL
+template<>
+struct Formatter<float> : StandardFormatter {
+    void format(FormatBuilder&, float value);
+};
+template<>
+struct Formatter<double> : StandardFormatter {
+    Formatter() = default;
+    explicit Formatter(StandardFormatter formatter)
+        : StandardFormatter(formatter)
+    {
+    }
+
+    void format(FormatBuilder&, double value);
+};
+
+template<>
+struct Formatter<long double> : StandardFormatter {
+    Formatter() = default;
+    explicit Formatter(StandardFormatter formatter)
+        : StandardFormatter(formatter)
+    {
+    }
+
+    void format(FormatBuilder&, long double value);
+};
+#endif
+
+template<>
+struct Formatter<std::nullptr_t> : Formatter<FlatPtr> {
+    void format(FormatBuilder& builder, std::nullptr_t)
+    {
+        if (m_mode == Mode::Default)
+            m_mode = Mode::Pointer;
+
+        return Formatter<FlatPtr>::format(builder, 0);
+    }
+};
+
+
 }
