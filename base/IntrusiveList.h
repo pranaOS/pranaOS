@@ -33,5 +33,16 @@ struct SubstituteIntrusiveListNodeContainerType<T, NonnullRefPtr<T>> {
 template<typename T, typename Container = RawPtr<T>>
 using IntrusiveListNode = Detail::IntrusiveListNode<T, typename Detail::SubstituteIntrusiveListNodeContainerType<T, Container>::Type>;
 
+template<typename T, typename Container>
+class IntrusiveListStorage {
+private:
+    friend class Detail::IntrusiveListNode<T, Container>;
+
+    template<class T_, typename Container_, IntrusiveListNode<T_, Container_> T_::*member>
+    friend class IntrusiveList;
+
+    IntrusiveListNode<T, Container>* m_first { nullptr };
+    IntrusiveListNode<T, Container>* m_last { nullptr };
+};
 
 }
