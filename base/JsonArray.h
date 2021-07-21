@@ -89,7 +89,13 @@ inline void JsonArray::serialize(Builder& builder) const
     for_each([&](auto& value) { serializer.add(value); });
 }
 
-
+template<typename Builder>
+inline typename Builder::OutputType JsonArray::serialized() const
+{
+    Builder builder;
+    serialize(builder);
+    return builder.build();
+}
 
 }
 
