@@ -39,6 +39,23 @@ public:
         value.serialize(m_builder);
     }
 #endif
+
+    void add(const StringView& key, const StringView& value)
+    {
+        begin_item(key);
+        m_builder.append('"');
+        m_builder.append_escaped_for_json(value);
+        m_builder.append('"');
+    }
+
+    void add(const StringView& key, const String& value)
+    {
+        begin_item(key);
+        m_builder.append('"');
+        m_builder.append_escaped_for_json(value);
+        m_builder.append('"');
+    }
+
     void add(const StringView& key, const char* value)
     {
         begin_item(key);
@@ -97,7 +114,6 @@ public:
     }
 #endif
 
-
     JsonArraySerializer<Builder> add_array(const StringView& key)
     {
         begin_item(key);
@@ -117,7 +133,30 @@ public:
         m_builder.append('}');
     }
 
+private:
+    void begin_item(const StringView& key)
+    {
+        if (!m_empty)
+            m_builder.append(',');
+        m_empty = false;
 
+        m_builder.append('"');
+        m_builder.append_escaped_for_json(key);
+        m_builder.append("\":");
+    }
+
+    Builder& m_builder;
+    bool m_empty { true };
+    bool m_finished { false };
+};
+
+template<typename Builder>
+JsonObjectSerializer<Builder> JsonArraySerializer<Builder>::add_object()
+{
+    begin_item();
+    return JsonObjectSerializer(m_builder);
 }
 
 }
+
+using Base::JsonObjectSerializer;
