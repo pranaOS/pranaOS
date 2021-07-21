@@ -1,6 +1,6 @@
 /*
 * Copyright (C) 2011-2019 Apple Inc. All rights reserved.
- * Copyright (c) 2021, krishpranav, Andrew-stew
+ * Copyright (c) 2021, Krisna Pranav, Andrew-stew
  *
  * SPDX-License-Identifier: BSD-2-Clause
  */
