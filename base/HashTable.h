@@ -37,6 +37,26 @@ public:
     T* operator->() { return m_bucket->slot(); }
     void operator++() { skip_to_next(); }
 
+private:
+    void skip_to_next()
+    {
+        if (!m_bucket)
+            return;
+        do {
+            ++m_bucket;
+            if (m_bucket->used)
+                return;
+        } while (!m_bucket->end);
+        if (m_bucket->end)
+            m_bucket = nullptr;
+    }
+
+    explicit HashTableIterator(BucketType* bucket)
+        : m_bucket(bucket)
+    {
+    }
+
+    BucketType* m_bucket { nullptr };
 };
 
 }
