@@ -6,8 +6,8 @@
 
 #pragma once
 
+// includes
 #include <base/CheckedFormatString.h>
-
 #include <base/AllOf.h>
 #include <base/AnyOf.h>
 #include <base/Array.h>
@@ -132,8 +132,7 @@ public:
     StringView consume_literal();
     bool consume_number(size_t& value);
     bool consume_specifier(FormatSpecifier& specifier);
-    bool consume_replacement_field(size_t& inedx);
-
+    bool consume_replacement_field(size_t& index);
 };
 
 class FormatBuilder {
@@ -478,5 +477,146 @@ struct Formatter<std::nullptr_t> : Formatter<FlatPtr> {
     }
 };
 
+void vformat(StringBuilder&, StringView fmtstr, TypeErasedFormatParams);
 
+#ifndef KERNEL
+void vout(FILE*, StringView fmtstr, TypeErasedFormatParams, bool newline = false);
+
+template<typename... Parameters>
+void out(FILE* file, CheckedFormatString<Parameters...>&& fmtstr, const Parameters&... parameters) { vout(file, fmtstr.view(), VariadicFormatParams { parameters... }); }
+
+template<typename... Parameters>
+void outln(FILE* file, CheckedFormatString<Parameters...>&& fmtstr, const Parameters&... parameters) { vout(file, fmtstr.view(), VariadicFormatParams { parameters... }, true); }
+
+inline void outln(FILE* file) { fputc('\n', file); }
+
+template<typename... Parameters>
+void out(CheckedFormatString<Parameters...>&& fmtstr, const Parameters&... parameters) { out(stdout, move(fmtstr), parameters...); }
+
+template<typename... Parameters>
+void outln(CheckedFormatString<Parameters...>&& fmtstr, const Parameters&... parameters) { outln(stdout, move(fmtstr), parameters...); }
+
+inline void outln() { outln(stdout); }
+
+#    define outln_if(flag, fmt, ...)       \
+        do {                               \
+            if constexpr (flag)            \
+                outln(fmt, ##__VA_ARGS__); \
+        } while (0)
+
+template<typename... Parameters>
+void warn(CheckedFormatString<Parameters...>&& fmtstr, const Parameters&... parameters)
+{
+    out(stderr, move(fmtstr), parameters...);
 }
+
+template<typename... Parameters>
+void warnln(CheckedFormatString<Parameters...>&& fmtstr, const Parameters&... parameters) { outln(stderr, move(fmtstr), parameters...); }
+
+inline void warnln() { outln(stderr); }
+
+#    define warnln_if(flag, fmt, ...)      \
+        do {                               \
+            if constexpr (flag)            \
+                outln(fmt, ##__VA_ARGS__); \
+        } while (0)
+
+#endif
+
+void vdbgln(StringView fmtstr, TypeErasedFormatParams);
+
+template<typename... Parameters>
+void dbgln(CheckedFormatString<Parameters...>&& fmtstr, const Parameters&... parameters)
+{
+    vdbgln(fmtstr.view(), VariadicFormatParams { parameters... });
+}
+
+inline void dbgln() { dbgln(""); }
+
+void set_debug_enabled(bool);
+
+#ifdef KERNEL
+void vdmesgln(StringView fmtstr, TypeErasedFormatParams);
+
+template<typename... Parameters>
+void dmesgln(CheckedFormatString<Parameters...>&& fmt, const Parameters&... parameters)
+{
+    vdmesgln(fmt.view(), VariadicFormatParams { parameters... });
+}
+
+void v_critical_dmesgln(StringView fmtstr, TypeErasedFormatParams);
+
+template<typename... Parameters>
+void critical_dmesgln(CheckedFormatString<Parameters...>&& fmt, const Parameters&... parameters)
+{
+    v_critical_dmesgln(fmt.view(), VariadicFormatParams { parameters... });
+}
+#endif
+
+template<typename T>
+class FormatIfSupported {
+public:
+    explicit FormatIfSupported(const T& value)
+        : m_value(value)
+    {
+    }
+
+    const T& value() const { return m_value; }
+
+private:
+    const T& m_value;
+};
+template<typename T, bool Supported = false>
+struct __FormatIfSupported : Formatter<StringView> {
+    void format(FormatBuilder& builder, const FormatIfSupported<T>&)
+    {
+        Formatter<StringView>::format(builder, "?");
+    }
+};
+template<typename T>
+struct __FormatIfSupported<T, true> : Formatter<T> {
+    void format(FormatBuilder& builder, const FormatIfSupported<T>& value)
+    {
+        Formatter<T>::format(builder, value.value());
+    }
+};
+template<typename T>
+struct Formatter<FormatIfSupported<T>> : __FormatIfSupported<T, HasFormatter<T>> {
+};
+
+struct FormatString {
+};
+template<>
+struct Formatter<FormatString> : Formatter<String> {
+    template<typename... Parameters>
+    void format(FormatBuilder& builder, StringView fmtstr, const Parameters&... parameters)
+    {
+        vformat(builder, fmtstr, VariadicFormatParams { parameters... });
+    }
+    void vformat(FormatBuilder& builder, StringView fmtstr, TypeErasedFormatParams params);
+};
+
+} 
+
+#ifdef KERNEL
+using Base::critical_dmesgln;
+using Base::dmesgln;
+#else
+using Base::out;
+using Base::outln;
+
+using Base::warn;
+using Base::warnln;
+#endif
+
+using Base::dbgln;
+
+using Base::CheckedFormatString;
+using Base::FormatIfSupported;
+using Base::FormatString;
+
+#define dbgln_if(flag, fmt, ...)       \
+    do {                               \
+        if constexpr (flag)            \
+            dbgln(fmt, ##__VA_ARGS__); \
+    } while (0)
