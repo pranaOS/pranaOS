@@ -98,5 +98,46 @@ template Optional<u16> FlyString::to_uint(TrimWhitespace) const;
 template Optional<u32> FlyString::to_uint(TrimWhitespace) const;
 template Optional<u64> FlyString::to_uint(TrimWhitespace) const;
 
+bool FlyString::equals_ignoring_case(const StringView& other) const
+{
+    return StringUtils::equals_ignoring_case(view(), other);
+}
+
+bool FlyString::starts_with(const StringView& str, CaseSensitivity case_sensitivity) const
+{
+    return StringUtils::starts_with(view(), str, case_sensitivity);
+}
+
+bool FlyString::ends_with(const StringView& str, CaseSensitivity case_sensitivity) const
+{
+    return StringUtils::ends_with(view(), str, case_sensitivity);
+}
+
+FlyString FlyString::to_lowercase() const
+{
+    return String(*m_impl).to_lowercase();
+}
+
+bool FlyString::operator==(const String& other) const
+{
+    if (m_impl == other.impl())
+        return true;
+
+    if (!m_impl)
+        return !other.impl();
+
+    if (!other.impl())
+        return false;
+
+    if (length() != other.length())
+        return false;
+
+    return !__builtin_memcmp(characters(), other.characters(), length());
+}
+
+bool FlyString::operator==(const StringView& string) const
+{
+    return *this == String(string);
+}
 
 }
