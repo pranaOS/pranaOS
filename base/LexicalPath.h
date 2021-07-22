@@ -51,6 +51,33 @@ public:
         return lexical_path.dirname();
     }
 
+    [[nodiscard]] static String basename(String path)
+    {
+        auto lexical_path = LexicalPath(move(path));
+        return lexical_path.basename();
+    }
+
+    [[nodiscard]] static String title(String path)
+    {
+        auto lexical_path = LexicalPath(move(path));
+        return lexical_path.title();
+    }
+
+    [[nodiscard]] static String extension(String path)
+    {
+        auto lexical_path = LexicalPath(move(path));
+        return lexical_path.extension();
+    }
+
+private:
+    Vector<StringView> m_parts;
+    String m_string;
+    StringView m_dirname;
+    StringView m_basename;
+    StringView m_title;
+    StringView m_extension;
+};
+
 }
 
 using Base::LexicalPath;
