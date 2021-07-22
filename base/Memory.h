@@ -4,10 +4,10 @@
  * SPDX-License-Identifier: BSD-2-Clause
 */
 
+#include <base/Types.h>
 #pragma once
 
 // includes
-#include <base/Types.h>
 
 #if defined(KERNEL)
 #    include <kernel/StdLib.h>
