@@ -48,7 +48,6 @@ LexicalPath::LexicalPath(String path)
     }
 
     auto last_dot_index = m_basename.find_last('.');
-    // NOTE: if the dot index is 0, this means we have ".foo", it's not an extension, as the title would then be "".
     if (last_dot_index.has_value() && *last_dot_index != 0) {
         m_title = m_basename.substring_view(0, *last_dot_index);
         m_extension = m_basename.substring_view(*last_dot_index + 1);
