@@ -121,4 +121,67 @@ String JsonParser::consume_and_unescape_string()
     return final_sb.to_string();
 }
 
+Optional<JsonValue> JsonParser::parse_object()
+{
+    JsonObject object;
+    if (!consume_specific('{'))
+        return {};
+    for (;;) {
+        ignore_while(is_space);
+        if (peek() == '}')
+            break;
+        ignore_while(is_space);
+        auto name = consume_and_unescape_string();
+        if (name.is_null())
+            return {};
+        ignore_while(is_space);
+        if (!consume_specific(':'))
+            return {};
+        ignore_while(is_space);
+        auto value = parse_helper();
+        if (!value.has_value())
+            return {};
+        object.set(name, value.release_value());
+        ignore_while(is_space);
+        if (peek() == '}')
+            break;
+        if (!consume_specific(','))
+            return {};
+        ignore_while(is_space);
+        if (peek() == '}')
+            return {};
+    }
+    if (!consume_specific('}'))
+        return {};
+    return JsonValue { move(object) };
+}
+
+Optional<JsonValue> JsonParser::parse_array()
+{
+    JsonArray array;
+    if (!consume_specific('['))
+        return {};
+    for (;;) {
+        ignore_while(is_space);
+        if (peek() == ']')
+            break;
+        auto element = parse_helper();
+        if (!element.has_value())
+            return {};
+        array.append(element.release_value());
+        ignore_while(is_space);
+        if (peek() == ']')
+            break;
+        if (!consume_specific(','))
+            return {};
+        ignore_while(is_space);
+        if (peek() == ']')
+            return {};
+    }
+    ignore_while(is_space);
+    if (!consume_specific(']'))
+        return {};
+    return JsonValue { move(array) };
+}
+
 }
