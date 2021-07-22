@@ -137,4 +137,26 @@ private:
     Bytes m_bytes;
 };
 
+class DuplexMemoryStream final : public DuplexStream {
+public:
+    static constexpr size_t chunk_size = 4 * 1024;
+
+    bool unreliable_eof() const override { return eof(); }
+    bool eof() const { return m_write_offset == m_read_offset; }
+
+    bool discard_or_error(size_t count) override
+    {
+        if (m_write_offset - m_read_offset < count) {
+            set_recoverable_error();
+            return false;
+        }
+
+        m_read_offset += count;
+        try_discard_chunks();
+        return true;
+    }
+
+
+};
+
 }
