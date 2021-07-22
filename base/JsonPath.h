@@ -41,6 +41,43 @@ public:
         return m_key;
     }
 
+    size_t index() const 
+    {
+        VERIFY(m_kind == Kind::Index);
+        return m_index;
+    }
+
+    String to_string() const
+    {
+        switch (m_kind) {
+        case Kind::Key:
+            return key()
+        case Kind::Index:
+            return String::number(index());
+        default:
+            return "*";
+        }
+
+    }
+
+    static JsonPathElement any_array_element;
+    static JsonPathElement any_object_element;
+
+    bool operator==(const JsonPathElement& other) const
+    {
+        switch (other.kind()) {
+        case Kind::Key:
+            return (m_kind == Kind::Key && other.key() == key()) || m_kind == Kind::AnyKey;
+        case Kind::Index:
+            return (m_kind == Kind::Index && other.index() == index()) || m_kind == Kind::AnyIndex;
+        case Kind::AnyKey:
+            return m_kind == Kind::Key;
+        case Kind::AnyIndex:
+            return m_kind == Kind::Index;
+        }
+        return false;
+    }
+
 };
 
 }
