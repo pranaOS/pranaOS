@@ -288,4 +288,36 @@ Optional<JsonValue> JsonParser::parse_number()
     return value;
 }
 
+Optional<JsonValue> JsonParser::parse_true()
+{
+    if (!consume_specific("true"))
+        return {};
+    return JsonValue(true);
+}
+
+Optional<JsonValue> JsonParser::parse_false()
+{
+    if (!consume_specific("false"))
+        return {};
+    return JsonValue(false);
+}
+
+Optional<JsonValue> JsonParser::parse_null()
+{
+    if (!consume_specific("null"))
+        return {};
+    return JsonValue(JsonValue::Type::Null);
+}
+
+Optional<JsonValue> JsonParser::parse()
+{
+    auto result = parse_helper();
+    if (!result.has_value())
+        return {};
+    ignore_while(is_space);
+    if (!is_eof())
+        return {};
+    return result;
+}
+
 }
