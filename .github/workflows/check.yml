@@ -11,7 +11,11 @@ jobs:
   build-ubuntu:
 
     runs-on: ubuntu-latest
-    
+
+    run: |
+      sudo apt-get update
+      
+
     steps:
     - uses: actions/checkout@v1
     - name: configure
