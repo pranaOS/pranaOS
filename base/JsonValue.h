@@ -34,6 +34,16 @@ public:
     static Optional<JsonValue> from_string(const StringView&);
 
     explicit JsonValue(Type = Type::Null);
+    ~JsonValue() { clear(); }
+
+    JsonValue(const JsonValue&);
+    JsonValue(JsonValue&&);
+
+    JsonValue& operator=(const JsonValue&);
+    JsonValue& operator=(JsonValue&&);
+
+    JsonValue(int);
+    JsonValue(unsigned);
 
 };
 
