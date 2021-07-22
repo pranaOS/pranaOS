@@ -104,7 +104,7 @@ String JsonParser::consume_and_unescape_string()
             if (tell_remaining() < 4)
                 return {};
 
-            auto code_point = AK::StringUtils::convert_to_uint_from_hex(consume(4));
+            auto code_point = Base::StringUtils::convert_to_uint_from_hex(consume(4));
             if (code_point.has_value()) {
                 final_sb.append_code_point(code_point.value());
                 continue;
@@ -239,7 +239,6 @@ Optional<JsonValue> JsonParser::parse_number()
 
 #ifndef KERNEL
     if (is_double) {
-        // FIXME: This logic looks shaky.
         int whole = 0;
         auto to_signed_result = number_string.to_uint();
         if (to_signed_result.has_value()) {
@@ -307,6 +306,40 @@ Optional<JsonValue> JsonParser::parse_null()
     if (!consume_specific("null"))
         return {};
     return JsonValue(JsonValue::Type::Null);
+}
+
+Optional<JsonValue> JsonParser::parse_helper()
+{
+    ignore_while(is_space);
+    auto type_hint = peek();
+    switch (type_hint) {
+    case '{':
+        return parse_object();
+    case '[':
+        return parse_array();
+    case '"':
+        return parse_string();
+    case '-':
+    case '0':
+    case '1':
+    case '2':
+    case '3':
+    case '4':
+    case '5':
+    case '6':
+    case '7':
+    case '8':
+    case '9':
+        return parse_number();
+    case 'f':
+        return parse_false();
+    case 't':
+        return parse_true();
+    case 'n':
+        return parse_null();
+    }
+
+    return {};
 }
 
 Optional<JsonValue> JsonParser::parse()
