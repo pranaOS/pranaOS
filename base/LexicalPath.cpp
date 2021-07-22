@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
 */
 
+// includes
 #include <base/LexicalPath.h>
 #include <base/StringBuilder.h>
 #include <base/StringView.h>
@@ -30,8 +31,10 @@ LexicalPath::LexicalPath(String path)
 
     auto last_slash_index = m_string.view().find_last('/');
     if (!last_slash_index.has_value()) {
+        // The path contains a single part and is not absolute. m_dirname = "."sv
         m_dirname = { &s_single_dot, 1 };
     } else if (*last_slash_index == 0) {
+        // The path contains a single part and is absolute. m_dirname = "/"sv
         m_dirname = m_string.substring_view(0, 1);
     } else {
         m_dirname = m_string.substring_view(0, *last_slash_index);
@@ -45,6 +48,7 @@ LexicalPath::LexicalPath(String path)
     }
 
     auto last_dot_index = m_basename.find_last('.');
+    // NOTE: if the dot index is 0, this means we have ".foo", it's not an extension, as the title would then be "".
     if (last_dot_index.has_value() && *last_dot_index != 0) {
         m_title = m_basename.substring_view(0, *last_dot_index);
         m_extension = m_basename.substring_view(*last_dot_index + 1);
@@ -73,9 +77,11 @@ String LexicalPath::canonicalized_path(String path)
     if (path.is_null())
         return {};
 
+    // NOTE: We never allow an empty m_string, if it's empty, we just set it to '.'.
     if (path.is_empty())
         return ".";
 
+    // NOTE: If there are no dots, no '//' and the path doesn't end with a slash, it is already canonical.
     if (!path.contains("."sv) && !path.contains("//"sv) && !path.ends_with('/'))
         return path;
 
@@ -90,6 +96,7 @@ String LexicalPath::canonicalized_path(String path)
         if (part == "..") {
             if (canonical_parts.is_empty()) {
                 if (is_absolute) {
+                    // At the root, .. does nothing.
                     continue;
                 }
             } else {
@@ -138,5 +145,14 @@ String LexicalPath::relative_path(StringView const& a_path, StringView const& a_
     return path;
 }
 
+LexicalPath LexicalPath::append(StringView const& value) const
+{
+    return LexicalPath::join(m_string, value);
+}
+
+LexicalPath LexicalPath::parent() const
+{
+    return append("..");
+}
 
 }
