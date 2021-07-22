@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
 */
 
+// include
 #include <base/JsonArray.h>
 #include <base/JsonObject.h>
 #include <base/JsonValue.h>
@@ -12,9 +13,7 @@
 #    include <base/JsonParser.h>
 #endif
 
-
 namespace Base {
-
 
 JsonValue::JsonValue(Type type)
     : m_type(type)
@@ -32,7 +31,6 @@ JsonValue& JsonValue::operator=(const JsonValue& other)
         clear();
         copy_from(other);
     }
-
     return *this;
 }
 
@@ -175,5 +173,66 @@ JsonValue::JsonValue(bool value)
 {
     m_value.as_bool = value;
 }
+
+JsonValue::JsonValue(const String& value)
+{
+    if (value.is_null()) {
+        m_type = Type::Null;
+    } else {
+        m_type = Type::String;
+        m_value.as_string = const_cast<StringImpl*>(value.impl());
+        m_value.as_string->ref();
+    }
+}
+
+JsonValue::JsonValue(const JsonObject& value)
+    : m_type(Type::Object)
+{
+    m_value.as_object = new JsonObject(value);
+}
+
+JsonValue::JsonValue(const JsonArray& value)
+    : m_type(Type::Array)
+{
+    m_value.as_array = new JsonArray(value);
+}
+
+JsonValue::JsonValue(JsonObject&& value)
+    : m_type(Type::Object)
+{
+    m_value.as_object = new JsonObject(move(value));
+}
+
+JsonValue::JsonValue(JsonArray&& value)
+    : m_type(Type::Array)
+{
+    m_value.as_array = new JsonArray(move(value));
+}
+
+void JsonValue::clear()
+{
+    switch (m_type) {
+    case Type::String:
+        m_value.as_string->unref();
+        break;
+    case Type::Object:
+        delete m_value.as_object;
+        break;
+    case Type::Array:
+        delete m_value.as_array;
+        break;
+    default:
+        break;
+    }
+    m_type = Type::Null;
+    m_value.as_string = nullptr;
+}
+
+#ifndef KERNEL
+Optional<JsonValue> JsonValue::from_string(const StringView& input)
+{
+    return JsonParser(input).parse();
+}
+#endif
 
 }
