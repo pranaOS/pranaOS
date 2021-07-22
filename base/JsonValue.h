@@ -122,6 +122,42 @@ public:
         return m_value.as_u64;
     }
 
+    int as_bool() const
+    {
+        VERIFY(is_bool());
+        return m_value.as_bool;
+    }
+
+    String as_string() const
+    {
+        VERIFY(is_string());
+        return *m_value.as_string;
+    }
+
+    const JsonObject& as_object() const
+    {
+        VERIFY(is_object());
+        return *m_value.as_object;
+    }
+
+    const JsonArray& as_array()
+    {
+        VERIFY(is_array());
+        return *m_value.as_array;
+    }
+
+#if !defined(KERNEL)
+    double as_double() const
+    {
+        VERIFY(is_double());
+        return m_value.as_double;
+    }
+#endif
+    
+    Type type() const
+    {
+        return m_type;
+    }
 
 };
 
