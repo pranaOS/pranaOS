@@ -44,6 +44,45 @@ public:
 
     JsonValue(int);
     JsonValue(unsigned);
+    JsonValue(long);
+    JsonValue(long unsigned);
+    JsonValue(long long);
+    JsonValue(long long unsigned);
+
+#if !defined(KERNEL)
+    JsonValue(double);
+#endif
+    JsonValue(bool);
+    JsonValue(const char*);
+    JsonValue(const String&);
+    JsonValue(const JsonArray&);
+    JsonValue(const JsonObject&);
+
+    JsonValue(JsonArray&&);
+    JsonValue(JsonObject&&);
+
+    JsonValue& operator=(JsonArray&&) = delete;
+    JsonValue& operator=(JsonObject&&) = delete;
+
+    template<typename Builder>
+    typename Builder::OutputType serialized() const;
+    template<typename Builder>
+    void serialize(Builder&) const;
+
+    String as_string_or(String const& alternative) const 
+    {
+        if (is_string())
+            return as_string()
+        return alternative;
+    }
+
+    String to_string() const
+    {
+        if (is_string())    
+            return as_string();
+        return serialized<StringBuilder()>;
+    }
+    
 
 };
 
