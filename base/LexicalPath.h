@@ -6,11 +6,11 @@
 
 #pragma once
 
-// includes
+// incldues
 #include <base/String.h>
 #include <base/Vector.h>
 
-namespace AK {
+namespace Base {
 
 class LexicalPath {
 public:
@@ -78,6 +78,14 @@ private:
     StringView m_extension;
 };
 
-}
+template<>
+struct Formatter<LexicalPath> : Formatter<StringView> {
+    void format(FormatBuilder& builder, LexicalPath const& value)
+    {
+        Formatter<StringView>::format(builder, value.string());
+    }
+};
+
+};
 
 using Base::LexicalPath;
