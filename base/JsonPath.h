@@ -29,7 +29,7 @@ public:
     }
 
     JsonPathElement(const StringView& key)
-        : m_kind(Kind::key)
+        : m_kind(Kind::Key)
         , m_key(key)
     {
     }
@@ -41,7 +41,7 @@ public:
         return m_key;
     }
 
-    size_t index() const 
+    size_t index() const
     {
         VERIFY(m_kind == Kind::Index);
         return m_index;
@@ -51,13 +51,12 @@ public:
     {
         switch (m_kind) {
         case Kind::Key:
-            return key()
+            return key();
         case Kind::Index:
             return String::number(index());
         default:
             return "*";
         }
-
     }
 
     static JsonPathElement any_array_element;
@@ -77,7 +76,29 @@ public:
         }
         return false;
     }
+    bool operator!=(const JsonPathElement& other) const
+    {
+        return !(*this == other);
+    }
 
+private:
+    Kind m_kind;
+    String m_key;
+    size_t m_index { 0 };
+
+    JsonPathElement(Kind kind)
+        : m_kind(kind)
+    {
+    }
+};
+
+class JsonPath : public Vector<JsonPathElement> {
+public:
+    JsonValue resolve(const JsonValue&) const;
+    String to_string() const;
 };
 
 }
+
+using Base::JsonPath;
+using Base::JsonPathElement;
