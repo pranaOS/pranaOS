@@ -41,4 +41,16 @@ Result<NonnullRefPtr<MappedFile>, OSError> MappedFile::map(const String& path)
     return adopt_ref(*new MappedFile(ptr, size));
 }
 
+MappedFile::MappedFile(void* ptr, size_t size)
+    : m_data(ptr)
+    , m_size(size)
+{
+}
+
+MappedFile::~MappedFile()
+{
+    auto rc = munmap(m_data, m_size);
+    VERIFY(rc == 0);
+}
+
 }
