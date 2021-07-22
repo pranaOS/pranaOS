@@ -15,7 +15,7 @@ namespace Base {
 template<typename T>
 class NeverDestroyed {
     BASE_MAKE_NONCOPYABLE(NeverDestroyed);
-    BASE_MAKE_NONCOPYABLE(NeverDestroyed);
+    BASE_MAKE_NONMOVABLE(NeverDestroyed);
 
 public:
     template<typename... Args>
@@ -29,8 +29,14 @@ public:
     T* operator->() { return &get(); }
     const T* operator->() const { return &get(); }
 
+    T& operator*() { return get(); }
+    const T& operator*() const { return get(); }
+
+    T& get() { return reinterpret_cast<T&>(storage); }
+    const T& get() const { return reinterpret_cast<T&>(storage); }
+
 private:
-    alignas(T) u8 stroage[sizeof(T)];
+    alignas(T) u8 storage[sizeof(T)];
 };
 
 }
