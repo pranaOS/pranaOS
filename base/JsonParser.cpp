@@ -184,4 +184,108 @@ Optional<JsonValue> JsonParser::parse_array()
     return JsonValue { move(array) };
 }
 
+Optional<JsonValue> JsonParser::parse_string()
+{
+    auto result = consume_and_unescape_string();
+    if (result.is_null())
+        return {};
+    return JsonValue(result);
+}
+
+Optional<JsonValue> JsonParser::parse_number()
+{
+    JsonValue value;
+    Vector<char, 128> number_buffer;
+    Vector<char, 128> fraction_buffer;
+
+    bool is_double = false;
+    for (;;) {
+        char ch = peek();
+        if (ch == '.') {
+            if (is_double)
+                return {};
+
+            is_double = true;
+            ++m_index;
+            continue;
+        }
+        if (ch == '-' || (ch >= '0' && ch <= '9')) {
+            if (is_double) {
+                if (ch == '-')
+                    return {};
+
+                fraction_buffer.append(ch);
+            } else {
+                if (number_buffer.size() > 0) {
+                    if (number_buffer.at(0) == '0')
+                        return {};
+                }
+
+                if (number_buffer.size() > 1) {
+                    if (number_buffer.at(0) == '-' && number_buffer.at(1) == '0')
+                        return {};
+                }
+
+                number_buffer.append(ch);
+            }
+            ++m_index;
+            continue;
+        }
+        break;
+    }
+
+    StringView number_string(number_buffer.data(), number_buffer.size());
+    StringView fraction_string(fraction_buffer.data(), fraction_buffer.size());
+
+#ifndef KERNEL
+    if (is_double) {
+        // FIXME: This logic looks shaky.
+        int whole = 0;
+        auto to_signed_result = number_string.to_uint();
+        if (to_signed_result.has_value()) {
+            whole = to_signed_result.value();
+        } else {
+            auto number = number_string.to_int();
+            if (!number.has_value())
+                return {};
+            whole = number.value();
+        }
+
+        auto fraction_string_uint = fraction_string.to_uint();
+        if (!fraction_string_uint.has_value())
+            return {};
+        int fraction = fraction_string_uint.value();
+        fraction *= (whole < 0) ? -1 : 1;
+
+        auto divider = 1;
+        for (size_t i = 0; i < fraction_buffer.size(); ++i) {
+            divider *= 10;
+        }
+        value = JsonValue((double)whole + ((double)fraction / divider));
+    } else {
+#endif
+        auto to_unsigned_result = number_string.to_uint<u64>();
+        if (to_unsigned_result.has_value()) {
+            auto number = *to_unsigned_result;
+            if (number <= NumericLimits<u32>::max())
+                value = JsonValue((u32)number);
+            else
+                value = JsonValue(number);
+        } else {
+            auto number = number_string.to_int<i64>();
+            if (!number.has_value())
+                return {};
+            if (number.value() <= NumericLimits<i32>::max()) {
+                value = JsonValue((i32)number.value());
+            } else {
+                value = JsonValue(number.value());
+            }
+        }
+#ifndef KERNEL
+    }
+#endif
+
+    return value;
+}
+
 }
