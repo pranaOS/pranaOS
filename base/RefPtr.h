@@ -15,10 +15,9 @@
 #include <base/Traits.h>
 #include <base/Types.h>
 #ifdef KERNEL
-#    include <kernel/arch/x86/Processor.h>
-#    include <kernel/arch/x86/ScopedCritical.h>
+#    include <kernel/Arch/x86/Processor.h>
+#    include <kernel/Arch/x86/ScopedCritical.h>
 #endif
-
 
 namespace Base {
 
@@ -108,7 +107,6 @@ struct RefPtrTraits {
 
     using NullType = std::nullptr_t;
 };
-
 
 template<typename T, typename PtrTraits>
 class RefPtr {
@@ -469,4 +467,21 @@ inline RefPtr<T> adopt_ref_if_nonnull(T* object)
     return {};
 }
 
+template<typename T, class... Args>
+requires(IsConstructible<T, Args...>) inline RefPtr<T> try_create(Args&&... args)
+{
+    return adopt_ref_if_nonnull(new (nothrow) T(forward<Args>(args)...));
 }
+
+template<typename T, class... Args>
+inline RefPtr<T> try_create(Args&&... args)
+{
+    return adopt_ref_if_nonnull(new (nothrow) T { forward<Args>(args)... });
+}
+
+}
+
+using Base::adopt_ref_if_nonnull;
+using Base::RefPtr;
+using Base::static_ptr_cast;
+using Base::try_create;
