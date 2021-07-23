@@ -72,7 +72,6 @@ private:
     Optional<ErrorType> m_error;
 };
 
-// Partial specialization for void value type
 template<typename ErrorT>
 class [[nodiscard]] Result<void, ErrorT> {
 public:
