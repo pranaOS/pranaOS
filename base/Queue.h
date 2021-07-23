@@ -54,6 +54,31 @@ public:
         return value;
     }
 
+    const T& head() const
+    {
+        VERIFY(!is_empty());
+        return m_segments.first()->data[m_index_into_first];
+    }
+
+    void clear()
+    {
+        while (auto* segment = m_segments.take_first())
+            delete segment;
+        m_index_into_first = 0;
+        m_size = 0;
+    }
+
+private:
+    struct QueueSegment {
+        Vector<T, segment_size> data;
+        IntrusiveListNode<QueueSegment> node;
+    };
+
+    IntrusiveList<QueueSegment, RawPtr<QueueSegment>, &QueueSegment::node> m_segments;
+    size_t m_index_into_first { 0 };
+    size_t m_size { 0 };
 };
 
 }
+
+using Base::Queue;
