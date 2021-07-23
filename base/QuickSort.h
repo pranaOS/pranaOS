@@ -85,10 +85,50 @@ void dual_pivot_quick_sort(Collection& col, int start, int end, LessThan less_th
     }
 }
 
+template<typename Iterator, typename LessThan>
+void single_pivot_quick_sort(Iterator start, Iterator end, LessThan less_than)
+{
+    for (;;) {
+        int size = end - start;
+        if (size <= 1)
+            return;
+
+        int pivot_point = size / 2;
+        if (pivot_point)
+            swap(*(start + pivot_point), *start);
+
+        auto&& pivot = *start;
+
+        int i = 1;
+        for (int j = 1; j < size; ++j) {
+            if (less_than(*(start + j), pivot)) {
+                swap(*(start + j), *(start + i));
+                ++i;
+            }
+        }
+
+        swap(*start, *(start + i - 1));
+        if (i > size / 2) {
+            single_pivot_quick_sort(start + i, end, less_than);
+            end = start + i - 1;
+        } else {
+            single_pivot_quick_sort(start, start + i - 1, less_than);
+            start = start + i;
+        }
+    }
+}
+
+
 template<typename Iterator>
 void quick_sort(Iterator start, Iterator end)
 {
     signle_pivot_quick_sort(start, end, [](auto& a, auto& b) { return a < b; });
+}
+
+template<typename Collection, typename LessThan>
+void quick_sort(Collection& collection, LessThan less_than)
+{
+    dual_pivot_quick_sort(collection, 0, collection.size() - 1, move(less_than));
 }
 
 }
