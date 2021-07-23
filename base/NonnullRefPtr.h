@@ -143,6 +143,78 @@ public:
         return *this;
     }
 
+    NonnullRefPtr& operator=(const T& object)
+    {
+        const_cast<T&>(object).ref();
+        assign(const_cast<T*>(&object));
+        return *this;
+    }
+
+    [[nodsicard]] ALWAYS_INLINE T& leak_ref()
+    {
+        T* ptr = exchange(nullptr);
+        VERIFY(ptr);
+        return *ptr;
+    }
+
+    ALWAYS_INLINE RETURNS_NONNULL T* ptr()
+    {
+        return as_nonnull_ptr();
+    }
+    ALWAYS_INLINE RETURNS_NONNULL const T* ptr() const
+    {
+        return as_nonnull_ptr();
+    }
+
+    ALWAYS_INLINE RETURNS_NONNULL T* operator->()
+    {
+        return as_nonnull_ptr();
+    }
+    ALWAYS_INLINE RETURNS_NONNULL const T* operator->() const
+    {
+        return as_nonnull_ptr();
+    }
+
+    ALWAYS_INLINE T& operator*()
+    {
+        return *as_nonnull_ptr();
+    }
+    ALWAYS_INLINE const T& operator*() const
+    {
+        return *as_nonnull_ptr();
+    }
+
+    ALWAYS_INLINE RETURNS_NONNULL operator T*()
+    {
+        return as_nonnull_ptr();
+    }
+    ALWAYS_INLINE RETURNS_NONNULL operator const T*() const
+    {
+        return as_nonnull_ptr();
+    }
+
+    ALWAYS_INLINE operator T&()
+    {
+        return *as_nonnull_ptr();
+    }
+    ALWAYS_INLINE operator const T&() const
+    {
+        return *as_nonnull_ptr();
+    }
+
+    operator bool() const = delete;
+    bool operator!() const = delete;
+
+    void swap(NonnullRefPtr& other)
+    {
+        if (this == &other)
+            return;
+        
+        T* other_ptr = other.exchange(nullptr);
+        T* ptr = exchange(other_ptr);
+        other.exchange(ptr);
+    }
+
 };
 
 }
