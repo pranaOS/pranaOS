@@ -512,5 +512,35 @@ inline constexpr bool IsTriviallyDestructible = __is_trivially_destructible(T);
 inline constexpr bool IsTriviallyDestructible = __has_trivial_destructor(T) && IsDestructible<T>;
 #endif
 
+#if defined(__clang__)
+inline constexpr bool IsTriviallyDestructible = __is_trivially_destructible(T);
+#else
+inline constexpr bool IsTriviallyDestructible = __has_trivial_destructor(T) && IsDestructible<T>;
+#endif
+
+template<typename T>
+inline constexpr bool IsCopyConstructible = IsConstructible<T, AddLvalueReference<AddConst<T>>>;
+
+template<typename T>
+inline constexpr bool IsTriviallyCopyConstructible = IsTriviallyConstructible<T, AddLvalueReference<AddConst<T>>>;
+
+template<typename T>
+inline constexpr bool IsCopyAssignable = IsAssignable<AddLvalueReference<T>, AddLvalueReference<AddConst<T>>>;
+
+template<typename T>
+inline constexpr bool IsTriviallyCopyAssignable = IsTriviallyAssignable<AddLvalueReference<T>, AddLvalueReference<AddConst<T>>>;
+
+template<typename T>
+inline constexpr bool IsMoveConstructible = IsConstructible<T, AddRvalueReference<T>>;
+
+template<typename T>
+inline constexpr bool IsTriviallyMoveConstructible = IsTriviallyConstructible<T, AddRvalueReference<T>>;
+
+template<typename T>
+inline constexpr bool IsMoveAssignable = IsAssignable<AddLvalueReference<T>, AddRvalueReference<T>>;
+
+template<typename T>
+inline constexpr bool IsTriviallyMoveAssignable = IsTriviallyAssignable<AddLvalueReference<T>, AddRvalueReference<T>>;
+}
 
 }
