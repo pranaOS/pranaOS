@@ -9,7 +9,7 @@
 // includes
 #include <base/StdLibExtras.h>
 
-namespace Base {
+namespace AK {
 
 template<typename Collection, typename LessThan>
 void dual_pivot_quick_sort(Collection& col, int start, int end, LessThan less_than)
@@ -118,11 +118,16 @@ void single_pivot_quick_sort(Iterator start, Iterator end, LessThan less_than)
     }
 }
 
-
 template<typename Iterator>
 void quick_sort(Iterator start, Iterator end)
 {
-    signle_pivot_quick_sort(start, end, [](auto& a, auto& b) { return a < b; });
+    single_pivot_quick_sort(start, end, [](auto& a, auto& b) { return a < b; });
+}
+
+template<typename Iterator, typename LessThan>
+void quick_sort(Iterator start, Iterator end, LessThan less_than)
+{
+    single_pivot_quick_sort(start, end, move(less_than));
 }
 
 template<typename Collection, typename LessThan>
@@ -131,4 +136,13 @@ void quick_sort(Collection& collection, LessThan less_than)
     dual_pivot_quick_sort(collection, 0, collection.size() - 1, move(less_than));
 }
 
+template<typename Collection>
+void quick_sort(Collection& collection)
+{
+    dual_pivot_quick_sort(collection, 0, collection.size() - 1,
+                          [](auto& a, auto& b) { return a < b; });
 }
+
+}
+
+using Base::quick_sort;
