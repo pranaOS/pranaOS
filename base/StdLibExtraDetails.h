@@ -543,4 +543,7 @@ template<typename T>
 inline constexpr bool IsTriviallyMoveAssignable = IsTriviallyAssignable<AddLvalueReference<T>, AddRvalueReference<T>>;
 }
 
+template<typename T>
+inline constexpr bool IsDestructible = requires { declval<T>().~T(); };
+
 }
