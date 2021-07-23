@@ -23,7 +23,7 @@ inline void kfree_sized(void* ptr, size_t)
 }
 #endif
 
-#ifndef __serenity__
+#ifndef __pranaos__
 #    include <base/Types.h>
 
 #    ifndef BASE_OS_MACOS
@@ -34,3 +34,15 @@ inline size_t malloc_good_size(size_t size) { return size; }
 #        include <malloc/malloc.h>
 #    endif
 #endif
+
+#ifdef KERNEL
+#    define BASE_MAKE_ETERNAL                                               \
+    public:                                                               \
+        void* operator new(size_t size) { return kmalloc_eternal(size); } \
+                                                                          \
+    private:
+#else
+#    define BASE_MAKE_ETERNAL
+#endif
+
+using std::nothrow;
