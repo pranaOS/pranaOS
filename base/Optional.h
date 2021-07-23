@@ -4,9 +4,15 @@
  * SPDX-License-Identifier: BSD-2-Clause
 */
 
+/*
+ * Copyright (c) 2018-2021, Andreas Kling <kling@serenityos.org>
+ * Copyright (c) 2021, Daniel Bertalan <dani@danielbertalan.dev>
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+ */
+
 #pragma once
 
-// includes
 #include <base/Assertions.h>
 #include <base/StdLibExtras.h>
 #include <base/Types.h>
@@ -102,7 +108,7 @@ public:
     }
 
     ALWAYS_INLINE ~Optional()
-#ifdef AK_HAS_CONDITIONALLY_TRIVIAL
+#ifdef BASE_HAS_CONDITIONALLY_TRIVIAL
     requires(!IsTriviallyDestructible<T>)
 #endif
     {
@@ -155,6 +161,16 @@ public:
         return fallback;
     }
 
-};
+    ALWAYS_INLINE const T& operator*() const { return value(); }
+    ALWAYS_INLINE T& operator*() { return value(); }
 
+    ALWAYS_INLINE const T* operator->() const { return &value(); }
+    ALWAYS_INLINE T* operator->() { return &value(); }
+
+private:
+    alignas(T) u8 m_storage[sizeof(T)];
+    bool m_has_value { false };
+};
 }
+
+using Base::Optional;
