@@ -15,7 +15,7 @@ namespace Base {
 template<Intergral K>
 class BaseRedBlackTree {
     BASE_MAKE_NONCOPYABLE(BaseRedBlackTree);
-    BASE_MAKE_NONCOPYABLE(BaseRedBlackTree);
+    BASE_MAKE_NONMOVABLE(BaseRedBlackTree);
 
 public:
     [[nodiscard]] size_t size() const { return m_size; }
@@ -25,7 +25,6 @@ public:
         Red,
         Black
     };
-
     struct Node {
         Node* left_child { nullptr };
         Node* right_child { nullptr };
@@ -33,19 +32,19 @@ public:
 
         Color color { Color::Red };
 
-        K key; 
+        K key;
+
         Node(K key)
             : key(key)
         {
         }
-
         virtual ~Node() {};
     };
 
 protected:
-    BaseRedBlackTree() = default;
-    virtual ~BaseRedBlackTree() {}
-    
+    BaseRedBlackTree() = default; 
+    virtual ~BaseRedBlackTree() {};
+
     void rotate_left(Node* subtree_root)
     {
         VERIFY(subtree_root);
@@ -122,6 +121,254 @@ protected:
         return candidate;
     }
 
-}
+    void insert(Node* node)
+    {
+        VERIFY(node);
+        Node* parent = nullptr;
+        Node* temp = m_root;
+        while (temp) {
+            parent = temp;
+            if (node->key < temp->key) {
+                temp = temp->left_child;
+            } else {
+                temp = temp->right_child;
+            }
+        }
+        if (!parent) { 
+            node->color = Color::Black;
+            m_root = node;
+            m_size = 1;
+            m_minimum = node;
+            return;
+        } else if (node->key < parent->key) {
+            parent->left_child = node;
+        } else { 
+            parent->right_child = node;
+        }
+        node->parent = parent;
+
+        if (node->parent->parent) 
+            insert_fixups(node);
+
+        m_size++;
+        if (m_minimum->left_child == node)
+            m_minimum = node;
+    }
+
+    void insert_fixups(Node* node)
+    {
+        VERIFY(node && node->color == Color::Red);
+        while (node->parent && node->parent->color == Color::Red) {
+            auto* grand_parent = node->parent->parent;
+            if (grand_parent->right_child == node->parent) {
+                auto* uncle = grand_parent->left_child;
+                if (uncle && uncle->color == Color::Red) {
+                    node->parent->color = Color::Black;
+                    uncle->color = Color::Black;
+                    grand_parent->color = Color::Red;
+                    node = grand_parent;
+                } else {
+                    if (node->parent->left_child == node) {
+                        node = node->parent;
+                        rotate_right(node);
+                    }
+                    node->parent->color = Color::Black;
+                    grand_parent->color = Color::Red;
+                    rotate_left(grand_parent);
+                }
+            } else {
+                auto* uncle = grand_parent->right_child;
+                if (uncle && uncle->color == Color::Red) {
+                    node->parent->color = Color::Black;
+                    uncle->color = Color::Black;
+                    grand_parent->color = Color::Red;
+                    node = grand_parent;
+                } else {
+                    if (node->parent->right_child == node) {
+                        node = node->parent;
+                        rotate_left(node);
+                    }
+                    node->parent->color = Color::Black;
+                    grand_parent->color = Color::Red;
+                    rotate_right(grand_parent);
+                }
+            }
+        }
+        m_root->color = Color::Black;
+    }
+
+    void remove(Node* node)
+    {
+        VERIFY(node);
+
+        if (m_size == 1) {
+            m_root = nullptr;
+            m_size = 0;
+            return;
+        }
+
+        if (m_minimum == node)
+            m_minimum = successor(node);
+
+        if (node->left_child && node->right_child) {
+            auto* successor_node = successor(node); 
+            auto neighbour_swap = successor_node->parent == node;
+            node->left_child->parent = successor_node;
+            if (!neighbour_swap)
+                node->right_child->parent = successor_node;
+            if (node->parent) {
+                if (node->parent->left_child == node) {
+                    node->parent->left_child = successor_node;
+                } else {
+                    node->parent->right_child = successor_node;
+                }
+            } else {
+                m_root = successor_node;
+            }
+            if (successor_node->right_child)
+                successor_node->right_child->parent = node;
+            if (neighbour_swap) {
+                successor_node->parent = node->parent;
+                node->parent = successor_node;
+            } else {
+                if (successor_node->parent) {
+                    if (successor_node->parent->left_child == successor_node) {
+                        successor_node->parent->left_child = node;
+                    } else {
+                        successor_node->parent->right_child = node;
+                    }
+                } else {
+                    m_root = node;
+                }
+                swap(node->parent, successor_node->parent);
+            }
+            swap(node->left_child, successor_node->left_child);
+            if (neighbour_swap) {
+                node->right_child = successor_node->right_child;
+                successor_node->right_child = node;
+            } else {
+                swap(node->right_child, successor_node->right_child);
+            }
+            swap(node->color, successor_node->color);
+        }
+
+        auto* child = node->left_child ?: node->right_child;
+
+        if (child)
+            child->parent = node->parent;
+        if (node->parent) {
+            if (node->parent->left_child == node)
+                node->parent->left_child = child;
+            else
+                node->parent->right_child = child;
+        } else {
+            m_root = child;
+        }
+
+        
+        if (node->color != Color::Red)
+            remove_fixups(child, node->parent);
+
+        m_size--;
+    }
+
+    void remove_fixups(Node* node, Node* parent)
+    {
+        while (node != m_root && (!node || node->color == Color::Black)) {
+            if (parent->left_child == node) {
+                auto* sibling = parent->right_child;
+                if (sibling->color == Color::Red) {
+                    sibling->color = Color::Black;
+                    parent->color = Color::Red;
+                    rotate_left(parent);
+                    sibling = parent->right_child;
+                }
+                if ((!sibling->left_child || sibling->left_child->color == Color::Black) && (!sibling->right_child || sibling->right_child->color == Color::Black)) {
+                    sibling->color = Color::Red;
+                    node = parent;
+                } else {
+                    if (!sibling->right_child || sibling->right_child->color == Color::Black) {
+                        sibling->left_child->color = Color::Black; 
+                        sibling->color = Color::Red;
+                        rotate_right(sibling);
+                        sibling = parent->right_child;
+                    }
+                    sibling->color = parent->color;
+                    parent->color = Color::Black;
+                    sibling->right_child->color = Color::Black;
+                    rotate_left(parent);
+                    node = m_root; 
+                }
+            } else {
+                auto* sibling = parent->left_child;
+                if (sibling->color == Color::Red) {
+                    sibling->color = Color::Black;
+                    parent->color = Color::Red;
+                    rotate_right(parent);
+                    sibling = parent->left_child;
+                }
+                if ((!sibling->left_child || sibling->left_child->color == Color::Black) && (!sibling->right_child || sibling->right_child->color == Color::Black)) {
+                    sibling->color = Color::Red;
+                    node = parent;
+                } else {
+                    if (!sibling->left_child || sibling->left_child->color == Color::Black) {
+                        sibling->right_child->color = Color::Black; 
+                        sibling->color = Color::Red;
+                        rotate_left(sibling);
+                        sibling = parent->left_child;
+                    }
+                    sibling->color = parent->color;
+                    parent->color = Color::Black;
+                    sibling->left_child->color = Color::Black; 
+                    rotate_right(parent);
+                    node = m_root; 
+                }
+            }
+            parent = node->parent;
+        }
+        node->color = Color::Black; 
+    }
+
+    static Node* successor(Node* node)
+    {
+        VERIFY(node);
+        if (node->right_child) {
+            node = node->right_child;
+            while (node->left_child)
+                node = node->left_child;
+            return node;
+        } else {
+            auto temp = node->parent;
+            while (temp && node == temp->right_child) {
+                node = temp;
+                temp = temp->parent;
+            }
+            return temp;
+        }
+    }
+
+    static Node* predecessor(Node* node)
+    {
+        VERIFY(node);
+        if (node->left_child) {
+            node = node->left_child;
+            while (node->right_child)
+                node = node->right_child;
+            return node;
+        } else {
+            auto temp = node->parent;
+            while (temp && node == temp->left_child) {
+                node = temp;
+                temp = temp->parent;
+            }
+            return temp;
+        }
+    }
+
+    Node* m_root { nullptr };
+    size_t m_size { 0 };
+    Node* m_minimum { nullptr }; 
+};
+
 
 }
