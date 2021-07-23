@@ -185,4 +185,76 @@ struct __RemoveReference {
     using Type = T;
 };
 
+template<class T>
+struct __RemoveReference<T&> {
+    using Type = T;
+};
+template<class T>
+struct __RemoveReference<T&&> {
+    using Type = T;
+};
+
+template<typename T>
+using RemoveReference = typename __RemoveReference<T>::Type;
+
+template<typename T>
+using RemoveCVReference = RemoveCV<RemoveReference<T>>;
+
+template<typename T>
+struct __MakeUnsigned {
+    using Type = void;
+};
+template<>
+struct __MakeUnsigned<signed char> {
+    using Type = unsigned char;
+};
+template<>
+struct __MakeUnsigned<short> {
+    using Type = unsigned short;
+};
+template<>
+struct __MakeUnsigned<int> {
+    using Type = unsigned int;
+};
+template<>
+struct __MakeUnsigned<long> {
+    using Type = unsigned long;
+};
+template<>
+struct __MakeUnsigned<long long> {
+    using Type = unsigned long long;
+};
+template<>
+struct __MakeUnsigned<unsigned char> {
+    using Type = unsigned char;
+};
+template<>
+struct __MakeUnsigned<unsigned short> {
+    using Type = unsigned short;
+};
+template<>
+struct __MakeUnsigned<unsigned int> {
+    using Type = unsigned int;
+};
+template<>
+struct __MakeUnsigned<unsigned long> {
+    using Type = unsigned long;
+};
+template<>
+struct __MakeUnsigned<unsigned long long> {
+    using Type = unsigned long long;
+};
+template<>
+struct __MakeUnsigned<char> {
+    using Type = unsigned char;
+};
+template<>
+struct __MakeUnsigned<char8_t> {
+    using Type = char8_t;
+};
+template<>
+struct __MakeUnsigned<char16_t> {
+    using Type = char16_t;
+};
+
 }
