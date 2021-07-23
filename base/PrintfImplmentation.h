@@ -397,4 +397,10 @@ struct VaArgNextArgument {
     }
 };
 
+#define PRINTF_IMPL_DELEGATE_TO_IMPL(c)    \
+    case* #c:                              \
+        ret += impl.format_##c(state, ap); \
+        break;
+
+
 }
