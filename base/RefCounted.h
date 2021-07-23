@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: BSD-2-Clause
 */
 
-
 #pragma once
 
 // includes
@@ -90,6 +89,23 @@ protected:
     mutable Atomic<RefCountType> m_ref_count { 1 };
 };
 
-
+template<typename T>
+class RefCounted : public RefCountedBase {
+public:
+    bool unref() const
+    {
+        auto new_ref_count = deref_base();
+        if (new_ref_count == 0) {
+            call_will_be_destroyed_if_present(static_cast<const T*>(this));
+            delete static_cast<const T*>(this);
+            return true;
+        } else if (new_ref_count == 1) {
+            call_one_ref_left_if_present(static_cast<const T*>(this));
+        }
+        return false;
+    }
+};
 
 }
+
+using Base::RefCounted;
