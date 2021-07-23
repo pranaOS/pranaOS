@@ -427,4 +427,46 @@ private:
     mutable Atomic<FlatPtr> m_bits { PtrTraits::default_null_value };
 };
 
+template<typename T>
+struct Formatter<RefPtr<T>> : Formatter<const T*> {
+    void format(FormatBuilder& builder, const RefPtr<T>& value)
+    {
+        Formatter<const T*>::format(builder, value.ptr());
+    }
+};
+
+template<typename T>
+struct Traits<RefPtr<T>> : public GenericTraits<RefPtr<T>> {
+    using PeekType = T*;
+    using ConstPeekType = const T*;
+    static unsigned hash(const RefPtr<T>& p) { return ptr_hash(p.ptr()); }
+    static bool equals(const RefPtr<T>& a, const RefPtr<T>& b) { return a.ptr() == b.ptr(); }
+};
+
+template<typename T, typename U>
+inline NonnullRefPtr<T> static_ptr_cast(const NonnullRefPtr<U>& ptr)
+{
+    return NonnullRefPtr<T>(static_cast<const T&>(*ptr));
+}
+
+template<typename T, typename U, typename PtrTraits = RefPtrTraits<T>>
+inline RefPtr<T> static_ptr_cast(const RefPtr<U>& ptr)
+{
+    return RefPtr<T, PtrTraits>(static_cast<const T*>(ptr.ptr()));
+}
+
+template<typename T, typename PtrTraitsT, typename U, typename PtrTraitsU>
+inline void swap(RefPtr<T, PtrTraitsT>& a, RefPtr<U, PtrTraitsU>& b)
+{
+    a.swap(b);
+}
+
+template<typename T>
+inline RefPtr<T> adopt_ref_if_nonnull(T* object)
+{
+    if (object)
+        return RefPtr<T>(RefPtr<T>::Adopt, *object);
+    return {};
+}
+
 }
