@@ -4,9 +4,9 @@
  * SPDX-License-Identifier: BSD-2-Clause
 */
 
-
 #pragma once
 
+// includes
 #include <base/Types.h>
 
 namespace Base::SIMD {
@@ -34,4 +34,30 @@ using i32x8 = i32 __attribute__((vector_size(32)));
 
 using i64x2 = i64 __attribute__((vector_size(16)));
 using i64x4 = i64 __attribute__((vector_size(32)));
+
+using u8x2 = u8 __attribute__((vector_size(2)));
+using u8x4 = u8 __attribute__((vector_size(4)));
+using u8x8 = u8 __attribute__((vector_size(8)));
+using u8x16 = u8 __attribute__((vector_size(16)));
+using u8x32 = u8 __attribute__((vector_size(32)));
+
+using u16x2 = u16 __attribute__((vector_size(4)));
+using u16x4 = u16 __attribute__((vector_size(8)));
+using u16x8 = u16 __attribute__((vector_size(16)));
+using u16x16 = u16 __attribute__((vector_size(32)));
+
+using u32x2 = u32 __attribute__((vector_size(8)));
+using u32x4 = u32 __attribute__((vector_size(16)));
+using u32x8 = u32 __attribute__((vector_size(32)));
+
+using u64x2 = u64 __attribute__((vector_size(16)));
+using u64x4 = u64 __attribute__((vector_size(32)));
+
+using f32x2 = float __attribute__((vector_size(8)));
+using f32x4 = float __attribute__((vector_size(16)));
+using f32x8 = float __attribute__((vector_size(32)));
+
+using f64x2 = double __attribute__((vector_size(16)));
+using f64x4 = double __attribute__((vector_size(32)));
+
 }
