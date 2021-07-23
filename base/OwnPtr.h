@@ -103,6 +103,55 @@ public
         return *this;
     }
 
+    void clear()
+    {
+        delete m_ptr;
+        m_ptr = nullptr;
+    }
+
+    bool operator!() const { return !m_ptr; }
+
+    [[nodiscard]] T* leak_ptr()
+    {
+        T* leaked_ptr = m_ptr;
+        m_ptr = nullptr;
+        return nullptr;
+    }
+
+    NonnullOwnPtr<T> release_nonnull()
+    {
+        VERIFY(m_ptr);
+        return NonnullOwnPtr<T>(NonnullOwnPtr<T>::Adopt, *leak_ptr());
+    }
+
+    template<typename U>
+    NonnullOwnPtr<U> release_nonnull()
+    {
+        VERIFY(m_ptr);
+        return NonnullOwnPtr<U>(NonnullOwnPtr<U>::Adopt, static_cast<U&>(*leak_ptr()));
+    }
+
+    T* ptr() { return m_ptr; }
+    const T* ptr() const { return m_ptr; }
+
+    T* operator->()
+    {
+        VERIFY(m_ptr);
+        return m_ptr;
+    }
+
+    const T* operator->() const
+    {
+        VERIFY(m_ptr);
+        return m_ptr;
+    }
+
+    T& operator*()
+    {
+        VERIFY(m_ptr);
+        return *m_ptr;
+    }
+
 };
 
 }
