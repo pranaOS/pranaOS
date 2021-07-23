@@ -12,7 +12,7 @@
 #include <base/Types.h>
 #include <stdarg.h>
 
-#ifdef __pranaos__
+#ifdef __serenity__
 extern "C" size_t strlen(const char*);
 #else
 #    include <string.h>
@@ -184,7 +184,6 @@ ALWAYS_INLINE int print_double(PutChFunc putch, char*& bufptr, double number, bo
 template<typename PutChFunc>
 ALWAYS_INLINE int print_i64(PutChFunc putch, char*& bufptr, i64 number, bool left_pad, bool zero_pad, u32 field_width)
 {
-    // FIXME: This won't work if there is padding. '  -17' becomes '-  17'.
     if (number < 0) {
         putch(bufptr, '-');
         return print_u64(putch, bufptr, 0 - number, left_pad, zero_pad, field_width) + 1;
@@ -402,5 +401,118 @@ struct VaArgNextArgument {
         ret += impl.format_##c(state, ap); \
         break;
 
+template<typename PutChFunc, template<typename T, typename U, template<typename X, typename Y> typename V> typename Impl = PrintfImpl, typename ArgumentListT = va_list, template<typename T, typename V = decltype(declval<ArgumentListT&>())> typename NextArgument = VaArgNextArgument>
+ALWAYS_INLINE int printf_internal(PutChFunc putch, char* buffer, const char*& fmt, ArgumentListT ap)
+{
+    int ret = 0;
+    char* bufptr = buffer;
+
+    Impl<PutChFunc, ArgumentListT&, NextArgument> impl { putch, bufptr, ret };
+
+    for (const char* p = fmt; *p; ++p) {
+        ModifierState state;
+        if (*p == '%' && *(p + 1)) {
+            one_more:
+            ++p;
+            if (*p == '.') {
+                state.dot = true;
+                if (*(p + 1))
+                    goto one_more;
+            }
+            if (*p == '-') {
+                state.left_pad = true;
+                if (*(p + 1))
+                    goto one_more;
+            }
+            if (*p == '+') {
+                state.always_sign = true;
+                if (*(p + 1))
+                    goto one_more;
+            }
+            if (!state.zero_pad && !state.field_width && !state.has_fraction_length && *p == '0') {
+                state.zero_pad = true;
+                if (*(p + 1))
+                    goto one_more;
+            }
+            if (*p >= '0' && *p <= '9') {
+                if (!state.dot) {
+                    state.field_width *= 10;
+                    state.field_width += *p - '0';
+                    if (*(p + 1))
+                        goto one_more;
+                } else {
+                    if (!state.has_fraction_length) {
+                        state.has_fraction_length = true;
+                        state.fraction_length = 0;
+                    }
+                    state.fraction_length *= 10;
+                    state.fraction_length += *p - '0';
+                    if (*(p + 1))
+                        goto one_more;
+                }
+            }
+            if (*p == '*') {
+                if (state.dot) {
+                    state.has_fraction_length = true;
+                    state.fraction_length = NextArgument<int>()(ap);
+                } else {
+                    state.field_width = NextArgument<int>()(ap);
+                }
+
+                if (*(p + 1))
+                    goto one_more;
+            }
+            if (*p == 'l') {
+                ++state.long_qualifiers;
+                if (*(p + 1))
+                    goto one_more;
+            }
+            if (*p == 'z') {
+                state.size_qualifier = true;
+                if (*(p + 1))
+                    goto one_more;
+            }
+            if (*p == '#') {
+                state.alternate_form = true;
+                if (*(p + 1))
+                    goto one_more;
+            }
+            switch (*p) {
+            case '%':
+                ret += impl.format_percent(state, ap);
+                break;
+
+            PRINTF_IMPL_DELEGATE_TO_IMPL(P);
+            PRINTF_IMPL_DELEGATE_TO_IMPL(Q);
+            PRINTF_IMPL_DELEGATE_TO_IMPL(X);
+            PRINTF_IMPL_DELEGATE_TO_IMPL(c);
+            PRINTF_IMPL_DELEGATE_TO_IMPL(d);
+#ifndef KERNEL
+            PRINTF_IMPL_DELEGATE_TO_IMPL(f);
+            PRINTF_IMPL_DELEGATE_TO_IMPL(g);
+#endif
+            PRINTF_IMPL_DELEGATE_TO_IMPL(i);
+            PRINTF_IMPL_DELEGATE_TO_IMPL(n);
+            PRINTF_IMPL_DELEGATE_TO_IMPL(o);
+            PRINTF_IMPL_DELEGATE_TO_IMPL(p);
+            PRINTF_IMPL_DELEGATE_TO_IMPL(q);
+            PRINTF_IMPL_DELEGATE_TO_IMPL(s);
+            PRINTF_IMPL_DELEGATE_TO_IMPL(u);
+            PRINTF_IMPL_DELEGATE_TO_IMPL(x);
+            default:
+                ret += impl.format_unrecognized(*p, fmt, state, ap);
+                break;
+            }
+        } else {
+            putch(bufptr, *p);
+            ++ret;
+        }
+    }
+    return ret;
+}
+
+#undef PRINTF_IMPL_DELEGATE_TO_IMPL
 
 }
+
+using PrintfImplementation::printf_internal;
