@@ -6,6 +6,7 @@
 
 #pragma once
 
+// includes
 #include <base/NonnullOwnPtr.h>
 #include <base/RefCounted.h>
 
@@ -13,7 +14,7 @@ namespace Base {
 
 template<typename T>
 class OwnPtr {
-public
+public:
     OwnPtr() = default;
 
     OwnPtr(decltype(nullptr))
@@ -115,7 +116,7 @@ public
     {
         T* leaked_ptr = m_ptr;
         m_ptr = nullptr;
-        return nullptr;
+        return leaked_ptr;
     }
 
     NonnullOwnPtr<T> release_nonnull()
@@ -189,7 +190,6 @@ protected:
 
 private:
     T* m_ptr = nullptr;
-
 };
 
 template<typename T, typename U>
@@ -198,4 +198,37 @@ inline void swap(OwnPtr<T>& a, OwnPtr<U>& b)
     a.swap(b);
 }
 
+template<typename T>
+inline OwnPtr<T> adopt_own_if_nonnull(T* object)
+{
+    if (object)
+        return OwnPtr<T>::lift(object);
+    return {};
 }
+
+template<typename T, class... Args>
+requires(IsConstructible<T, Args...>) inline OwnPtr<T> try_make(Args&&... args)
+{
+    return adopt_own_if_nonnull(new (nothrow) T(forward<Args>(args)...));
+}
+
+template<typename T, class... Args>
+inline OwnPtr<T> try_make(Args&&... args)
+
+{
+    return adopt_own_if_nonnull(new (nothrow) T { forward<Args>(args)... });
+}
+
+template<typename T>
+struct Traits<OwnPtr<T>> : public GenericTraits<OwnPtr<T>> {
+    using PeekType = T*;
+    using ConstPeekType = const T*;
+    static unsigned hash(const OwnPtr<T>& p) { return ptr_hash(p.ptr()); }
+    static bool equals(const OwnPtr<T>& a, const OwnPtr<T>& b) { return a.ptr() == b.ptr(); }
+};
+
+}
+
+using Base::adopt_own_if_nonnull;
+using Base::OwnPtr;
+using Base::try_make;
