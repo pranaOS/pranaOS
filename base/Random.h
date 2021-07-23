@@ -34,4 +34,18 @@ inline void fill_with_random([[maybe_unused]] void* buffer, [[maybe_unused]] siz
 #endif
 }
 
+template<typename T>
+inline T get_random()
+{
+    T t;
+    fill_with_random(&t, sizeof(T));
+    return t;
 }
+
+u32 get_random_uniform(u32 max_bounds);
+
+}
+
+using Base::fill_with_random;
+using Base::get_random;
+using Base::get_random_uniform;
