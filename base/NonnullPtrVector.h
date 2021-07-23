@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: BSD-2-Clause
 */
 
-
 #pragma once
 
 // includes
@@ -15,7 +14,7 @@ namespace Base {
 template<typename PtrType, size_t inline_capacity = 0>
 class NonnullPtrVector : public Vector<PtrType, inline_capacity> {
     using T = typename PtrType::ElementType;
-    using Base=  Vector<PtrType, inline_capacity>;
+    using Base = Vector<PtrType, inline_capacity>;
 
 public:
     NonnullPtrVector()
@@ -26,12 +25,11 @@ public:
         : Base(static_cast<Base&&>(other))
     {
     }
-
     NonnullPtrVector(const Vector<PtrType>& other)
         : Base(static_cast<const Base&>(other))
     {
     }
-    
+
     using Base::size;
 
     using ConstIterator = SimpleIterator<const NonnullPtrVector, const T>;
@@ -55,8 +53,8 @@ public:
     ALWAYS_INLINE T& last() { return at(size() - 1); }
     ALWAYS_INLINE const T& last() const { return at(size() - 1); }
 
-
-    
+private:
+    void resize(size_t) = delete;
 };
 
 }
