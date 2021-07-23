@@ -122,6 +122,27 @@ public:
         return *this;
     }
 
+    template<typename U>
+    NonnullRefPtr& operator=(const NonnullRefPtr<U>& other)
+    {
+        assign(other.add_ref());
+        return *this;
+    }
+
+    ALWAYS_INLINE NonnullRefPtr& operator=(NonnullRefPtr()&& other)
+    {
+        if (this != &other)
+            assign(&other.leak_ref());
+        return *this;
+    }
+
+    template<typename U>
+    NonnullRefPtr& operator=(NonnullRefPtr<U>&& other)
+    {
+        assign(&other.leak_ref());
+        return *this;
+    }
+
 };
 
 }
