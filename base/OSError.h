@@ -27,4 +27,14 @@ private:
     int m_error { 0 };
 };
 
+template<>
+struct Formatter<OSError> : Formatter<StringView> {
+    void format(FormatBuilder& builder, const OSError& value)
+    {
+        Formatter<StringView>::format(builder, value.string());
+    }
+};
+
 }
+
+using Base::OSError;
