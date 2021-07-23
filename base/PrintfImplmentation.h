@@ -77,4 +77,87 @@ ALWAYS_INLINE int print_hex(PutChFunc putch, char*& bufptr, T number, bool upper
     return ret;
 }
 
+template<typename PutChFunc>
+ALWAYS_INLINE int print_number(PutChFunc putch, char*& bufptr, u32 number, bool left_pad, bool zero_pad, u32 field_width)
+{
+    u32 divisor = 1000000000;
+    char ch;
+    char padding = 1;
+    char buf[16];
+    char* p = buf;
+
+    for (;;) {
+        ch = '0' + (number / divisor);
+        number %= divisor;
+        if (ch != '0')
+            padding = 0;
+        if (!padding || divisor == 1)
+            *(p++) = ch;
+        if (divisor == 1)
+            break;
+        divisor /= 10;
+    }
+
+    size_t numlen = p - buf;
+    if (!field_width || field_width < numlen)
+        field_width = numlen;
+    if (!left_pad) {
+        for (unsigned i = 0; i < field_width - numlen; ++i) {
+            putch(bufptr, zero_pad ? '0' : ' ');
+        }
+    }
+    for (unsigned i = 0; i < numlen; ++i) {
+        putch(bufptr, buf[i]);
+    }
+    if (left_pad) {
+        for (unsigned i = 0; i < field_width - numlen; ++i) {
+            putch(bufptr, ' ');
+        }
+    }
+
+    return field_width;
+}
+
+template<typename PutChFunc>
+ALWAYS_INLINE int print_u64(PutChFunc putch, char*& bufptr, u64 number, bool left_pad, bool zero_pad, u32 field_width)
+{
+    u64 divisor = 10000000000000000000LLU;
+    char ch;
+    char padding = 1;
+    char buf[16];
+    char* p = buf;
+
+    for (;;) {
+        ch = '0' + (number / divisor);
+        number %= divisor;
+        if (ch != '0')
+            padding = 0;
+        if (!padding || divisor == 1)
+            *(p++) = ch;
+        if (divisor == 1)
+            break;
+        divisor /= 10;
+    }
+
+    size_t numlen = p - buf;
+    if (!field_width || field_width < numlen)
+        field_width = numlen;
+    if (!left_pad) {
+        for (unsigned i = 0; i < field_width - numlen; ++i) {
+            putch(bufptr, zero_pad ? '0' : ' ');
+        }
+    }
+    for (unsigned i = 0; i < numlen; ++i) {
+        putch(bufptr, buf[i]);
+    }
+    if (left_pad) {
+        for (unsigned i = 0; i < field_width - numlen; ++i) {
+            putch(bufptr, ' ');
+        }
+    }
+
+    return field_width;
+}
+
+
 }
