@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
 */
 
+
 #pragma once
 
 // includes
@@ -18,7 +19,6 @@ constexpr auto round_up_to_power_of_two(T value, U power_of_two) requires(IsInte
 
 namespace std {
 
-
 template<typename T>
 constexpr T&& move(T& arg)
 {
@@ -29,14 +29,14 @@ constexpr T&& move(T& arg)
 
 using std::move;
 
-namespace AK::Detail {
+namespace Base::Detail {
 template<typename T>
 struct _RawPtr {
     using Type = T*;
 };
 }
 
-namespace AK {
+namespace Base {
 
 template<class T>
 constexpr T&& forward(RemoveReference<T>& param)
@@ -98,4 +98,61 @@ inline void swap(T& a, U& b)
     b = move(tmp);
 }
 
+template<typename T, typename U = T>
+constexpr T exchange(T& slot, U&& value)
+{
+    T old_value = move(slot);
+    slot = forward<U>(value);
+    return old_value;
 }
+
+template<typename T>
+using RawPtr = typename Detail::_RawPtr<T>::Type;
+
+template<typename V>
+constexpr decltype(auto) to_underlying(V value) requires(IsEnum<V>)
+{
+    return static_cast<UnderlyingType<V>>(value);
+}
+
+constexpr bool is_constant_evaluated()
+{
+#if __has_builtin(__builtin_is_constant_evaluated)
+    return __builtin_is_constant_evaluated();
+#else
+    return false;
+#endif
+}
+
+
+#define __DEFINE_GENERIC_ABS(type, zero, intrinsic) \
+    constexpr type abs(type num)                    \
+    {                                               \
+        if (is_constant_evaluated())                \
+            return num < zero ? -num : num;         \
+        else                                        \
+            return __builtin_##intrinsic(num);      \
+    }
+
+__DEFINE_GENERIC_ABS(int, 0, abs);
+__DEFINE_GENERIC_ABS(long, 0l, labs);
+__DEFINE_GENERIC_ABS(long long, 0ll, llabs);
+#ifndef KERNEL
+__DEFINE_GENERIC_ABS(float, 0.0f, fabsf);
+__DEFINE_GENERIC_ABS(double, 0.0, fabs);
+__DEFINE_GENERIC_ABS(long double, 0.0l, fabsl);
+#endif
+
+}
+
+using Base::array_size;
+using Base::ceil_div;
+using Base::clamp;
+using Base::exchange;
+using Base::forward;
+using Base::is_constant_evaluated;
+using Base::max;
+using Base::min;
+using Base::RawPtr;
+using Base::swap;
+using Base::to_underlying;
