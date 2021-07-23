@@ -77,6 +77,84 @@ public:
         return *this;
     }
 
+    ALWAYS_INLINE Optional& operator=(Optional&& other)
+    {
+        if (this != &other) {
+            clear();
+            m_has_value = other.m_has_value;
+            if (other.has_value()) {
+                new (&m_storage) T(other.release_value());
+            }
+        }
+        return *this;
+    }
+
+    template<typename O>
+    ALWAYS_INLINE bool operator==(const Optional<O>& other) const
+    {
+        return has_value() == other.has_value() && (!has_value() || value() == other.value());
+    }
+
+    template<typename O>
+    ALWAYS_INLINE bool operator==(O const& other) const
+    {
+        return has_value() && value() == other;
+    }
+
+    ALWAYS_INLINE ~Optional()
+#ifdef AK_HAS_CONDITIONALLY_TRIVIAL
+    requires(!IsTriviallyDestructible<T>)
+#endif
+    {
+        clear();
+    }
+
+    ALWAYS_INLINE void clear()
+    {
+        if (m_has_value) {
+            value().~T();
+            m_has_value = false;
+        }
+    }
+
+    template<typename... Parameters>
+    ALWAYS_INLINE void emplace(Parameters&&... parameters)
+    {
+        clear();
+        m_has_value = true;
+        new (&m_storage) T(forward<Parameters>(parameters)...);
+    }
+
+    [[nodiscard]] ALWAYS_INLINE bool has_value() const { return m_has_value; }
+
+    [[nodiscard]] ALWAYS_INLINE T& value()
+    {
+        VERIFY(m_has_value);
+        return *__builtin_launder(reinterpret_cast<T*>(&m_storage));
+    }
+
+    [[nodiscard]] ALWAYS_INLINE const T& value() const
+    {
+        VERIFY(m_has_value);
+        return *__builtin_launder(reinterpret_cast<const T*>(&m_storage));
+    }
+
+    [[nodiscard]] T release_value()
+    {
+        VERIFY(m_has_value);
+        T released_value = move(value());
+        value().~T();
+        m_has_value = false;
+        return released_value;
+    }
+
+    [[nodiscard]] ALWAYS_INLINE T value_or(const T& fallback) const
+    {
+        if (m_has_value)
+            return value();
+        return fallback;
+    }
+
 };
 
 }
