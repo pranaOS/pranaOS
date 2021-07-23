@@ -11,8 +11,7 @@
 
 namespace Base {
 
-
-template<Intergral K>
+template<Integral K>
 class BaseRedBlackTree {
     BASE_MAKE_NONCOPYABLE(BaseRedBlackTree);
     BASE_MAKE_NONMOVABLE(BaseRedBlackTree);
@@ -86,7 +85,7 @@ protected:
         pivot->parent = parent;
         if (!parent) { 
             m_root = pivot;
-        } else if (parent->left_child == subtree_root) { 
+        } else if (parent->left_child == subtree_root) {
             parent->left_child = pivot;
         } else { 
             parent->right_child = pivot;
@@ -140,7 +139,7 @@ protected:
             m_size = 1;
             m_minimum = node;
             return;
-        } else if (node->key < parent->key) {
+        } else if (node->key < parent->key) { 
             parent->left_child = node;
         } else { 
             parent->right_child = node;
@@ -194,7 +193,7 @@ protected:
                 }
             }
         }
-        m_root->color = Color::Black;
+        m_root->color = Color::Black; 
     }
 
     void remove(Node* node)
@@ -265,7 +264,6 @@ protected:
             m_root = child;
         }
 
-        
         if (node->color != Color::Red)
             remove_fixups(child, node->parent);
 
@@ -295,7 +293,7 @@ protected:
                     }
                     sibling->color = parent->color;
                     parent->color = Color::Black;
-                    sibling->right_child->color = Color::Black;
+                    sibling->right_child->color = Color::Black; 
                     rotate_left(parent);
                     node = m_root; 
                 }
@@ -370,7 +368,6 @@ protected:
     Node* m_minimum { nullptr }; 
 };
 
-
 template<typename TreeType, typename ElementType>
 class RedBlackTreeIterator {
 public:
@@ -410,5 +407,133 @@ private:
     typename TreeType::Node* m_prev { nullptr };
 };
 
+template<Integral K, typename V>
+class RedBlackTree final : public BaseRedBlackTree<K> {
+public:
+    RedBlackTree() = default;
+    virtual ~RedBlackTree() override
+    {
+        clear();
+    }
+
+    using BaseTree = BaseRedBlackTree<K>;
+
+    [[nodiscard]] V* find(K key)
+    {
+        auto* node = static_cast<Node*>(BaseTree::find(this->m_root, key));
+        if (!node)
+            return nullptr;
+        return &node->value;
+    }
+
+    [[nodiscard]] V* find_largest_not_above(K key)
+    {
+        auto* node = static_cast<Node*>(BaseTree::find_largest_not_above(this->m_root, key));
+        if (!node)
+            return nullptr;
+        return &node->value;
+    }
+
+    void insert(K key, const V& value)
+    {
+        insert(key, V(value));
+    }
+
+    [[nodiscard]] bool try_insert(K key, V&& value)
+    {
+        auto* node = new (nothrow) Node(key, move(value));
+        if (!node)
+            return false;
+        BaseTree::insert(node);
+        return true;
+    }
+
+    void insert(K key, V&& value)
+    {
+        auto success = try_insert(key, move(value));
+        VERIFY(success);
+    }
+
+    using Iterator = RedBlackTreeIterator<RedBlackTree, V>;
+    friend Iterator;
+    Iterator begin() { return Iterator(static_cast<Node*>(this->m_minimum)); }
+    Iterator end() { return {}; }
+    Iterator begin_from(K key) { return Iterator(static_cast<Node*>(BaseTree::find(this->m_root, key))); }
+
+    using ConstIterator = RedBlackTreeIterator<const RedBlackTree, const V>;
+    friend ConstIterator;
+    ConstIterator begin() const { return ConstIterator(static_cast<Node*>(this->m_minimum)); }
+    ConstIterator end() const { return {}; }
+    ConstIterator begin_from(K key) const { return ConstIterator(static_cast<Node*>(BaseTree::find(this->m_root, key))); }
+
+    ConstIterator find_largest_not_above_iterator(K key) const
+    {
+        auto node = static_cast<Node*>(BaseTree::find_largest_not_above(this->m_root, key));
+        return ConstIterator(node, static_cast<Node*>(BaseTree::predecessor(node)));
+    }
+
+    V unsafe_remove(K key)
+    {
+        auto* node = BaseTree::find(this->m_root, key);
+        VERIFY(node);
+
+        BaseTree::remove(node);
+
+        V temp = move(static_cast<Node*>(node)->value);
+
+        node->right_child = nullptr;
+        node->left_child = nullptr;
+        delete node;
+
+        return temp;
+    }
+
+    bool remove(K key)
+    {
+        auto* node = BaseTree::find(this->m_root, key);
+        if (!node)
+            return false;
+
+        BaseTree::remove(node);
+
+        node->right_child = nullptr;
+        node->left_child = nullptr;
+        delete node;
+
+        return true;
+    }
+
+    void clear()
+    {
+        if (this->m_root) {
+            delete this->m_root;
+            this->m_root = nullptr;
+        }
+        this->m_minimum = nullptr;
+        this->m_size = 0;
+    }
+
+private:
+    struct Node : BaseRedBlackTree<K>::Node {
+
+        V value;
+
+        Node(K key, V value)
+            : BaseRedBlackTree<K>::Node(key)
+            , value(move(value))
+        {
+        }
+
+        ~Node()
+        {
+            if (this->left_child)
+                delete this->left_child;
+            if (this->right_child)
+                delete this->right_child;
+        }
+    };
+};
 
 }
+
+using Base::RedBlackTree;
