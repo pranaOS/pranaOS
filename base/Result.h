@@ -47,6 +47,29 @@ public:
         return m_result.value();
     }
 
+    ErrorType& error()
+    {
+        return m_error.value();
+    }
+
+    bool is_error() const
+    {
+        return m_error.has_value();
+    }
+
+    ValueType release_value()
+    {
+        return m_result.release_value();
+    }
+
+    ErrorType release_error()
+    {
+        return m_error.release_value();
+    }
+
+private:
+    Optional<ValueType> m_result;
+    Optioanl<ErrorType> m_error;
 };
 
 }
