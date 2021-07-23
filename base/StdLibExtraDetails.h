@@ -302,4 +302,60 @@ struct __MakeSigned<unsigned short> {
     using Type = short;
 };
 
+template<>
+struct __MakeSigned<unsigned int> {
+    using Type = int;
+};
+template<>
+struct __MakeSigned<unsigned long> {
+    using Type = long;
+};
+template<>
+struct __MakeSigned<unsigned long long> {
+    using Type = long long;
+};
+template<>
+struct __MakeSigned<char> {
+    using Type = char;
+};
+
+template<typename T>
+using MakeSigned = typename __MakeSigned<T>::Type;
+
+template<typename T>
+auto declval() -> T;
+
+template<typename...>
+struct __CommonType;
+
+template<typename T>
+struct __CommonType<T> {
+    using Type = T;
+};
+
+template<typename T1, typename T2>
+struct __CommonType<T1, T2> {
+    using Type = decltype(true ? declval<T1>() : declval<T2>());
+};
+
+template<typename T1, typename T2, typename... Ts>
+struct __CommonType<T1, T2, Ts...> {
+    using Type = typename __CommonType<typename __CommonType<T1, T2>::Type, Ts...>::Type;
+};
+
+template<typename... Ts>
+using CommonType = typename __CommonType<Ts...>::Type;
+
+template<class T>
+inline constexpr bool IsVoid = IsSame<void, RemoveCV<T>>;
+
+template<class T>
+inline constexpr bool IsConst = false;
+
+template<class T>
+inline constexpr bool IsConst<const T> = true;
+
+template<typename T>
+inline constexpr bool IsEnum = __is_enum(T);
+
 }
