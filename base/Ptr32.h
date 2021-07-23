@@ -3,7 +3,6 @@
  *
  * SPDX-License-Identifier: BSD-2-Clause
 */
-
 #pragma once
 
 // includes
@@ -11,7 +10,6 @@
 #include <base/Types.h>
 
 namespace Base {
-
 
 template<typename T>
 class Ptr32 {
@@ -37,6 +35,24 @@ public:
     constexpr explicit operator bool() { return m_ptr; }
     template<typename U>
     constexpr bool operator==(Ptr32<U> other) { return m_ptr == other.m_ptr; }
+
+    constexpr Ptr32<T> operator+(u32 other) const
+    {
+        Ptr32<T> ptr {};
+        ptr.m_ptr = m_ptr + other;
+        return ptr;
+    }
+    constexpr Ptr32<T> operator-(u32 other) const
+    {
+        Ptr32<T> ptr {};
+        ptr.m_ptr = m_ptr - other;
+        return ptr;
+    }
+
+private:
+    u32 m_ptr { 0 };
 };
 
 }
+
+using Base::Ptr32;
