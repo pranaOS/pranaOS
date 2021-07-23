@@ -36,6 +36,47 @@ public:
     ~Optional() = default;
 #endif
 
+    ALWAYS_INLINE Optional(const Optional& other)
+#ifdef BASE_HAS_CONDITIONALLY_TRIVIAL
+    requires(!IsTriviallyCopyConstructible<T>)
+#endif
+        : m_has_value(other.m_has_value)
+    {
+        if (other.has_value()) {
+            new (&m_storage) T(other.value());
+        }
+    }
+
+    ALWAYS_INLINE Optional(Optional&& other)
+        : m_has_value(other.m_has_value)
+    {
+        if (other.has_value()) {
+            new (&m_storage) T(other.release_value());
+        }
+    }
+
+    template<typename U = T>
+    ALWAYS_INLINE explicit(!IsConvertible<U&&, T>) Optional(U&& value) requires(!IsSame<RemoveCVReference<U>, Optional<T>> && IsConstructible<T, U&&>)
+    : m_has_value(true)
+    {
+        new (&m_storage) T(forward<U>(value));
+    }
+
+    ALWAYS_INLINE Optional& operator=(const Optional& other)
+#ifdef BASE_HAS_CONDITIONALLY_TRIVIAL
+    requires(!IsTriviallyCopyConstructible<T> || !IsTriviallyDestructible<T>)
+#endif
+    {
+        if (this != &other) {
+            clear();
+            m_has_value = other.m_has_value;
+            if (other.has_value()) {
+                new (&m_storage) T(other.value());
+            }
+        }
+        return *this;
+    }
+
 };
 
 }
