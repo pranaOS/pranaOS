@@ -79,4 +79,110 @@ inline constexpr bool __IsPointerHelper<T*> = true;
 template<class T>
 inline constexpr bool IsPointer = __IsPointerHelper<RemoveCV<T>>;
 
+template<class>
+inline constexpr bool IsFunction = false;
+template<class Ret, class... Args>
+inline constexpr bool IsFunction<Ret(Args...)> = true;
+template<class Ret, class... Args>
+inline constexpr bool IsFunction<Ret(Args..., ...)> = true;
+template<class Ret, class... Args>
+inline constexpr bool IsFunction<Ret(Args...) const> = true;
+template<class Ret, class... Args>
+inline constexpr bool IsFunction<Ret(Args..., ...) const> = true;
+template<class Ret, class... Args>
+inline constexpr bool IsFunction<Ret(Args...) volatile> = true;
+template<class Ret, class... Args>
+inline constexpr bool IsFunction<Ret(Args..., ...) volatile> = true;
+template<class Ret, class... Args>
+inline constexpr bool IsFunction<Ret(Args...) const volatile> = true;
+template<class Ret, class... Args>
+inline constexpr bool IsFunction<Ret(Args..., ...) const volatile> = true;
+template<class Ret, class... Args>
+inline constexpr bool IsFunction<Ret(Args...)&> = true;
+template<class Ret, class... Args>
+inline constexpr bool IsFunction<Ret(Args..., ...)&> = true;
+template<class Ret, class... Args>
+inline constexpr bool IsFunction<Ret(Args...) const&> = true;
+template<class Ret, class... Args>
+inline constexpr bool IsFunction<Ret(Args..., ...) const&> = true;
+template<class Ret, class... Args>
+inline constexpr bool IsFunction<Ret(Args...) volatile&> = true;
+template<class Ret, class... Args>
+inline constexpr bool IsFunction<Ret(Args..., ...) volatile&> = true;
+template<class Ret, class... Args>
+inline constexpr bool IsFunction<Ret(Args...) const volatile&> = true;
+template<class Ret, class... Args>
+inline constexpr bool IsFunction<Ret(Args..., ...) const volatile&> = true;
+template<class Ret, class... Args>
+inline constexpr bool IsFunction<Ret(Args...) &&> = true;
+template<class Ret, class... Args>
+inline constexpr bool IsFunction<Ret(Args..., ...) &&> = true;
+template<class Ret, class... Args>
+inline constexpr bool IsFunction<Ret(Args...) const&&> = true;
+template<class Ret, class... Args>
+inline constexpr bool IsFunction<Ret(Args..., ...) const&&> = true;
+template<class Ret, class... Args>
+inline constexpr bool IsFunction<Ret(Args...) volatile&&> = true;
+template<class Ret, class... Args>
+inline constexpr bool IsFunction<Ret(Args..., ...) volatile&&> = true;
+template<class Ret, class... Args>
+inline constexpr bool IsFunction<Ret(Args...) const volatile&&> = true;
+template<class Ret, class... Args>
+inline constexpr bool IsFunction<Ret(Args..., ...) const volatile&&> = true;
+
+template<class T>
+inline constexpr bool IsRvalueReference = false;
+template<class T>
+inline constexpr bool IsRvalueReference<T&&> = true;
+
+template<class T>
+struct __RemovePointer {
+    using Type = T;
+};
+template<class T>
+struct __RemovePointer<T*> {
+    using Type = T;
+};
+template<class T>
+struct __RemovePointer<T* const> {
+    using Type = T;
+};
+template<class T>
+struct __RemovePointer<T* volatile> {
+    using Type = T;
+};
+template<class T>
+struct __RemovePointer<T* const volatile> {
+    using Type = T;
+};
+template<typename T>
+using RemovePointer = typename __RemovePointer<T>::Type;
+
+template<typename T, typename U>
+inline constexpr bool IsSame = false;
+
+template<typename T>
+inline constexpr bool IsSame<T, T> = true;
+
+template<bool condition, class TrueType, class FalseType>
+struct __Conditional {
+    using Type = TrueType;
+};
+
+template<class TrueType, class FalseType>
+struct __Conditional<false, TrueType, FalseType> {
+    using Type = FalseType;
+};
+
+template<bool condition, class TrueType, class FalseType>
+using Conditional = typename __Conditional<condition, TrueType, FalseType>::Type;
+
+template<typename T>
+inline constexpr bool IsNullPointer = IsSame<decltype(nullptr), RemoveCV<T>>;
+
+template<typename T>
+struct __RemoveReference {
+    using Type = T;
+};
+
 }
