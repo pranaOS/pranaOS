@@ -69,7 +69,50 @@ public:
 
 private:
     Optional<ValueType> m_result;
-    Optioanl<ErrorType> m_error;
+    Optional<ErrorType> m_error;
+};
+
+// Partial specialization for void value type
+template<typename ErrorT>
+class [[nodiscard]] Result<void, ErrorT> {
+public:
+    using ValueType = void;
+    using ErrorType = ErrorT;
+
+    Result(const ErrorType& error)
+        : m_error(error)
+    {
+    }
+
+    Result(ErrorType&& error)
+        : m_error(move(error))
+    {
+    }
+
+    Result() = default;
+    Result(Result&& other) = default;
+    Result(const Result& other) = default;
+    ~Result() = default;
+
+    ErrorType& error()
+    {
+        return m_error.value();
+    }
+
+    bool is_error() const
+    {
+        return m_error.has_value();
+    }
+
+    ErrorType release_error()
+    {
+        return m_error.release_value();
+    }
+
+private:
+    Optional<ErrorType> m_error;
 };
 
 }
+
+using Base::Result;
