@@ -38,4 +38,45 @@ struct __RemoveConst {
     using Type = T;
 };
 
+template<class T>
+struct __RemoveConst<const T> {
+    using Type = T;
+};
+template<class T>
+using RemoveConst = typename __RemoveConst<T>::Type;
+
+template<class T>
+struct __RemoveVolatile {
+    using Type = T;
+};
+
+template<class T>
+struct __RemoveVolatile<volatile T> {
+    using Type = T;
+};
+
+template<typename T>
+using RemoveVolatile = typename __RemoveVolatile<T>::Type;
+
+template<class T>
+using RemoveCV = RemoveVolatile<RemoveConst<T>>;
+
+template<typename...>
+using VoidType = void;
+
+template<class T>
+inline constexpr bool IsLvalueReference = false;
+
+template<class T>
+inline constexpr bool IsLvalueReference<T&> = true;
+
+template<class T>
+inline constexpr bool __IsPointerHelper = false;
+
+template<class T>
+inline constexpr bool __IsPointerHelper<T*> = true;
+
+template<class T>
+inline constexpr bool IsPointer = __IsPointerHelper<RemoveCV<T>>;
+
 }
