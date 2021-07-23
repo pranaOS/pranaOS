@@ -152,6 +152,50 @@ public
         return *m_ptr;
     }
 
+    const T& operator*() const
+    {
+        VERIFY(m_ptr);
+        return *m_ptr;
+    }
+
+    operator const T*() const { return m_ptr; }
+    operator T*() { return m_ptr; }
+
+    operator bool() { return !!m_ptr; }
+
+    void swap(OwnPtr& other)
+    {
+        ::swap(m_ptr, other.m_ptr);
+    }
+
+    template<typename U>
+    void swap(OwnPtr<U>& other)
+    {
+        ::swap(m_ptr, other.m_ptr);
+    }
+
+    static OwnPtr lift(T* ptr)
+    {
+        return OwnPtr { ptr };
+    }
+
+protected:
+    explicit OwnPtr(T* ptr)
+        : m_ptr(ptr)
+    {
+        static_assert(
+            requires { requires typename T::AllowOwnPtr()(); } || !requires { requires !typename T::AllowOwnPtr()(); declval<T>().ref(); declval<T>().unref(); }, "Use RefPtr<> for RefCounted types");
+    }
+
+private:
+    T* m_ptr = nullptr;
+
 };
+
+template<typename T, typename U>
+inline void swap(OwnPtr<T>& a, OwnPtr<U>& b)
+{
+    a.swap(b);
+}
 
 }
