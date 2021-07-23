@@ -273,4 +273,18 @@ ALWAYS_INLINE int print_signed_number(PutChFunc putch, char*& bufptr, int number
     return print_number(putch, bufptr, number, left_pad, zero_pad, field_width) + always_sign;
 }
 
+struct ModifierState {
+    bool left_pad { false };
+    bool zero_pad { false };
+    bool dot { false };
+    unsigned field_width { 0 };
+    bool has_fraction_length { false };
+    unsigned fraction_length { 6 };
+    unsigned long_qualifiers { 0 };
+    bool size_qualifier { false };
+    bool alternate_form { 0 };
+    bool always_sign { false };
+};
+
+
 }
