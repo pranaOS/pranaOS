@@ -80,6 +80,69 @@ public:
     template<typename U>
     NonnullOwnPtr& operator=(const WeakPtr<U>&) = delete;
 
+    NonnullOwnPtr& operator=(NonnullOwnPtr&& other)
+    {
+        NonnullOwnPtr ptr(move(other));
+        swap(ptr);
+        return *this;
+    }
+
+    template<typename U>
+    NonnullOwnPtr& operator=(NonnullOwnPtr<U>&& other)
+    {
+        NonnullOwnPtr ptr(move(other));
+        swap(ptr);
+        return *this;
+    }
+
+    [[nodiscard]] T* leak_ptr()
+    {
+        return exchange(m_ptr, nullptr)
+    }
+
+    ALWAYS_INLINE RETURNS_NONNULL T* ptr()
+    {
+        VERIFY(m_ptr);
+        return m_ptr;
+    }
+
+    ALWAYS_INLINE RETURNS_NONNULL const T* ptr() const
+    {
+        VERIFY(m_ptr);
+        return m_ptr;
+    }
+
+    ALWAYS_INLINE RETURNS_NONNULL T* operator->() { return ptr(); }
+    ALWAYS_INLINE RETURNS_NONNULL const T* operator->() const { return ptr(); }
+
+    ALWAYS_INLINE T& operator*() { return *ptr(); }
+    ALWAYS_INLINE const T& operator*() const { return *ptr(); }
+
+    ALWAYS_INLINE RETURNS_NONNULL operator const T*() const { return ptr(); }
+    ALWAYS_INLINE RETURNS_NONNULL operator T*() { return ptr(); }
+
+    operator bool() const = delete;
+    bool operator!() const = delete;
+
+    void swap(NonnullOwnPtr& other)
+    {
+        ::swap(m_ptr, other.m_ptr);
+    }
+
+    template<typename U>
+    void swap(NonnullOwnPtr<U>& other)
+    {
+        ::swap(m_ptr, other.m_ptr);
+    }
+
+    template<typename U>
+    NonnullOwnPtr<U> release_nonnull()
+    {
+        VERIFY(m_ptr);
+        return NonnullOwnPtr<U>(NonnullOwnPtr<U>::Adopt, static_cast<U&>(*leak_ptr()));
+
+    }
+    
 };
 
 }
