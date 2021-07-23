@@ -17,7 +17,7 @@
 #    include <kernel/arch/x86/ScopedCritical.h>
 #endif
 
-namespace Base {
+namespace AK {
 
 template<typename T>
 class OwnPtr;
@@ -129,7 +129,7 @@ public:
         return *this;
     }
 
-    ALWAYS_INLINE NonnullRefPtr& operator=(NonnullRefPtr()&& other)
+    ALWAYS_INLINE NonnullRefPtr& operator=(NonnullRefPtr&& other)
     {
         if (this != &other)
             assign(&other.leak_ref());
@@ -150,7 +150,7 @@ public:
         return *this;
     }
 
-    [[nodsicard]] ALWAYS_INLINE T& leak_ref()
+    [[nodiscard]] ALWAYS_INLINE T& leak_ref()
     {
         T* ptr = exchange(nullptr);
         VERIFY(ptr);
@@ -209,12 +209,145 @@ public:
     {
         if (this == &other)
             return;
-        
+
         T* other_ptr = other.exchange(nullptr);
         T* ptr = exchange(other_ptr);
         other.exchange(ptr);
     }
 
+    template<typename U>
+    void swap(NonnullRefPtr<U>& other)
+    {
+        U* other_ptr = other.exchange(nullptr);
+        T* ptr = exchange(other_ptr);
+        other.exchange(ptr);
+    }
+
+private:
+    NonnullRefPtr() = delete;
+
+    ALWAYS_INLINE T* as_ptr() const
+    {
+        return (T*)(m_bits.load(AK::MemoryOrder::memory_order_relaxed) & ~(FlatPtr)1);
+    }
+
+    ALWAYS_INLINE RETURNS_NONNULL T* as_nonnull_ptr() const
+    {
+        T* ptr = (T*)(m_bits.load(AK::MemoryOrder::memory_order_relaxed) & ~(FlatPtr)1);
+        VERIFY(ptr);
+        return ptr;
+    }
+
+    template<typename F>
+    void do_while_locked(F f) const
+    {
+#ifdef KERNEL
+        kernel::ScopedCritical critical;
+#endif
+        FlatPtr bits;
+        for (;;) {
+            bits = m_bits.fetch_or(1, AK::MemoryOrder::memory_order_acq_rel);
+            if (!(bits & 1))
+                break;
+#ifdef KERNEL
+            kernel::Processor::wait_check();
+#endif
+        }
+        VERIFY(!(bits & 1));
+        f((T*)bits);
+        m_bits.store(bits, AK::MemoryOrder::memory_order_release);
+    }
+
+    ALWAYS_INLINE void assign(T* new_ptr)
+    {
+        T* prev_ptr = exchange(new_ptr);
+        unref_if_not_null(prev_ptr);
+    }
+
+    ALWAYS_INLINE T* exchange(T* new_ptr)
+    {
+        VERIFY(!((FlatPtr)new_ptr & 1));
+#ifdef KERNEL
+        kernel::ScopedCritical critical;
+#endif
+        FlatPtr expected = m_bits.load(AK::MemoryOrder::memory_order_relaxed);
+        for (;;) {
+            expected &= ~(FlatPtr)1;
+            if (m_bits.compare_exchange_strong(expected, (FlatPtr)new_ptr, AK::MemoryOrder::memory_order_acq_rel))
+                break;
+#ifdef KERNEL
+            kernel::Processor::wait_check();
+#endif
+        }
+        VERIFY(!(expected & 1));
+        return (T*)expected;
+    }
+
+    T* add_ref() const
+    {
+#ifdef KERNEL
+        kernel::ScopedCritical critical;
+#endif
+        FlatPtr expected = m_bits.load(AK::MemoryOrder::memory_order_relaxed);
+        for (;;) {
+            expected &= ~(FlatPtr)1;
+            if (m_bits.compare_exchange_strong(expected, expected | 1, AK::MemoryOrder::memory_order_acq_rel))
+                break;
+#ifdef KERNEL
+            kernel::Processor::wait_check();
+#endif
+        }
+
+        ref_if_not_null((T*)expected);
+
+        m_bits.store(expected, AK::MemoryOrder::memory_order_release);
+        return (T*)expected;
+    }
+
+    mutable Atomic<FlatPtr> m_bits { 0 };
 };
 
+template<typename T>
+inline NonnullRefPtr<T> adopt_ref(T& object)
+{
+    return NonnullRefPtr<T>(NonnullRefPtr<T>::Adopt, object);
 }
+
+template<typename T>
+struct Formatter<NonnullRefPtr<T>> : Formatter<const T*> {
+    void format(FormatBuilder& builder, const NonnullRefPtr<T>& value)
+    {
+        Formatter<const T*>::format(builder, value.ptr());
+    }
+};
+
+template<typename T, typename U>
+inline void swap(NonnullRefPtr<T>& a, NonnullRefPtr<U>& b)
+{
+    a.swap(b);
+}
+
+template<typename T, class... Args>
+requires(IsConstructible<T, Args...>) inline NonnullRefPtr<T> create(Args&&... args)
+{
+    return NonnullRefPtr<T>(NonnullRefPtr<T>::Adopt, *new T(forward<Args>(args)...));
+}
+
+template<typename T, class... Args>
+inline NonnullRefPtr<T> create(Args&&... args)
+{
+    return NonnullRefPtr<T>(NonnullRefPtr<T>::Adopt, *new T { forward<Args>(args)... });
+}
+}
+
+template<typename T>
+struct Traits<NonnullRefPtr<T>> : public GenericTraits<NonnullRefPtr<T>> {
+using PeekType = T*;
+using ConstPeekType = const T*;
+static unsigned hash(const NonnullRefPtr<T>& p) { return ptr_hash(p.ptr()); }
+static bool equals(const NonnullRefPtr<T>& a, const NonnullRefPtr<T>& b) { return a.ptr() == b.ptr(); }
+};
+
+using AK::adopt_ref;
+using AK::create;
+using AK::NonnullRefPtr;
