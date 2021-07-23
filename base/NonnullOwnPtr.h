@@ -142,7 +142,34 @@ public:
         return NonnullOwnPtr<U>(NonnullOwnPtr<U>::Adopt, static_cast<U&>(*leak_ptr()));
 
     }
-    
+
+private:
+    void clear()
+    {
+        if (!m_ptr)
+            return;
+        delete m_ptr;
+        m_ptr = nullptr;
+
+    }
+
+    T* m_ptr = nullptr;
 };
+
+#if !defined(KERNEL)
+
+template<typename T>
+inline NonnullOwnPtr<T> adopt_own(T& object)
+{
+    return NonnullOwnPtr<T>(NonnullOwnPtr<T>::Adopt, object);
+}
+
+#endif
+
+template<class T, class... Args>
+requires(IsConstructible<T, Args...>) inline NonnullOwnPtr<T> make(Args&&... args)
+{
+    return NonnullOwnPtr<T>(NonnullOwnPtr<T>::Adopt, *new T(forward<Args>(args)...));
+}
 
 }
