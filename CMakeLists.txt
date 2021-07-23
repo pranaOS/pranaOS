@@ -43,11 +43,6 @@ add_custom_target(run
     USES_TERMINAL
 )
 
-# This can currently only be implemented by ordered commands
-# as cmake doesn't support inter dependency ordering, and we
-# would like to avoid inject dependencies on the existing
-# custom commands to allow people to run commands adhoc with
-# out forcing re-builds when they might not want them.
 add_custom_target(setup-and-run
     COMMAND ${CMAKE_MAKE_PROGRAM} install
     COMMAND ${CMAKE_MAKE_PROGRAM} image
@@ -109,10 +104,7 @@ if (ENABLE_ALL_DEBUG_FACILITIES)
     set(ENABLE_ALL_THE_DEBUG_MACROS ON)
     set(ENABLE_EXTRA_KERNEL_DEBUG_SYMBOLS ON)
 
-    # Immediately finds violations during boot, shouldn't be discoverable
-    # by people who aren't working on fixing issues. Use this check to make
-    # sure this code continues to build instead of all_debug_macros to avoid
-    # people filing bugs.
+
     set(KMALLOC_VERIFY_NO_SPINLOCK_HELD ON)
 endif()
 
@@ -179,7 +171,6 @@ foreach(lang ASM C CXX OBJC OBJCXX)
     unset(CMAKE_${lang}_OSX_DEPLOYMENT_TARGET_FLAG)
     unset(CMAKE_${lang}_SYSROOT_FLAG)
     if (CMAKE_SYSTEM_NAME MATCHES Darwin)
-        ## macOS workaround. Use GNU ld flags for SONAMEs.
         set(CMAKE_${lang}_CREATE_SHARED_LIBRARY
             "<CMAKE_${lang}_COMPILER> <LANGUAGE_COMPILE_FLAGS> <CMAKE_SHARED_LIBRARY_CREATE_${lang}_FLAGS> <LINK_FLAGS> <SONAME_FLAG><TARGET_SONAME> -o <TARGET> <OBJECTS> <LINK_LIBRARIES>")
         set(CMAKE_SHARED_LIBRARY_SONAME_${lang}_FLAG "-Wl,-soname,")
@@ -191,23 +182,18 @@ set(CMAKE_SHARED_LIBRARY_SUFFIX ".so")
 set(CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS "-shared -Wl,--hash-style=gnu,-z,relro,-z,now,-z,noexecstack")
 set(CMAKE_CXX_LINK_FLAGS "-Wl,--hash-style=gnu,-z,relro,-z,now,-z,noexecstack,-z,max-page-size=0x1000")
 
-# We disable it completely because it makes cmake very spammy.
-# This will need to be revisited when the Loader supports RPATH/RUN_PATH.
 set(CMAKE_SKIP_RPATH TRUE)
 
 add_compile_options(-Wformat=2)
 add_compile_options(-fdiagnostics-color=always)
 
 if (NOT ${CMAKE_HOST_SYSTEM_NAME} MATCHES pranaOS)
-    # FIXME: Something makes this go crazy and flag unused variables that aren't flagged as such when building with the toolchain.
-    #        Disable -Werror for now.
     add_compile_options(-Werror)
 endif()
 
 add_compile_options(-Wall)
 add_compile_options(-Wextra)
 
-# The following warnings are sorted by the "base" name (the part excluding the initial Wno or W).
 add_compile_options(-Wno-address-of-packed-member)
 add_compile_options(-Wcast-align)
 add_compile_options(-Wcast-qual)
@@ -259,11 +245,6 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR}/Userland/Services)
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/Userland/Libraries)
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/Userland)
 
-# FIXME: vptr sanitizing requires.. intense ABI wrangling of std::type_info
-#     And would be better served by porting ubsan_type_hash_itanium.cpp from compiler-rt
-# We don't set this along with the original fsanitize=undefined because for host tools, we can rely on
-# the host's libubsan to provide the ABI-specific vptr type cache.
-# This is not a problem for the Kernel, because it does not have RTTI enabled :^)
 if (ENABLE_UNDEFINED_SANITIZER)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-sanitize=vptr")
 endif()
