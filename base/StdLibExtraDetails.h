@@ -4,10 +4,9 @@
  * SPDX-License-Identifier: BSD-2-Clause
 */
 
-
 #pragma once
 
-namespace AK::Detail {
+namespace Base::Detail {
 
 template<bool B, class T = void>
 struct EnableIf {
@@ -37,7 +36,6 @@ template<class T>
 struct __RemoveConst {
     using Type = T;
 };
-
 template<class T>
 struct __RemoveConst<const T> {
     using Type = T;
@@ -184,7 +182,6 @@ template<typename T>
 struct __RemoveReference {
     using Type = T;
 };
-
 template<class T>
 struct __RemoveReference<T&> {
     using Type = T;
@@ -256,7 +253,6 @@ template<>
 struct __MakeUnsigned<char16_t> {
     using Type = char16_t;
 };
-
 template<>
 struct __MakeUnsigned<char32_t> {
     using Type = char32_t;
@@ -301,7 +297,6 @@ template<>
 struct __MakeSigned<unsigned short> {
     using Type = short;
 };
-
 template<>
 struct __MakeSigned<unsigned int> {
     using Type = int;
@@ -512,12 +507,6 @@ inline constexpr bool IsTriviallyDestructible = __is_trivially_destructible(T);
 inline constexpr bool IsTriviallyDestructible = __has_trivial_destructor(T) && IsDestructible<T>;
 #endif
 
-#if defined(__clang__)
-inline constexpr bool IsTriviallyDestructible = __is_trivially_destructible(T);
-#else
-inline constexpr bool IsTriviallyDestructible = __has_trivial_destructor(T) && IsDestructible<T>;
-#endif
-
 template<typename T>
 inline constexpr bool IsCopyConstructible = IsConstructible<T, AddLvalueReference<AddConst<T>>>;
 
@@ -542,8 +531,65 @@ inline constexpr bool IsMoveAssignable = IsAssignable<AddLvalueReference<T>, Add
 template<typename T>
 inline constexpr bool IsTriviallyMoveAssignable = IsTriviallyAssignable<AddLvalueReference<T>, AddRvalueReference<T>>;
 }
-
-template<typename T>
-inline constexpr bool IsDestructible = requires { declval<T>().~T(); };
-
-}
+using Base::Detail::AddConst;
+using Base::Detail::AddLvalueReference;
+using Base::Detail::AddRvalueReference;
+using Base::Detail::CommonType;
+using Base::Detail::Conditional;
+using Base::Detail::CopyConst;
+using Base::Detail::declval;
+using Base::Detail::DependentFalse;
+using Base::Detail::EnableIf;
+using Base::Detail::FalseType;
+using Base::Detail::IdentityType;
+using Base::Detail::IndexSequence;
+using Base::Detail::IntegerSequence;
+using Base::Detail::IsArithmetic;
+using Base::Detail::IsAssignable;
+using Base::Detail::IsBaseOf;
+using Base::Detail::IsCallableWithArguments;
+using Base::Detail::IsClass;
+using Base::Detail::IsConst;
+using Base::Detail::IsConstructible;
+using Base::Detail::IsConvertible;
+using Base::Detail::IsCopyAssignable;
+using Base::Detail::IsCopyConstructible;
+using Base::Detail::IsDestructible;
+using Base::Detail::IsEnum;
+using Base::Detail::IsFloatingPoint;
+using Base::Detail::IsFunction;
+using Base::Detail::IsFundamental;
+using Base::Detail::IsIntegral;
+using Base::Detail::IsLvalueReference;
+using Base::Detail::IsMoveAssignable;
+using Base::Detail::IsMoveConstructible;
+using Base::Detail::IsNullPointer;
+using Base::Detail::IsPointer;
+using Base::Detail::IsRvalueReference;
+using Base::Detail::IsSame;
+using Base::Detail::IsSigned;
+using Base::Detail::IsTrivial;
+using Base::Detail::IsTriviallyAssignable;
+using Base::Detail::IsTriviallyConstructible;
+using Base::Detail::IsTriviallyCopyable;
+using Base::Detail::IsTriviallyCopyAssignable;
+using Base::Detail::IsTriviallyCopyConstructible;
+using Base::Detail::IsTriviallyDestructible;
+using Base::Detail::IsTriviallyMoveAssignable;
+using Base::Detail::IsTriviallyMoveConstructible;
+using Base::Detail::IsUnion;
+using Base::Detail::IsUnsigned;
+using Base::Detail::IsVoid;
+using Base::Detail::MakeIndexSequence;
+using Base::Detail::MakeIntegerSequence;
+using Base::Detail::MakeSigned;
+using Base::Detail::MakeUnsigned;
+using Base::Detail::RemoveConst;
+using Base::Detail::RemoveCV;
+using Base::Detail::RemoveCVReference;
+using Base::Detail::RemovePointer;
+using Base::Detail::RemoveReference;
+using Base::Detail::RemoveVolatile;
+using Base::Detail::TrueType;
+using Base::Detail::UnderlyingType;
+using Base::Detail::Void;
