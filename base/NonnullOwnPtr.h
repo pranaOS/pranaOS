@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: BSD-2-Clause
 */
 
-
 #pragma once
 
 // includes
@@ -25,27 +24,27 @@ template<typename T>
 class WeakPtr;
 
 template<typename T>
-class NonnullRefPtr {
+class NonnullOwnPtr {
 public:
     using ElementType = T;
 
     enum AdoptTag { Adopt };
 
     NonnullOwnPtr(AdoptTag, T& ptr)
-    : m_ptr(&ptr)
-        {
-            static_assert(
-                requires { requires typename T::AllowOwnPtr()(); } || !requires { requires !typename T::AllowOwnPtr()(); declval<T>().ref(); declval<T>().unref(); },
-                "Use NonnullRefPtr<> for RefCounted types");
-        }
+        : m_ptr(&ptr)
+    {
+        static_assert(
+            requires { requires typename T::AllowOwnPtr()(); } || !requires { requires !typename T::AllowOwnPtr()(); declval<T>().ref(); declval<T>().unref(); },
+            "Use NonnullRefPtr<> for RefCounted types");
+    }
     NonnullOwnPtr(NonnullOwnPtr&& other)
-    : m_ptr(other.leak_ptr())
+        : m_ptr(other.leak_ptr())
     {
         VERIFY(m_ptr);
     }
     template<typename U>
     NonnullOwnPtr(NonnullOwnPtr<U>&& other)
-    : m_ptr(other.leak_ptr())
+        : m_ptr(other.leak_ptr())
     {
         VERIFY(m_ptr);
     }
@@ -97,7 +96,7 @@ public:
 
     [[nodiscard]] T* leak_ptr()
     {
-        return exchange(m_ptr, nullptr)
+        return exchange(m_ptr, nullptr);
     }
 
     ALWAYS_INLINE RETURNS_NONNULL T* ptr()
@@ -140,7 +139,6 @@ public:
     {
         VERIFY(m_ptr);
         return NonnullOwnPtr<U>(NonnullOwnPtr<U>::Adopt, static_cast<U&>(*leak_ptr()));
-
     }
 
 private:
@@ -150,7 +148,6 @@ private:
             return;
         delete m_ptr;
         m_ptr = nullptr;
-
     }
 
     T* m_ptr = nullptr;
@@ -172,4 +169,38 @@ requires(IsConstructible<T, Args...>) inline NonnullOwnPtr<T> make(Args&&... arg
     return NonnullOwnPtr<T>(NonnullOwnPtr<T>::Adopt, *new T(forward<Args>(args)...));
 }
 
+template<class T, class... Args>
+inline NonnullOwnPtr<T> make(Args&&... args)
+{
+    return NonnullOwnPtr<T>(NonnullOwnPtr<T>::Adopt, *new T { forward<Args>(args)... });
 }
+
+template<typename T>
+struct Traits<NonnullOwnPtr<T>> : public GenericTraits<NonnullOwnPtr<T>> {
+    using PeekType = T*;
+    using ConstPeekType = const T*;
+    static unsigned hash(const NonnullOwnPtr<T>& p) { return int_hash((u32)p.ptr()); }
+    static bool equals(const NonnullOwnPtr<T>& a, const NonnullOwnPtr<T>& b) { return a.ptr() == b.ptr(); }
+};
+
+template<typename T, typename U>
+inline void swap(NonnullOwnPtr<T>& a, NonnullOwnPtr<U>& b)
+{
+    a.swap(b);
+}
+
+template<typename T>
+struct Formatter<NonnullOwnPtr<T>> : Formatter<const T*> {
+    void format(FormatBuilder& builder, const NonnullOwnPtr<T>& value)
+    {
+        Formatter<const T*>::format(builder, value.ptr());
+    }
+};
+
+}
+
+#if !defined(KERNEL)
+using Base::adopt_own;
+#endif
+using Base::make;
+using Base::NonnullOwnPtr;
