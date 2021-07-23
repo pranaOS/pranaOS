@@ -371,4 +371,44 @@ protected:
 };
 
 
+template<typename TreeType, typename ElementType>
+class RedBlackTreeIterator {
+public:
+    RedBlackTreeIterator() = default;
+    bool operator!=(const RedBlackTreeIterator& other) const { return m_node != other.m_node; }
+    RedBlackTreeIterator& operator++()
+    {
+        if (!m_node)
+            return *this;
+        m_prev = m_node;
+        m_node = static_cast<typename TreeType::Node*>(TreeType::successor(m_node));
+        return *this;
+    }
+    RedBlackTreeIterator& operator--()
+    {
+        if (!m_prev)
+            return *this;
+        m_node = m_prev;
+        m_prev = static_cast<typename TreeType::Node*>(TreeType::predecessor(m_prev));
+        return *this;
+    }
+    ElementType& operator*() { return m_node->value; }
+    ElementType* operator->() { return &m_node->value; }
+    [[nodiscard]] bool is_end() const { return !m_node; }
+    [[nodiscard]] bool is_begin() const { return !m_prev; }
+
+    [[nodiscard]] auto key() const { return m_node->key; }
+
+private:
+    friend TreeType;
+    explicit RedBlackTreeIterator(typename TreeType::Node* node, typename TreeType::Node* prev = nullptr)
+        : m_node(node)
+        , m_prev(prev)
+    {
+    }
+    typename TreeType::Node* m_node { nullptr };
+    typename TreeType::Node* m_prev { nullptr };
+};
+
+
 }
