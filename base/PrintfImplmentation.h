@@ -286,5 +286,115 @@ struct ModifierState {
     bool always_sign { false };
 };
 
+template<typename PutChFunc, typename ArgumentListRefT, template<typename T, typename U = ArgumentListRefT> typename NextArgument>
+struct PrintfImpl {
+    ALWAYS_INLINE PrintfImpl(PutChFunc& putch, char*& bufptr, const int& nwritten)
+        : m_bufptr(bufptr)
+        , m_nwritten(nwritten)
+        , m_putch(putch)
+    {
+    }
+
+    ALWAYS_INLINE int format_s(const ModifierState& state, ArgumentListRefT ap) const
+    {
+        const char* sp = NextArgument<const char*>()(ap);
+        if (!sp)
+            sp = "(null)";
+        return print_string(m_putch, m_bufptr, sp, strlen(sp), state.left_pad, state.field_width, state.dot, state.fraction_length, state.has_fraction_length);
+    }
+    ALWAYS_INLINE int format_d(const ModifierState& state, ArgumentListRefT ap) const
+    {
+        if (state.long_qualifiers >= 2)
+            return print_i64(m_putch, m_bufptr, NextArgument<i64>()(ap), state.left_pad, state.zero_pad, state.field_width);
+
+        return print_signed_number(m_putch, m_bufptr, NextArgument<int>()(ap), state.left_pad, state.zero_pad, state.field_width, state.always_sign);
+    }
+    ALWAYS_INLINE int format_i(const ModifierState& state, ArgumentListRefT ap) const
+    {
+        return format_d(state, ap);
+    }
+    ALWAYS_INLINE int format_u(const ModifierState& state, ArgumentListRefT ap) const
+    {
+        if (state.long_qualifiers >= 2)
+            return print_u64(m_putch, m_bufptr, NextArgument<u64>()(ap), state.left_pad, state.zero_pad, state.field_width);
+        return print_number(m_putch, m_bufptr, NextArgument<u32>()(ap), state.left_pad, state.zero_pad, state.field_width);
+    }
+    ALWAYS_INLINE int format_Q(const ModifierState& state, ArgumentListRefT ap) const
+    {
+        return print_u64(m_putch, m_bufptr, NextArgument<u64>()(ap), state.left_pad, state.zero_pad, state.field_width);
+    }
+    ALWAYS_INLINE int format_q(const ModifierState& state, ArgumentListRefT ap) const
+    {
+        return print_hex(m_putch, m_bufptr, NextArgument<u64>()(ap), false, false, state.left_pad, state.zero_pad, 16);
+    }
+    ALWAYS_INLINE int format_g(const ModifierState& state, ArgumentListRefT ap) const
+    {
+        return format_f(state, ap);
+    }
+    ALWAYS_INLINE int format_f(const ModifierState& state, ArgumentListRefT ap) const
+    {
+        return print_double(m_putch, m_bufptr, NextArgument<double>()(ap), state.left_pad, state.zero_pad, state.field_width, state.fraction_length);
+    }
+    ALWAYS_INLINE int format_o(const ModifierState& state, ArgumentListRefT ap) const
+    {
+        if (state.alternate_form)
+            m_putch(m_bufptr, '0');
+
+        return (state.alternate_form ? 1 : 0) + print_octal_number(m_putch, m_bufptr, NextArgument<u32>()(ap), state.left_pad, state.zero_pad, state.field_width);
+    }
+    ALWAYS_INLINE int format_x(const ModifierState& state, ArgumentListRefT ap) const
+    {
+        if (state.long_qualifiers >= 2)
+            return print_hex(m_putch, m_bufptr, NextArgument<u64>()(ap), false, state.alternate_form, state.left_pad, state.zero_pad, state.field_width);
+        return print_hex(m_putch, m_bufptr, NextArgument<u32>()(ap), false, state.alternate_form, state.left_pad, state.zero_pad, state.field_width);
+    }
+    ALWAYS_INLINE int format_X(const ModifierState& state, ArgumentListRefT ap) const
+    {
+        if (state.long_qualifiers >= 2)
+            return print_hex(m_putch, m_bufptr, NextArgument<u64>()(ap), true, state.alternate_form, state.left_pad, state.zero_pad, state.field_width);
+        return print_hex(m_putch, m_bufptr, NextArgument<u32>()(ap), true, state.alternate_form, state.left_pad, state.zero_pad, state.field_width);
+    }
+    ALWAYS_INLINE int format_n(const ModifierState&, ArgumentListRefT ap) const
+    {
+        *NextArgument<int*>()(ap) = m_nwritten;
+        return 0;
+    }
+    ALWAYS_INLINE int format_p(const ModifierState&, ArgumentListRefT ap) const
+    {
+        return print_hex(m_putch, m_bufptr, NextArgument<FlatPtr>()(ap), false, true, false, true, 8);
+    }
+    ALWAYS_INLINE int format_P(const ModifierState&, ArgumentListRefT ap) const
+    {
+        return print_hex(m_putch, m_bufptr, NextArgument<FlatPtr>()(ap), true, true, false, true, 8);
+    }
+    ALWAYS_INLINE int format_percent(const ModifierState&, ArgumentListRefT) const
+    {
+        m_putch(m_bufptr, '%');
+        return 1;
+    }
+    ALWAYS_INLINE int format_c(const ModifierState& state, ArgumentListRefT ap) const
+    {
+        char c = NextArgument<int>()(ap);
+        return print_string(m_putch, m_bufptr, &c, 1, state.left_pad, state.field_width, state.dot, state.fraction_length, state.has_fraction_length);
+    }
+    ALWAYS_INLINE int format_unrecognized(char format_op, const char* fmt, const ModifierState&, ArgumentListRefT) const
+    {
+        dbgln("printf_internal: Unimplemented format specifier {} (fmt: {})", format_op, fmt);
+        return 0;
+    }
+
+protected:
+    char*& m_bufptr;
+    const int& m_nwritten;
+    PutChFunc& m_putch;
+};
+
+template<typename T, typename V>
+struct VaArgNextArgument {
+    ALWAYS_INLINE T operator()(V ap) const
+    {
+        return va_arg(ap, T);
+    }
+};
 
 }
