@@ -6,13 +6,13 @@
 
 // includes
 #include <base/StringView.h>
-#include <kernel/ACPI/MultiProcessorParser.h>
-#include <kernel/Arch/PC/BIOS.h>
+#include <kernel/acpi/MultiProcessorParser.h>
+#include <kernel/arch/pc/BIOS.h>
 #include <kernel/Debug.h>
 #include <kernel/Interrupts/IOAPIC.h>
 #include <kernel/Sections.h>
 #include <kernel/StdLib.h>
-#include <kernel/VM/TypedMapping.h>
+#include <kernel/vm/TypedMapping.h>
 
 namespace Kernel {
 
@@ -82,6 +82,76 @@ UNMAP_AFTER_INIT void MultiProcessorParser::parse_configuration_table()
         }
         --entry_count;
     }
+}
+
+UNMAP_AFTER_INIT Optional<PhysicalAddress> MultiProcessorParser::find_floating_pointer()
+{
+    StringView signature("_MP_");
+    auto mp_floating_pointer = map_ebda().find_chunk_starting_with(signature, 16);
+    if (mp_floating_pointer.has_value())
+        return mp_floating_pointer;
+    return map_bios().find_chunk_starting_with(signature, 16);
+}
+
+UNMAP_AFTER_INIT Vector<u8> MultiProcessorParser::get_pci_bus_ids() const
+{
+    Vector<u8> pci_bus_ids;
+    for (auto& entry : m_bus_entries) {
+        if (!strncmp("PCI   ", entry.bus_type, strlen("PCI   ")))
+            pci_bus_ids.append(entry.bus_id);
+    }
+    return pci_bus_ids;
+}
+
+UNMAP_AFTER_INIT Vector<PCIInterruptOverrideMetadata> MultiProcessorParser::get_pci_interrupt_redirections()
+{
+    dbgln("MultiProcessor: Get PCI IOAPIC redirections");
+    Vector<PCIInterruptOverrideMetadata> overrides;
+    auto pci_bus_ids = get_pci_bus_ids();
+    for (auto& entry : m_io_interrupt_assignment_entries) {
+        for (auto id : pci_bus_ids) {
+            if (id == entry.source_bus_id) {
+
+                dbgln("Interrupts: Bus {}, polarity {}, trigger mode {}, INT {}, IOAPIC {}, IOAPIC INTIN {}",
+                    entry.source_bus_id,
+                    entry.polarity,
+                    entry.trigger_mode,
+                    entry.source_bus_irq,
+                    entry.destination_ioapic_id,
+                    entry.destination_ioapic_intin_pin);
+                overrides.empend(
+                    entry.source_bus_id,
+                    entry.polarity,
+                    entry.trigger_mode,
+                    entry.source_bus_irq,
+                    entry.destination_ioapic_id,
+                    entry.destination_ioapic_intin_pin);
+            }
+        }
+    }
+
+    for (auto& override_metadata : overrides) {
+        dbgln("Interrupts: Bus {}, polarity {}, PCI device {}, trigger mode {}, INT {}, IOAPIC {}, IOAPIC INTIN {}",
+            override_metadata.bus(),
+            override_metadata.polarity(),
+            override_metadata.pci_device_number(),
+            override_metadata.trigger_mode(),
+            override_metadata.pci_interrupt_pin(),
+            override_metadata.ioapic_id(),
+            override_metadata.ioapic_interrupt_pin());
+    }
+    return overrides;
+}
+
+UNMAP_AFTER_INIT PCIInterruptOverrideMetadata::PCIInterruptOverrideMetadata(u8 bus_id, u8 polarity, u8 trigger_mode, u8 source_irq, u32 ioapic_id, u16 ioapic_int_pin)
+    : m_bus_id(bus_id)
+    , m_polarity(polarity)
+    , m_trigger_mode(trigger_mode)
+    , m_pci_interrupt_pin(source_irq & 0b11)
+    , m_pci_device_number((source_irq >> 2) & 0b11111)
+    , m_ioapic_id(ioapic_id)
+    , m_ioapic_interrupt_pin(ioapic_int_pin)
+{
 }
 
 }
