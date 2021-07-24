@@ -89,5 +89,71 @@ void StringBuilder::clear()
     m_buffer.clear();
 }
 
+void StringBuilder::append_code_point(u32 code_point)
+{
+    if (code_point <= 0x7f) {
+        append((char)code_point);
+    } else if (code_point <= 0x07ff) {
+        append((char)(((code_point >> 6) & 0x1f) | 0xc0));
+        append((char)(((code_point >> 0) & 0x3f) | 0x80));
+    } else if (code_point <= 0xffff) {
+        append((char)(((code_point >> 12) & 0x0f) | 0xe0));
+        append((char)(((code_point >> 6) & 0x3f) | 0x80));
+        append((char)(((code_point >> 0) & 0x3f) | 0x80));
+    } else if (code_point <= 0x10ffff) {
+        append((char)(((code_point >> 18) & 0x07) | 0xf0));
+        append((char)(((code_point >> 12) & 0x3f) | 0x80));
+        append((char)(((code_point >> 6) & 0x3f) | 0x80));
+        append((char)(((code_point >> 0) & 0x3f) | 0x80));
+    } else {
+        append(0xef);
+        append(0xbf);
+        append(0xbd);
+    }
+}
+
+void StringBuilder::append(const Utf32View& utf32_view)
+{
+    for (size_t i = 0; i < utf32_view.length(); ++i) {
+        auto code_point = utf32_view.code_points()[i];
+        append_code_point(code_point);
+    }
+}
+
+void StringBuilder::append_as_lowercase(char ch)
+{
+    if (ch >= 'A' && ch <= 'Z')
+        append(ch + 0x20);
+    else
+        append(ch);
+}
+
+void StringBuilder::append_escaped_for_json(const StringView& string)
+{
+    for (auto ch : string) {
+        switch (ch) {
+        case '\e':
+            append("\\u001B");
+            break;
+        case '\b':
+            append("\\b");
+            break;
+        case '\n':
+            append("\\n");
+            break;
+        case '\t':
+            append("\\t");
+            break;
+        case '\"':
+            append("\\\"");
+            break;
+        case '\\':
+            append("\\\\");
+            break;
+        default:
+            append(ch);
+        }
+    }
+}
 
 }
