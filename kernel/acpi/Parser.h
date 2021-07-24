@@ -39,4 +39,31 @@ protected:
 
 };
 
+
+class Parser {
+public:
+    static Parser* the();
+
+    template<typename ParserType>
+    static void initialize(PhysicalAddress rsdp)
+    {
+        set_the(*new ParserType(rsdp));
+    }   
+
+    virtual PhysicalAddress find_table(const StringView& signature);
+
+protected:
+    explicit Parser(PhysicalAddress rsdp);
+    virtual ~Parser() = default;
+
+private:
+    static void set_the(Parser&);
+
+    size_t get_table_size(PhysicalAddress)
+    u8 get_table_revision(PhysicalAddress);
+    void init_fadt();
+    void init_facs();
+
+};
+
 }
