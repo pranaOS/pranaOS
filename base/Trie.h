@@ -31,7 +31,7 @@ class Trie {
     using BaseType = typename SubstituteIfVoid<DeclaredBaseType, DefaultBaseType>::Type;
 
     class ConstIterator {
-    
+
     public:
         static ConstIterator end() { return {}; }
 
@@ -47,9 +47,85 @@ class Trie {
             m_state.empend(false, node.m_children.begin(), node.m_children.end());
         }
 
+    private:
+        void skip_to_next()
+        {
+            auto& current_state = m_state.last();
+            if (current_state.did_generate_root)
+                ++current_state.it;
+            else
+                current_state.did_generate_root = true;
+            if (current_state.it == current_state.end)
+                return pop_and_get_next();
 
-    }    
-}
+            m_current_node = &*(*current_state.it).value;
+            m_state.empend(false, m_current_node->m_children.begin(), m_current_node->m_children.end());
+        }
+        void pop_and_get_next()
+        {
+            m_state.take_last();
+            if (m_state.is_empty()) {
+                m_current_node = nullptr;
+                return;
+            }
+
+            skip_to_next();
+        }
+
+        ConstIterator() = default;
+
+        struct State {
+            bool did_generate_root { false };
+            typename HashMap<ValueType, NonnullOwnPtr<Trie>, ValueTraits>::ConstIteratorType it;
+            typename HashMap<ValueType, NonnullOwnPtr<Trie>, ValueTraits>::ConstIteratorType end;
+        };
+        Vector<State> m_state;
+        const Trie* m_current_node { nullptr };
+    };
+
+public:
+    using MetadataType = MetadataT;
+
+    Trie(ValueType value, Optional<MetadataType> metadata)
+        : m_value(move(value))
+        , m_metadata(move(metadata))
+    {
+    }
+
+    template<typename It>
+    BaseType& traverse_until_last_accessible_node(It& it, const It& end)
+    {
+        Trie* node = this;
+        for (; it < end; ++it) {
+            auto next_it = node->m_children.find(*it);
+            if (next_it == node->m_children.end())
+                return static_cast<BaseType&>(*node);
+            node = &*(*next_it).value;
+        }
+        return static_cast<BaseType&>(*node);
+    }
+
+    template<typename It>
+    const BaseType& traverse_until_last_accessible_node(It& it, const It& end) const { return const_cast<Trie*>(this)->traverse_until_last_accessible_node(it, end); }
+
+    template<typename It>
+    BaseType& traverse_until_last_accessible_node(const It& begin, const It& end)
+    {
+        auto it = begin;
+        return const_cast<Trie*>(this)->traverse_until_last_accessible_node(it, end);
+    }
+
+    template<typename It>
+    const BaseType& traverse_until_last_accessible_node(const It& begin, const It& end) const
+    {
+        auto it = begin;
+        return const_cast<Trie*>(this)->traverse_until_last_accessible_node(it, end);
+    }
+
+    Optional<MetadataType> metadata() const requires(!IsNullPointer<MetadataType>) { return m_metadata; }
+    void set_metadata(MetadataType metadata) requires(!IsNullPointer<MetadataType>) { m_metadata = move(metadata); }
+    const MetadataType& metadata_value() const requires(!IsNullPointer<MetadataType>) { return m_metadata.value(); }
+
 
 }
 
