@@ -79,4 +79,43 @@ struct ShiftOutOfBoundsData {
     const TypeDescriptor& rhs_type;
 };
 
+struct OutOfBoundsData {
+    SourceLocation location;
+    const TypeDescriptor& array_type;
+    const TypeDescriptor& index_type;
+};
+
+struct TypeMismatchData {
+    SourceLocation location;
+    const TypeDescriptor& type;
+    u8 log_alignment;
+    u8 type_check_kind;
+};
+
+struct AlignmentAssumptionData {
+    SourceLocation location;
+    SourceLocation assumption_location;
+    const TypeDescriptor& type;
+};
+
+struct UnreachableData {
+    SourceLocation location;
+};
+
+struct ImplicitConversionData {
+    SourceLocation location;
+    const TypeDescriptor& from_type;
+    const TypeDescriptor& to_type;
+    unsigned char kind;
+};
+
+struct InvalidBuiltinData {
+    SourceLocation location;
+    unsigned char kind;
+};
+
+struct PointerOverflowData {
+    SourceLocation location;
+};
+
 }
