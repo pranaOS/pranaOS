@@ -54,4 +54,21 @@ public:
         return count;
     }
 
+    static bool compare(const T* a, const T* b, size_t count)
+    {
+        if (!count)
+            return true;
+
+        if constexpr (Traits<T>::is_trivial())
+            return !__builtin_memcmp(a, b, count * sizeof(T));
+
+        for (size_t i = 0; i < count; ++i) {
+            if (a[i] != b[i])
+                return false;
+        }
+
+        return true;
+    }
+};
+
 }
