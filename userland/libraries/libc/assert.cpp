@@ -18,18 +18,24 @@ extern "C" {
 
 extern bool __stdio_is_initialized;
 #ifndef NDEBUG
-void __asertion_failed(const char *msg)
+void __assertion_failed(const char* msg)
 {
     dbgln("ASSERTION FAILED: {}", msg);
+    if (__stdio_is_initialized)
+        warnln("ASSERTION FAILED: {}", msg);
 
-    abort()
+    Syscall::SC_set_coredump_metadata_params params {
+        { "assertion", strlen("assertion") },
+        { msg, strlen(msg) },
+    };
+    syscall(SC_set_coredump_metadata, &params);
+    abort();
 }
 #endif
-
 }
 
 void _abort()
 {
     asm volatile("ud2");
-    builtin_unreachable();
+    __builtin_unreachable();
 }
