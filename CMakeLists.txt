@@ -109,28 +109,28 @@ if (ENABLE_ALL_DEBUG_FACILITIES)
 endif()
 
 if (ENABLE_ALL_THE_DEBUG_MACROS)
-    include(${CMAKE_SOURCE_DIR}/Meta/CMake/all_the_debug_macros.cmake)
+    include(${CMAKE_SOURCE_DIR}/meta/CMake/all_the_debug_macros.cmake)
 endif(ENABLE_ALL_THE_DEBUG_MACROS)
 
-configure_file(AK/Debug.h.in AK/Debug.h @ONLY)
-configure_file(Kernel/Debug.h.in Kernel/Debug.h @ONLY)
+configure_file(base/Debug.h.in AK/Debug.h @ONLY)
+configure_file(kernel/Debug.h.in Kernel/Debug.h @ONLY)
 
-include_directories(Userland/Libraries)
+include_directories(userland/libraries)
 include_directories(.)
 include_directories(${CMAKE_BINARY_DIR})
 
-add_subdirectory(Meta/Lagom)
+add_subdirectory(meta/Lagom)
 
 if (ENABLE_UNDEFINED_SANITIZER)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=undefined")
 endif()
 
-add_subdirectory(Userland/DevTools/IPCCompiler)
-add_subdirectory(Userland/DevTools/StateMachineGenerator)
-add_subdirectory(Userland/Libraries/LibWeb/CodeGenerators)
-add_subdirectory(Meta/CMake/ConfigureComponents)
+add_subdirectory(userland/devtools/ipccomipler)
+add_subdirectory(userland/devtools/statemachinegenerator)
+add_subdirectory(userland/libraries/libweb/CodeGenerators)
+add_subdirectory(meta/CMake/ConfigureComponents)
 
-set(write_if_different ${CMAKE_SOURCE_DIR}/Meta/write-only-on-difference.sh)
+set(write_if_different ${CMAKE_SOURCE_DIR}/meta/write-only-on-difference.sh)
 
 find_program(CCACHE_PROGRAM ccache)
 if(CCACHE_PROGRAM)
@@ -147,7 +147,7 @@ set(GCC_VERSION 11.1.0)
 if (${CMAKE_HOST_SYSTEM_NAME} MATCHES pranaOS)
     message("Good job on building cmake!")
 else()
-    set(TOOLCHAIN_ROOT ${CMAKE_SOURCE_DIR}/Toolchain/Local/${PRANAOS_ARCH}/)
+    set(TOOLCHAIN_ROOT ${CMAKE_SOURCE_DIR}/toolchain/Local/${PRANAOS_ARCH}/)
     set(TOOLCHAIN_PATH ${TOOLCHAIN_ROOT}/bin)
     set(TOOLCHAIN_PREFIX ${TOOLCHAIN_PATH}/${PRANAOS_ARCH}-pc-pranaos-)
 
@@ -233,17 +233,17 @@ endif()
 
 add_link_options(--sysroot ${CMAKE_BINARY_DIR}/Root)
 
-include_directories(Userland/Libraries/LibC)
-include_directories(Userland/Libraries/LibCrypt)
-include_directories(Userland/Libraries/LibM)
-include_directories(Userland/Libraries/LibPthread)
-include_directories(Userland/Libraries/LibSystem)
-include_directories(Userland/Services)
-include_directories(Userland)
+include_directories(userland/libraries/libc)
+include_directories(userland/libraries/libcrypt)
+include_directories(userland/libraries/libm)
+include_directories(userland/libraries/libpthread)
+include_directories(userland/libraries/libsystem)
+include_directories(userland/services)
+include_directories(userland)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
-include_directories(${CMAKE_CURRENT_BINARY_DIR}/Userland/Services)
-include_directories(${CMAKE_CURRENT_BINARY_DIR}/Userland/Libraries)
-include_directories(${CMAKE_CURRENT_BINARY_DIR}/Userland)
+include_directories(${CMAKE_CURRENT_BINARY_DIR}/userland/services)
+include_directories(${CMAKE_CURRENT_BINARY_DIR}/userland/libraries)
+include_directories(${CMAKE_CURRENT_BINARY_DIR}/userland)
 
 if (ENABLE_UNDEFINED_SANITIZER)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-sanitize=vptr")
@@ -252,17 +252,17 @@ endif()
 add_custom_target(components ALL)
 option(BUILD_EVERYTHING "Build all optional components" ON)
 
-include(${CMAKE_SOURCE_DIR}/Meta/CMake/utils.cmake)
+include(${CMAKE_SOURCE_DIR}/meta/CMake/utils.cmake)
 
 pranaos_component(
-    Tests
+    tests
     RECOMMENDED
 )
 
-add_subdirectory(AK)
-add_subdirectory(Kernel)
-add_subdirectory(Userland)
-add_subdirectory(Tests)
+add_subdirectory(base)
+add_subdirectory(kernel)
+add_subdirectory(userland)
+add_subdirectory(tests)
 
 export_components("${CMAKE_BINARY_DIR}/components.ini")
 
