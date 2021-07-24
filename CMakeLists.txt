@@ -54,27 +54,27 @@ add_custom_target(image
     DEPENDS qemu-image
 )
 add_custom_target(qemu-image
-    COMMAND ${CMAKE_COMMAND} -E env "PRANAOS_SOURCE_DIR=${CMAKE_SOURCE_DIR}" "PRANAOS_ARCH=${PRANAOS_ARCH}" ${CMAKE_SOURCE_DIR}/Meta/build-image-qemu.sh
+    COMMAND ${CMAKE_COMMAND} -E env "PRANAOS_SOURCE_DIR=${CMAKE_SOURCE_DIR}" "PRANAOS_ARCH=${PRANAOS_ARCH}" ${CMAKE_SOURCE_DIR}/meta/build-image-qemu.sh
     BYPRODUCTS ${CMAKE_BINARY_DIR}/_disk_image
     USES_TERMINAL
 )
 add_custom_target(grub-image
-    COMMAND ${CMAKE_COMMAND} -E env "PRANAOS_SOURCE_DIR=${CMAKE_SOURCE_DIR}" "PRANAOS_ARCH=${PRANAOS_ARCH}" ${CMAKE_SOURCE_DIR}/Meta/build-image-grub.sh
+    COMMAND ${CMAKE_COMMAND} -E env "PRANAOS_SOURCE_DIR=${CMAKE_SOURCE_DIR}" "PRANAOS_ARCH=${PRANAOS_ARCH}" ${CMAKE_SOURCE_DIR}/meta/build-image-grub.sh
     BYPRODUCTS ${CMAKE_BINARY_DIR}/grub_disk_image
     USES_TERMINAL
 )
 add_custom_target(extlinux-image
-    COMMAND ${CMAKE_COMMAND} -E env "PRANAOS_SOURCE_DIR=${CMAKE_SOURCE_DIR}" "PRANAOS_ARCH=${PRANAOS_ARCH}" ${CMAKE_SOURCE_DIR}/Meta/build-image-extlinux.sh
+    COMMAND ${CMAKE_COMMAND} -E env "PRANAOS_SOURCE_DIR=${CMAKE_SOURCE_DIR}" "PRANAOS_ARCH=${PRANAOS_ARCH}" ${CMAKE_SOURCE_DIR}/meta/build-image-extlinux.sh
     BYPRODUCTS ${CMAKE_BINARY_DIR}/extlinux_disk_image
     USES_TERMINAL
 )
 
 add_custom_target(lint-shell-scripts
-    COMMAND ${CMAKE_SOURCE_DIR}/Meta/lint-shell-scripts.sh
+    COMMAND ${CMAKE_SOURCE_DIR}/meta/lint-shell-scripts.sh
     USES_TERMINAL
 )
 add_custom_target(check-style
-    COMMAND ${CMAKE_SOURCE_DIR}/Meta/check-style.sh
+    COMMAND ${CMAKE_SOURCE_DIR}/meta/check-style.sh
     USES_TERMINAL
 )
 
