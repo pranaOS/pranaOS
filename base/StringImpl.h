@@ -21,6 +21,8 @@ enum ShouldChomp {
     Chomp
 };
 
+size_t allocation_size_for_stringimpl(size_t length);
+
 class StringImpl : public RefCounted<StringImpl> {
 public:
     static NonnullRefPtr<StringImpl> create_uninitialized(size_t length, char*& buffer);
@@ -42,9 +44,8 @@ public:
 
     ~StringImpl();
 
-    size_t length() const { return length; }
-
-       const char* characters() const { return &m_inline_buffer[0]; }
+    size_t length() const { return m_length; }
+    const char* characters() const { return &m_inline_buffer[0]; }
 
     ALWAYS_INLINE ReadonlyBytes bytes() const { return { characters(), length() }; }
     ALWAYS_INLINE StringView view() const { return { characters(), length() }; }
@@ -87,6 +88,35 @@ private:
         m_inline_buffer[0] = '\0';
     }
 
+    enum ConstructWithInlineBufferTag {
+        ConstructWithInlineBuffer
+    };
+    StringImpl(ConstructWithInlineBufferTag, size_t length);
+
+    void compute_hash() const;
+
+    size_t m_length { 0 };
+    mutable unsigned m_hash { 0 };
+    mutable bool m_has_hash { false };
+    mutable bool m_fly { false };
+    char m_inline_buffer[0];
+};
+
+inline size_t allocation_size_for_stringimpl(size_t length)
+{
+    return sizeof(StringImpl) + (sizeof(char) * length) + sizeof(char);
+}
+
+template<>
+struct Formatter<StringImpl> : Formatter<StringView> {
+    void format(FormatBuilder& builder, const StringImpl& value)
+    {
+        Formatter<StringView>::format(builder, { value.characters(), value.length() });
+    }
 };
 
 }
+
+using Base::Chomp;
+using Base::NoChomp;
+using Base::StringImpl;
