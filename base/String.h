@@ -74,7 +74,7 @@ public:
     {
     }
 
-        String(const FlyString&);
+    String(const FlyString&);
 
     [[nodiscard]] static String repeated(char, size_t count);
     [[nodiscard]] static String repeated(const StringView&, size_t count);
@@ -104,7 +104,7 @@ public:
 
     [[nodiscard]] bool is_whitespace() const { return StringUtils::is_whitespace(*this); }
 
-    #ifndef KERNEL
+#ifndef KERNEL
     [[nodiscard]] String trim(const StringView& characters, TrimMode mode = TrimMode::Both) const
     {
         return StringUtils::trim(view(), characters, mode);
@@ -167,7 +167,7 @@ public:
     [[nodiscard]] bool starts_with(char) const;
     [[nodiscard]] bool ends_with(char) const;
 
-        bool operator==(const String&) const;
+    bool operator==(const String&) const;
     bool operator!=(const String& other) const { return !(*this == other); }
 
     bool operator==(const StringView&) const;
@@ -273,7 +273,29 @@ public:
 
 private:
     RefPtr<StringImpl> m_impl;
-
 };
 
+template<>
+struct Traits<String> : public GenericTraits<String> {
+    static unsigned hash(const String& s) { return s.impl() ? s.impl()->hash() : 0; }
+};
+
+struct CaseInsensitiveStringTraits : public Traits<String> {
+    static unsigned hash(const String& s) { return s.impl() ? s.to_lowercase().impl()->hash() : 0; }
+    static bool equals(const String& a, const String& b) { return a.to_lowercase() == b.to_lowercase(); }
+};
+
+bool operator<(const char*, const String&);
+bool operator>=(const char*, const String&);
+bool operator>(const char*, const String&);
+bool operator<=(const char*, const String&);
+
+String escape_html_entities(const StringView& html);
+
+InputStream& operator>>(InputStream& stream, String& string);
+
 }
+
+using Base::CaseInsensitiveStringTraits;
+using Base::escape_html_entities;
+using Base::String;
