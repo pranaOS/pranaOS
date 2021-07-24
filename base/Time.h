@@ -23,7 +23,7 @@ concept TimeSpecType = requires(T t)
 
 namespace Base {
 
-unsigned day_of_weak(int year, unsigned month, int day);
+unsigned day_of_week(int year, unsigned month, int day);
 
 int day_of_year(int year, unsigned month, int day);
 
@@ -70,14 +70,13 @@ public:
     }
 
 private:
+
     ALWAYS_INLINE static constexpr i64 sane_mod(i64& numerator, i64 denominator)
     {
         VERIFY(2 <= denominator && denominator <= 1'000'000'000);
-        
         i64 dividend = numerator / denominator;
         numerator %= denominator;
         if (numerator < 0) {
-            
             numerator += denominator;
             dividend -= 1;
         }
@@ -117,12 +116,12 @@ public:
     i64 to_truncated_seconds() const;
     i64 to_truncated_milliseconds() const;
     i64 to_truncated_microseconds() const;
+
     i64 to_seconds() const;
     i64 to_milliseconds() const;
     i64 to_microseconds() const;
     i64 to_nanoseconds() const;
     timespec to_timespec() const;
-
     timeval to_timeval() const;
 
     bool is_zero() const { return !m_seconds && !m_nanoseconds; }
@@ -150,4 +149,132 @@ private:
     i64 m_seconds { 0 };
     u32 m_nanoseconds { 0 }; 
 };
+
+template<typename TimevalType>
+inline void timeval_sub(const TimevalType& a, const TimevalType& b, TimevalType& result)
+{
+    result.tv_sec = a.tv_sec - b.tv_sec;
+    result.tv_usec = a.tv_usec - b.tv_usec;
+    if (result.tv_usec < 0) {
+        --result.tv_sec;
+        result.tv_usec += 1'000'000;
+    }
 }
+
+template<typename TimevalType>
+inline void timeval_add(const TimevalType& a, const TimevalType& b, TimevalType& result)
+{
+    result.tv_sec = a.tv_sec + b.tv_sec;
+    result.tv_usec = a.tv_usec + b.tv_usec;
+    if (result.tv_usec >= 1'000'000) {
+        ++result.tv_sec;
+        result.tv_usec -= 1'000'000;
+    }
+}
+
+template<typename TimespecType>
+inline void timespec_sub(const TimespecType& a, const TimespecType& b, TimespecType& result)
+{
+    result.tv_sec = a.tv_sec - b.tv_sec;
+    result.tv_nsec = a.tv_nsec - b.tv_nsec;
+    if (result.tv_nsec < 0) {
+        --result.tv_sec;
+        result.tv_nsec += 1'000'000'000;
+    }
+}
+
+template<typename TimespecType>
+inline void timespec_add(const TimespecType& a, const TimespecType& b, TimespecType& result)
+{
+    result.tv_sec = a.tv_sec + b.tv_sec;
+    result.tv_nsec = a.tv_nsec + b.tv_nsec;
+    if (result.tv_nsec >= 1000'000'000) {
+        ++result.tv_sec;
+        result.tv_nsec -= 1000'000'000;
+    }
+}
+
+template<typename TimespecType, typename TimevalType>
+inline void timespec_add_timeval(const TimespecType& a, const TimevalType& b, TimespecType& result)
+{
+    result.tv_sec = a.tv_sec + b.tv_sec;
+    result.tv_nsec = a.tv_nsec + b.tv_usec * 1000;
+    if (result.tv_nsec >= 1000'000'000) {
+        ++result.tv_sec;
+        result.tv_nsec -= 1000'000'000;
+    }
+}
+
+template<typename TimevalType, typename TimespecType>
+inline void timeval_to_timespec(const TimevalType& tv, TimespecType& ts)
+{
+    ts.tv_sec = tv.tv_sec;
+    ts.tv_nsec = tv.tv_usec * 1000;
+}
+
+template<typename TimespecType, typename TimevalType>
+inline void timespec_to_timeval(const TimespecType& ts, TimevalType& tv)
+{
+    tv.tv_sec = ts.tv_sec;
+    tv.tv_usec = ts.tv_nsec / 1000;
+}
+
+template<TimeSpecType T>
+inline bool operator>=(const T& a, const T& b)
+{
+    return a.tv_sec > b.tv_sec || (a.tv_sec == b.tv_sec && a.tv_nsec >= b.tv_nsec);
+}
+
+template<TimeSpecType T>
+inline bool operator>(const T& a, const T& b)
+{
+    return a.tv_sec > b.tv_sec || (a.tv_sec == b.tv_sec && a.tv_nsec > b.tv_nsec);
+}
+
+template<TimeSpecType T>
+inline bool operator<(const T& a, const T& b)
+{
+    return a.tv_sec < b.tv_sec || (a.tv_sec == b.tv_sec && a.tv_nsec < b.tv_nsec);
+}
+
+template<TimeSpecType T>
+inline bool operator<=(const T& a, const T& b)
+
+{
+    return a.tv_sec < b.tv_sec || (a.tv_sec == b.tv_sec && a.tv_nsec <= b.tv_nsec);
+}
+
+template<TimeSpecType T>
+inline bool operator==(const T& a, const T& b)
+{
+    return a.tv_sec == b.tv_sec && a.tv_nsec == b.tv_nsec;
+}
+
+template<TimeSpecType T>
+inline bool operator!=(const T& a, const T& b)
+{
+    return a.tv_sec != b.tv_sec || a.tv_nsec != b.tv_nsec;
+}
+
+}
+
+using Base::day_of_week;
+using Base::day_of_year;
+using Base::days_in_month;
+using Base::days_in_year;
+using Base::is_leap_year;
+using Base::Time;
+using Base::timespec_add;
+using Base::timespec_add_timeval;
+using Base::timespec_sub;
+using Base::timespec_to_timeval;
+using Base::timeval_add;
+using Base::timeval_sub;
+using Base::timeval_to_timespec;
+using Base::years_to_days_since_epoch;
+using Base::operator<=;
+using Base::operator<;
+using Base::operator>;
+using Base::operator>=;
+using Base::operator==;
+using Base::operator!=;
