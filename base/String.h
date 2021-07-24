@@ -104,6 +104,69 @@ public:
 
     [[nodiscard]] bool is_whitespace() const { return StringUtils::is_whitespace(*this); }
 
+    #ifndef KERNEL
+    [[nodiscard]] String trim(const StringView& characters, TrimMode mode = TrimMode::Both) const
+    {
+        return StringUtils::trim(view(), characters, mode);
+    }
+
+    [[nodiscard]] String trim_whitespace(TrimMode mode = TrimMode::Both) const
+    {
+        return StringUtils::trim_whitespace(view(), mode);
+    }
+#endif
+
+    [[nodiscard]] bool equals_ignoring_case(const StringView&) const;
+
+    [[nodiscard]] bool contains(const StringView&, CaseSensitivity = CaseSensitivity::CaseSensitive) const;
+
+    [[nodiscard]] Vector<String> split_limit(char separator, size_t limit, bool keep_empty = false) const;
+    [[nodiscard]] Vector<String> split(char separator, bool keep_empty = false) const;
+    [[nodiscard]] Vector<StringView> split_view(char separator, bool keep_empty = false) const;
+
+    [[nodiscard]] Optional<size_t> find(char needle, size_t start = 0) const { return StringUtils::find(*this, needle, start); }
+    [[nodiscard]] Optional<size_t> find(StringView const& needle, size_t start = 0) const { return StringUtils::find(*this, needle, start); }
+    [[nodiscard]] Optional<size_t> find_last(char needle) const { return StringUtils::find_last(*this, needle); }
+    [[nodiscard]] Vector<size_t> find_all(StringView const& needle) const { return StringUtils::find_all(*this, needle); }
+    using SearchDirection = StringUtils::SearchDirection;
+    [[nodiscard]] Optional<size_t> find_any_of(StringView const& needles, SearchDirection direction) const { return StringUtils::find_any_of(*this, needles, direction); }
+
+    [[nodiscard]] String substring(size_t start, size_t length) const;
+    [[nodiscard]] String substring(size_t start) const;
+    [[nodiscard]] StringView substring_view(size_t start, size_t length) const;
+    [[nodiscard]] StringView substring_view(size_t start) const;
+
+    [[nodiscard]] bool is_null() const { return !m_impl; }
+    [[nodiscard]] ALWAYS_INLINE bool is_empty() const { return length() == 0; }
+    [[nodiscard]] ALWAYS_INLINE size_t length() const { return m_impl ? m_impl->length() : 0; }
+    [[nodiscard]] ALWAYS_INLINE const char* characters() const { return m_impl ? m_impl->characters() : nullptr; }
+
+    [[nodiscard]] bool copy_characters_to_buffer(char* buffer, size_t buffer_size) const;
+
+    [[nodiscard]] ALWAYS_INLINE ReadonlyBytes bytes() const
+    {
+        if (m_impl) {
+            return m_impl->bytes();
+        }
+        return {};
+    }
+
+    [[nodiscard]] ALWAYS_INLINE const char& operator[](size_t i) const
+    {
+        VERIFY(!is_null());
+        return (*m_impl)[i];
+    }
+
+    using ConstIterator = SimpleIterator<const String, const char>;
+
+    [[nodiscard]] constexpr ConstIterator begin() const { return ConstIterator::begin(*this); }
+    [[nodiscard]] constexpr ConstIterator end() const { return ConstIterator::end(*this); }
+
+    [[nodiscard]] bool starts_with(const StringView&, CaseSensitivity = CaseSensitivity::CaseSensitive) const;
+    [[nodiscard]] bool ends_with(const StringView&, CaseSensitivity = CaseSensitivity::CaseSensitive) const;
+    [[nodiscard]] bool starts_with(char) const;
+    [[nodiscard]] bool ends_with(char) const;
+
 };
 
 }
