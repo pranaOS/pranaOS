@@ -58,4 +58,57 @@ UNMAP_AFTER_INIT ACPISysFSComponent::ACPISysFSComponent(String name, PhysicalAdd
 {
 }
 
+UNMAP_AFTER_INIT void ACPISysFSDirectory::initialize()
+{
+    auto acpi_directory = adopt_ref(*new (nothrow) ACPISysFSDirectory());
+    SysFSComponentRegistry::the().register_new_component(acpi_directory);
+}
+
+UNMAP_AFTER_INIT ACPISysFSDirectory::ACPISysFSDirectory()
+    : SysFSDirectory("acpi", SysFSComponentRegistry::the().root_directory())
+{
+    NonnullRefPtrVector<SysFSComponent> components;
+    size_t ssdt_count = 0;
+    ACPI::Parser::the()->enumerate_static_tables([&](const StringView& signature, PhysicalAddress p_table, size_t length) {
+        if (signature == "SSDT") {
+            components.append(ACPISysFSComponent::create(String::formatted("{:4s}{}", signature.characters_without_null_termination(), ssdt_count), p_table, length));
+            ssdt_count++;
+            return;
+        }
+        components.append(ACPISysFSComponent::create(signature, p_table, length));
+    });
+    m_components = components;
+
+    auto rsdp = map_typed<Structures::RSDPDescriptor20>(ACPI::Parser::the()->rsdp());
+    m_components.append(ACPISysFSComponent::create("RSDP", ACPI::Parser::the()->rsdp(), rsdp->base.revision == 0 ? sizeof(Structures::RSDPDescriptor) : rsdp->length));
+
+    auto main_system_description_table = map_typed<Structures::SDTHeader>(ACPI::Parser::the()->main_system_description_table());
+    if (ACPI::Parser::the()->is_xsdt_supported()) {
+        m_components.append(ACPISysFSComponent::create("XSDT", ACPI::Parser::the()->main_system_description_table(), main_system_description_table->length));
+    } else {
+        m_components.append(ACPISysFSComponent::create("RSDT", ACPI::Parser::the()->main_system_description_table(), main_system_description_table->length));
+    }
+}
+
+void Parser::enumerate_static_tables(Function<void(const StringView&, PhysicalAddress, size_t)> callback)
+{
+    for (auto& p_table : m_std_pointers) {
+        auto table = map_typed<Structures::SDTHeader>(p_table);
+        callback({  table->sig, 4 }, p_table, table->length);
+
+    }
+}
+
+void Parser::set_the(Parser& parser)
+{
+    VERIFY(!s_acpi_parser);
+    s_acpi_parser = &parser;
+}
+
+
+static bool match_table_signature(PhysicalAddress table_header, cosnt StringView& signature)
+static PhysicalAddress search_table_in_xsdt(PhysicalAddress xsdt, const StringView& signature);
+static PhysicalAddress search_table_in_rsdt(PhysicalAddress rsdt, const StringView& signature);
+static bool validate_table(const Structures::SDTHeader&, size_t length);
+
 }
