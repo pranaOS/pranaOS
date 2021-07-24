@@ -126,7 +126,107 @@ public:
     void set_metadata(MetadataType metadata) requires(!IsNullPointer<MetadataType>) { m_metadata = move(metadata); }
     const MetadataType& metadata_value() const requires(!IsNullPointer<MetadataType>) { return m_metadata.value(); }
 
+    const ValueType& value() const { return m_value; }
+    ValueType& value() { return m_value; }
+
+    Trie& ensure_child(ValueType value, Optional<MetadataType> metadata = {})
+    {
+        auto it = m_children.find(value);
+        if (it == m_children.end()) {
+            auto node = make<Trie>(value, move(metadata));
+            auto& node_ref = *node;
+            m_children.set(move(value), move(node));
+            return static_cast<BaseType&>(node_ref);
+        }
+
+        auto& node_ref = *it->value;
+        if (metadata.has_value())
+            node_ref.m_metadata = move(metadata);
+        return static_cast<BaseType&>(node_ref);
+    }
+
+    template<typename It, typename ProvideMetadataFunction>
+    BaseType& insert(
+        It& it, const It& end, MetadataType metadata, ProvideMetadataFunction provide_missing_metadata) requires(!IsNullPointer<MetadataType>)
+    {
+        Trie* last_root_node = &traverse_until_last_accessible_node(it, end);
+        for (; it != end; ++it)
+            last_root_node = static_cast<Trie*>(&last_root_node->ensure_child(*it, provide_missing_metadata(static_cast<BaseType&>(*last_root_node), it)));
+        last_root_node->set_metadata(move(metadata));
+        return static_cast<BaseType&>(*last_root_node);
+    }
+
+    template<typename It>
+    BaseType& insert(It& it, const It& end) requires(IsNullPointer<MetadataType>)
+    {
+        Trie* last_root_node = &traverse_until_last_accessible_node(it, end);
+        for (; it != end; ++it)
+            last_root_node = static_cast<Trie*>(&last_root_node->ensure_child(*it, {}));
+        return static_cast<BaseType&>(*last_root_node);
+    }
+
+    template<typename It, typename ProvideMetadataFunction>
+    BaseType& insert(
+        const It& begin, const It& end, MetadataType metadata, ProvideMetadataFunction provide_missing_metadata) requires(!IsNullPointer<MetadataType>)
+    {
+        auto it = begin;
+        return insert(it, end, move(metadata), move(provide_missing_metadata));
+    }
+
+    template<typename It>
+    BaseType& insert(const It& begin, const It& end) requires(IsNullPointer<MetadataType>)
+    {
+        auto it = begin;
+        return insert(it, end);
+    }
+
+    HashMap<ValueType, NonnullOwnPtr<Trie>, ValueTraits>& children() { return m_children; }
+    HashMap<ValueType, NonnullOwnPtr<Trie>, ValueTraits> const& children() const { return m_children; }
+
+    ConstIterator begin() const { return ConstIterator(*this); }
+    ConstIterator end() const { return ConstIterator::end(); }
+
+    [[nodiscard]] bool is_empty() const { return m_children.is_empty(); }
+    void clear() { m_children.clear(); }
+
+    BaseType deep_copy()
+    {
+        Trie root(m_value, m_metadata);
+        for (auto& it : m_children)
+            root.m_children.set(it.key, make<Trie>(it.value->deep_copy()));
+        return static_cast<BaseType&&>(move(root));
+    }
+
+private:
+    ValueType m_value;
+    Optional<MetadataType> m_metadata;
+    HashMap<ValueType, NonnullOwnPtr<Trie>, ValueTraits> m_children;
+};
+
+template<typename BaseType, typename DefaultBaseType, typename ValueType, typename ValueTraits>
+class Trie<BaseType, DefaultBaseType, ValueType, void, ValueTraits> : public Trie<BaseType, DefaultBaseType, ValueType, decltype(nullptr), ValueTraits> {
+    using Trie<BaseType, DefaultBaseType, ValueType, decltype(nullptr), ValueTraits>::Trie;
+};
 
 }
 
+template<typename ValueType, typename MetadataT = void, typename ValueTraits = Traits<ValueType>, typename BaseT = void>
+class Trie : public Detail::Trie<BaseT, Trie<ValueType, MetadataT, ValueTraits>, ValueType, MetadataT, ValueTraits> {
+public:
+    using DetailTrie = Detail::Trie<BaseT, Trie<ValueType, MetadataT, ValueTraits>, ValueType, MetadataT, ValueTraits>;
+    using MetadataType = typename DetailTrie::MetadataType;
+
+    Trie(ValueType value, MetadataType metadata) requires(!IsVoid<MetadataType> && !IsNullPointer<MetadataType>)
+        : DetailTrie(move(value), move(metadata))
+    {
+    }
+
+    explicit Trie(ValueType value)
+        : DetailTrie(move(value), Optional<MetadataType> {})
+    {
+    }
+};
+
 }
+
+using Base::Trie;
