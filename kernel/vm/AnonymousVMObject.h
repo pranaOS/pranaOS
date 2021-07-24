@@ -18,7 +18,7 @@ namespace Kernel {
 
 class AnonymousVMObject final : public VMObject {
     friend class PurgeablePageRanges;
-    
+
 public:
     virtual ~AnonymousVMObject() override;
 
@@ -39,6 +39,78 @@ public:
     int purge();
 
     bool is_any_volatile() const;
-}
+
+        template<IteratorFunction<VolatilePageRange const&> F>
+    IterationDecision for_each_volatile_range(F f) const
+    {
+        VERIFY(m_lock.is_locked());
+        for (auto* purgeable_range : m_purgeable_ranges) {
+            ScopedSpinLock purgeable_lock(purgeable_range->m_volatile_ranges_lock);
+            for (auto& r1 : purgeable_range->volatile_ranges().ranges()) {
+                VolatilePageRange range(r1);
+                for (auto* purgeable_range2 : m_purgeable_ranges) {
+                    if (purgeable_range2 == purgeable_range)
+                        continue;
+                    ScopedSpinLock purgeable2_lock(purgeable_range2->m_volatile_ranges_lock);
+                    if (purgeable_range2->is_empty()) {
+
+                        return IterationDecision::Continue;
+                    }
+                    for (auto const& r2 : purgeable_range2->volatile_ranges().ranges()) {
+                        range = range.intersected(r2);
+                        if (range.is_empty())
+                            break;
+                    }
+                    if (range.is_empty())
+                        break;
+                }
+                if (range.is_empty())
+                    continue;
+                IterationDecision decision = f(range);
+                if (decision != IterationDecision::Continue)
+                    return decision;
+            }
+        }
+        return IterationDecision::Continue;
+    }
+
+    template<IteratorFunction<VolatilePageRange const&> F>
+    IterationDecision for_each_nonvolatile_range(F f) const
+    {
+        size_t base = 0;
+        for_each_volatile_range([&](VolatilePageRange const& volatile_range) {
+            if (volatile_range.base == base)
+                return IterationDecision::Continue;
+            IterationDecision decision = f(VolatilePageRange { base, volatile_range.base - base });
+            if (decision != IterationDecision::Continue)
+                return decision;
+            base = volatile_range.base + volatile_range.count;
+            return IterationDecision::Continue;
+        });
+        if (base < page_count())
+            return f(VolatilePageRange { base, page_count() - base });
+        return IterationDecision::Continue;
+    }
+
+    template<VoidFunction<VolatilePageRange const&> F>
+    IterationDecision for_each_volatile_range(F f) const
+    {
+        return for_each_volatile_range([&](auto& range) {
+            f(range);
+            return IterationDecision::Continue;
+        });
+    }
+
+    template<VoidFunction<VolatilePageRange const&> F>
+    IterationDecision for_each_nonvolatile_range(F f) const
+    {
+        return for_each_nonvolatile_range([&](auto range) {
+            f(move(range));
+            return IterationDecision::Continue;
+        });
+    }
+
+
+};
     
 }
