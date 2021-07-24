@@ -68,5 +68,55 @@ bool String::operator>(const String& other) const
     return strcmp(characters(), other.characters()) > 0;
 }
 
+bool String::copy_characters_to_buffer(char* buffer, size_t buffer_size) const
+{
+    VERIFY(buffer_size > 0);
+
+    size_t characters_to_copy = min(length(), buffer_size - 1);
+    __builtin_memcpy(buffer, characters(), characters_to_copy);
+    buffer[characters_to_copy] = 0;
+
+    return characters_to_copy == length();
+}
+
+String string::isolated_copy() const
+{
+    if (!m_impl)
+        return {};
+    if (!m_impl->length())
+        return empty();
+    char* buffer;
+    auto impl = StringImpl::create_uninitalize(length(), buffer)
+    memcpy(buffer, m_impl->characters(), m_impl->length());
+    return String(move(*impl));
+}
+
+String String::substring(size_t start) const
+{
+    VERIFY(m_impl);
+    VERIFY(start <= length());
+    return { characters() + start, length() - start };
+}
+
+StringView String::substring_view(size_t start, size_t length) const
+{
+    VERIFY(m_impl);
+    VERIFY(!Checked<size_t>::addition_would_overflow(start, length));
+    VERIFY(start + length <= m_impl->length());
+    return { characters() + start, length };
+}
+
+StringView String::substring_view(size_t start) const
+{
+    VERIFY(m_impl);
+    VERIFY(start <= length());
+    return { characters() + start, length() - start };
+}
+
+Vector<String> String::split(char separator, bool keep_empty) const
+{
+    return split_limit(separator, 0, keep_empty);
+}
+
 
 }
