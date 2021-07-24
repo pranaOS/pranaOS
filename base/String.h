@@ -167,6 +167,113 @@ public:
     [[nodiscard]] bool starts_with(char) const;
     [[nodiscard]] bool ends_with(char) const;
 
+        bool operator==(const String&) const;
+    bool operator!=(const String& other) const { return !(*this == other); }
+
+    bool operator==(const StringView&) const;
+    bool operator!=(const StringView& other) const { return !(*this == other); }
+
+    bool operator==(const FlyString&) const;
+    bool operator!=(const FlyString& other) const { return !(*this == other); }
+
+    bool operator<(const String&) const;
+    bool operator<(const char*) const;
+    bool operator>=(const String& other) const { return !(*this < other); }
+    bool operator>=(const char* other) const { return !(*this < other); }
+
+    bool operator>(const String&) const;
+    bool operator>(const char*) const;
+    bool operator<=(const String& other) const { return !(*this > other); }
+    bool operator<=(const char* other) const { return !(*this > other); }
+
+    bool operator==(const char* cstring) const;
+    bool operator!=(const char* cstring) const { return !(*this == cstring); }
+
+    [[nodiscard]] String isolated_copy() const;
+
+    [[nodiscard]] static String empty()
+    {
+        return StringImpl::the_empty_stringimpl();
+    }
+
+    [[nodiscard]] StringImpl* impl() { return m_impl.ptr(); }
+    [[nodiscard]] const StringImpl* impl() const { return m_impl.ptr(); }
+
+    String& operator=(String&& other)
+    {
+        if (this != &other)
+            m_impl = move(other.m_impl);
+        return *this;
+    }
+
+    String& operator=(const String& other)
+    {
+        if (this != &other)
+            m_impl = const_cast<String&>(other).m_impl;
+        return *this;
+    }
+
+    String& operator=(std::nullptr_t)
+    {
+        m_impl = nullptr;
+        return *this;
+    }
+
+    String& operator=(ReadonlyBytes bytes)
+    {
+        m_impl = StringImpl::create(bytes);
+        return *this;
+    }
+
+    [[nodiscard]] u32 hash() const
+    {
+        if (!m_impl)
+            return 0;
+        return m_impl->hash();
+    }
+
+    [[nodiscard]] ByteBuffer to_byte_buffer() const;
+
+    template<typename BufferType>
+    [[nodiscard]] static String copy(const BufferType& buffer, ShouldChomp should_chomp = NoChomp)
+    {
+        if (buffer.is_empty())
+            return empty();
+        return String((const char*)buffer.data(), buffer.size(), should_chomp);
+    }
+
+    [[nodiscard]] static String vformatted(StringView fmtstr, TypeErasedFormatParams);
+
+    template<typename... Parameters>
+    [[nodiscard]] static String formatted(CheckedFormatString<Parameters...>&& fmtstr, const Parameters&... parameters)
+    {
+        return vformatted(fmtstr.view(), VariadicFormatParams { parameters... });
+    }
+
+    template<typename T>
+    [[nodiscard]] static String number(T value) requires IsArithmetic<T>
+    {
+        return formatted("{}", value);
+    }
+
+    [[nodiscard]] StringView view() const
+    {
+        return { characters(), length() };
+    }
+
+    int replace(const String& needle, const String& replacement, bool all_occurrences = false);
+    size_t count(const String& needle) const;
+    [[nodiscard]] String reverse() const;
+
+    template<typename... Ts>
+    [[nodiscard]] ALWAYS_INLINE constexpr bool is_one_of(Ts... strings) const
+    {
+        return (... || this->operator==(forward<Ts>(strings)));
+    }
+
+private:
+    RefPtr<StringImpl> m_impl;
+
 };
 
 }
