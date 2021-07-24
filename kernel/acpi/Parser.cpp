@@ -332,4 +332,90 @@ UNMAP_AFTER_INIT void Parser::initialize_main_system_description_table()
     }
 }
 
+UNMAP_AFTER_INIT void Parser::locate_main_system_description_table()
+{
+    auto rsdp = map_typed<Structures::RSDPDescriptor20>(m_rsdp);
+    if (rsdp->base.revision == 0) {
+        m_xsdt_supported = false;
+    } else if (rsdp->base.revision >= 2) {
+        if (rsdp->xsdt_ptr != (u64) nullptr) {
+            m_xsdt_supported = true;
+        } else {
+            m_xsdt_supported = false;
+        }
+    }
+    if (!m_xsdt_supported) {
+        m_main_system_description_table = PhysicalAddress(rsdp->base.rsdt_ptr);
+    } else {
+        m_main_system_description_table = PhysicalAddress(rsdp->xsdt_ptr);
+    }
+}
+
+UNMAP_AFTER_INIT Parser::Parser(PhysicalAddress rsdp)
+    : m_rsdp(rsdp)
+{
+    dmesgln("ACPI: Using RSDP @ {}", rsdp);
+    locate_static_data();
+}
+
+static bool validate_table(const Structures::SDTHeader& v_header, size_t length)
+{
+    u8 checksum = 0;
+    auto* sdt = (const u8*)&v_header;
+    for (size_t i = 0; i < length; i++)
+        checksum += sdt[i];
+    if (checksum == 0)
+        return true;
+    return false;
+}
+
+UNMAP_AFTER_INIT Optional<PhysicalAddress> StaticParsing::find_rsdp()
+{
+    StringView signature("RSD PTR ");
+    auto rsdp = map_ebda().find_chunk_starting_with(signature, 16);
+    if (rsdp.has_value())
+        return rsdp;
+    return map_bios().find_chunk_starting_with(signature, 16);
+}
+
+UNMAP_AFTER_INIT PhysicalAddress StaticParsing::find_table(PhysicalAddress rsdp_address, const StringView& signature)
+{
+
+    VERIFY(signature.length() == 4);
+
+    auto rsdp = map_typed<Structures::RSDPDescriptor20>(rsdp_address);
+
+    if (rsdp->base.revision == 0)
+        return search_table_in_rsdt(PhysicalAddress(rsdp->base.rsdt_ptr), signature);
+
+    if (rsdp->base.revision >= 2) {
+        if (rsdp->xsdt_ptr)
+            return search_table_in_xsdt(PhysicalAddress(rsdp->xsdt_ptr), signature);
+        return search_table_in_rsdt(PhysicalAddress(rsdp->base.rsdt_ptr), signature);
+    }
+    VERIFY_NOT_REACHED();
+}
+
+UNMAP_AFTER_INIT static PhysicalAddress search_table_in_xsdt(PhysicalAddress xsdt_address, const StringView& signature)
+{
+    VERIFY(signature.length() == 4);
+
+    auto xsdt = map_typed<Structures::XSDT>(xsdt_address);
+
+    for (size_t i = 0; i < ((xsdt->h.length - sizeof(Structures::SDTHeader)) / sizeof(u64)); ++i) {
+        if (match_table_signature(PhysicalAddress((PhysicalPtr)xsdt->table_ptrs[i]), signature))
+            return PhysicalAddress((PhysicalPtr)xsdt->table_ptrs[i]);
+    }
+    return {};
+}
+
+static bool match_table_signature(PhysicalAddress table_header, const StringView& signature)
+{
+
+    VERIFY(signature.length() == 4);
+
+    auto table = map_typed<Structures::RSDT>(table_header);
+    return !strncmp(table->h.sig, signature.characters_without_null_termination(), 4);
+}
+
 }
