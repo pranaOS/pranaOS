@@ -107,3 +107,75 @@ private:
 };
 
 }
+
+namespace Base {
+
+template<typename... Ts>
+struct Tuple : Detail::Tuple<Ts...> {
+    using Types = TypeList<Ts...>;
+    using Detail::Tuple<Ts...>::Tuple;
+    using Indices = MakeIndexSequence<sizeof...(Ts)>;
+
+    Tuple(Tuple&& other)
+        : Tuple(move(other), Indices())
+    {
+    }
+
+    Tuple(const Tuple& other)
+        : Tuple(other, Indices())
+    {
+    }
+
+    Tuple& operator=(Tuple&& other)
+    {
+        set(move(other), Indices());
+        return *this;
+    }
+
+    Tuple& operator=(const Tuple& other)
+    {
+        set(other, Indices());
+        return *this;
+    }
+
+    template<typename T>
+    auto& get()
+    {
+        return Detail::Tuple<Ts...>::template get<T>();
+    }
+
+    template<unsigned index>
+    auto& get()
+    {
+        return Detail::Tuple<Ts...>::template get_with_index<typename Types::template Type<index>, index>();
+    }
+
+    template<typename T>
+    auto& get() const
+    {
+        return Detail::Tuple<Ts...>::template get<T>();
+    }
+
+    template<unsigned index>
+    auto& get() const
+    {
+        return Detail::Tuple<Ts...>::template get_with_index<typename Types::template Type<index>, index>();
+    }
+
+    template<typename F>
+    auto apply_as_args(F&& f)
+    {
+        return apply_as_args(forward<F>(f), Indices());
+    }
+
+    template<typename F>
+    auto apply_as_args(F&& f) const
+    {
+        return apply_as_args(forward<F>(f), Indices());
+    }
+
+    static constexpr auto size() { return sizeof...(Ts); }
+
+};
+
+}
