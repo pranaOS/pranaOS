@@ -312,4 +312,100 @@ String String::roman_number_from(size_t value)
     return builder.to_string();
 }
 
+bool String::matches(const StringView& mask, Vector<MaskSpan>& mask_spans, CaseSensitivity case_sensitivity) const
+{
+    return StringUtils::matches(*this, mask, case_sensitivity, &mask_spans);
+}
+
+bool String::matches(const StringView& mask, CaseSensitivity case_sensitivity) const
+{
+    return StringUtils::matches(*this, mask, case_sensitivity);
+}
+
+bool String::contains(const StringView& needle, CaseSensitivity case_sensitivity) const
+{
+    return StringUtils::contains(*this, needle, case_sensitivity);
+}
+
+bool String::equals_ignoring_case(const StringView& other) const
+{
+    return StringUtils::equals_ignoring_case(view(), other);
+}
+
+int String::replace(const String& needle, const String& replacement, bool all_occurrences)
+{
+    if (is_empty())
+        return 0;
+
+    Vector<size_t> positions;
+    if (all_occurrences) {
+        positions = find_all(needle);
+    } else {
+        auto pos = find(needle);
+        if (!pos.has_value())
+            return 0;
+        positions.append(pos.value());
+    }
+
+    if (!positions.size())
+        return 0;
+
+    StringBuilder b;
+    size_t lastpos = 0;
+    for (auto& pos : positions) {
+        b.append(substring_view(lastpos, pos - lastpos));
+        b.append(replacement);
+        lastpos = pos + needle.length();
+    }
+    b.append(substring_view(lastpos, length() - lastpos));
+    m_impl = StringImpl::create(b.build().characters());
+    return positions.size();
+}
+
+size_t String::count(const String& needle) const
+{
+    size_t count = 0;
+    size_t start = 0, pos;
+    for (;;) {
+        const char* ptr = strstr(characters() + start, needle.characters());
+        if (!ptr)
+            break;
+
+        pos = ptr - characters();
+        count++;
+        start = pos + 1;
+    }
+    return count;
+}
+
+String String::reverse() const
+{
+    StringBuilder reversed_string(length());
+    for (size_t i = length(); i-- > 0;) {
+        reversed_string.append(characters()[i]);
+    }
+    return reversed_string.to_string();
+}
+
+String escape_html_entities(const StringView& html)
+{
+    StringBuilder builder;
+    for (size_t i = 0; i < html.length(); ++i) {
+        if (html[i] == '<')
+            builder.append("&lt;");
+        else if (html[i] == '>')
+            builder.append("&gt;");
+        else if (html[i] == '&')
+            builder.append("&amp;");
+        else
+            builder.append(html[i]);
+    }
+    return builder.to_string();
+}
+
+String::String(const FlyString& string)
+    : m_impl(string.impl())
+{
+}
+
 }
