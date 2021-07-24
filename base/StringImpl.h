@@ -44,6 +44,49 @@ public:
 
     size_t length() const { return length; }
 
+       const char* characters() const { return &m_inline_buffer[0]; }
+
+    ALWAYS_INLINE ReadonlyBytes bytes() const { return { characters(), length() }; }
+    ALWAYS_INLINE StringView view() const { return { characters(), length() }; }
+
+    const char& operator[](size_t i) const
+    {
+        VERIFY(i < m_length);
+        return characters()[i];
+    }
+
+    bool operator==(const StringImpl& other) const
+    {
+        if (length() != other.length())
+            return false;
+        return !__builtin_memcmp(characters(), other.characters(), length());
+    }
+
+    unsigned hash() const
+    {
+        if (!m_has_hash)
+            compute_hash();
+        return m_hash;
+    }
+
+    unsigned existing_hash() const
+    {
+        return m_hash;
+    }
+
+    bool is_fly() const { return m_fly; }
+    void set_fly(Badge<FlyString>, bool fly) const { m_fly = fly; }
+
+private:
+    enum ConstructTheEmptyStringImplTag {
+        ConstructTheEmptyStringImpl
+    };
+    explicit StringImpl(ConstructTheEmptyStringImplTag)
+        : m_fly(true)
+    {
+        m_inline_buffer[0] = '\0';
+    }
+
 };
 
 }
