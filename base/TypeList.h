@@ -27,6 +27,37 @@ struct TypeListElement<0, TypeList<Head, Tail...>> {
     using Type = Head;
 };
 
+template<typename... Types>
+struct TypeList {
+    static constexpr unsigned size = sizeof...(Types);
+
+    template<unsigned N>
+    using Type = typename TypeListElement<N, TypeList<Types...>>::Type;
+};
+
+template<typename T>
+struct TypeWrapper {
+    using Type = T;
+};
+
+template<typename List, typename F, unsigned... Indices>
+constexpr void for_each_type_impl(F&& f, IndexSequence<Indices...>)
+{
+    (forward<F>(f)(TypeWrapper<typename List::template Type<Indices>> {}), ...);
+}
+
+template<typename List, typename F>
+constexpr void for_each_type(F&& f)
+{
+    for_each_type_impl<List>(forward<F>(f), MakeIndexSequence<List::size> {});
+}
+
+template<typename ListA, typename ListB, typename F, unsigned... Indices>
+constexpr void for_each_type_zipped_impl(F&& f, IndexSequence<Indices...>)
+{
+    (forward<F>(f)(TypeWrapper<typename ListA::template Type<Indices>> {}, TypeWrapper<typename ListB::template Type<Indices>> {}), ...);
+}
+
 template<typename ListA, typename ListB, typename F>
 constexpr void for_each_type_zipped(F&& f)
 {
@@ -35,3 +66,9 @@ constexpr void for_each_type_zipped(F&& f)
 }
 
 }
+
+using Base::for_each_type;
+using Base::for_each_type_zipped;
+using Base::TypeList;
+using Base::TypeListElement;
+using Base::TypeWrapper;
