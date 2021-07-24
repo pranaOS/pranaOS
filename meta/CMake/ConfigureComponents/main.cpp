@@ -1,9 +1,10 @@
 /*
- * Copyright (c) 2021, Krisna Pranav
+ * Copyright (c) 2021, Krisna Pranav, antonystevanson
  *
  * SPDX-License-Identifier: BSD-2-Clause
 */
 
+// includes
 #include <base/Format.h>
 #include <base/LexicalPath.h>
 #include <base/QuickSort.h>
@@ -135,7 +136,6 @@ static Result<Vector<String>, int> run_whiptail(WhiptailMode mode, Vector<Whipta
     arguments.append(String::number(width));
     arguments.append(String::number(height - 9));
 
-    // Check how wide the name field needs to be.
     size_t max_name_width = 0;
     for (auto& option : options) {
         if (option.name.length() > max_name_width)
@@ -228,12 +228,21 @@ static bool run_system_command(String const& command, StringView const& command_
 
 int main()
 {
-    auto current_working_directory = get_current_working_directory();
-    if (!get_current_working_directory.has_value())
-        return 1;
-    auto lexical_cmd = LexicalPath(*current_working_directory);
-    auto& parts = lexical_cmd.parts_view();
 
+    if (!isatty(STDIN_FILENO)) {
+        warnln("Not a terminal!");
+        return 1;
+    }
+
+    auto current_working_directory = get_current_working_directory();
+    if (!current_working_directory.has_value())
+        return 1;
+    auto lexical_cwd = LexicalPath(*current_working_directory);
+    auto& parts = lexical_cwd.parts_view();
+    if (parts.size() < 2 || parts[parts.size() - 2] != "Build") {
+        warnln("\e[31mError:\e[0m This program needs to be executed from inside 'Build/*'.");
+        return 1;
+    }
 
     if (!Core::File::exists("components.ini")) {
         warnln("\e[31mError:\e[0m There is no 'components.ini' in the current working directory.");
@@ -247,11 +256,110 @@ int main()
         return 1;
     }
 
+    bool build_everything = components_file->read_bool_entry("Global", "build_everything", false);
+    auto components = read_component_data(components_file);
+    warnln("{} components were read from 'components.ini'.", components.size());
 
-    auto configs_result = run_whiptail(WhiptailMode::Menu, configs, "SerenityOS - System Configurations", "Which system configuration do you want to use or customize?");
+    Vector<WhiptailOption> configs;
+    configs.append({ "REQUIRED", "Required", "Only the essentials.", false });
+    configs.append({ "RECOMMENDED", "Recommended", "A sensible collection of programs.", false });
+    configs.append({ "FULL", "Full", "All available programs.", false });
+    configs.append({ "CUSTOM_REQUIRED", "Required", "Customizable.", false });
+    configs.append({ "CUSTOM_RECOMMENDED", "Recommended", "Customizable.", false });
+    configs.append({ "CUSTOM_FULL", "Full", "Customizable.", false });
+    configs.append({ "CUSTOM_CURRENT", "Current", "Customize current configuration.", false });
+
+    auto configs_result = run_whiptail(WhiptailMode::Menu, configs, "pranaOS - System Configurations", "Which system configuration do you want to use or customize?");
     if (configs_result.is_error()) {
         warnln("ConfigureComponents cancelled.");
         return 0;
     }
 
+    VERIFY(configs_result.value().size() == 1);
+    auto type = configs_result.value().first();
+
+    bool customize = type.starts_with("CUSTOM_");
+    StringView build_type = customize ? type.substring_view(7) : type.view();
+
+    Vector<String> activated_components;
+
+    if (customize) {
+        Vector<WhiptailOption> options;
+        for (auto& component : components) {
+            auto is_required = component.category == ComponentCategory::Required;
+
+            StringBuilder description_builder;
+            description_builder.append(component.description);
+            if (is_required) {
+                if (!description_builder.is_empty())
+                    description_builder.append(' ');
+                description_builder.append("[required]");
+            }
+
+            WhiptailOption option { component.name, component.name, description_builder.to_string(), is_required };
+            if (build_type == "REQUIRED") {
+            } else if (build_type == "RECOMMENDED") {
+                if (component.category == ComponentCategory::Recommended)
+                    option.checked = true;
+            } else if (build_type == "FULL") {
+                option.checked = true;
+            } else if (build_type == "CURRENT") {
+                if (build_everything || component.was_selected)
+                    option.checked = true;
+            } else {
+                VERIFY_NOT_REACHED();
+            }
+            options.append(move(option));
+        }
+
+        auto result = run_whiptail(WhiptailMode::Checklist, options, "pranaOS - System Components", "Which optional system components do you want to include?");
+        if (result.is_error()) {
+            warnln("ConfigureComponents cancelled.");
+            return 0;
+        }
+
+        auto selected_components = result.value();
+        for (auto& component : components) {
+            if (selected_components.contains_slow(component.name)) {
+                component.is_selected = true;
+            } else if (component.category == ComponentCategory::Required) {
+                warnln("\e[33mWarning:\e[0m {} was not selected even though it is required. It will be enabled anyway.", component.name);
+                component.is_selected = true;
+            }
+        }
+    } else {
+        for (auto& component : components) {
+            if (build_type == "REQUIRED")
+                component.is_selected = component.category == ComponentCategory::Required;
+            else if (build_type == "RECOMMENDED")
+                component.is_selected = component.category == ComponentCategory::Required || component.category == ComponentCategory::Recommended;
+            else if (build_type == "FULL")
+                component.is_selected = true;
+            else
+                VERIFY_NOT_REACHED();
+        }
+    }
+
+    Vector<String> cmake_arguments = { "cmake", "../..", "-G", "Ninja", "-DBUILD_EVERYTHING=OFF" };
+    for (auto& component : components)
+        cmake_arguments.append(String::formatted("-DBUILD_{}={}", component.name.to_uppercase(), component.is_selected ? "ON" : "OFF"));
+
+    warnln("\e[34mThe following command will be run:\e[0m");
+    outln("{} \\", String::join(' ', cmake_arguments));
+    outln("  && ninja clean\n  && rm -rf Root");
+    warn("\e[34mDo you want to run the command?\e[0m [Y/n] ");
+    auto character = getchar();
+    if (character == 'n' || character == 'N') {
+        warnln("ConfigureComponents cancelled.");
+        return 0;
+    }
+
+    auto command = String::join(' ', cmake_arguments);
+    if (!run_system_command(command, "CMake"))
+        return 1;
+    if (!run_system_command("ninja clean", "Ninja"))
+        return 1;
+    if (!run_system_command("rm -rf Root", "rm"))
+        return 1;
+    return 0;
 }
