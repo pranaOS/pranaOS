@@ -194,4 +194,142 @@ bool Parser::can_reboot()
 
 }
 
+void Parser::access_generic_address(const Structures::GenericAddressStructure& structure, u32 value)
+{
+    switch ((GenericAddressStructure::AddressSpace)structure.address_space) {
+    case GenericAddressStructure::AddressSpace::SystemIO: {
+        IOAddress address(structure.address);
+        dbgln("ACPI: Sending value {:x} to {}", value, address);
+        switch (structure.access_size) {
+        case (u8)GenericAddressStructure::AccessSize::QWord: {
+            dbgln("Trying to send QWord to IO port");
+            VERIFY_NOT_REACHED();
+            break;
+        }
+        case (u8)GenericAddressStructure::AccessSize::Undefined: {
+            dbgln("ACPI Warning: Unknown access size {}", structure.access_size);
+            VERIFY(structure.bit_width != (u8)GenericAddressStructure::BitWidth::QWord);
+            VERIFY(structure.bit_width != (u8)GenericAddressStructure::BitWidth::Undefined);
+            dbgln("ACPI: Bit Width - {} bits", structure.bit_width);
+            address.out(value, structure.bit_width);
+            break;
+        }
+        default:
+            address.out(value, (8 << (structure.access_size - 1)));
+            break;
+        }
+        return;
+    }
+    case GenericAddressStructure::AddressSpace::SystemMemory: {
+        dbgln("ACPI: Sending value {:x} to {}", value, PhysicalAddress(structure.address));
+        switch ((GenericAddressStructure::AccessSize)structure.access_size) {
+        case GenericAddressStructure::AccessSize::Byte:
+            *map_typed<u8>(PhysicalAddress(structure.address)) = value;
+            break;
+        case GenericAddressStructure::AccessSize::Word:
+            *map_typed<u16>(PhysicalAddress(structure.address)) = value;
+            break;
+        case GenericAddressStructure::AccessSize::DWord:
+            *map_typed<u32>(PhysicalAddress(structure.address)) = value;
+            break;
+        case GenericAddressStructure::AccessSize::QWord: {
+            *map_typed<u64>(PhysicalAddress(structure.address)) = value;
+            break;
+        }
+        default:
+            VERIFY_NOT_REACHED();
+        }
+        return;
+    }
+    case GenericAddressStructure::AddressSpace::PCIConfigurationSpace: {
+        auto pci_address = PCI::Address(0, 0, ((structure.address >> 24) & 0xFF), ((structure.address >> 16) & 0xFF));
+        dbgln("ACPI: Sending value {:x} to {}", value, pci_address);
+        u32 offset_in_pci_address = structure.address & 0xFFFF;
+        if (structure.access_size == (u8)GenericAddressStructure::AccessSize::QWord) {
+            dbgln("Trying to send QWord to PCI configuration space");
+            VERIFY_NOT_REACHED();
+        }
+        VERIFY(structure.access_size != (u8)GenericAddressStructure::AccessSize::Undefined);
+        PCI::raw_access(pci_address, offset_in_pci_address, (1 << (structure.access_size - 1)), value);
+        return;
+    }
+    default:
+        VERIFY_NOT_REACHED();
+    }
+    VERIFY_NOT_REACHED();
+}
+
+bool Parser::validate_reset_register()
+{
+
+    auto fadt = map_typed<Structures::FADT>(m_fadt);
+    return (fadt->reset_reg.address_space == (u8)GenericAddressStructure::AddressSpace::PCIConfigurationSpace || fadt->reset_reg.address_space == (u8)GenericAddressStructure::AddressSpace::SystemMemory || fadt->reset_reg.address_space == (u8)GenericAddressStructure::AddressSpace::SystemIO);
+}
+
+void Parser::try_acpi_reboot()
+{
+    InterruptDisabler disabler;
+    if (!can_reboot()) {
+        dmesgln("ACPI: Reboot not supported!");
+        return;
+    }
+    dbgln_if(ACPI_DEBUG, "ACPI: Rebooting, probing FADT ({})", m_fadt);
+
+    auto fadt = map_typed<Structures::FADT>(m_fadt);
+    VERIFY(validate_reset_register());
+    access_generic_address(fadt->reset_reg, fadt->reset_value);
+    Processor::halt();
+}
+
+void Parser::try_acpi_shutdown()
+{
+    dmesgln("ACPI: Shutdown is not supported with the current configuration, aborting!");
+}
+
+size_t Parser::get_table_size(PhysicalAddress table_header)
+{
+    InterruptDisabler disabler;
+    dbgln_if(ACPI_DEBUG, "ACPI: Checking SDT Length");
+    return map_typed<Structures::SDTHeader>(table_header)->length;
+}
+
+u8 Parser::get_table_revision(PhysicalAddress table_header)
+{
+    InterruptDisabler disabler;
+    dbgln_if(ACPI_DEBUG, "ACPI: Checking SDT Revision");
+    return map_typed<Structures::SDTHeader>(table_header)->revision;
+}
+
+UNMAP_AFTER_INIT void Parser::initialize_main_system_description_table()
+{
+    dbgln_if(ACPI_DEBUG, "ACPI: Checking Main SDT Length to choose the correct mapping size");
+    VERIFY(!m_main_system_description_table.is_null());
+    auto length = get_table_size(m_main_system_description_table);
+    auto revision = get_table_revision(m_main_system_description_table);
+
+    auto sdt = map_typed<Structures::SDTHeader>(m_main_system_description_table, length);
+
+    dmesgln("ACPI: Main Description Table valid? {}", validate_table(*sdt, length));
+
+    if (m_xsdt_supported) {
+        auto& xsdt = (const Structures::XSDT&)*sdt;
+        dmesgln("ACPI: Using XSDT, enumerating tables @ {}", m_main_system_description_table);
+        dmesgln("ACPI: XSDT revision {}, total length: {}", revision, length);
+        dbgln_if(ACPI_DEBUG, "ACPI: XSDT pointer @ {}", VirtualAddress { &xsdt });
+        for (u32 i = 0; i < ((length - sizeof(Structures::SDTHeader)) / sizeof(u64)); i++) {
+            dbgln_if(ACPI_DEBUG, "ACPI: Found new table [{0}], @ V{1:p} - P{1:p}", i, &xsdt.table_ptrs[i]);
+            m_sdt_pointers.append(PhysicalAddress(xsdt.table_ptrs[i]));
+        }
+    } else {
+        auto& rsdt = (const Structures::RSDT&)*sdt;
+        dmesgln("ACPI: Using RSDT, enumerating tables @ {}", m_main_system_description_table);
+        dmesgln("ACPI: RSDT revision {}, total length: {}", revision, length);
+        dbgln_if(ACPI_DEBUG, "ACPI: RSDT pointer @ V{}", &rsdt);
+        for (u32 i = 0; i < ((length - sizeof(Structures::SDTHeader)) / sizeof(u32)); i++) {
+            dbgln_if(ACPI_DEBUG, "ACPI: Found new table [{0}], @ V{1:p} - P{1:p}", i, &rsdt.table_ptrs[i]);
+            m_sdt_pointers.append(PhysicalAddress(rsdt.table_ptrs[i]));
+        }
+    }
+}
+
 }
