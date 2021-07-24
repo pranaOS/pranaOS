@@ -6,13 +6,12 @@
 
 #pragma once
 
-// includes
 #include <kernel/PhysicalAddress.h>
-#include <kernel/vm/AllocationStrategy.h>
-#include <kernel/vm/MemoryManager.h>
-#include <kernel/vm/PageFaultResponse.h>
-#include <kernel/vm/PurgeablePageRanges.h>
-#include <kernel/vm/VMObject.h>
+#include <kernel/VM/AllocationStrategy.h>
+#include <kernel/VM/MemoryManager.h>
+#include <kernel/VM/PageFaultResponse.h>
+#include <kernel/VM/PurgeablePageRanges.h>
+#include <kernel/VM/VMObject.h>
 
 namespace Kernel {
 
@@ -40,7 +39,7 @@ public:
 
     bool is_any_volatile() const;
 
-        template<IteratorFunction<VolatilePageRange const&> F>
+    template<IteratorFunction<VolatilePageRange const&> F>
     IterationDecision for_each_volatile_range(F f) const
     {
         VERIFY(m_lock.is_locked());
@@ -53,7 +52,6 @@ public:
                         continue;
                     ScopedSpinLock purgeable2_lock(purgeable_range2->m_volatile_ranges_lock);
                     if (purgeable_range2->is_empty()) {
-
                         return IterationDecision::Continue;
                     }
                     for (auto const& r2 : purgeable_range2->volatile_ranges().ranges()) {
@@ -110,7 +108,40 @@ public:
         });
     }
 
+private:
+    explicit AnonymousVMObject(size_t, AllocationStrategy);
+    explicit AnonymousVMObject(PhysicalAddress, size_t);
+    explicit AnonymousVMObject(Span<NonnullRefPtr<PhysicalPage>>);
+    explicit AnonymousVMObject(AnonymousVMObject const&);
 
+    virtual StringView class_name() const override { return "AnonymousVMObject"sv; }
+
+    void update_volatile_cache();
+    void set_was_purged(VolatilePageRange const&);
+    size_t remove_lazy_commit_pages(VolatilePageRange const&);
+    void range_made_volatile(VolatilePageRange const&);
+    void range_made_nonvolatile(VolatilePageRange const&);
+    size_t count_needed_commit_pages_for_nonvolatile_range(VolatilePageRange const&);
+    size_t mark_committed_pages_for_nonvolatile_range(VolatilePageRange const&, size_t);
+    bool is_nonvolatile(size_t page_index);
+
+    AnonymousVMObject& operator=(AnonymousVMObject const&) = delete;
+    AnonymousVMObject& operator=(AnonymousVMObject&&) = delete;
+    AnonymousVMObject(AnonymousVMObject&&) = delete;
+
+    virtual bool is_anonymous() const override { return true; }
+
+    Bitmap& ensure_cow_map();
+    void ensure_or_reset_cow_map();
+
+    VolatilePageRanges m_volatile_ranges_cache;
+    bool m_volatile_ranges_cache_dirty { true };
+    Vector<PurgeablePageRanges*> m_purgeable_ranges;
+    size_t m_unused_committed_pages { 0 };
+
+    Bitmap m_cow_map;
+
+    RefPtr<CommittedCowPages> m_shared_committed_cow_pages;
 };
-    
+
 }
