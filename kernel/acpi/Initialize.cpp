@@ -27,5 +27,9 @@ UNMAP_AFTER_INIT void initialize()
         Parser::initialize<Parser>(rsdp.value());
 }
 
+bool is_enabled()
+{
+    return Parser::the();
+}
 
 }
