@@ -74,6 +74,36 @@ public:
     {
     }
 
+        String(const FlyString&);
+
+    [[nodiscard]] static String repeated(char, size_t count);
+    [[nodiscard]] static String repeated(const StringView&, size_t count);
+
+    [[nodiscard]] static String bijective_base_from(size_t value, unsigned base = 26, StringView map = {});
+    [[nodiscard]] static String roman_number_from(size_t value);
+
+    template<class SeparatorType, class CollectionType>
+    [[nodiscard]] static String join(const SeparatorType& separator, const CollectionType& collection)
+    {
+        StringBuilder builder;
+        builder.join(separator, collection);
+        return builder.build();
+    }
+
+    [[nodiscard]] bool matches(const StringView& mask, CaseSensitivity = CaseSensitivity::CaseInsensitive) const;
+    [[nodiscard]] bool matches(const StringView& mask, Vector<MaskSpan>&, CaseSensitivity = CaseSensitivity::CaseInsensitive) const;
+
+    template<typename T = int>
+    [[nodiscard]] Optional<T> to_int(TrimWhitespace = TrimWhitespace::Yes) const;
+    template<typename T = unsigned>
+    [[nodiscard]] Optional<T> to_uint(TrimWhitespace = TrimWhitespace::Yes) const;
+
+    [[nodiscard]] String to_lowercase() const;
+    [[nodiscard]] String to_uppercase() const;
+    [[nodiscard]] String to_snakecase() const;
+
+    [[nodiscard]] bool is_whitespace() const { return StringUtils::is_whitespace(*this); }
+
 };
 
 }
