@@ -3,8 +3,7 @@
  *
  * SPDX-License-Identifier: BSD-2-Clause
 */
-
-
+    
 #pragma once
 
 // includes
@@ -144,4 +143,29 @@ struct [[gnu::packed]] CompatibilityBusAddressSpaceModifierEntry {
     u32 predefined_range_list;
 };
 
+}
+
+class PCIInterruptOverrideMetadata;
+
+class MultiProcessorParser final {
+public:
+    static OwnPtr<MultiProcessorParser> autodetect();
+
+    Vector<PCIInterruptOverrideMetadata> get_pci_interrupt_redirections();
+
+private:
+    explicit MultiProcessorParser(PhysicalAddress floating_pointer);
+
+    void parse_configuration_table();
+    void parse_floating_pointer_data();
+
+    Vector<u8> get_pci_bus_ids() const;
+
+    static Optional<PhysicalAddress> find_floating_pointer();
+
+    PhysicalAddress m_floating_pointer;
+    PhysicalAddress m_configuration_table;
+    Vector<MultiProcessor::IOInterruptAssignmentEntry> m_io_interrupt_assignment_entries;
+    Vector<MultiProcessor::BusEntry> m_bus_entries;
+};
 }
