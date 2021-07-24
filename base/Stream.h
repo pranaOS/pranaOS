@@ -45,6 +45,24 @@ public:
     virtual void set_recoverable_error() const { m_recoverable_error = true; }
     virtual void set_fatal_error() const { m_fatal_error = true; }
 
+private:
+    mutable bool m_recoverable_error { false };
+    mutable bool m_fatal_error { false };
+
 };
+
+namespace Base {
+
+class InputStream : public virtual Base::Detail::Stream {
+public:
+    virtual size_t read(Bytes) = 0;
+
+    virtual bool unreliable_eof() const = 0;
+
+    virtual bool read_or_error(Bytes) = 0;
+    virtual bool discard_or_error(size_t count) = 0;
+};
+
+}
 
 }
