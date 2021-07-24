@@ -29,7 +29,7 @@ public:
     void append(const char*, size_t);
     void appendvf(const char*, va_list);
 
-    void apped_as_lowercase(char);
+    void append_as_lowercase(char);
     void append_escaped_for_json(const StringView&);
 
     template<typename... Parameters>
@@ -38,6 +38,18 @@ public:
         vformat(*this, fmtstr.view(), VariadicFormatParams { parameters... });
     }
 
+    [[nodiscard]] String build() const;
+    [[nodiscard]] String to_string() const;
+    [[nodiscard]] ByteBuffer to_byte_buffer() const;
+
+    [[nodiscard]] StringView string_view() const;
+    void clear();
+
+    [[nodiscard]] size_t length() const { return m_buffer.size(); }
+    [[nodiscard]] bool is_empty() const { return m_buffer.is_empty(); }
+    void trim(size_t count) { m_buffer.resize(m_buffer.size() - count); }
+
+    template<class SeparatorType, class CollectionType>
     void join(const SeparatorType& separator, const CollectionType& collection)
     {
         bool first = true;
@@ -51,11 +63,12 @@ public:
     }
 
 private:
-    void will_append(size_t)
+    void will_append(size_t);
+    u8* data() { return m_buffer.data(); }
+    const u8* data() const { return m_buffer.data(); }
 
     static constexpr size_t inline_capacity = 128;
     Base::Detail::ByteBuffer<inline_capacity> m_buffer;
-
 };
 
 }
