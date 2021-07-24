@@ -25,8 +25,21 @@ struct Traits : public GenericTraits<T> {
 };
 
 template<typename T>
-requires(IsPointer<T>) struct Traits<T> : public GenericTraits {
-    static unsigned hash(T p) { return ptr_hash((FlatPtr)p)};
+requires(IsIntegral<T>) struct Traits<T> : public GenericTraits<T> {
+    static constexpr bool is_trivial() { return true; }
+    static constexpr unsigned hash(T value)
+    {
+        if constexpr (sizeof(T) < 8)
+            return int_hash(value);
+        else
+            return u64_hash(value);
+    }
+};
+
+template<typename T>
+requires(IsPointer<T>) struct Traits<T> : public GenericTraits<T> {
+    static unsigned hash(T p) { return ptr_hash((FlatPtr)p); }
+    static constexpr bool is_trivial() { return true; }
 };
 
 }
