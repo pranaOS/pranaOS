@@ -13,7 +13,7 @@
 
 extern "C" {
 
-void* serenity_mmap(void* addr, size_t size, int prot, int flags, int fd, off_t offset, size_t alignment, const char* name)
+void* pranaos_mmap(void* addr, size_t size, int prot, int flags, int fd, off_t offset, size_t alignment, const char* name)
 {
     Syscall::SC_mmap_params params { (uintptr_t)addr, size, alignment, prot, flags, fd, offset, { name, name ? strlen(name) : 0 } };
     ptrdiff_t rc = syscall(SC_mmap, &params);
@@ -26,12 +26,12 @@ void* serenity_mmap(void* addr, size_t size, int prot, int flags, int fd, off_t 
 
 void* mmap(void* addr, size_t size, int prot, int flags, int fd, off_t offset)
 {
-    return serenity_mmap(addr, size, prot, flags, fd, offset, PAGE_SIZE, nullptr);
+    return pranaos_mmap(addr, size, prot, flags, fd, offset, PAGE_SIZE, nullptr);
 }
 
 void* mmap_with_name(void* addr, size_t size, int prot, int flags, int fd, off_t offset, const char* name)
 {
-    return serenity_mmap(addr, size, prot, flags, fd, offset, PAGE_SIZE, name);
+    return pranaos_mmap(addr, size, prot, flags, fd, offset, PAGE_SIZE, name);
 }
 
 void* mremap(void* old_address, size_t old_size, size_t new_size, int flags)
@@ -57,4 +57,30 @@ int mprotect(void* addr, size_t size, int prot)
     __RETURN_WITH_ERRNO(rc, rc, -1);
 }
 
+int set_mmap_name(void* addr, size_t size, const char* name)
+{
+    if (!name) {
+        errno = EFAULT;
+        return -1;
+    }
+    Syscall::SC_set_mmap_name_params params { addr, size, { name, strlen(name) } };
+    int rc = syscall(SC_set_mmap_name, &params);
+    __RETURN_WITH_ERRNO(rc, rc, -1);
+}
+
+int madvise(void* address, size_t size, int advice)
+{
+    int rc = syscall(SC_madvise, address, size, advice);
+    __RETURN_WITH_ERRNO(rc, rc, -1);
+}
+
+void* allocate_tls(const char* initial_data, size_t size)
+{
+    ptrdiff_t rc = syscall(SC_allocate_tls, initial_data, size);
+    if (rc < 0 && -rc < EMAXERRNO) {
+        errno = -rc;
+        return MAP_FAILED;
+    }
+    return (void*)rc;
+}
 }
