@@ -4,11 +4,12 @@
  * SPDX-License-Identifier: BSD-2-Clause
 */
 
+// includes
 #include <base/Format.h>
 #include <base/StringView.h>
 #include <kernel/acpi/Parser.h>
 #include <kernel/arch/pc/BIOS.h>
-#include <kernel/arch/x86/InterruptDisabler.h>
+#include <kernel/archi/x86/InterruptDisabler.h>
 #include <kernel/bus/pci/Access.h>
 #include <kernel/Debug.h>
 #include <kernel/IO.h>
@@ -27,7 +28,7 @@ Parser* Parser::the()
 
 UNMAP_AFTER_INIT NonnullRefPtr<ACPISysFSComponent> ACPISysFSComponent::create(String name, PhysicalAddress paddr, size_t table_size)
 {
-    return adpot_ref(*new (nothrow) ACPISysFSComponent(name, paddr, table_size));
+    return adopt_ref(*new (nothrow) ACPISysFSComponent(name, paddr, table_size));
 }
 
 KResultOr<size_t> ACPISysFSComponent::read_bytes(off_t offset, size_t count, UserOrKernelBuffer& buffer, FileDescription*) const
@@ -92,10 +93,9 @@ UNMAP_AFTER_INIT ACPISysFSDirectory::ACPISysFSDirectory()
 
 void Parser::enumerate_static_tables(Function<void(const StringView&, PhysicalAddress, size_t)> callback)
 {
-    for (auto& p_table : m_std_pointers) {
+    for (auto& p_table : m_sdt_pointers) {
         auto table = map_typed<Structures::SDTHeader>(p_table);
-        callback({  table->sig, 4 }, p_table, table->length);
-
+        callback({ table->sig, 4 }, p_table, table->length);
     }
 }
 
@@ -105,8 +105,7 @@ void Parser::set_the(Parser& parser)
     s_acpi_parser = &parser;
 }
 
-
-static bool match_table_signature(PhysicalAddress table_header, cosnt StringView& signature)
+static bool match_table_signature(PhysicalAddress table_header, const StringView& signature);
 static PhysicalAddress search_table_in_xsdt(PhysicalAddress xsdt, const StringView& signature);
 static PhysicalAddress search_table_in_rsdt(PhysicalAddress rsdt, const StringView& signature);
 static bool validate_table(const Structures::SDTHeader&, size_t length);
@@ -190,8 +189,7 @@ bool Parser::can_reboot()
     auto fadt = map_typed<Structures::FADT>(m_fadt);
     if (fadt->h.revision < 2)
         return false;
-    return m_header_flags.reset_register_supported;
-
+    return m_hardware_flags.reset_register_supported;
 }
 
 void Parser::access_generic_address(const Structures::GenericAddressStructure& structure, u32 value)
@@ -261,7 +259,6 @@ void Parser::access_generic_address(const Structures::GenericAddressStructure& s
 
 bool Parser::validate_reset_register()
 {
-
     auto fadt = map_typed<Structures::FADT>(m_fadt);
     return (fadt->reset_reg.address_space == (u8)GenericAddressStructure::AddressSpace::PCIConfigurationSpace || fadt->reset_reg.address_space == (u8)GenericAddressStructure::AddressSpace::SystemMemory || fadt->reset_reg.address_space == (u8)GenericAddressStructure::AddressSpace::SystemIO);
 }
@@ -368,7 +365,6 @@ static bool validate_table(const Structures::SDTHeader& v_header, size_t length)
         return true;
     return false;
 }
-
 UNMAP_AFTER_INIT Optional<PhysicalAddress> StaticParsing::find_rsdp()
 {
     StringView signature("RSD PTR ");
@@ -380,7 +376,6 @@ UNMAP_AFTER_INIT Optional<PhysicalAddress> StaticParsing::find_rsdp()
 
 UNMAP_AFTER_INIT PhysicalAddress StaticParsing::find_table(PhysicalAddress rsdp_address, const StringView& signature)
 {
-
     VERIFY(signature.length() == 4);
 
     auto rsdp = map_typed<Structures::RSDPDescriptor20>(rsdp_address);
@@ -411,11 +406,43 @@ UNMAP_AFTER_INIT static PhysicalAddress search_table_in_xsdt(PhysicalAddress xsd
 
 static bool match_table_signature(PhysicalAddress table_header, const StringView& signature)
 {
-
     VERIFY(signature.length() == 4);
 
     auto table = map_typed<Structures::RSDT>(table_header);
     return !strncmp(table->h.sig, signature.characters_without_null_termination(), 4);
+}
+
+UNMAP_AFTER_INIT static PhysicalAddress search_table_in_rsdt(PhysicalAddress rsdt_address, const StringView& signature)
+{
+    VERIFY(signature.length() == 4);
+
+    auto rsdt = map_typed<Structures::RSDT>(rsdt_address);
+
+    for (u32 i = 0; i < ((rsdt->h.length - sizeof(Structures::SDTHeader)) / sizeof(u32)); i++) {
+        if (match_table_signature(PhysicalAddress((PhysicalPtr)rsdt->table_ptrs[i]), signature))
+            return PhysicalAddress((PhysicalPtr)rsdt->table_ptrs[i]);
+    }
+    return {};
+}
+
+void Parser::enable_aml_interpretation()
+{
+    VERIFY_NOT_REACHED();
+}
+
+void Parser::enable_aml_interpretation(File&)
+{
+    VERIFY_NOT_REACHED();
+}
+
+void Parser::enable_aml_interpretation(u8*, u32)
+{
+    VERIFY_NOT_REACHED();
+}
+
+void Parser::disable_aml_interpretation()
+{
+    VERIFY_NOT_REACHED();
 }
 
 }
