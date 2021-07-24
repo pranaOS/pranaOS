@@ -10,11 +10,10 @@
 #include <base/Time.h>
 
 #ifdef KERNEL
-#   include <kernel/UnixTypes.h>
+#    include <kernel/UnixTypes.h>
 #else
-#   include <sys/time.h>
+#    include <sys/time.h>
 #endif
-
 
 namespace Base {
 
@@ -83,6 +82,7 @@ i64 Time::to_truncated_milliseconds() const
         if (m_nanoseconds % 1'000'000 != 0) {
             milliseconds++;
         }
+
         milliseconds -= 1'000;
     }
     if (!milliseconds.has_overflow())
@@ -229,5 +229,47 @@ Time Time::operator-(const Time& other) const
     return Time { (m_seconds + 0x4000'0000'0000'0000) + 0x4000'0000'0000'0000, m_nanoseconds };
 }
 
+Time& Time::operator-=(const Time& other)
+{
+    *this = *this - other;
+    return *this;
+}
+
+bool Time::operator<(const Time& other) const
+{
+    return m_seconds < other.m_seconds || (m_seconds == other.m_seconds && m_nanoseconds < other.m_nanoseconds);
+}
+bool Time::operator<=(const Time& other) const
+{
+    return m_seconds < other.m_seconds || (m_seconds == other.m_seconds && m_nanoseconds <= other.m_nanoseconds);
+}
+bool Time::operator>(const Time& other) const
+{
+    return m_seconds > other.m_seconds || (m_seconds == other.m_seconds && m_nanoseconds > other.m_nanoseconds);
+}
+bool Time::operator>=(const Time& other) const
+{
+    return m_seconds > other.m_seconds || (m_seconds == other.m_seconds && m_nanoseconds >= other.m_nanoseconds);
+}
+
+Time Time::from_half_sanitized(i64 seconds, i32 extra_seconds, u32 nanoseconds)
+{
+    VERIFY(nanoseconds < 1'000'000'000);
+
+    if ((seconds <= 0 && extra_seconds > 0) || (seconds >= 0 && extra_seconds < 0)) {
+        seconds += extra_seconds;
+        extra_seconds = 0;
+    }
+
+    if (Checked<i64>::addition_would_overflow<i64, i64>(seconds, extra_seconds)) {
+        if (seconds < 0) {
+            return Time::min();
+        } else {
+            return Time::max();
+        }
+    }
+
+    return Time { seconds + extra_seconds, nanoseconds };
+}
 
 }
