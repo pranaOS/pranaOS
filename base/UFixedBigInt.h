@@ -342,6 +342,272 @@ public:
         };
     }
 
+        template<Unsigned U>
+    requires(IsSame<R, U>&& IsSame<T, u64>) constexpr R addc(const U& other, bool& carry) const
+    {
+        bool low_carry = Checked<T>::addition_would_overflow(m_low, other.low());
+        bool high_carry = Checked<T>::addition_would_overflow(m_high, other.high());
+
+        T lower = m_low + other.low();
+        T higher = m_high + other.high();
+        low_carry |= Checked<T>::addition_would_overflow(lower, carry);
+        high_carry |= Checked<T>::addition_would_overflow(higher, low_carry);
+
+        lower += carry;
+        higher += low_carry;
+        carry = high_carry;
+
+        return {
+            lower,
+            higher
+        };
+    }
+    template<Unsigned U>
+    requires(IsSame<R, U> && sizeof(T) > sizeof(u64)) constexpr R addc(const U& other, bool& carry) const
+    {
+        T lower = m_low.addc(other.low(), carry);
+        T higher = m_high.addc(other.high(), carry);
+
+        return {
+            lower,
+            higher
+        };
+    }
+    template<Unsigned U>
+    requires(my_size() < sizeof(U)) constexpr U addc(const U& other, bool& carry) const
+    {
+        return other.addc(*this, carry);
+    }
+
+    template<Unsigned U>
+    requires(sizeof(T) >= sizeof(U)) constexpr R subc(const U& other, bool& carry) const
+    {
+        bool low_carry = (!m_low && carry) || (m_low - carry) < other;
+        bool high_carry = !m_high && low_carry;
+
+        T lower = m_low - other - carry;
+        T higher = m_high - low_carry;
+        carry = high_carry;
+
+        return { lower, higher };
+    }
+    constexpr R subc(const R& other, bool& carry) const
+    {
+        bool low_carry = (!m_low && carry) || (m_low - carry) < other.low();
+        bool high_carry = (!m_high && low_carry) || (m_high - low_carry) < other.high();
+
+        T lower = m_low - other.low() - carry;
+        T higher = m_high - other.high() - low_carry;
+        carry = high_carry;
+
+        return { lower, higher };
+    }
+
+    constexpr R operator+(const bool& other) const
+    {
+        bool carry = false; 
+        return addc((u8)other, carry);
+    }
+    template<Unsigned U>
+    constexpr R operator+(const U& other) const
+    {
+        bool carry = false; 
+        return addc(other, carry);
+    }
+
+    constexpr R operator-(const bool& other) const
+    {
+        bool carry = false; 
+        return subc((u8)other, carry);
+    }
+
+    template<Unsigned U>
+    constexpr R operator-(const U& other) const
+    {
+        bool carry = false;
+        return subc(other, carry);
+    }
+
+    template<Unsigned U>
+    constexpr R& operator+=(const U& other)
+    {
+        *this = *this + other;
+        return *this;
+    }
+    template<Unsigned U>
+    constexpr R& operator-=(const U& other)
+    {
+        *this = *this - other;
+        return *this;
+    }
+
+    constexpr R operator++()
+    {
+        auto old = *this;
+        *this += 1;
+        return old;
+    }
+    constexpr R& operator++(int)
+    {
+        *this += 1;
+        return *this;
+    }
+    constexpr R operator--()
+    {
+        auto old = *this;
+        *this -= 1;
+        return old;
+    }
+    constexpr R& operator--(int)
+    {
+        *this -= 1;
+        return *this;
+    }
+
+    template<Unsigned U>
+    requires(my_size() >= sizeof(U)) constexpr R div_mod(const U& divisor, U& remainder) const
+    {
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdiv-by-zero"
+        if (!divisor) {
+            volatile int x = 1;
+            volatile int y = 0;
+            [[maybe_unused]] volatile int z = x / y;
+        }
+#pragma GCC diagnostic pop
+
+        if (*this < divisor) {
+            remainder = static_cast<U>(*this);
+            return 0u;
+        }
+        if (*this == divisor) {
+            remainder = 0u;
+            return 1u;
+        }
+        if (divisor == 1u) {
+            remainder = 0u;
+            return *this;
+        }
+
+        remainder = 0u;
+        R quotient = 0u;
+
+        for (ssize_t i = sizeof(R) * 8 - clz() - 1; i >= 0; --i) {
+            remainder <<= 1u;
+            remainder |= (*this >> (size_t)i) & 1u;
+            if (remainder >= divisor) {
+                remainder -= divisor;
+                quotient |= R { 1u } << (size_t)i;
+            }
+        }
+
+        return quotient;
+    }
+
+    template<Unsigned U>
+    constexpr R operator*(U other) const
+    {
+        R res = 0u;
+        R that = *this;
+        for (; other != 0u; other >>= 1u) {
+            if (other & 1u)
+                res += that;
+            that <<= 1u;
+        }
+        return res;
+    }
+
+    template<Unsigned U>
+    constexpr R operator/(const U& other) const
+    {
+        U mod { 0u }; 
+        return div_mod(other, mod);
+    }
+    template<Unsigned U>
+    constexpr U operator%(const U& other) const
+    {
+        R res { 0u };
+        div_mod(other, res);
+        return res;
+    }
+
+    template<Unsigned U>
+    constexpr R& operator*=(const U& other)
+    {
+        *this = *this * other;
+        return *this;
+    }
+    template<Unsigned U>
+    constexpr R& operator/=(const U& other)
+    {
+        *this = *this / other;
+        return *this;
+    }
+    template<Unsigned U>
+    constexpr R& operator%=(const U& other)
+    {
+        *this = *this % other;
+        return *this;
+    }
+
+    constexpr R sqrt() const
+    {
+
+        if (*this == 1u)
+            return 1u;
+
+        ssize_t shift = (sizeof(R) * 8 - clz()) & ~1ULL;
+
+        R res = 0u;
+        while (shift >= 0) {
+            res = res << 1u;
+            R large_cand = (res | 1u);
+            if (*this >> (size_t)shift >= large_cand * large_cand)
+                res = large_cand;
+            shift -= 2;
+        }
+        return res;
+    }
+
+    constexpr R pow(u64 exp)
+    {
+        R x1 = *this;
+        R x2 = *this * *this;
+        u64 exp_copy = exp;
+        for (ssize_t i = sizeof(u64) * 8 - __builtin_clzll(exp) - 2; i >= 0; --i) {
+            if (exp_copy & 1u) {
+                x2 *= x1;
+                x1 *= x1;
+            } else {
+                x1 *= x2;
+                x2 *= x2;
+            }
+            exp_copy >>= 1u;
+        }
+        return x1;
+    }
+    template<Unsigned U>
+    requires(sizeof(U) > sizeof(u64)) constexpr R pow(U exp)
+    {
+        
+        R x1 = *this;
+        R x2 = *this * *this;
+        U exp_copy = exp;
+        for (ssize_t i = sizeof(U) * 8 - exp().clz() - 2; i >= 0; --i) {
+            if (exp_copy & 1u) {
+                x2 *= x1;
+                x1 *= x1;
+            } else {
+                x1 *= x2;
+                x2 *= x2;
+            }
+            exp_copy >>= 1u;
+        }
+        return x1;
+    }
+
+
 }
 
 }
