@@ -11,7 +11,7 @@
 #include <base/UUID.h>
 
 namespace Base {
-
+    
 UUID::UUID()
 {
 }
@@ -41,14 +41,38 @@ void UUID::convert_string_view_to_uuid(const StringView& uuid_string_view)
     m_uuid_buffer.span().overwrite(10, fifth_unit.value().data(), fifth_unit.value().size());
 }
 
-bool UUID::operator==(const UUID& other) const 
+UUID::UUID(const StringView& uuid_string_view)
+{
+    convert_string_view_to_uuid(uuid_string_view);
+}
+
+String UUID::to_string() const
+{
+    StringBuilder builder(36);
+    builder.append(encode_hex(m_uuid_buffer.span().trim(4)).view());
+    builder.append('-');
+    builder.append(encode_hex(m_uuid_buffer.span().slice(4).trim(2)).view());
+    builder.append('-');
+    builder.append(encode_hex(m_uuid_buffer.span().slice(6).trim(2)).view());
+    builder.append('-');
+    builder.append(encode_hex(m_uuid_buffer.span().slice(8).trim(2)).view());
+    builder.append('-');
+    builder.append(encode_hex(m_uuid_buffer.span().slice(10).trim(6)).view());
+    return builder.to_string();
+}
+
+bool UUID::operator==(const UUID& other) const
 {
     for (size_t index = 0; index < 16; index++) {
         if (m_uuid_buffer[index] != other.m_uuid_buffer[index])
-            return false
+            return false;
     }
-
     return true;
+}
+
+bool UUID::is_zero() const
+{
+    return all_of(m_uuid_buffer.begin(), m_uuid_buffer.end(), [](const auto octet) { return octet == 0; });
 }
 
 }
