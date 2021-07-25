@@ -626,5 +626,182 @@ void MemoryManager::validate_syscall_preconditions(Space& space, RegisterState c
     }
 }
 
+Region* MemoryManager::find_region_from_vaddr(VirtualAddress vaddr)
+{
+    ScopedSpinLock lock(s_mm_lock);
+    if (auto* region = kernel_region_from_vaddr(vaddr))
+        return region;
+    auto page_directory = PageDirectory::find_by_cr3(read_cr3());
+    if (!page_directory)
+        return nullptr;
+    VERIFY(page_directory->space());
+    return find_user_region_from_vaddr(*page_directory->space(), vaddr);
+}
+
+PageFaultResponse MemoryManager::handle_page_fault(PageFault const& fault)
+{
+    VERIFY_INTERRUPTS_DISABLED();
+    if (Processor::current().in_irq()) {
+        dbgln("CPU[{}] BUG! Page fault while handling IRQ! code={}, vaddr={}, irq level: {}",
+            Processor::id(), fault.code(), fault.vaddr(), Processor::current().in_irq());
+        dump_kernel_regions();
+        return PageFaultResponse::ShouldCrash;
+    }
+    dbgln_if(PAGE_FAULT_DEBUG, "MM: CPU[{}] handle_page_fault({:#04x}) at {}", Processor::id(), fault.code(), fault.vaddr());
+    auto* region = find_region_from_vaddr(fault.vaddr());
+    if (!region) {
+        return PageFaultResponse::ShouldCrash;
+    }
+    return region->handle_fault(fault);
+}
+
+OwnPtr<Region> MemoryManager::allocate_contiguous_kernel_region(size_t size, StringView name, Region::Access access, Region::Cacheable cacheable)
+{
+    VERIFY(!(size % PAGE_SIZE));
+    ScopedSpinLock lock(s_mm_lock);
+    auto range = kernel_page_directory().range_allocator().allocate_anywhere(size);
+    if (!range.has_value())
+        return {};
+    auto vmobject = ContiguousVMObject::try_create_with_size(size);
+    if (!vmobject) {
+        kernel_page_directory().range_allocator().deallocate(range.value());
+        return {};
+    }
+    return allocate_kernel_region_with_vmobject(range.value(), *vmobject, name, access, cacheable);
+}
+
+OwnPtr<Region> MemoryManager::allocate_kernel_region(size_t size, StringView name, Region::Access access, AllocationStrategy strategy, Region::Cacheable cacheable)
+{
+    VERIFY(!(size % PAGE_SIZE));
+    auto vm_object = AnonymousVMObject::try_create_with_size(size, strategy);
+    if (!vm_object)
+        return {};
+    ScopedSpinLock lock(s_mm_lock);
+    auto range = kernel_page_directory().range_allocator().allocate_anywhere(size);
+    if (!range.has_value())
+        return {};
+    return allocate_kernel_region_with_vmobject(range.value(), vm_object.release_nonnull(), name, access, cacheable);
+}
+
+OwnPtr<Region> MemoryManager::allocate_kernel_region(PhysicalAddress paddr, size_t size, StringView name, Region::Access access, Region::Cacheable cacheable)
+{
+    auto vm_object = AnonymousVMObject::try_create_for_physical_range(paddr, size);
+    if (!vm_object)
+        return {};
+    VERIFY(!(size % PAGE_SIZE));
+    ScopedSpinLock lock(s_mm_lock);
+    auto range = kernel_page_directory().range_allocator().allocate_anywhere(size);
+    if (!range.has_value())
+        return {};
+    return allocate_kernel_region_with_vmobject(range.value(), *vm_object, name, access, cacheable);
+}
+
+OwnPtr<Region> MemoryManager::allocate_kernel_region_identity(PhysicalAddress paddr, size_t size, StringView name, Region::Access access, Region::Cacheable cacheable)
+{
+    auto vm_object = AnonymousVMObject::try_create_for_physical_range(paddr, size);
+    if (!vm_object)
+        return {};
+    VERIFY(!(size % PAGE_SIZE));
+    ScopedSpinLock lock(s_mm_lock);
+    auto range = kernel_page_directory().identity_range_allocator().allocate_specific(VirtualAddress(paddr.get()), size);
+    if (!range.has_value())
+        return {};
+    return allocate_kernel_region_with_vmobject(range.value(), *vm_object, name, access, cacheable);
+}
+
+OwnPtr<Region> MemoryManager::allocate_kernel_region_with_vmobject(Range const& range, VMObject& vmobject, StringView name, Region::Access access, Region::Cacheable cacheable)
+{
+    ScopedSpinLock lock(s_mm_lock);
+    auto region = Region::try_create_kernel_only(range, vmobject, 0, KString::try_create(name), access, cacheable);
+    if (region)
+        region->map(kernel_page_directory());
+    return region;
+}
+
+OwnPtr<Region> MemoryManager::allocate_kernel_region_with_vmobject(VMObject& vmobject, size_t size, StringView name, Region::Access access, Region::Cacheable cacheable)
+{
+    VERIFY(!(size % PAGE_SIZE));
+    ScopedSpinLock lock(s_mm_lock);
+    auto range = kernel_page_directory().range_allocator().allocate_anywhere(size);
+    if (!range.has_value())
+        return {};
+    return allocate_kernel_region_with_vmobject(range.value(), vmobject, name, access, cacheable);
+}
+
+bool MemoryManager::commit_user_physical_pages(size_t page_count)
+{
+    VERIFY(page_count > 0);
+    ScopedSpinLock lock(s_mm_lock);
+    if (m_system_memory_info.user_physical_pages_uncommitted < page_count)
+        return false;
+
+    m_system_memory_info.user_physical_pages_uncommitted -= page_count;
+    m_system_memory_info.user_physical_pages_committed += page_count;
+    return true;
+}
+
+void MemoryManager::uncommit_user_physical_pages(size_t page_count)
+{
+    VERIFY(page_count > 0);
+    ScopedSpinLock lock(s_mm_lock);
+    VERIFY(m_system_memory_info.user_physical_pages_committed >= page_count);
+
+    m_system_memory_info.user_physical_pages_uncommitted += page_count;
+    m_system_memory_info.user_physical_pages_committed -= page_count;
+}
+
+void MemoryManager::deallocate_physical_page(PhysicalAddress paddr)
+{
+    ScopedSpinLock lock(s_mm_lock);
+
+    for (auto& region : m_user_physical_regions) {
+        if (!region.contains(paddr))
+            continue;
+
+        region.return_page(paddr);
+        --m_system_memory_info.user_physical_pages_used;
+
+        ++m_system_memory_info.user_physical_pages_uncommitted;
+        return;
+    }
+
+    for (auto& region : m_super_physical_regions) {
+        if (!region.contains(paddr)) {
+            dbgln("MM: deallocate_supervisor_physical_page: {} not in {} - {}", paddr, region.lower(), region.upper());
+            continue;
+        }
+
+        region.return_page(paddr);
+        --m_system_memory_info.super_physical_pages_used;
+        return;
+    }
+
+    PANIC("MM: deallocate_user_physical_page couldn't figure out region for page @ {}", paddr);
+}
+
+RefPtr<PhysicalPage> MemoryManager::find_free_user_physical_page(bool committed)
+{
+    VERIFY(s_mm_lock.is_locked());
+    RefPtr<PhysicalPage> page;
+    if (committed) {
+        VERIFY(m_system_memory_info.user_physical_pages_committed > 0);
+        m_system_memory_info.user_physical_pages_committed--;
+    } else {
+
+        if (m_system_memory_info.user_physical_pages_uncommitted == 0)
+            return {};
+        m_system_memory_info.user_physical_pages_uncommitted--;
+    }
+    for (auto& region : m_user_physical_regions) {
+        page = region.take_free_page();
+        if (!page.is_null()) {
+            ++m_system_memory_info.user_physical_pages_used;
+            break;
+        }
+    }
+    VERIFY(!committed || !page.is_null());
+    return page;
+}
+
 
 }
