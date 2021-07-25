@@ -6,6 +6,7 @@
 
 #pragma once
 
+// includes
 #include <base/Concepts.h>
 #include <base/HashTable.h>
 #include <base/NonnullOwnPtrVector.h>
@@ -31,6 +32,7 @@ constexpr bool page_round_up_would_wrap(FlatPtr x)
 constexpr FlatPtr page_round_up(FlatPtr x)
 {
     FlatPtr rounded = (((FlatPtr)(x)) + PAGE_SIZE - 1) & (~(PAGE_SIZE - 1));
+
     VERIFY(x == 0 || rounded != 0);
     return rounded;
 }
@@ -105,7 +107,7 @@ struct MemoryManagerData {
 extern RecursiveSpinLock s_mm_lock;
 
 class MemoryManager {
-    AK_MAKE_ETERNAL
+    BASE_MAKE_ETERNAL
     friend class PageDirectory;
     friend class AnonymousVMObject;
     friend class Region;
@@ -269,5 +271,26 @@ inline bool is_user_address(VirtualAddress vaddr)
     return vaddr.get() < USER_RANGE_CEILING;
 }
 
+inline bool is_user_range(VirtualAddress vaddr, size_t size)
+{
+    if (vaddr.offset(size) < vaddr)
+        return false;
+    return is_user_address(vaddr) && is_user_address(vaddr.offset(size));
+}
+
+inline bool is_user_range(Range const& range)
+{
+    return is_user_range(range.base(), range.size());
+}
+
+inline bool PhysicalPage::is_shared_zero_page() const
+{
+    return this == &MM.shared_zero_page();
+}
+
+inline bool PhysicalPage::is_lazy_committed_page() const
+{
+    return this == &MM.lazy_committed_page();
+}
 
 }
