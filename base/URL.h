@@ -136,5 +136,17 @@ private:
     String m_data_payload;
 };
 
+template<>
+struct Formatter<URL> : Formatter<StringView> {
+    void format(FormatBuilder& builder, URL const& value)
+    {
+        Formatter<StringView>::format(builder, value.serialize());
+    }
+};
+
+template<>
+struct Traits<URL> : public GenericTraits<URL> {
+    static unsigned hash(URL const& url) { return url.to_string().hash(); }
+};
 
 }
