@@ -481,5 +481,150 @@ PageTableEntry* MemoryManager::pte(PageDirectory& page_directory, VirtualAddress
     return &quickmap_pt(PhysicalAddress((FlatPtr)pde.page_table_base()))[page_table_index];
 }
 
+PageTableEntry* MemoryManager::ensure_pte(PageDirectory& page_directory, VirtualAddress vaddr)
+{
+    VERIFY_INTERRUPTS_DISABLED();
+    VERIFY(s_mm_lock.own_lock());
+    VERIFY(page_directory.get_lock().own_lock());
+    u32 page_directory_table_index = (vaddr.get() >> 30) & 0x1ff;
+    u32 page_directory_index = (vaddr.get() >> 21) & 0x1ff;
+    u32 page_table_index = (vaddr.get() >> 12) & 0x1ff;
+
+    auto* pd = quickmap_pd(page_directory, page_directory_table_index);
+    PageDirectoryEntry& pde = pd[page_directory_index];
+    if (!pde.is_present()) {
+        bool did_purge = false;
+        auto page_table = allocate_user_physical_page(ShouldZeroFill::Yes, &did_purge);
+        if (!page_table) {
+            dbgln("MM: Unable to allocate page table to map {}", vaddr);
+            return nullptr;
+        }
+        if (did_purge) {
+
+            pd = quickmap_pd(page_directory, page_directory_table_index);
+            VERIFY(&pde == &pd[page_directory_index]); 
+
+            VERIFY(!pde.is_present()); 
+        }
+        pde.set_page_table_base(page_table->paddr().get());
+        pde.set_user_allowed(true);
+        pde.set_present(true);
+        pde.set_writable(true);
+        pde.set_global(&page_directory == m_kernel_page_directory.ptr());
+
+        auto result = page_directory.m_page_tables.set(vaddr.get() & ~(FlatPtr)0x1fffff, move(page_table));
+
+        VERIFY(result == AK::HashSetResult::InsertedNewEntry);
+    }
+
+    return &quickmap_pt(PhysicalAddress((FlatPtr)pde.page_table_base()))[page_table_index];
+}
+
+void MemoryManager::release_pte(PageDirectory& page_directory, VirtualAddress vaddr, bool is_last_release)
+{
+    VERIFY_INTERRUPTS_DISABLED();
+    VERIFY(s_mm_lock.own_lock());
+    VERIFY(page_directory.get_lock().own_lock());
+    u32 page_directory_table_index = (vaddr.get() >> 30) & 0x1ff;
+    u32 page_directory_index = (vaddr.get() >> 21) & 0x1ff;
+    u32 page_table_index = (vaddr.get() >> 12) & 0x1ff;
+
+    auto* pd = quickmap_pd(page_directory, page_directory_table_index);
+    PageDirectoryEntry& pde = pd[page_directory_index];
+    if (pde.is_present()) {
+        auto* page_table = quickmap_pt(PhysicalAddress((FlatPtr)pde.page_table_base()));
+        auto& pte = page_table[page_table_index];
+        pte.clear();
+
+        if (is_last_release || page_table_index == 0x1ff) {
+
+            bool all_clear = true;
+            for (u32 i = 0; i <= 0x1ff; i++) {
+                if (!page_table[i].is_null()) {
+                    all_clear = false;
+                    break;
+                }
+            }
+            if (all_clear) {
+                pde.clear();
+
+                auto result = page_directory.m_page_tables.remove(vaddr.get() & ~0x1fffff);
+                VERIFY(result);
+            }
+        }
+    }
+}
+
+UNMAP_AFTER_INIT void MemoryManager::initialize(u32 cpu)
+{
+    auto mm_data = new MemoryManagerData;
+    Processor::current().set_mm_data(*mm_data);
+
+    if (cpu == 0) {
+        new MemoryManager;
+        kmalloc_enable_expand();
+    }
+}
+
+Region* MemoryManager::kernel_region_from_vaddr(VirtualAddress vaddr)
+{
+    ScopedSpinLock lock(s_mm_lock);
+    for (auto& region : MM.m_kernel_regions) {
+        if (region.contains(vaddr))
+            return &region;
+    }
+    return nullptr;
+}
+
+Region* MemoryManager::find_user_region_from_vaddr_no_lock(Space& space, VirtualAddress vaddr)
+{
+    VERIFY(space.get_lock().own_lock());
+    return space.find_region_containing({ vaddr, 1 });
+}
+
+Region* MemoryManager::find_user_region_from_vaddr(Space& space, VirtualAddress vaddr)
+{
+    ScopedSpinLock lock(space.get_lock());
+    return find_user_region_from_vaddr_no_lock(space, vaddr);
+}
+
+void MemoryManager::validate_syscall_preconditions(Space& space, RegisterState const& regs)
+{
+
+    ScopedSpinLock lock(space.get_lock());
+
+    auto unlock_and_handle_crash = [&lock, &regs](const char* description, int signal) {
+        lock.unlock();
+        handle_crash(regs, description, signal);
+    };
+
+    {
+        VirtualAddress userspace_sp = VirtualAddress { regs.userspace_sp() };
+        if (!MM.validate_user_stack_no_lock(space, userspace_sp)) {
+            dbgln("Invalid stack pointer: {:p}", userspace_sp);
+            unlock_and_handle_crash("Bad stack on syscall entry", SIGSTKFLT);
+        }
+    }
+
+    {
+        VirtualAddress ip = VirtualAddress { regs.ip() };
+        auto* calling_region = MM.find_user_region_from_vaddr_no_lock(space, ip);
+        if (!calling_region) {
+            dbgln("Syscall from {:p} which has no associated region", ip);
+            unlock_and_handle_crash("Syscall from unknown region", SIGSEGV);
+        }
+
+        if (calling_region->is_writable()) {
+            dbgln("Syscall from writable memory at {:p}", ip);
+            unlock_and_handle_crash("Syscall from writable memory", SIGSEGV);
+        }
+
+        if (space.enforces_syscall_regions() && !calling_region->is_syscall_region()) {
+            dbgln("Syscall from non-syscall region");
+            unlock_and_handle_crash("Syscall from non-syscall region", SIGSEGV);
+        }
+    }
+}
+
 
 }
