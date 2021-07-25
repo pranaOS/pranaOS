@@ -19,7 +19,7 @@ enum class MayReturnToFreeList : bool {
 
 class PhysicalPage {
     BASE_MAKE_NONCOPYABLE(PhysicalPage);
-    BASe_MAKE_NONMOVABLE(PhysicalPage);
+    BASE_MAKE_NONMOVABLE(PhysicalPage);
 
     friend class MemoryManager;
 
@@ -54,5 +54,17 @@ private:
     MayReturnToFreeList m_may_return_to_freelist { MayReturnToFreeList::Yes };
 };
 
+struct PhysicalPageEntry {
+    union {
+        struct {
+            PhysicalPage physical_page;
+        } allocated;
+
+        struct {
+            i16 next_index;
+            i16 prev_index;
+        } freelist;
+    };
+};
 
 }
