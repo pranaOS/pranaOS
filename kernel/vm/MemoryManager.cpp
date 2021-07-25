@@ -803,5 +803,251 @@ RefPtr<PhysicalPage> MemoryManager::find_free_user_physical_page(bool committed)
     return page;
 }
 
+NonnullRefPtr<PhysicalPage> MemoryManager::allocate_committed_user_physical_page(ShouldZeroFill should_zero_fill)
+{
+    ScopedSpinLock lock(s_mm_lock);
+    auto page = find_free_user_physical_page(true);
+    if (should_zero_fill == ShouldZeroFill::Yes) {
+        auto* ptr = quickmap_page(*page);
+        memset(ptr, 0, PAGE_SIZE);
+        unquickmap_page();
+    }
+    return page.release_nonnull();
+}
+
+RefPtr<PhysicalPage> MemoryManager::allocate_user_physical_page(ShouldZeroFill should_zero_fill, bool* did_purge)
+{
+    ScopedSpinLock lock(s_mm_lock);
+    auto page = find_free_user_physical_page(false);
+    bool purged_pages = false;
+
+    if (!page) {
+
+        for_each_vmobject([&](auto& vmobject) {
+            if (!vmobject.is_anonymous())
+                return IterationDecision::Continue;
+            int purged_page_count = static_cast<AnonymousVMObject&>(vmobject).purge();
+            if (purged_page_count) {
+                dbgln("MM: Purge saved the day! Purged {} pages from AnonymousVMObject", purged_page_count);
+                page = find_free_user_physical_page(false);
+                purged_pages = true;
+                VERIFY(page);
+                return IterationDecision::Break;
+            }
+            return IterationDecision::Continue;
+        });
+        if (!page) {
+            dmesgln("MM: no user physical pages available");
+            return {};
+        }
+    }
+
+    if (should_zero_fill == ShouldZeroFill::Yes) {
+        auto* ptr = quickmap_page(*page);
+        memset(ptr, 0, PAGE_SIZE);
+        unquickmap_page();
+    }
+
+    if (did_purge)
+        *did_purge = purged_pages;
+    return page;
+}
+
+NonnullRefPtrVector<PhysicalPage> MemoryManager::allocate_contiguous_supervisor_physical_pages(size_t size)
+{
+    VERIFY(!(size % PAGE_SIZE));
+    ScopedSpinLock lock(s_mm_lock);
+    size_t count = ceil_div(size, static_cast<size_t>(PAGE_SIZE));
+    NonnullRefPtrVector<PhysicalPage> physical_pages;
+
+    for (auto& region : m_super_physical_regions) {
+        physical_pages = region.take_contiguous_free_pages(count);
+        if (!physical_pages.is_empty())
+            continue;
+    }
+
+    if (physical_pages.is_empty()) {
+        if (m_super_physical_regions.is_empty()) {
+            dmesgln("MM: no super physical regions available (?)");
+        }
+
+        dmesgln("MM: no super physical pages available");
+        VERIFY_NOT_REACHED();
+        return {};
+    }
+
+    auto cleanup_region = MM.allocate_kernel_region(physical_pages[0].paddr(), PAGE_SIZE * count, "MemoryManager Allocation Sanitization", Region::Access::Read | Region::Access::Write);
+    fast_u32_fill((u32*)cleanup_region->vaddr().as_ptr(), 0, (PAGE_SIZE * count) / sizeof(u32));
+    m_system_memory_info.super_physical_pages_used += count;
+    return physical_pages;
+}
+
+RefPtr<PhysicalPage> MemoryManager::allocate_supervisor_physical_page()
+{
+    ScopedSpinLock lock(s_mm_lock);
+    RefPtr<PhysicalPage> page;
+
+    for (auto& region : m_super_physical_regions) {
+        page = region.take_free_page();
+        if (!page.is_null())
+            break;
+    }
+
+    if (!page) {
+        if (m_super_physical_regions.is_empty()) {
+            dmesgln("MM: no super physical regions available (?)");
+        }
+
+        dmesgln("MM: no super physical pages available");
+        VERIFY_NOT_REACHED();
+        return {};
+    }
+
+    fast_u32_fill((u32*)page->paddr().offset(kernel_base).as_ptr(), 0, PAGE_SIZE / sizeof(u32));
+    ++m_system_memory_info.super_physical_pages_used;
+    return page;
+}
+
+void MemoryManager::enter_process_paging_scope(Process& process)
+{
+    enter_space(process.space());
+}
+
+void MemoryManager::enter_space(Space& space)
+{
+    auto current_thread = Thread::current();
+    VERIFY(current_thread != nullptr);
+    ScopedSpinLock lock(s_mm_lock);
+
+    current_thread->regs().cr3 = space.page_directory().cr3();
+    write_cr3(space.page_directory().cr3());
+}
+
+void MemoryManager::flush_tlb_local(VirtualAddress vaddr, size_t page_count)
+{
+    Processor::flush_tlb_local(vaddr, page_count);
+}
+
+void MemoryManager::flush_tlb(PageDirectory const* page_directory, VirtualAddress vaddr, size_t page_count)
+{
+    Processor::flush_tlb(page_directory, vaddr, page_count);
+}
+
+PageDirectoryEntry* MemoryManager::quickmap_pd(PageDirectory& directory, size_t pdpt_index)
+{
+    VERIFY(s_mm_lock.own_lock());
+    auto& mm_data = get_data();
+    auto& pte = boot_pd_kernel_pt1023[(KERNEL_QUICKMAP_PD - KERNEL_PT1024_BASE) / PAGE_SIZE];
+    auto pd_paddr = directory.m_directory_pages[pdpt_index]->paddr();
+    if (pte.physical_page_base() != pd_paddr.get()) {
+        pte.set_physical_page_base(pd_paddr.get());
+        pte.set_present(true);
+        pte.set_writable(true);
+        pte.set_user_allowed(false);
+
+        flush_tlb_local(VirtualAddress(KERNEL_QUICKMAP_PD));
+    } else {
+
+        if (mm_data.m_last_quickmap_pd != pd_paddr)
+            flush_tlb_local(VirtualAddress(KERNEL_QUICKMAP_PD));
+    }
+    mm_data.m_last_quickmap_pd = pd_paddr;
+    return (PageDirectoryEntry*)KERNEL_QUICKMAP_PD;
+}
+
+PageTableEntry* MemoryManager::quickmap_pt(PhysicalAddress pt_paddr)
+{
+    VERIFY(s_mm_lock.own_lock());
+    auto& mm_data = get_data();
+    auto& pte = ((PageTableEntry*)boot_pd_kernel_pt1023)[(KERNEL_QUICKMAP_PT - KERNEL_PT1024_BASE) / PAGE_SIZE];
+    if (pte.physical_page_base() != pt_paddr.get()) {
+        pte.set_physical_page_base(pt_paddr.get());
+        pte.set_present(true);
+        pte.set_writable(true);
+        pte.set_user_allowed(false);
+
+        flush_tlb_local(VirtualAddress(KERNEL_QUICKMAP_PT));
+    } else {
+
+        if (mm_data.m_last_quickmap_pt != pt_paddr)
+            flush_tlb_local(VirtualAddress(KERNEL_QUICKMAP_PT));
+    }
+    mm_data.m_last_quickmap_pt = pt_paddr;
+    return (PageTableEntry*)KERNEL_QUICKMAP_PT;
+}
+
+u8* MemoryManager::quickmap_page(PhysicalAddress const& physical_address)
+{
+    VERIFY_INTERRUPTS_DISABLED();
+    auto& mm_data = get_data();
+    mm_data.m_quickmap_prev_flags = mm_data.m_quickmap_in_use.lock();
+    ScopedSpinLock lock(s_mm_lock);
+
+    VirtualAddress vaddr(KERNEL_QUICKMAP_PER_CPU_BASE + Processor::id() * PAGE_SIZE);
+    u32 pte_idx = (vaddr.get() - KERNEL_PT1024_BASE) / PAGE_SIZE;
+
+    auto& pte = ((PageTableEntry*)boot_pd_kernel_pt1023)[pte_idx];
+    if (pte.physical_page_base() != physical_address.get()) {
+        pte.set_physical_page_base(physical_address.get());
+        pte.set_present(true);
+        pte.set_writable(true);
+        pte.set_user_allowed(false);
+        flush_tlb_local(vaddr);
+    }
+    return vaddr.as_ptr();
+}
+
+void MemoryManager::unquickmap_page()
+{
+    VERIFY_INTERRUPTS_DISABLED();
+    ScopedSpinLock lock(s_mm_lock);
+    auto& mm_data = get_data();
+    VERIFY(mm_data.m_quickmap_in_use.is_locked());
+    VirtualAddress vaddr(KERNEL_QUICKMAP_PER_CPU_BASE + Processor::id() * PAGE_SIZE);
+    u32 pte_idx = (vaddr.get() - KERNEL_PT1024_BASE) / PAGE_SIZE;
+    auto& pte = ((PageTableEntry*)boot_pd_kernel_pt1023)[pte_idx];
+    pte.clear();
+    flush_tlb_local(vaddr);
+    mm_data.m_quickmap_in_use.unlock(mm_data.m_quickmap_prev_flags);
+}
+
+bool MemoryManager::validate_user_stack_no_lock(Space& space, VirtualAddress vaddr) const
+{
+    VERIFY(space.get_lock().own_lock());
+
+    if (!is_user_address(vaddr))
+        return false;
+
+    auto* region = find_user_region_from_vaddr_no_lock(space, vaddr);
+    return region && region->is_user() && region->is_stack();
+}
+
+bool MemoryManager::validate_user_stack(Space& space, VirtualAddress vaddr) const
+{
+    ScopedSpinLock lock(space.get_lock());
+    return validate_user_stack_no_lock(space, vaddr);
+}
+
+void MemoryManager::register_vmobject(VMObject& vmobject)
+{
+    ScopedSpinLock lock(s_mm_lock);
+    m_vmobjects.append(vmobject);
+}
+
+void MemoryManager::unregister_vmobject(VMObject& vmobject)
+{
+    ScopedSpinLock lock(s_mm_lock);
+    m_vmobjects.remove(vmobject);
+}
+
+void MemoryManager::register_region(Region& region)
+{
+    ScopedSpinLock lock(s_mm_lock);
+    if (region.is_kernel())
+        m_kernel_regions.append(region);
+    else
+        m_user_regions.append(region);
+}
+
 
 }
