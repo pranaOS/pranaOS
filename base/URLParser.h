@@ -13,7 +13,6 @@
 
 namespace Base {
 
-
 #define ENUMERATE_STATES                 \
     STATE(SchemeStart)                   \
     STATE(Scheme)                        \
@@ -41,16 +40,29 @@ class URLParser {
 public:
     enum class State {
 #define STATE(state) state,
-        ENUMERATE_STATES;
+        ENUMERATE_STATES
 #undef STATE
     };
 
+    static char const* state_name(State const& state)
+    {
+        switch (state) {
+#define STATE(state)   \
+    case State::state: \
+        return #state;
+            ENUMERATE_STATES
+#undef STATE
+        }
+        VERIFY_NOT_REACHED();
+    }
+
+    static URL parse(Badge<URL>, StringView const& input, URL const* base_url = nullptr);
 
 private:
     static Optional<URL> parse_data_url(StringView const& raw_input);
 };
 
-#undef ENUMERATE_STATEs
+#undef ENUMERATE_STATES
 
 }
 
