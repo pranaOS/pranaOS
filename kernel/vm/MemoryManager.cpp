@@ -4,13 +4,14 @@
  * SPDX-License-Identifier: BSD-2-Clause
 */
 
+// includes
 #include <base/Assertions.h>
 #include <base/Memory.h>
 #include <base/StringView.h>
 #include <kernel/BootInfo.h>
 #include <kernel/CMOS.h>
-#include <kernel/FileSystem/Inode.h>
-#include <kernel/Heap/kmalloc.h>
+#include <kernel/filesystem/Inode.h>
+#include <kernel/heap/kmalloc.h>
 #include <kernel/Multiboot.h>
 #include <kernel/Panic.h>
 #include <kernel/Process.h>
@@ -83,8 +84,7 @@ UNMAP_AFTER_INIT void MemoryManager::protect_kernel_image()
         auto& pte = *ensure_pte(kernel_page_directory(), VirtualAddress(i));
         pte.set_writable(false);
     }
-    if (Processor::current().has_feature(CPUFeature::NX)) {
-
+    if (Processor::current().has_feature(CPUFeature::NX)) {        
         for (auto i = start_of_kernel_data; i < end_of_kernel_image; i += PAGE_SIZE) {
             auto& pte = *ensure_pte(kernel_page_directory(), VirtualAddress(i));
             pte.set_execute_disabled(true);
@@ -96,6 +96,7 @@ UNMAP_AFTER_INIT void MemoryManager::protect_readonly_after_init_memory()
 {
     ScopedSpinLock mm_lock(s_mm_lock);
     ScopedSpinLock page_lock(kernel_page_directory().get_lock());
+
     for (auto i = (FlatPtr)&start_of_ro_after_init; i < (FlatPtr)&end_of_ro_after_init; i += PAGE_SIZE) {
         auto& pte = *ensure_pte(kernel_page_directory(), VirtualAddress(i));
         pte.set_writable(false);
@@ -127,7 +128,7 @@ void MemoryManager::unmap_ksyms_after_init()
 
     auto start = page_round_down((FlatPtr)start_of_kernel_ksyms);
     auto end = page_round_up((FlatPtr)end_of_kernel_ksyms);
- 
+
     for (auto i = start; i < end; i += PAGE_SIZE) {
         auto& pte = *ensure_pte(kernel_page_directory(), VirtualAddress(i));
         pte.clear();
@@ -280,6 +281,7 @@ UNMAP_AFTER_INIT void MemoryManager::parse_memory_map()
 
     VERIFY(virtual_to_low_physical((FlatPtr)super_pages) + sizeof(super_pages) < 0x1000000);
 
+
     m_super_physical_regions.append(PhysicalRegion::try_create(
         PhysicalAddress(virtual_to_low_physical(FlatPtr(super_pages))),
         PhysicalAddress(virtual_to_low_physical(FlatPtr(super_pages + sizeof(super_pages)))))
@@ -301,6 +303,7 @@ UNMAP_AFTER_INIT void MemoryManager::parse_memory_map()
     VERIFY(m_system_memory_info.super_physical_pages > 0);
     VERIFY(m_system_memory_info.user_physical_pages > 0);
 
+    
     m_system_memory_info.user_physical_pages_uncommitted = m_system_memory_info.user_physical_pages;
 
     for (auto& used_range : m_used_memory_ranges) {
@@ -320,7 +323,6 @@ UNMAP_AFTER_INIT void MemoryManager::parse_memory_map()
 
 UNMAP_AFTER_INIT void MemoryManager::initialize_physical_pages()
 {
-
     PhysicalAddress highest_physical_address;
     for (auto& range : m_used_memory_ranges) {
         if (range.end.get() > highest_physical_address.get())
@@ -365,6 +367,7 @@ UNMAP_AFTER_INIT void MemoryManager::initialize_physical_pages()
     m_system_memory_info.user_physical_pages -= physical_page_array_pages_and_page_tables_count;
 
     if (found_region->size() == physical_page_array_pages_and_page_tables_count) {
+
         m_physical_pages_region = m_user_physical_regions.take(*found_region_index);
     } else {
         m_physical_pages_region = found_region->try_take_pages_from_beginning(physical_page_array_pages_and_page_tables_count);
@@ -380,6 +383,7 @@ UNMAP_AFTER_INIT void MemoryManager::initialize_physical_pages()
     }
 
     ScopedSpinLock lock(s_mm_lock);
+
 
     auto page_tables_base = m_physical_pages_region->lower();
     auto physical_page_array_base = page_tables_base.offset(needed_page_table_count * PAGE_SIZE);
@@ -439,7 +443,7 @@ UNMAP_AFTER_INIT void MemoryManager::initialize_physical_pages()
         auto& physical_page_entry = m_physical_page_entries[physical_page_index];
         auto physical_page = adopt_ref(*new (&physical_page_entry.allocated.physical_page) PhysicalPage(MayReturnToFreeList::No));
         auto result = kernel_page_tables.set(virtual_page_array_current_page & ~0x1fffff, move(physical_page));
-        VERIFY(result == AK::HashSetResult::InsertedNewEntry);
+        VERIFY(result == Base::HashSetResult::InsertedNewEntry);
 
         virtual_page_array_current_page += (PAGE_SIZE / sizeof(PageTableEntry)) * PAGE_SIZE;
     }
@@ -500,7 +504,7 @@ PageTableEntry* MemoryManager::ensure_pte(PageDirectory& page_directory, Virtual
             return nullptr;
         }
         if (did_purge) {
-
+            
             pd = quickmap_pd(page_directory, page_directory_table_index);
             VERIFY(&pde == &pd[page_directory_index]); 
 
@@ -514,7 +518,7 @@ PageTableEntry* MemoryManager::ensure_pte(PageDirectory& page_directory, Virtual
 
         auto result = page_directory.m_page_tables.set(vaddr.get() & ~(FlatPtr)0x1fffff, move(page_table));
 
-        VERIFY(result == AK::HashSetResult::InsertedNewEntry);
+        VERIFY(result == Base::HashSetResult::InsertedNewEntry);
     }
 
     return &quickmap_pt(PhysicalAddress((FlatPtr)pde.page_table_base()))[page_table_index];
@@ -787,7 +791,6 @@ RefPtr<PhysicalPage> MemoryManager::find_free_user_physical_page(bool committed)
         VERIFY(m_system_memory_info.user_physical_pages_committed > 0);
         m_system_memory_info.user_physical_pages_committed--;
     } else {
-
         if (m_system_memory_info.user_physical_pages_uncommitted == 0)
             return {};
         m_system_memory_info.user_physical_pages_uncommitted--;
@@ -822,7 +825,6 @@ RefPtr<PhysicalPage> MemoryManager::allocate_user_physical_page(ShouldZeroFill s
     bool purged_pages = false;
 
     if (!page) {
-
         for_each_vmobject([&](auto& vmobject) {
             if (!vmobject.is_anonymous())
                 return IterationDecision::Continue;
@@ -1049,5 +1051,51 @@ void MemoryManager::register_region(Region& region)
         m_user_regions.append(region);
 }
 
+void MemoryManager::unregister_region(Region& region)
+{
+    ScopedSpinLock lock(s_mm_lock);
+    if (region.is_kernel())
+        m_kernel_regions.remove(region);
+    else
+        m_user_regions.remove(region);
+}
+
+void MemoryManager::dump_kernel_regions()
+{
+    dbgln("Kernel regions:");
+#if ARCH(I386)
+    auto addr_padding = "";
+#else
+    auto addr_padding = "        ";
+#endif
+    dbgln("BEGIN{}         END{}        SIZE{}       ACCESS NAME",
+        addr_padding, addr_padding, addr_padding);
+    ScopedSpinLock lock(s_mm_lock);
+    for (auto& region : m_kernel_regions) {
+        dbgln("{:p} -- {:p} {:p} {:c}{:c}{:c}{:c}{:c}{:c} {}",
+            region.vaddr().get(),
+            region.vaddr().offset(region.size() - 1).get(),
+            region.size(),
+            region.is_readable() ? 'R' : ' ',
+            region.is_writable() ? 'W' : ' ',
+            region.is_executable() ? 'X' : ' ',
+            region.is_shared() ? 'S' : ' ',
+            region.is_stack() ? 'T' : ' ',
+            region.is_syscall_region() ? 'C' : ' ',
+            region.name());
+    }
+}
+
+void MemoryManager::set_page_writable_direct(VirtualAddress vaddr, bool writable)
+{
+    ScopedSpinLock lock(s_mm_lock);
+    ScopedSpinLock page_lock(kernel_page_directory().get_lock());
+    auto* pte = ensure_pte(kernel_page_directory(), vaddr);
+    VERIFY(pte);
+    if (pte->is_writable() == writable)
+        return;
+    pte->set_writable(writable);
+    flush_tlb(&kernel_page_directory(), vaddr);
+}
 
 }
