@@ -451,5 +451,70 @@ public:
             return value;
     }
 
+        T unstable_take(size_t index)
+    {
+        VERIFY(index < m_size);
+        swap(raw_at(index), raw_at(m_size - 1));
+        return take_last();
+    }
+
+    template<typename U = T>
+    [[nodiscard]] bool try_insert(size_t index, U&& value) requires(CanBePlacedInsideVector<U>)
+    {
+        if (index > size())
+            return false;
+        if (index == size())
+            return try_append(forward<U>(value));
+        if (!try_grow_capacity(size() + 1))
+            return false;
+        ++m_size;
+        if constexpr (Traits<StorageType>::is_trivial()) {
+            TypedTransfer<StorageType>::move(slot(index + 1), slot(index), m_size - index - 1);
+        } else {
+            for (size_t i = size() - 1; i > index; --i) {
+                new (slot(i)) StorageType(move(at(i - 1)));
+                at(i - 1).~StorageType();
+            }
+        }
+        if constexpr (contains_reference)
+            new (slot(index)) StorageType(&value);
+        else
+            new (slot(index)) StorageType(forward<U>(value));
+        return true;
+    }
+
+    template<typename TUnaryPredicate, typename U = T>
+    [[nodiscard]] bool try_insert_before_matching(U&& value, TUnaryPredicate predicate, size_t first_index = 0, size_t* inserted_index = nullptr) requires(CanBePlacedInsideVector<U>)
+    {
+        for (size_t i = first_index; i < size(); ++i) {
+            if (predicate(at(i))) {
+                if (!try_insert(i, forward<U>(value)))
+                    return false;
+                if (inserted_index)
+                    *inserted_index = i;
+                return true;
+            }
+        }
+        if (!try_append(forward<U>(value)))
+            return false;
+        if (inserted_index)
+            *inserted_index = size() - 1;
+        return true;
+    }
+
+    [[nodiscard]] bool try_extend(Vector&& other)
+    {
+        if (is_empty()) {
+            *this = move(other);
+            return true;
+        }
+        auto other_size = other.size();
+        Vector tmp = move(other);
+        if (!try_grow_capacity(size() + other_size))
+            return false;
+        TypedTransfer<StorageType>::move(data() + m_size, tmp.data(), other_size);
+        m_size += other_size;
+        return true;
+    }
 
 }
