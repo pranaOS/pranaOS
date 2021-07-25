@@ -7,9 +7,9 @@
 
 #pragma once
 
-#include <AK/Weakable.h>
+#include <base/Weakable.h>
 
-namespace AK {
+namespace Base {
 
 template<typename T>
 class WeakPtr {
@@ -111,6 +111,64 @@ public:
         });
         return *this;
     }
+
+        template<typename U, typename EnableIf<IsBaseOf<T, U>>::Type* = nullptr>
+    WeakPtr& operator=(const NonnullRefPtr<U>& object)
+    {
+        object.do_while_locked([&](U* obj) {
+            if (obj)
+                m_link = obj->template make_weak_ptr<U>().take_link();
+            else
+                m_link = nullptr;
+        });
+        return *this;
+    }
+
+    [[nodiscard]] RefPtr<T> strong_ref() const
+    {
+
+        RefPtr<T> ref;
+
+        m_link.do_while_locked([&](WeakLink* link) {
+            if (link)
+                ref = link->template strong_ref<T>();
+        });
+        return ref;
+    }
+
+#ifndef KERNEL
+    
+    T* ptr() const { return unsafe_ptr(); }
+    T* operator->() { return unsafe_ptr(); }
+    const T* operator->() const { return unsafe_ptr(); }
+    operator const T*() const { return unsafe_ptr(); }
+    operator T*() { return unsafe_ptr(); }
+#endif
+
+    [[nodiscard]] T* unsafe_ptr() const
+    {
+        T* ptr = nullptr;
+        m_link.do_while_locked([&](WeakLink* link) {
+            if (link)
+                ptr = link->unsafe_ptr<T>();
+        });
+        return ptr;
+    }
+
+    operator bool() const { return m_link ? !m_link->is_null() : false; }
+
+    [[nodiscard]] bool is_null() const { return !m_link || m_link->is_null(); }
+    void clear() { m_link = nullptr; }
+
+    [[nodiscard]] RefPtr<WeakLink> take_link() { return move(m_link); }
+
+private:
+    WeakPtr(const RefPtr<WeakLink>& link)
+        : m_link(link)
+    {
+    }
+
+    RefPtr<WeakLink> m_link;
 
 
 }
