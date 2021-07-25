@@ -12,12 +12,11 @@
 
 namespace Base {
 
-
 class URL {
     friend class URLParser;
 
 public:
-        enum class PercentEncodeSet {
+    enum class PercentEncodeSet {
         C0Control,
         Fragment,
         Query,
@@ -45,7 +44,7 @@ public:
     {
     }
 
-        bool const& is_valid() const { return m_valid; }
+    bool const& is_valid() const { return m_valid; }
 
     String const& scheme() const { return m_scheme; }
     String const& protocol() const { return m_scheme; }
@@ -60,6 +59,47 @@ public:
 
     bool includes_credentials() const { return !m_username.is_empty() || !m_password.is_empty(); }
     bool is_special() const { return is_special_scheme(m_scheme); }
+
+    void set_scheme(String);
+    void set_protocol(String protocol) { set_scheme(move(protocol)); }
+    void set_username(String);
+    void set_password(String);
+    void set_host(String);
+    void set_port(u16);
+    void set_paths(Vector<String>);
+    void set_query(String);
+    void set_fragment(String);
+    void set_cannot_be_a_base_url(bool value) { m_cannot_be_a_base_url = value; }
+    void append_path(String path) { m_paths.append(path); }
+
+    String path() const;
+    String basename() const;
+
+    String serialize(ExcludeFragment = ExcludeFragment::No) const;
+    String serialize_for_display() const;
+    String to_string() const { return serialize(); }
+
+    bool equals(URL const& other, ExcludeFragment = ExcludeFragment::No) const;
+
+    URL complete_url(String const&) const;
+
+    bool data_payload_is_base64() const { return m_data_payload_is_base64; }
+    String const& data_mime_type() const { return m_data_mime_type; }
+    String const& data_payload() const { return m_data_payload; }
+
+    static URL create_with_url_or_path(String const&);
+    static URL create_with_file_scheme(String const& path, String const& fragment = {}, String const& hostname = {});
+    static URL create_with_file_protocol(String const& path, String const& fragment = {}) { return create_with_file_scheme(path, fragment); }
+    static URL create_with_data(String mime_type, String payload, bool is_base64 = false) { return URL(move(mime_type), move(payload), is_base64); };
+
+    static bool scheme_requires_port(StringView const&);
+    static u16 default_port_for_scheme(StringView const&);
+    static bool is_special_scheme(StringView const&);
+
+    static String percent_encode(StringView const& input, PercentEncodeSet set = PercentEncodeSet::Userinfo);
+    static String percent_decode(StringView const& input);
+
+    bool operator==(URL const& other) const { return equals(other, ExcludeFragment::No); }
 
 private:
     URL(String&& data_mime_type, String&& data_payload, bool payload_is_base64)
@@ -78,6 +118,23 @@ private:
     static void append_percent_encoded(StringBuilder&, u32 code_point);
 
     bool m_valid { false };
+
+    String m_scheme;
+    String m_username;
+    String m_password;
+    String m_host;
+    u16 m_port { 0 };
+    String m_path;
+    Vector<String> m_paths;
+    String m_query;
+    String m_fragment;
+
+    bool m_cannot_be_a_base_url { false };
+
+    bool m_data_payload_is_base64 { false };
+    String m_data_mime_type;
+    String m_data_payload;
 };
+
 
 }
