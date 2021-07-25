@@ -4,9 +4,9 @@
  * SPDX-License-Identifier: BSD-2-Clause
 */
 
-
 #pragma once
 
+// includes
 #include <base/Weakable.h>
 
 namespace Base {
@@ -112,7 +112,7 @@ public:
         return *this;
     }
 
-        template<typename U, typename EnableIf<IsBaseOf<T, U>>::Type* = nullptr>
+    template<typename U, typename EnableIf<IsBaseOf<T, U>>::Type* = nullptr>
     WeakPtr& operator=(const NonnullRefPtr<U>& object)
     {
         object.do_while_locked([&](U* obj) {
@@ -126,9 +126,7 @@ public:
 
     [[nodiscard]] RefPtr<T> strong_ref() const
     {
-
         RefPtr<T> ref;
-
         m_link.do_while_locked([&](WeakLink* link) {
             if (link)
                 ref = link->template strong_ref<T>();
@@ -169,6 +167,61 @@ private:
     }
 
     RefPtr<WeakLink> m_link;
+};
 
+template<typename T>
+template<typename U>
+inline WeakPtr<U> Weakable<T>::make_weak_ptr() const
+{
+    if constexpr (IsBaseOf<RefCountedBase, T>) {
+        
+        if (!static_cast<const T*>(this)->try_ref())
+            return {};
+    } else {
+        
+        if (m_being_destroyed.load(Base::MemoryOrder::memory_order_acquire))
+            return {};
+    }
+    if (!m_link) {
+
+        m_link.assign_if_null(adopt_ref(*new WeakLink(const_cast<T&>(static_cast<const T&>(*this)))));
+    }
+
+    WeakPtr<U> weak_ptr(m_link);
+
+    if constexpr (IsBaseOf<RefCountedBase, T>) {
+
+        if (static_cast<const T*>(this)->unref()) {
+            
+            VERIFY(!weak_ptr.strong_ref());
+            return {};
+        }
+    }
+    return weak_ptr;
+}
+
+template<typename T>
+struct Formatter<WeakPtr<T>> : Formatter<const T*> {
+    void format(FormatBuilder& builder, const WeakPtr<T>& value)
+    {
+#ifdef KERNEL
+        auto ref = value.strong_ref();
+        Formatter<const T*>::format(builder, ref.ptr());
+#else
+        Formatter<const T*>::format(builder, value.ptr());
+#endif
+    }
+};
+
+template<typename T>
+WeakPtr<T> try_make_weak_ptr(const T* ptr)
+{
+    if (ptr) {
+        return ptr->template make_weak_ptr<T>();
+    }
+    return {};
+}
 
 }
+
+using Base::WeakPtr;
