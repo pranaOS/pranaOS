@@ -18,7 +18,7 @@ extern u8 end_of_kernel_image[];
 
 namespace Kernel {
 
-static AK::Singleton<HashMap<FlatPtr, PageDirectory*>> s_cr3_map;
+static Base::Singleton<HashMap<FlatPtr, PageDirectory*>> s_cr3_map;
 
 static HashMap<FlatPtr, PageDirectory*>& cr3_map()
 {
@@ -92,5 +92,46 @@ PageDirectory::PageDirectory(const RangeAllocator* parent_range_allocator)
         MM.unquickmap_page();
     }
 #endif
+
+    {
+        auto& table = *(PageDirectoryPointerTable*)MM.quickmap_page(*m_directory_table);
+        for (size_t i = 0; i < sizeof(m_directory_pages) / sizeof(m_directory_pages[0]); i++) {
+            if (m_directory_pages[i]) {
+#if ARCH(I386)
+                table.raw[i] = (FlatPtr)m_directory_pages[i]->paddr().as_ptr() | 1;
+#else
+                table.raw[i] = (FlatPtr)m_directory_pages[i]->paddr().as_ptr() | 7;
+#endif
+            }
+        }
+
+        u64 max_physical_address = (1ULL << Processor::current().physical_address_bit_width()) - 1;
+
+
+        constexpr u64 pdpte_bit_flags = 0x80000000000000BF;
+
+        for (auto table_entry : table.raw)
+            VERIFY((table_entry & ~pdpte_bit_flags) <= max_physical_address);
+
+        MM.unquickmap_page();
+    }
+
+    PageDirectoryEntry buffer;
+    auto* kernel_pd = MM.quickmap_pd(MM.kernel_page_directory(), 0);
+    memcpy(&buffer, kernel_pd, sizeof(PageDirectoryEntry));
+    auto* new_pd = MM.quickmap_pd(*this, 0);
+    memcpy(new_pd, &buffer, sizeof(PageDirectoryEntry));
+
+    m_valid = true;
+
+    cr3_map().set(cr3(), this);
+}
+
+PageDirectory::~PageDirectory()
+{
+    ScopedSpinLock lock(s_mm_lock);
+    if (m_space)
+        cr3_map().remove(cr3());
+}
 
 }
