@@ -67,6 +67,102 @@ public:
         return m_high;
     }
 
+        Span<u8> bytes()
+    {
+        return Span<u8>(reinterpret_cast<u8*>(this), sizeof(R));
+    }
+    Span<const u8> bytes() const
+    {
+        return Span<const u8>(reinterpret_cast<const u8*>(this), sizeof(R));
+    }
+
+    template<Unsigned U>
+    requires(sizeof(T) >= sizeof(U)) explicit operator U() const
+    {
+        return static_cast<U>(m_low);
+    }
+
+    // Utils
+    constexpr size_t clz() const requires(IsSame<T, u64>)
+    {
+        if (m_high)
+            return __builtin_clzll(m_high);
+        else
+            return sizeof(T) * 8 + __builtin_clzll(m_low);
+    }
+    constexpr size_t clz() const requires(!IsSame<T, u64>)
+    {
+        if (m_high)
+            return m_high.clz();
+        else
+            return sizeof(T) * 8 + m_low.clz();
+    }
+    constexpr size_t ctz() const requires(IsSame<T, u64>)
+    {
+        if (m_low)
+            return __builtin_ctzll(m_low);
+        else
+            return sizeof(T) * 8 + __builtin_ctzll(m_high);
+    }
+    constexpr size_t ctz() const requires(!IsSame<T, u64>)
+    {
+        if (m_low)
+            return m_low.ctz();
+        else
+            return sizeof(T) * 8 + m_high.ctz();
+    }
+
+        constexpr size_t popcnt() const requires(IsSame<T, u64>)
+    {
+        return __builtin_popcntll(m_low) + __builtin_popcntll(m_high);
+    }
+    constexpr size_t popcnt() const requires(!IsSame<T, u64>)
+    {
+        return m_low.popcnt() + m_high.popcnt();
+    }
+
+    // Comparison Operations
+    constexpr bool operator!() const
+    {
+        return !m_low && !m_high;
+    }
+    constexpr explicit operator bool() const
+    {
+        return m_low || m_high;
+    }
+    template<Unsigned U>
+    requires(sizeof(T) >= sizeof(U)) constexpr bool operator==(const T& other) const
+    {
+        return !m_high && m_low == other;
+    }
+
+        template<Unsigned U>
+    requires(sizeof(T) >= sizeof(U)) constexpr bool operator!=(const T& other) const
+    {
+        return m_high || m_low != other;
+    }
+    template<Unsigned U>
+    requires(sizeof(T) >= sizeof(U)) constexpr bool operator>(const T& other) const
+    {
+        return m_high || m_low > other;
+    }
+    template<Unsigned U>
+    requires(sizeof(T) >= sizeof(U)) constexpr bool operator<(const T& other) const
+    {
+        return !m_high && m_low < other;
+    }
+    template<Unsigned U>
+    requires(sizeof(T) >= sizeof(U)) constexpr bool operator>=(const T& other) const
+    {
+        return *this == other || *this > other;
+    }
+    template<Unsigned U>
+    requires(sizeof(T) >= sizeof(U)) constexpr bool operator<=(const T& other) const
+    {
+        return *this == other || *this < other;
+    }
+
+
 }
 
 }
