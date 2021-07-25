@@ -35,7 +35,6 @@ String URL::path() const
         builder.append('/');
         builder.append(path);
     }
-
     return builder.to_string();
 }
 
@@ -43,7 +42,7 @@ URL URL::complete_url(String const& string) const
 {
     if (!is_valid())
         return {};
-    
+
     return URLParser::parse({}, string, this);
 }
 
@@ -121,7 +120,6 @@ bool URL::compute_validity() const
     } else {
         if (m_scheme.is_one_of("about", "mailto"))
             return false;
-
         if (m_paths.size() == 0)
             return false;
     }
@@ -167,7 +165,6 @@ URL URL::create_with_file_scheme(String const& path, String const& fragment, Str
 
     url.set_host(hostname.is_null() || hostname == "localhost" ? String::empty() : hostname);
     url.set_paths(lexical_path.parts());
-
     if (path.ends_with('/'))
         url.append_path("");
     url.set_fragment(fragment);
@@ -254,5 +251,142 @@ String URL::serialize(ExcludeFragment exclude_fragment) const
     return builder.to_string();
 }
 
+String URL::serialize_for_display() const
+{
+    VERIFY(m_valid);
+    if (m_scheme == "data")
+        return serialize_data_url();
+    StringBuilder builder;
+    builder.append(m_scheme);
+    builder.append(':');
+
+    if (!m_host.is_null()) {
+        builder.append("//");
+        builder.append(m_host);
+        if (m_port != 0)
+            builder.appendff(":{}", m_port);
+    }
+
+    if (cannot_be_a_base_url()) {
+        builder.append(percent_encode(m_paths[0], PercentEncodeSet::Path));
+    } else {
+        if (m_host.is_null() && m_paths.size() > 1 && m_paths[0].is_empty())
+            builder.append("/.");
+        for (auto& segment : m_paths) {
+            builder.append('/');
+            builder.append(percent_encode(segment, PercentEncodeSet::Path));
+        }
+    }
+
+    if (!m_query.is_null()) {
+        builder.append('?');
+        builder.append(percent_encode(m_query, is_special() ? URL::PercentEncodeSet::SpecialQuery : URL::PercentEncodeSet::Query));
+    }
+
+    if (!m_fragment.is_null()) {
+        builder.append('#');
+        builder.append(percent_encode(m_fragment, PercentEncodeSet::Fragment));
+    }
+
+    return builder.to_string();
+}
+
+bool URL::equals(URL const& other, ExcludeFragment exclude_fragments) const
+{
+    if (this == &other)
+        return true;
+    if (!m_valid || !other.m_valid)
+        return false;
+    return serialize(exclude_fragments) == other.serialize(exclude_fragments);
+}
+
+String URL::basename() const
+{
+    if (!m_valid)
+        return {};
+    if (m_paths.is_empty())
+        return {};
+    return m_paths.last();
+}
+
+void URL::append_percent_encoded(StringBuilder& builder, u32 code_point)
+{
+    if (code_point <= 0x7f)
+        builder.appendff("%{:02X}", code_point);
+    else if (code_point <= 0x07ff)
+        builder.appendff("%{:02X}%{:02X}", ((code_point >> 6) & 0x1f) | 0xc0, (code_point & 0x3f) | 0x80);
+    else if (code_point <= 0xffff)
+        builder.appendff("%{:02X}%{:02X}%{:02X}", ((code_point >> 12) & 0x0f) | 0xe0, ((code_point >> 6) & 0x3f) | 0x80, (code_point & 0x3f) | 0x80);
+    else if (code_point <= 0x10ffff)
+        builder.appendff("%{:02X}%{:02X}%{:02X}%{:02X}", ((code_point >> 18) & 0x07) | 0xf0, ((code_point >> 12) & 0x3f) | 0x80, ((code_point >> 6) & 0x3f) | 0x80, (code_point & 0x3f) | 0x80);
+    else
+        VERIFY_NOT_REACHED();
+}
+
+constexpr bool code_point_is_in_percent_encode_set(u32 code_point, URL::PercentEncodeSet set)
+{
+    switch (set) {
+    case URL::PercentEncodeSet::C0Control:
+        return code_point < 0x20 || code_point > 0x7E;
+    case URL::PercentEncodeSet::Fragment:
+        return code_point_is_in_percent_encode_set(code_point, URL::PercentEncodeSet::C0Control) || " \"<>`"sv.contains(code_point);
+    case URL::PercentEncodeSet::Query:
+        return code_point_is_in_percent_encode_set(code_point, URL::PercentEncodeSet::C0Control) || " \"#<>"sv.contains(code_point);
+    case URL::PercentEncodeSet::SpecialQuery:
+        return code_point_is_in_percent_encode_set(code_point, URL::PercentEncodeSet::Query) || code_point == '\'';
+    case URL::PercentEncodeSet::Path:
+        return code_point_is_in_percent_encode_set(code_point, URL::PercentEncodeSet::Query) || "?`{}"sv.contains(code_point);
+    case URL::PercentEncodeSet::Userinfo:
+        return code_point_is_in_percent_encode_set(code_point, URL::PercentEncodeSet::Path) || "/:;=@[\\]^|"sv.contains(code_point);
+    case URL::PercentEncodeSet::Component:
+        return code_point_is_in_percent_encode_set(code_point, URL::PercentEncodeSet::Userinfo) || "$%&+,"sv.contains(code_point);
+    case URL::PercentEncodeSet::ApplicationXWWWFormUrlencoded:
+        return code_point >= 0x7E || !(is_ascii_alphanumeric(code_point) || "!'()~"sv.contains(code_point));
+    case URL::PercentEncodeSet::EncodeURI:
+
+        return code_point >= 0x7E || (!is_ascii_alphanumeric(code_point) && !";,/?:@&=+$-_.!~*'()#"sv.contains(code_point));
+    default:
+        VERIFY_NOT_REACHED();
+    }
+}
+
+void URL::append_percent_encoded_if_necessary(StringBuilder& builder, u32 code_point, URL::PercentEncodeSet set)
+{
+    if (code_point_is_in_percent_encode_set(code_point, set))
+        append_percent_encoded(builder, code_point);
+    else
+        builder.append_code_point(code_point);
+}
+
+String URL::percent_encode(StringView const& input, URL::PercentEncodeSet set)
+{
+    StringBuilder builder;
+    for (auto code_point : Utf8View(input)) {
+        append_percent_encoded_if_necessary(builder, code_point, set);
+    }
+    return builder.to_string();
+}
+
+String URL::percent_decode(StringView const& input)
+{
+    if (!input.contains('%'))
+        return input;
+    StringBuilder builder;
+    Utf8View utf8_view(input);
+    for (auto it = utf8_view.begin(); !it.done(); ++it) {
+        if (*it != '%') {
+            builder.append_code_point(*it);
+        } else if (!is_ascii_hex_digit(it.peek(1).value_or(0)) || !is_ascii_hex_digit(it.peek(2).value_or(0))) {
+            builder.append_code_point(*it);
+        } else {
+            ++it;
+            u8 byte = parse_ascii_hex_digit(*it) << 4;
+            ++it;
+            byte += parse_ascii_hex_digit(*it);
+            builder.append(byte);
+        }
+    }
+    return builder.to_string();
+}
 
 }
