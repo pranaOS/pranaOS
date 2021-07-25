@@ -25,3 +25,8 @@ inline void dbgputstr(const char* characters, size_t length)
     fwrite(characters, 1, length, stderr);
 }
 #endif
+template<size_t N>
+inline void dbgputstr(const char (&array)[N])
+{
+    return ::dbgputstr(array, N);
+}
