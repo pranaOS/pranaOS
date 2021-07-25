@@ -6,16 +6,17 @@
 
 #pragma once
 
-#include <Base/Assertions.h>
-#include <Base/Find.h>
-#include <Base/Forward.h>
-#include <Base/Iterator.h>
-#include <Base/Optional.h>
-#include <Base/Span.h>
-#include <Base/StdLibExtras.h>
-#include <Base/Traits.h>
-#include <Base/TypedTransfer.h>
-#include <Base/kmalloc.h>
+// includes
+#include <base/Assertions.h>
+#include <base/Find.h>
+#include <base/Forward.h>
+#include <base/Iterator.h>
+#include <base/Optional.h>
+#include <base/Span.h>
+#include <base/StdLibExtras.h>
+#include <base/Traits.h>
+#include <base/TypedTransfer.h>
+#include <base/kmalloc.h>
 
 
 #ifndef PRANAOS_LIBC_BUILD
@@ -246,7 +247,7 @@ public:
         VERIFY(did_allocate);
     }
 
-        ALWAYS_INLINE void append(T const& value) requires(!contains_reference)
+    ALWAYS_INLINE void append(T const& value) requires(!contains_reference)
     {
         auto did_allocate = try_append(T(value));
         VERIFY(did_allocate);
@@ -451,7 +452,7 @@ public:
             return value;
     }
 
-        T unstable_take(size_t index)
+    T unstable_take(size_t index)
     {
         VERIFY(index < m_size);
         swap(raw_at(index), raw_at(m_size - 1));
@@ -517,7 +518,7 @@ public:
         return true;
     }
 
-        [[nodiscard]] bool try_extend(Vector const& other)
+    [[nodiscard]] bool try_extend(Vector const& other)
     {
         if (!try_grow_capacity(size() + other.size()))
             return false;
@@ -671,5 +672,116 @@ public:
         VERIFY(did_allocate);
     }
 
+    void shrink(size_t new_size, bool keep_capacity = false)
+    {
+        VERIFY(new_size <= size());
+        if (new_size == size())
+            return;
+
+        if (!new_size) {
+            if (keep_capacity)
+                clear_with_capacity();
+            else
+                clear();
+            return;
+        }
+
+        for (size_t i = new_size; i < size(); ++i)
+            at(i).~StorageType();
+        m_size = new_size;
+    }
+
+    void resize(size_t new_size, bool keep_capacity = false) requires(!contains_reference)
+    {
+        auto did_allocate = try_resize(new_size, keep_capacity);
+        VERIFY(did_allocate);
+    }
+
+    void resize_and_keep_capacity(size_t new_size) requires(!contains_reference)
+    {
+        auto did_allocate = try_resize_and_keep_capacity(new_size);
+        VERIFY(did_allocate);
+    }
+
+    using ConstIterator = SimpleIterator<Vector const, T const>;
+    using Iterator = SimpleIterator<Vector, T>;
+
+    ConstIterator begin() const { return ConstIterator::begin(*this); }
+    Iterator begin() { return Iterator::begin(*this); }
+
+    ConstIterator end() const { return ConstIterator::end(*this); }
+    Iterator end() { return Iterator::end(*this); }
+
+    template<typename TUnaryPredicate>
+    ConstIterator find_if(TUnaryPredicate&& finder) const
+    {
+        return Base::find_if(begin(), end(), forward<TUnaryPredicate>(finder));
+    }
+
+    template<typename TUnaryPredicate>
+    Iterator find_if(TUnaryPredicate&& finder)
+    {
+        return Base::find_if(begin(), end(), forward<TUnaryPredicate>(finder));
+    }
+
+    ConstIterator find(T const& value) const
+    {
+        return Base::find(begin(), end(), value);
+    }
+
+    Iterator find(T const& value)
+    {
+        return Base::find(begin(), end(), value);
+    }
+
+    Optional<size_t> find_first_index(T const& value) const
+    {
+        if (auto const index = Base::find_index(begin(), end(), value);
+            index < size()) {
+            return index;
+        }
+        return {};
+    }
+
+private:
+    void reset_capacity()
+    {
+        m_capacity = inline_capacity;
+    }
+
+    static size_t padded_capacity(size_t capacity)
+    {
+        return max(static_cast<size_t>(4), capacity + (capacity / 4) + 4);
+    }
+
+    StorageType* slot(size_t i) { return &data()[i]; }
+    StorageType const* slot(size_t i) const { return &data()[i]; }
+
+    StorageType* inline_buffer()
+    {
+        static_assert(inline_capacity > 0);
+        return reinterpret_cast<StorageType*>(m_inline_buffer_storage);
+    }
+    StorageType const* inline_buffer() const
+    {
+        static_assert(inline_capacity > 0);
+        return reinterpret_cast<StorageType const*>(m_inline_buffer_storage);
+    }
+
+    StorageType& raw_last() { return raw_at(size() - 1); }
+    StorageType& raw_first() { return raw_at(0); }
+    StorageType& raw_at(size_t index) { return *slot(index); }
+
+    size_t m_size { 0 };
+    size_t m_capacity { 0 };
+
+    alignas(StorageType) unsigned char m_inline_buffer_storage[sizeof(StorageType) * inline_capacity];
+    StorageType* m_outline_buffer { nullptr };
+};
+
+template<class... Args>
+Vector(Args... args) -> Vector<CommonType<Args...>>;
 
 }
+
+using Base::Vector;
