@@ -7,11 +7,11 @@
 #pragma once
 
 #include <kernel/PhysicalAddress.h>
-#include <kernel/VM/AllocationStrategy.h>
-#include <kernel/VM/MemoryManager.h>
-#include <kernel/VM/PageFaultResponse.h>
-#include <kernel/VM/PurgeablePageRanges.h>
-#include <kernel/VM/VMObject.h>
+#include <kernel/vm/AllocationStrategy.h>
+#include <kernel/vm/MemoryManager.h>
+#include <kernel/vm/PageFaultResponse.h>
+#include <kernel/vm/PurgeablePageRanges.h>
+#include <kernel/vm/VMObject.h>
 
 namespace Kernel {
 
