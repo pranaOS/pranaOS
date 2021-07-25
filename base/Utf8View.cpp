@@ -173,5 +173,157 @@ bool Utf8View::starts_with(const Utf8View& start) const
     return true;
 }
 
+bool Utf8View::contains(u32 needle) const
+{
+    for (u32 code_point : *this) {
+        if (code_point == needle)
+            return true;
+    }
+    return false;
+}
+
+Utf8View Utf8View::trim(const Utf8View& characters, TrimMode mode) const
+{
+    size_t substring_start = 0;
+    size_t substring_length = byte_length();
+
+    if (mode == TrimMode::Left || mode == TrimMode::Both) {
+        for (auto code_point = begin(); code_point != end(); ++code_point) {
+            if (substring_length == 0)
+                return {};
+            if (!characters.contains(*code_point))
+                break;
+            substring_start += code_point.underlying_code_point_length_in_bytes();
+            substring_length -= code_point.underlying_code_point_length_in_bytes();
+        }
+    }
+
+    if (mode == TrimMode::Right || mode == TrimMode::Both) {
+        size_t seen_whitespace_length = 0;
+        for (auto code_point = begin(); code_point != end(); ++code_point) {
+            if (characters.contains(*code_point))
+                seen_whitespace_length += code_point.underlying_code_point_length_in_bytes();
+            else
+                seen_whitespace_length = 0;
+        }
+        if (seen_whitespace_length >= substring_length)
+            return {};
+        substring_length -= seen_whitespace_length;
+    }
+
+    return substring_view(substring_start, substring_length);
+}
+
+Utf8CodePointIterator::Utf8CodePointIterator(const unsigned char* ptr, size_t length)
+    : m_ptr(ptr)
+    , m_length(length)
+{
+}
+
+bool Utf8CodePointIterator::operator==(const Utf8CodePointIterator& other) const
+{
+    return m_ptr == other.m_ptr && m_length == other.m_length;
+}
+
+bool Utf8CodePointIterator::operator!=(const Utf8CodePointIterator& other) const
+{
+    return !(*this == other);
+}
+
+Utf8CodePointIterator& Utf8CodePointIterator::operator++()
+{
+    VERIFY(m_length > 0);
+
+    size_t code_point_length_in_bytes = underlying_code_point_length_in_bytes();
+    if (code_point_length_in_bytes > m_length) {
+
+        dbgln("Expected code point size {} is too big for the remaining length {}. Moving forward one byte.", code_point_length_in_bytes, m_length);
+        m_ptr += 1;
+        m_length -= 1;
+        return *this;
+    }
+
+    m_ptr += code_point_length_in_bytes;
+    m_length -= code_point_length_in_bytes;
+    return *this;
+}
+
+size_t Utf8CodePointIterator::underlying_code_point_length_in_bytes() const
+{
+    VERIFY(m_length > 0);
+    size_t code_point_length_in_bytes = 0;
+    u32 value;
+    bool first_byte_makes_sense = decode_first_byte(*m_ptr, code_point_length_in_bytes, value);
+
+    if (!first_byte_makes_sense)
+        return 1;
+
+    if (code_point_length_in_bytes > m_length)
+        return 1;
+
+    for (size_t offset = 1; offset < code_point_length_in_bytes; offset++) {
+        if (m_ptr[offset] >> 6 != 2)
+            return 1;
+    }
+
+    return code_point_length_in_bytes;
+}
+
+ReadonlyBytes Utf8CodePointIterator::underlying_code_point_bytes() const
+{
+    return { m_ptr, underlying_code_point_length_in_bytes() };
+}
+
+u32 Utf8CodePointIterator::operator*() const
+{
+    VERIFY(m_length > 0);
+
+    u32 code_point_value_so_far = 0;
+    size_t code_point_length_in_bytes = 0;
+
+    bool first_byte_makes_sense = decode_first_byte(m_ptr[0], code_point_length_in_bytes, code_point_value_so_far);
+
+    if (!first_byte_makes_sense) {
+
+        dbgln("First byte doesn't make sense: {:#02x}.", m_ptr[0]);
+        return 0xFFFD;
+    }
+
+    if (code_point_length_in_bytes > m_length) {
+
+        dbgln("Not enough bytes (need {}, have {}), first byte is: {:#02x}.", code_point_length_in_bytes, m_length, m_ptr[0]);
+        return 0xFFFD;
+    }
+
+    for (size_t offset = 1; offset < code_point_length_in_bytes; offset++) {
+        if (m_ptr[offset] >> 6 != 2) {
+
+            dbgln("Extension byte {:#02x} in {} position after first byte {:#02x} doesn't make sense.", m_ptr[offset], offset, m_ptr[0]);
+            return 0xFFFD;
+        }
+
+        code_point_value_so_far <<= 6;
+        code_point_value_so_far |= m_ptr[offset] & 63;
+    }
+
+    return code_point_value_so_far;
+}
+
+Optional<u32> Utf8CodePointIterator::peek(size_t offset) const
+{
+    if (offset == 0) {
+        if (this->done())
+            return {};
+        return this->operator*();
+    }
+
+    auto new_iterator = *this;
+    for (size_t index = 0; index < offset; ++index) {
+        ++new_iterator;
+        if (new_iterator.done())
+            return {};
+    }
+    return *new_iterator;
+}
 
 }
