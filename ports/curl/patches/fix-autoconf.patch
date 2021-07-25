@@ -1,0 +1,12 @@
+diff -Nru curl-7.77.0/config.sub curl-7.77.0-patched/config.sub
+--- curl-7.77.0/config.sub	2021-05-18 09:07:51.000000000 +0200
++++ curl-7.77.0-patched/config.sub	2021-05-27 08:28:58.201762746 +0200
+@@ -1368,7 +1368,7 @@
+ 	      | -hpux* | -unos* | -osf* | -luna* | -dgux* | -auroraux* | -solaris* \
+ 	      | -sym* | -kopensolaris* | -plan9* \
+ 	      | -amigaos* | -amigados* | -msdos* | -newsos* | -unicos* | -aof* \
+-	      | -aos* | -aros* | -cloudabi* | -sortix* \
++	      | -aos* | -aros* | -cloudabi* | -sortix* | -pranaos* \
+ 	      | -nindy* | -vxsim* | -vxworks* | -ebmon* | -hms* | -mvs* \
+ 	      | -clix* | -riscos* | -uniplus* | -iris* | -rtu* | -xenix* \
+ 	      | -hiux* | -knetbsd* | -mirbsd* | -netbsd* \
