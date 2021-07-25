@@ -33,12 +33,11 @@ struct NumericLimits<UFixedBigInt<T>> {
     static constexpr bool is_signed() { return false; }
 };
 
-
 template<typename T>
 requires(sizeof(T) >= sizeof(u64) && IsUnsigned<T>) class UFixedBigInt {
 public:
     using R = UFixedBigInt<T>;
-    
+
     constexpr UFixedBigInt() = default;
     template<Unsigned U>
     requires(sizeof(T) >= sizeof(U)) constexpr UFixedBigInt(U low)
@@ -46,28 +45,30 @@ public:
         , m_high(0u)
     {
     }
-
+    template<Unsigned U, Unsigned U2>
+    requires(sizeof(T) >= sizeof(U) && sizeof(T) >= sizeof(U2)) constexpr UFixedBigInt(U low, U2 high)
+        : m_low(low)
+        , m_high(high)
+    {
+    }
     constexpr T& low()
     {
         return m_low;
     }
-
     constexpr const T& low() const
     {
         return m_low;
     }
-
     constexpr T& high()
     {
         return m_high;
     }
-
     constexpr const T& high() const
     {
         return m_high;
     }
 
-        Span<u8> bytes()
+    Span<u8> bytes()
     {
         return Span<u8>(reinterpret_cast<u8*>(this), sizeof(R));
     }
@@ -110,8 +111,7 @@ public:
         else
             return sizeof(T) * 8 + m_high.ctz();
     }
-
-        constexpr size_t popcnt() const requires(IsSame<T, u64>)
+    constexpr size_t popcnt() const requires(IsSame<T, u64>)
     {
         return __builtin_popcntll(m_low) + __builtin_popcntll(m_high);
     }
@@ -133,8 +133,7 @@ public:
     {
         return !m_high && m_low == other;
     }
-
-        template<Unsigned U>
+    template<Unsigned U>
     requires(sizeof(T) >= sizeof(U)) constexpr bool operator!=(const T& other) const
     {
         return m_high || m_low != other;
@@ -160,7 +159,7 @@ public:
         return *this == other || *this < other;
     }
 
-        constexpr bool operator==(const R& other) const
+    constexpr bool operator==(const R& other) const
     {
         return m_low == other.low() && m_high == other.high();
     }
@@ -312,7 +311,6 @@ public:
         return sizeof(R);
     }
 
-
     template<Unsigned U>
     requires(sizeof(T) >= sizeof(U) && IsSame<T, u64>) constexpr R addc(const U other, bool& carry) const
     {
@@ -341,8 +339,7 @@ public:
             higher
         };
     }
-
-        template<Unsigned U>
+    template<Unsigned U>
     requires(IsSame<R, U>&& IsSame<T, u64>) constexpr R addc(const U& other, bool& carry) const
     {
         bool low_carry = Checked<T>::addition_would_overflow(m_low, other.low());
@@ -424,7 +421,7 @@ public:
     template<Unsigned U>
     constexpr R operator-(const U& other) const
     {
-        bool carry = false;
+        bool carry = false; 
         return subc(other, carry);
     }
 
@@ -467,7 +464,6 @@ public:
     template<Unsigned U>
     requires(my_size() >= sizeof(U)) constexpr R div_mod(const U& divisor, U& remainder) const
     {
-
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdiv-by-zero"
         if (!divisor) {
@@ -553,7 +549,6 @@ public:
 
     constexpr R sqrt() const
     {
-
         if (*this == 1u)
             return 1u;
 
@@ -590,7 +585,7 @@ public:
     template<Unsigned U>
     requires(sizeof(U) > sizeof(u64)) constexpr R pow(U exp)
     {
-        
+
         R x1 = *this;
         R x2 = *this * *this;
         U exp_copy = exp;
@@ -607,7 +602,130 @@ public:
         return x1;
     }
 
+    template<Unsigned U>
+    constexpr U pow_mod(u64 exp, U mod)
+    {
+        if (!mod)
+            return 0u;
 
+        U res = 1;
+        u64 exp_copy = exp;
+        for (size_t i = sizeof(u64) - __builtin_clzll(exp) - 1u; i < exp; ++i) {
+            res *= res;
+            res %= mod;
+            if (exp_copy & 1u) {
+                res = (*this * res) % mod;
+            }
+            exp_copy >>= 1u;
+        }
+        return res;
+    }
+    template<Unsigned ExpT, Unsigned U>
+    requires(sizeof(ExpT) > sizeof(u64)) constexpr U pow_mod(ExpT exp, U mod)
+    {
+
+        if (!mod)
+            return 0u;
+
+        U res = 1;
+        ExpT exp_copy = exp;
+        for (size_t i = sizeof(ExpT) - exp.clz() - 1u; i < exp; ++i) {
+            res *= res;
+            res %= mod;
+            if (exp_copy & 1u) {
+                res = (*this * res) % mod;
+            }
+            exp_copy >>= 1u;
+        }
+        return res;
+    }
+
+    constexpr size_t log2()
+    {
+        return sizeof(R) - clz();
+    }
+    constexpr size_t logn(u64 base)
+    {
+        return log2() / (sizeof(u64) - __builtin_clzll(base));
+    }
+    template<Unsigned U>
+    requires(sizeof(U) > sizeof(u64)) constexpr size_t logn(U base)
+    {
+        return log2() / base.log2();
+    }
+
+private:
+    T m_low;
+    T m_high;
+};
+
+template<Unsigned U, Unsigned T>
+requires(sizeof(U) < sizeof(T) * 2) constexpr bool operator<(const U a, const UFixedBigInt<T>& b) { return b >= a; }
+template<Unsigned U, Unsigned T>
+requires(sizeof(U) < sizeof(T) * 2) constexpr bool operator>(const U a, const UFixedBigInt<T>& b) { return b <= a; }
+template<Unsigned U, Unsigned T>
+requires(sizeof(U) < sizeof(T) * 2) constexpr bool operator<=(const U a, const UFixedBigInt<T>& b) { return b > a; }
+template<Unsigned U, Unsigned T>
+requires(sizeof(U) < sizeof(T) * 2) constexpr bool operator>=(const U a, const UFixedBigInt<T>& b) { return b < a; }
+
+template<Unsigned T>
+struct Formatter<UFixedBigInt<T>> : StandardFormatter {
+    Formatter() = default;
+    explicit Formatter(StandardFormatter formatter)
+        : StandardFormatter(formatter)
+    {
+    }
+
+    void format(FormatBuilder& builder, UFixedBigInt<T> value)
+    {
+        if (m_precision.has_value())
+            VERIFY_NOT_REACHED();
+
+        if (m_mode == Mode::Pointer) {
+            VERIFY_NOT_REACHED();
+        }
+        if (m_mode == Mode::Default)
+            m_mode = Mode::Hexadecimal;
+
+        if (!value.high()) {
+            Formatter<T> formatter { *this };
+            return formatter.format(builder, value.low());
+        }
+
+        u8 base = 0;
+        if (m_mode == Mode::Binary) {
+            base = 2;
+        } else if (m_mode == Mode::BinaryUppercase) {
+            base = 2;
+        } else if (m_mode == Mode::Octal) {
+            TODO();
+        } else if (m_mode == Mode::Decimal) {
+            TODO();
+        } else if (m_mode == Mode::Hexadecimal) {
+            base = 16;
+        } else if (m_mode == Mode::HexadecimalUppercase) {
+            base = 16;
+        } else {
+            VERIFY_NOT_REACHED();
+        }
+        ssize_t width = m_width.value_or(0);
+        ssize_t lower_length = ceil_div(sizeof(T) * 8, (ssize_t)base);
+        Formatter<T> formatter { *this };
+        formatter.m_width = max(width - lower_length, (ssize_t)0);
+        formatter.format(builder, value.high());
+        builder.put_literal("'"sv);
+        formatter.m_zero_pad = true;
+        formatter.m_alternative_form = false;
+        formatter.m_width = lower_length;
+        formatter.format(builder, value.low());
+    }
+};
 }
 
-}
+
+using u128 = Base::UFixedBigInt<u64>;
+using u256 = Base::UFixedBigInt<u128>;
+using u512 = Base::UFixedBigInt<u256>;
+using u1024 = Base::UFixedBigInt<u512>;
+using u2048 = Base::UFixedBigInt<u1024>;
+using u4096 = Base::UFixedBigInt<u2048>;
