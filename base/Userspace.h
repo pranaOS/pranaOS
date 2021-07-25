@@ -23,6 +23,11 @@ public:
 
     operator bool() const { return m_ptr; }
     operator FlatPtr() const { return (FlatPtr)m_ptr; }
+    bool operator==(const Userspace&) const = delete;
+    bool operator<=(const Userspace&) const = delete;
+    bool operator>=(const Userspace&) const = delete;
+    bool operator<(const Userspace&) const = delete;
+    bool operator>(const Userspace&) const = delete;
 
 #ifdef KERNEL
     Userspace(FlatPtr ptr)
@@ -47,7 +52,20 @@ private:
 #else
     T m_ptr { nullptr };
 #endif
-
 };
 
+template<typename T, typename U>
+inline Userspace<T> static_ptr_cast(const Userspace<U>& ptr)
+{
+#ifdef KERNEL
+    auto casted_ptr = static_cast<T>(ptr.unsafe_userspace_ptr());
+#else
+    auto casted_ptr = static_cast<T>(ptr.ptr());
+#endif
+    return Userspace<T>((FlatPtr)casted_ptr);
 }
+
+}
+
+using Base::static_ptr_cast;
+using Base::Userspace;
