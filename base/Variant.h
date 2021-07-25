@@ -122,6 +122,7 @@ struct VariantConstructors {
 private:
     [[nodiscard]] ALWAYS_INLINE Base& internal_cast()
     {
+
         return *reinterpret_cast<Base*>(this);
     }
 };
@@ -150,6 +151,7 @@ using BlankIfDuplicate = Conditional<(IsTypeInPack<T, Qs> || ...), Blank<T>, T>;
 template<unsigned I, typename...>
 struct InheritFromUniqueEntries;
 
+
 template<unsigned I, typename... Ts, unsigned... Js, typename... Qs>
 struct InheritFromUniqueEntries<I, ParameterPack<Ts...>, IndexSequence<Js...>, Qs...>
     : public BlankIfDuplicate<Ts, Conditional<Js <= I, ParameterPack<>, Qs>...>... {
@@ -159,6 +161,7 @@ struct InheritFromUniqueEntries<I, ParameterPack<Ts...>, IndexSequence<Js...>, Q
 
 template<typename...>
 struct InheritFromPacks;
+
 
 template<unsigned... Is, typename... Ps>
 struct InheritFromPacks<IndexSequence<Is...>, Ps...>
@@ -172,5 +175,247 @@ using MergeAndDeduplicatePacks = InheritFromPacks<MakeIndexSequence<sizeof...(Ps
 
 }
 
+namespace Base {
+
+struct Empty {
+};
+
+template<typename... Ts>
+struct Variant
+    : public Detail::MergeAndDeduplicatePacks<Detail::VariantConstructors<Ts, Variant<Ts...>>...> {
+private:
+    using IndexType = Conditional<sizeof...(Ts) < 255, u8, size_t>; 
+    static constexpr IndexType invalid_index = sizeof...(Ts);
+
+    template<typename T>
+    static constexpr IndexType index_of() { return Detail::index_of<T, IndexType, Ts...>(); }
+
+public:
+    template<typename T>
+    static constexpr bool can_contain()
+    {
+        return index_of<T>() != invalid_index;
+    }
+
+    template<typename... NewTs>
+    friend struct Variant;
+
+#ifdef BASE_HAS_CONDITIONALLY_TRIVIAL
+    Variant(const Variant&) requires(!(IsCopyConstructible<Ts> && ...)) = delete;
+    Variant(const Variant&) = default;
+
+    Variant(Variant&&) requires(!(IsMoveConstructible<Ts> && ...)) = delete;
+    Variant(Variant&&) = default;
+
+    ~Variant() requires(!(IsDestructible<Ts> && ...)) = delete;
+    ~Variant() = default;
+
+    Variant& operator=(const Variant&) requires(!(IsCopyConstructible<Ts> && ...) || !(IsDestructible<Ts> && ...)) = delete;
+    Variant& operator=(const Variant&) = default;
+
+    Variant& operator=(Variant&&) requires(!(IsMoveConstructible<Ts> && ...) || !(IsDestructible<Ts> && ...)) = delete;
+    Variant& operator=(Variant&&) = default;
+#endif
+
+    ALWAYS_INLINE Variant(const Variant& old)
+#ifdef BASE_HAS_CONDITIONALLY_TRIVIAL
+        requires(!(IsTriviallyCopyConstructible<Ts> && ...))
+#endif
+        : Detail::MergeAndDeduplicatePacks<Detail::VariantConstructors<Ts, Variant<Ts...>>...>()
+        , m_data {}
+        , m_index(old.m_index)
+    {
+        Helper::copy_(old.m_index, old.m_data, m_data);
+    }
+
+
+    ALWAYS_INLINE Variant(Variant&& old)
+#ifdef BASE_HAS_CONDITIONALLY_TRIVIAL
+        requires(!(IsTriviallyMoveConstructible<Ts> && ...))
+#endif
+        : Detail::MergeAndDeduplicatePacks<Detail::VariantConstructors<Ts, Variant<Ts...>>...>()
+        , m_data {}
+        , m_index(old.m_index)
+    {
+        Helper::move_(old.m_index, old.m_data, m_data);
+    }
+
+    ALWAYS_INLINE ~Variant()
+#ifdef BASE_HAS_CONDITIONALLY_TRIVIAL
+        requires(!(IsTriviallyDestructible<Ts> && ...))
+#endif
+    {
+        Helper::delete_(m_index, m_data);
+    }
+
+    ALWAYS_INLINE Variant& operator=(const Variant& other)
+#ifdef BASE_HAS_CONDITIONALLY_TRIVIAL
+        requires(!(IsTriviallyCopyConstructible<Ts> && ...) || !(IsTriviallyDestructible<Ts> && ...))
+#endif
+    {
+        if constexpr (!(IsTriviallyDestructible<Ts> && ...)) {
+            Helper::delete_(m_index, m_data);
+        }
+        m_index = other.m_index;
+        Helper::copy_(other.m_index, other.m_data, m_data);
+        return *this;
+    }
+
+    ALWAYS_INLINE Variant& operator=(Variant&& other)
+#ifdef BASE_HAS_CONDITIONALLY_TRIVIAL
+        requires(!(IsTriviallyMoveConstructible<Ts> && ...) || !(IsTriviallyDestructible<Ts> && ...))
+#endif
+    {
+        if constexpr (!(IsTriviallyDestructible<Ts> && ...)) {
+            Helper::delete_(m_index, m_data);
+        }
+        m_index = other.m_index;
+        Helper::move_(other.m_index, other.m_data, m_data);
+        return *this;
+    }
+
+    using Detail::MergeAndDeduplicatePacks<Detail::VariantConstructors<Ts, Variant<Ts...>>...>::MergeAndDeduplicatePacks;
+
+    template<typename T, typename StrippedT = RemoveCVReference<T>>
+    void set(T&& t) requires(can_contain<StrippedT>())
+    {
+        constexpr auto new_index = index_of<StrippedT>();
+        Helper::delete_(m_index, m_data);
+        new (m_data) StrippedT(forward<T>(t));
+        m_index = new_index;
+    }
+
+    template<typename T, typename StrippedT = RemoveCVReference<T>>
+    void set(T&& t, Detail::VariantNoClearTag) requires(can_contain<StrippedT>())
+    {
+        constexpr auto new_index = index_of<StrippedT>();
+        new (m_data) StrippedT(forward<T>(t));
+        m_index = new_index;
+    }
+
+    template<typename T>
+    T* get_pointer() requires(can_contain<T>())
+    {
+        if (index_of<T>() == m_index)
+            return bit_cast<T*>(&m_data);
+        return nullptr;
+    }
+
+    template<typename T>
+    T& get() requires(can_contain<T>())
+    {
+        VERIFY(has<T>());
+        return *bit_cast<T*>(&m_data);
+    }
+
+    template<typename T>
+    const T* get_pointer() const requires(can_contain<T>())
+    {
+        if (index_of<T>() == m_index)
+            return bit_cast<const T*>(&m_data);
+        return nullptr;
+    }
+
+    template<typename T>
+    const T& get() const requires(can_contain<T>())
+    {
+        VERIFY(has<T>());
+        return *bit_cast<const T*>(&m_data);
+    }
+
+    template<typename T>
+    [[nodiscard]] bool has() const requires(can_contain<T>())
+    {
+        return index_of<T>() == m_index;
+    }
+
+    template<typename... Fs>
+    ALWAYS_INLINE decltype(auto) visit(Fs&&... functions)
+    {
+        Visitor<Fs...> visitor { forward<Fs>(functions)... };
+        return VisitHelper::visit(m_index, m_data, move(visitor));
+    }
+
+    template<typename... Fs>
+    ALWAYS_INLINE decltype(auto) visit(Fs&&... functions) const
+    {
+        Visitor<Fs...> visitor { forward<Fs>(functions)... };
+        return VisitHelper::visit(m_index, m_data, move(visitor));
+    }
+
+    template<typename... NewTs>
+    Variant<NewTs...> downcast() &&
+    {
+        Variant<NewTs...> instance { Variant<NewTs...>::invalid_index, Detail::VariantConstructTag {} };
+        visit([&](auto& value) {
+            if constexpr (Variant<NewTs...>::template can_contain<RemoveCVReference<decltype(value)>>())
+                instance.set(move(value), Detail::VariantNoClearTag {});
+        });
+        VERIFY(instance.m_index != instance.invalid_index);
+        return instance;
+    }
+
+    template<typename... NewTs>
+    Variant<NewTs...> downcast() const&
+    {
+        Variant<NewTs...> instance { Variant<NewTs...>::invalid_index, Detail::VariantConstructTag {} };
+        visit([&](const auto& value) {
+            if constexpr (Variant<NewTs...>::template can_contain<RemoveCVReference<decltype(value)>>())
+                instance.set(value, Detail::VariantNoClearTag {});
+        });
+        VERIFY(instance.m_index != instance.invalid_index);
+        return instance;
+    }
+
+    template<typename... NewTs>
+    explicit operator Variant<NewTs...>() &&
+    {
+        return downcast<NewTs...>();
+    }
+
+    template<typename... NewTs>
+    explicit operator Variant<NewTs...>() const&
+    {
+        return downcast<NewTs...>();
+    }
+
+private:
+    static constexpr auto data_size = integer_sequence_generate_array<size_t>(0, IntegerSequence<size_t, sizeof(Ts)...>()).max();
+    static constexpr auto data_alignment = integer_sequence_generate_array<size_t>(0, IntegerSequence<size_t, alignof(Ts)...>()).max();
+    using Helper = Detail::Variant<IndexType, 0, Ts...>;
+    using VisitHelper = Detail::VisitImpl<IndexType, Ts...>;
+
+    template<typename T_, typename U_>
+    friend struct Detail::VariantConstructors;
+
+    explicit Variant(IndexType index, Detail::VariantConstructTag)
+        : Detail::MergeAndDeduplicatePacks<Detail::VariantConstructors<Ts, Variant<Ts...>>...>()
+        , m_index(index)
+    {
+    }
+
+    ALWAYS_INLINE void clear_without_destruction()
+    {
+        __builtin_memset(m_data, 0, data_size);
+        m_index = invalid_index;
+    }
+
+    template<typename... Fs>
+    struct Visitor : Fs... {
+        Visitor(Fs&&... args)
+            : Fs(forward<Fs>(args))...
+        {
+        }
+
+        using Fs::operator()...;
+    };
+
+
+    alignas(data_alignment) u8 m_data[data_size];
+    IndexType m_index;
+};
 
 }
+
+using Base::Empty;
+using Base::Variant;
