@@ -130,5 +130,47 @@ private:
 struct ParameterPackTag {
 };
 
+template<typename... Ts>
+struct ParameterPack : ParameterPackTag {
+};
+
+template<typename T>
+struct Blank {
+};
+
+template<typename A, typename P>
+inline constexpr bool IsTypeInPack = false;
+
+template<typename T, typename... Ts>
+inline constexpr bool IsTypeInPack<T, ParameterPack<Ts...>> = (IsSame<T, Ts> || ...);
+
+template<typename T, typename... Qs>
+using BlankIfDuplicate = Conditional<(IsTypeInPack<T, Qs> || ...), Blank<T>, T>;
+
+template<unsigned I, typename...>
+struct InheritFromUniqueEntries;
+
+template<unsigned I, typename... Ts, unsigned... Js, typename... Qs>
+struct InheritFromUniqueEntries<I, ParameterPack<Ts...>, IndexSequence<Js...>, Qs...>
+    : public BlankIfDuplicate<Ts, Conditional<Js <= I, ParameterPack<>, Qs>...>... {
+
+    using BlankIfDuplicate<Ts, Conditional<Js <= I, ParameterPack<>, Qs>...>::BlankIfDuplicate...;
+};
+
+template<typename...>
+struct InheritFromPacks;
+
+template<unsigned... Is, typename... Ps>
+struct InheritFromPacks<IndexSequence<Is...>, Ps...>
+    : public InheritFromUniqueEntries<Is, Ps, IndexSequence<Is...>, Ps...>... {
+
+    using InheritFromUniqueEntries<Is, Ps, IndexSequence<Is...>, Ps...>::InheritFromUniqueEntries...;
+};
+
+template<typename... Ps>
+using MergeAndDeduplicatePacks = InheritFromPacks<MakeIndexSequence<sizeof...(Ps)>, Conditional<IsBaseOf<ParameterPackTag, Ps>, Ps, ParameterPack<Ps>>...>;
+
+}
+
 
 }
