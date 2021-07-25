@@ -246,5 +246,210 @@ public:
         VERIFY(did_allocate);
     }
 
+        ALWAYS_INLINE void append(T const& value) requires(!contains_reference)
+    {
+        auto did_allocate = try_append(T(value));
+        VERIFY(did_allocate);
+    }
+
+    void append(StorageType const* values, size_t count)
+    {
+        auto did_allocate = try_append(values, count);
+        VERIFY(did_allocate);
+    }
+
+    template<typename U = T>
+    ALWAYS_INLINE void unchecked_append(U&& value) requires(CanBePlacedInsideVector<U>)
+    {
+        VERIFY((size() + 1) <= capacity());
+        if constexpr (contains_reference)
+            new (slot(m_size)) StorageType(&value);
+        else
+            new (slot(m_size)) StorageType(forward<U>(value));
+        ++m_size;
+    }
+
+    template<class... Args>
+    void empend(Args&&... args) requires(!contains_reference)
+    {
+        auto did_allocate = try_empend(forward<Args>(args)...);
+        VERIFY(did_allocate);
+    }
+
+    template<typename U = T>
+    void prepend(U&& value) requires(CanBePlacedInsideVector<U>)
+    {
+        auto did_allocate = try_insert(0, forward<U>(value));
+        VERIFY(did_allocate);
+    }
+
+    void prepend(Vector&& other)
+    {
+        auto did_allocate = try_prepend(move(other));
+        VERIFY(did_allocate);
+    }
+
+    void prepend(StorageType const* values, size_t count)
+    {
+        auto did_allocate = try_prepend(values, count);
+        VERIFY(did_allocate);
+    }
+
+    Vector& operator=(Vector&& other)
+    {
+        if (this != &other) {
+            clear();
+            m_size = other.m_size;
+            m_capacity = other.m_capacity;
+            m_outline_buffer = other.m_outline_buffer;
+            if constexpr (inline_capacity > 0) {
+                if (!m_outline_buffer) {
+                    for (size_t i = 0; i < m_size; ++i) {
+                        new (&inline_buffer()[i]) StorageType(move(other.inline_buffer()[i]));
+                        other.inline_buffer()[i].~StorageType();
+                    }
+                }
+            }
+            other.m_outline_buffer = nullptr;
+            other.m_size = 0;
+            other.reset_capacity();
+        }
+        return *this;
+    }
+
+    Vector& operator=(Vector const& other)
+    {
+        if (this != &other) {
+            clear();
+            ensure_capacity(other.size());
+            TypedTransfer<StorageType>::copy(data(), other.data(), other.size());
+            m_size = other.size();
+        }
+        return *this;
+    }
+
+    template<size_t other_inline_capacity>
+    Vector& operator=(Vector<T, other_inline_capacity> const& other)
+    {
+        clear();
+        ensure_capacity(other.size());
+        TypedTransfer<StorageType>::copy(data(), other.data(), other.size());
+        m_size = other.size();
+        return *this;
+    }
+
+    void clear()
+    {
+        clear_with_capacity();
+        if (m_outline_buffer) {
+            kfree_sized(m_outline_buffer, m_capacity * sizeof(StorageType));
+            m_outline_buffer = nullptr;
+        }
+        reset_capacity();
+    }
+
+    void clear_with_capacity()
+    {
+        for (size_t i = 0; i < m_size; ++i)
+            data()[i].~StorageType();
+        m_size = 0;
+    }
+
+    void remove(size_t index)
+    {
+        VERIFY(index < m_size);
+
+        if constexpr (Traits<StorageType>::is_trivial()) {
+            TypedTransfer<StorageType>::copy(slot(index), slot(index + 1), m_size - index - 1);
+        } else {
+            at(index).~StorageType();
+            for (size_t i = index + 1; i < m_size; ++i) {
+                new (slot(i - 1)) StorageType(move(at(i)));
+                at(i).~StorageType();
+            }
+        }
+
+        --m_size;
+    }
+
+    void remove(size_t index, size_t count)
+    {
+        if (count == 0)
+            return;
+        VERIFY(index + count > index);
+        VERIFY(index + count <= m_size);
+
+        if constexpr (Traits<StorageType>::is_trivial()) {
+            TypedTransfer<StorageType>::copy(slot(index), slot(index + count), m_size - index - count);
+        } else {
+            for (size_t i = index; i < index + count; i++)
+                at(i).~StorageType();
+            for (size_t i = index + count; i < m_size; ++i) {
+                new (slot(i - count)) StorageType(move(at(i)));
+                at(i).~StorageType();
+            }
+        }
+
+        m_size -= count;
+    }
+
+    template<typename TUnaryPredicate>
+    bool remove_first_matching(TUnaryPredicate predicate)
+    {
+        for (size_t i = 0; i < size(); ++i) {
+            if (predicate(at(i))) {
+                remove(i);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    template<typename TUnaryPredicate>
+    void remove_all_matching(TUnaryPredicate predicate)
+    {
+        for (size_t i = 0; i < size();) {
+            if (predicate(at(i))) {
+                remove(i);
+            } else {
+                ++i;
+            }
+        }
+    }
+
+    ALWAYS_INLINE T take_last()
+    {
+        VERIFY(!is_empty());
+        auto value = move(raw_last());
+        if constexpr (!contains_reference)
+            last().~T();
+        --m_size;
+        if constexpr (contains_reference)
+            return *value;
+        else
+            return value;
+    }
+
+    T take_first()
+    {
+        VERIFY(!is_empty());
+        auto value = move(raw_first());
+        remove(0);
+        if constexpr (contains_reference)
+            return *value;
+        else
+            return value;
+    }
+
+    T take(size_t index)
+    {
+        auto value = move(raw_at(index));
+        remove(index);
+        if constexpr (contains_reference)
+            return *value;
+        else
+            return value;
+    }
+
 
 }
