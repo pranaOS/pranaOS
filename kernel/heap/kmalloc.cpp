@@ -21,7 +21,7 @@
 
 #define CHUNK_SIZE 32
 #define POOL_SIZE (2 * MiB)
-#define ETHERNAL_RANGE_SIZE (3 * MiB)
+#define ETERNAL_RANGE_SIZE (3 * MiB)
 
 namespace std {
 const nothrow_t nothrow;
@@ -72,6 +72,7 @@ struct KmallocGlobalHeap {
             });
 
             if (subheap.free_bytes() < allocation_request) {
+
                 size_t memory_size = page_round_up(decltype(m_global_heap.m_heap)::calculate_memory_for_bytes(allocation_request));
 
                 memory_size += 1 * MiB;
@@ -91,7 +92,6 @@ struct KmallocGlobalHeap {
 
         bool remove_memory(void* memory)
         {
-
             for (size_t i = 0; i < m_global_heap.m_subheap_memory.size(); i++) {
                 if (m_global_heap.m_subheap_memory[i].vaddr().as_ptr() == memory) {
                     auto region = m_global_heap.m_subheap_memory.take(i);
@@ -299,4 +299,52 @@ void* operator new(size_t size, std::align_val_t al)
 void* operator new(size_t size, std::align_val_t al, const std::nothrow_t&) noexcept
 {
     return kmalloc_aligned_cxx(size, (size_t)al);
+}
+
+void* operator new[](size_t size)
+{
+    void* ptr = kmalloc(size);
+    VERIFY(ptr);
+    return ptr;
+}
+
+void* operator new[](size_t size, const std::nothrow_t&) noexcept
+{
+    return kmalloc(size);
+}
+
+void operator delete(void*) noexcept
+{
+    VERIFY_NOT_REACHED();
+}
+
+void operator delete(void* ptr, size_t size) noexcept
+{
+    return kfree_sized(ptr, size);
+}
+
+void operator delete(void* ptr, size_t, std::align_val_t) noexcept
+{
+    return kfree_aligned(ptr);
+}
+
+void operator delete[](void*) noexcept
+{
+
+    VERIFY_NOT_REACHED();
+}
+
+void operator delete[](void* ptr, size_t size) noexcept
+{
+    return kfree_sized(ptr, size);
+}
+
+void get_kmalloc_stats(kmalloc_stats& stats)
+{
+    ScopedSpinLock lock(s_lock);
+    stats.bytes_allocated = g_kmalloc_global->m_heap.allocated_bytes();
+    stats.bytes_free = g_kmalloc_global->m_heap.free_bytes() + g_kmalloc_global->backup_memory_bytes();
+    stats.bytes_eternal = g_kmalloc_bytes_eternal;
+    stats.kmalloc_call_count = g_kmalloc_call_count;
+    stats.kfree_call_count = g_kfree_call_count;
 }
