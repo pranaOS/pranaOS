@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
 */
 
+// includes
 #include <base/NonnullRefPtr.h>
 #include <base/RefPtr.h>
 #include <kernel/Assertions.h>
@@ -98,6 +99,37 @@ NonnullRefPtrVector<PhysicalPage> PhysicalRegion::take_contiguous_free_pages(siz
     for (size_t i = 0; i < count; ++i)
         physical_pages.append(PhysicalPage::create(page_base.value().offset(i * PAGE_SIZE)));
     return physical_pages;
+}
+
+RefPtr<PhysicalPage> PhysicalRegion::take_free_page()
+{
+    if (m_usable_zones.is_empty())
+        return nullptr;
+
+    auto& zone = *m_usable_zones.first();
+    auto page = zone.allocate_block(0);
+    VERIFY(page.has_value());
+
+    if (zone.is_empty()) {
+
+        m_full_zones.append(zone);
+    }
+
+    return PhysicalPage::create(page.value());
+}
+
+void PhysicalRegion::return_page(PhysicalAddress paddr)
+{
+    for (auto& zone : m_zones) {
+        if (zone.contains(paddr)) {
+            zone.deallocate_block(paddr, 0);
+            if (m_full_zones.contains(zone))
+                m_usable_zones.append(zone);
+            return;
+        }
+    }
+
+    VERIFY_NOT_REACHED();
 }
 
 }
