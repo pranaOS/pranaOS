@@ -211,5 +211,174 @@ const char* characters;
 size_t length { 0 };
 };
 
+template<typename DataType, typename SizeType>
+struct MutableBufferArgument {
+    DataType* data { nullptr };
+    SizeType size { 0 };
+};
+struct StringListArgument {
+    StringArgument* strings {};
+size_t length { 0 };
+};
+struct SC_mmap_params {
+uintptr_t addr;
+size_t size;
+size_t alignment;
+int32_t prot;
+int32_t flags;
+int32_t fd;
+int64_t offset;
+    StringArgument name;
+};
+struct SC_mremap_params {
+uintptr_t old_address;
+size_t old_size;
+size_t new_size;
+int32_t flags;
+};
+struct SC_open_params {
+int dirfd;
+    StringArgument path;
+int options;
+    u16 mode;
+};
+struct SC_select_params {
+int nfds;
+fd_set* readfds;
+fd_set* writefds;
+fd_set* exceptfds;
+const struct timespec* timeout;
+const u32* sigmask;
+};
+struct SC_poll_params {
+struct pollfd* fds;
+unsigned nfds;
+const struct timespec* timeout;
+const u32* sigmask;
+};
+struct SC_clock_nanosleep_params {
+int clock_id;
+int flags;
+const struct timespec* requested_sleep;
+struct timespec* remaining_sleep;
+};
+struct SC_accept4_params {
+int sockfd;
+    sockaddr* addr;
+socklen_t* addrlen;
+int flags;
+};
+struct SC_getsockopt_params {
+int sockfd;
+int level;
+int option;
+void* value;
+socklen_t* value_size;
+};
+struct SC_setsockopt_params {
+int sockfd;
+int level;
+int option;
+const void* value;
+socklen_t value_size;
+};
+struct SC_getsockname_params {
+int sockfd;
+    sockaddr* addr;
+socklen_t* addrlen;
+};
+struct SC_getpeername_params {
+int sockfd;
+    sockaddr* addr;
+socklen_t* addrlen;
+};
+struct SC_socketpair_params {
+int domain;
+int type;
+int protocol;
+int* sv;
+};
+struct SC_futex_params {
+    u32* userspace_address;
+int futex_op;
+    u32 val;
+union {
+const timespec* timeout;
+uintptr_t val2;
+    };
+    u32* userspace_address2;
+    u32 val3;
+};
+struct SC_setkeymap_params {
+const u32* map;
+const u32* shift_map;
+const u32* alt_map;
+const u32* altgr_map;
+const u32* shift_altgr_map;
+    StringArgument map_name;
+};
+struct SC_getkeymap_params {
+    u32* map;
+    u32* shift_map;
+    u32* alt_map;
+    u32* altgr_map;
+    u32* shift_altgr_map;
+    MutableBufferArgument<char, size_t> map_name;
+};
+struct SC_create_thread_params {
+unsigned int detach_state = 0; 
+int schedule_priority = 30;    
+
+unsigned int guard_page_size = 0;          
+unsigned int reported_guard_page_size = 0; 
+unsigned int stack_size = 4 * MiB;         
+void* stack_location;                      
+#    if ARCH(X86_64)
+    FlatPtr rdi;
+    FlatPtr rsi;
+    FlatPtr rcx;
+    FlatPtr rdx;
+#    endif
+};
+struct SC_realpath_params {
+    StringArgument path;
+    MutableBufferArgument<char, size_t> buffer;
+};
+struct SC_set_mmap_name_params {
+void* addr;
+size_t size;
+    StringArgument name;
+};
+struct SC_execve_params {
+    StringArgument path;
+    StringListArgument arguments;
+    StringListArgument environment;
+};
+struct SC_readlink_params {
+    StringArgument path;
+    MutableBufferArgument<char, size_t> buffer;
+};
+struct SC_link_params {
+    StringArgument old_path;
+    StringArgument new_path;
+};
+struct SC_chown_params {
+    StringArgument path;
+    u32 uid;
+    u32 gid;
+};
+struct SC_mknod_params {
+    StringArgument path;
+    u16 mode;
+    u32 dev;
+};
+struct SC_symlink_params {
+    StringArgument target;
+    StringArgument linkpath;
+};
+struct SC_rename_params {
+    StringArgument old_path;
+    StringArgument new_path;
+};
 
 }
