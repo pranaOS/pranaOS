@@ -110,5 +110,78 @@ KResultOr<Vector<Region*, 2>> Space::try_split_region_around_range(const Region&
     return new_regions;
 }
 
+size_t Space::amount_clean_inode() const
+{
+    ScopedSpinLock lock(m_lock);
+    HashTable<const InodeVMObject*> vmobjects;
+    for (auto& region : m_regions) {
+        if (region->vmobject().is_inode())
+            vmobjects.set(&static_cast<const InodeVMObject&>(region->vmobject()));
+    }
+    size_t amount = 0;
+    for (auto& vmobject : vmobjects)
+        amount += vmobject->amount_clean();
+    return amount;
+}
+
+size_t Space::amount_virtual() const
+{
+    ScopedSpinLock lock(m_lock);
+    size_t amount = 0;
+    for (auto& region : m_regions) {
+        amount += region->size();
+    }
+    return amount;
+}
+
+size_t Space::amount_resident() const
+{
+    ScopedSpinLock lock(m_lock);
+    size_t amount = 0;
+    for (auto& region : m_regions) {
+        amount += region->amount_resident();
+    }
+    return amount;
+}
+
+size_t Space::amount_shared() const
+{
+    ScopedSpinLock lock(m_lock);
+
+    size_t amount = 0;
+    for (auto& region : m_regions) {
+        amount += region->amount_shared();
+    }
+    return amount;
+}
+
+size_t Space::amount_purgeable_volatile() const
+{
+    ScopedSpinLock lock(m_lock);
+    size_t amount = 0;
+    for (auto& region : m_regions) {
+        if (!region->vmobject().is_anonymous())
+            continue;
+        auto const& vmobject = static_cast<AnonymousVMObject const&>(region->vmobject());
+        if (vmobject.is_purgeable() && vmobject.is_volatile())
+            amount += region->amount_resident();
+    }
+    return amount;
+}
+
+size_t Space::amount_purgeable_nonvolatile() const
+{
+    ScopedSpinLock lock(m_lock);
+    size_t amount = 0;
+    for (auto& region : m_regions) {
+        if (!region->vmobject().is_anonymous())
+            continue;
+        auto const& vmobject = static_cast<AnonymousVMObject const&>(region->vmobject());
+        if (vmobject.is_purgeable() && !vmobject.is_volatile())
+            amount += region->amount_resident();
+    }
+    return amount;
+}
+
 
 }
