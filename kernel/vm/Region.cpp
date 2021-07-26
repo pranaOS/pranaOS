@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: BSD-2-Clause
 */
 
-
 // includes
 #include <base/Memory.h>
 #include <base/StringView.h>
@@ -20,6 +19,84 @@
 #include <kernel/vm/SharedInodeVMObject.h>
 
 namespace Kernel {
+
+Region::Region(Range const& range, NonnullRefPtr<VMObject> vmobject, size_t offset_in_vmobject, OwnPtr<KString> name, Region::Access access, Cacheable cacheable, bool shared)
+    : m_range(range)
+    , m_offset_in_vmobject(offset_in_vmobject)
+    , m_vmobject(move(vmobject))
+    , m_name(move(name))
+    , m_access(access | ((access & 0x7) << 4))
+    , m_shared(shared)
+    , m_cacheable(cacheable == Cacheable::Yes)
+{
+    VERIFY(m_range.base().is_page_aligned());
+    VERIFY(m_range.size());
+    VERIFY((m_range.size() % PAGE_SIZE) == 0);
+
+    m_vmobject->add_region(*this);
+    MM.register_region(*this);
+}
+
+Region::~Region()
+{
+    m_vmobject->remove_region(*this);
+
+    ScopedSpinLock lock(s_mm_lock);
+    if (m_page_directory) {
+        unmap(ShouldDeallocateVirtualMemoryRange::Yes);
+        VERIFY(!m_page_directory);
+    }
+
+    MM.unregister_region(*this);
+}
+
+OwnPtr<Region> Region::clone()
+{
+    VERIFY(Process::current());
+
+    ScopedSpinLock lock(s_mm_lock);
+
+    if (m_shared) {
+        VERIFY(!m_stack);
+        if (vmobject().is_inode())
+            VERIFY(vmobject().is_shared_inode());
+
+        auto region = Region::try_create_user_accessible(
+            m_range, m_vmobject, m_offset_in_vmobject, m_name ? m_name->try_clone() : OwnPtr<KString> {}, access(), m_cacheable ? Cacheable::Yes : Cacheable::No, m_shared);
+        if (!region) {
+            dbgln("Region::clone: Unable to allocate new Region");
+            return nullptr;
+        }
+        region->set_mmap(m_mmap);
+        region->set_shared(m_shared);
+        region->set_syscall_region(is_syscall_region());
+        return region;
+    }
+
+    if (vmobject().is_inode())
+        VERIFY(vmobject().is_private_inode());
+
+    auto vmobject_clone = vmobject().try_clone();
+    if (!vmobject_clone)
+        return {};
+
+    remap();
+    auto clone_region = Region::try_create_user_accessible(
+        m_range, vmobject_clone.release_nonnull(), m_offset_in_vmobject, m_name ? m_name->try_clone() : OwnPtr<KString> {}, access(), m_cacheable ? Cacheable::Yes : Cacheable::No, m_shared);
+    if (!clone_region) {
+        dbgln("Region::clone: Unable to allocate new Region for COW");
+        return nullptr;
+    }
+    if (m_stack) {
+        VERIFY(is_readable());
+        VERIFY(is_writable());
+        VERIFY(vmobject().is_anonymous());
+        clone_region->set_stack(true);
+    }
+    clone_region->set_syscall_region(is_syscall_region());
+    clone_region->set_mmap(m_mmap);
+    return clone_region;
+}
 
 void Region::set_vmobject(NonnullRefPtr<VMObject>&& obj)
 {
@@ -348,7 +425,6 @@ PageFaultResponse Region::handle_inode_fault(size_t page_index_in_region)
     ScopedSpinLock locker(inode_vmobject.m_lock);
 
     if (!vmobject_physical_page_entry.is_null()) {
-
         dbgln_if(PAGE_FAULT_DEBUG, "handle_inode_fault: Page faulted in by someone else, remapping.");
         if (!remap_vmobject_page(page_index_in_vmobject))
             return PageFaultResponse::OutOfMemory;
