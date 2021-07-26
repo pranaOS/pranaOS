@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: BSD-2-Clause
 */
 
-
 #pragma once
 
 // includes
@@ -13,7 +12,6 @@
 #include <base/TemporaryChange.h>
 #include <base/Vector.h>
 #include <base/kmalloc.h>
-
 
 namespace Kernel {
 
@@ -52,6 +50,7 @@ public:
         , m_chunks(memory)
         , m_bitmap(memory + m_total_chunks * CHUNK_SIZE, m_total_chunks)
     {
+
         VERIFY(m_total_chunks * CHUNK_SIZE + (m_total_chunks + 7) / 8 <= memory_size);
     }
     ~Heap() = default;
@@ -103,6 +102,7 @@ public:
         VERIFY((u8*)a >= m_chunks && (u8*)ptr < m_chunks + m_total_chunks * CHUNK_SIZE);
         FlatPtr start = ((FlatPtr)a - (FlatPtr)m_chunks) / CHUNK_SIZE;
 
+
         VERIFY(m_bitmap.get(start));
 
         VERIFY((u8*)a + a->allocation_size_in_chunks * CHUNK_SIZE <= m_chunks + m_total_chunks * CHUNK_SIZE);
@@ -146,7 +146,7 @@ template<typename ExpandHeap>
 struct ExpandableHeapTraits {
     static bool add_memory(ExpandHeap& expand, size_t allocation_request)
     {
-        return expand.add_memory(allocation_request)''
+        return expand.add_memory(allocation_request);
     }
 
     static bool remove_memory(ExpandHeap& expand, void* memory)
@@ -158,6 +158,7 @@ struct ExpandableHeapTraits {
 struct DefaultExpandHeap {
     bool add_memory(size_t)
     {
+
         return false;
     }
 
@@ -169,8 +170,8 @@ struct DefaultExpandHeap {
 
 template<size_t CHUNK_SIZE, unsigned HEAP_SCRUB_BYTE_ALLOC = 0, unsigned HEAP_SCRUB_BYTE_FREE = 0, typename ExpandHeap = DefaultExpandHeap>
 class ExpandableHeap {
-    AK_MAKE_NONCOPYABLE(ExpandableHeap);
-    AK_MAKE_NONMOVABLE(ExpandableHeap);
+    BASE_MAKE_NONCOPYABLE(ExpandableHeap);
+    BASE_MAKE_NONMOVABLE(ExpandableHeap);
 
 public:
     typedef ExpandHeap ExpandHeapType;
@@ -228,7 +229,6 @@ public:
                     return ptr;
             }
 
-
             if (attempt++ >= 2)
                 break;
         } while (expand_memory(size));
@@ -243,7 +243,6 @@ public:
             if (subheap->heap.contains(ptr)) {
                 subheap->heap.deallocate(ptr);
                 if (subheap->heap.allocated_chunks() == 0 && subheap != &m_heaps && !m_expanding) {
-
                     {
                         auto* subheap2 = m_heaps.next;
                         auto** subheap_link = &m_heaps.next;
@@ -268,7 +267,65 @@ public:
         VERIFY_NOT_REACHED();
     }
 
+    HeapType& add_subheap(void* memory, size_t memory_size)
+    {
+        VERIFY(memory_size > sizeof(SubHeap));
 
-}
+        memory_size -= sizeof(SubHeap);
+        SubHeap* new_heap = (SubHeap*)memory;
+        new (new_heap) SubHeap(memory_size, (u8*)(new_heap + 1), memory_size);
+
+        SubHeap* next_heap = m_heaps.next;
+        SubHeap** next_heap_link = &m_heaps.next;
+        while (next_heap) {
+            if (new_heap->heap.memory() < next_heap->heap.memory())
+                break;
+            next_heap_link = &next_heap->next;
+            next_heap = next_heap->next;
+        }
+        new_heap->next = *next_heap_link;
+        *next_heap_link = new_heap;
+        return new_heap->heap;
+    }
+
+    bool contains(const void* ptr) const
+    {
+        for (auto* subheap = &m_heaps; subheap; subheap = subheap->next) {
+            if (subheap->heap.contains(ptr))
+                return true;
+        }
+        return false;
+    }
+
+    size_t total_chunks() const
+    {
+        size_t total = 0;
+        for (auto* subheap = &m_heaps; subheap; subheap = subheap->next)
+            total += subheap->heap.total_chunks();
+        return total;
+    }
+    size_t total_bytes() const { return total_chunks() * CHUNK_SIZE; }
+    size_t free_chunks() const
+    {
+        size_t total = 0;
+        for (auto* subheap = &m_heaps; subheap; subheap = subheap->next)
+            total += subheap->heap.free_chunks();
+        return total;
+    }
+    size_t free_bytes() const { return free_chunks() * CHUNK_SIZE; }
+    size_t allocated_chunks() const
+    {
+        size_t total = 0;
+        for (auto* subheap = &m_heaps; subheap; subheap = subheap->next)
+            total += subheap->heap.allocated_chunks();
+        return total;
+    }
+    size_t allocated_bytes() const { return allocated_chunks() * CHUNK_SIZE; }
+
+private:
+    SubHeap m_heaps;
+    ExpandHeap m_expand;
+    bool m_expanding { false };
+};
 
 }
