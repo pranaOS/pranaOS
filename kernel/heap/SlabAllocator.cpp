@@ -42,15 +42,16 @@ public:
     {
         FreeSlab* free_slab;
         {
+
             ScopedCritical critical;
             FreeSlab* next_free;
-            free_slab = m_freelist.load(AK::memory_order_consume);
+            free_slab = m_freelist.load(Base::memory_order_consume);
             do {
                 if (!free_slab)
                     return kmalloc(slab_size());
 
                 next_free = free_slab->next;
-            } while (!m_freelist.compare_exchange_strong(free_slab, next_free, AK::memory_order_acq_rel));
+            } while (!m_freelist.compare_exchange_strong(free_slab, next_free, Base::memory_order_acq_rel));
 
             m_num_allocated++;
         }
@@ -75,10 +76,10 @@ public:
 #endif
 
         ScopedCritical critical;
-        FreeSlab* next_free = m_freelist.load(AK::memory_order_consume);
+        FreeSlab* next_free = m_freelist.load(Base::memory_order_consume);
         do {
             free_slab->next = next_free;
-        } while (!m_freelist.compare_exchange_strong(next_free, free_slab, AK::memory_order_acq_rel));
+        } while (!m_freelist.compare_exchange_strong(next_free, free_slab, Base::memory_order_acq_rel));
 
         m_num_allocated--;
     }
@@ -86,6 +87,19 @@ public:
     size_t num_allocated() const { return m_num_allocated; }
     size_t num_free() const { return m_slab_count - m_num_allocated; }
 
+private:
+    struct FreeSlab {
+        FreeSlab* next;
+        char padding[templated_slab_size - sizeof(FreeSlab*)];
+    };
+
+    Atomic<FreeSlab*> m_freelist { nullptr };
+    Atomic<size_t, Base::MemoryOrder::memory_order_relaxed> m_num_allocated;
+    size_t m_slab_count;
+    void* m_base { nullptr };
+    void* m_end { nullptr };
+
+    static_assert(sizeof(FreeSlab) == templated_slab_size);
 };
 
 }
