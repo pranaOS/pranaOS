@@ -22,4 +22,19 @@ PhysicalPage::PhysicalPage(MayReturnToFreeList may_return_to_freelist)
 {
 }
 
+PhysicalAddress PhysicalPage::paddr() const
+{
+    return MM.get_physical_address(*this);
+}
+
+void PhysicalPage::free_this()
+{
+    auto paddr = MM.get_physical_address(*this);
+    if (m_may_return_to_freelist == MayReturnToFreeList::Yes) {
+        auto& this_as_freelist_entry = MM.get_physical_page_entry(paddr).freelist;
+    } else {
+        this->~PhysicalPage();
+    }
+}
+
 }
