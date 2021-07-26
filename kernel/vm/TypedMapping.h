@@ -25,9 +25,25 @@ struct TypedMapping {
 };
 
 template<typename T>
-static TypedMapping<T> map_typed_writable(PhyiscalAddress padddr)
+static TypedMapping<T> map_typed(PhysicalAddress paddr, size_t length, Region::Access access = Region::Access::Read)
 {
-    return map_typed<T>(paddr, sizeof(T), Region::Access::Read)
+    TypedMapping<T> table;
+    size_t mapping_length = page_round_up(paddr.offset_in_page() + length);
+    table.region = MM.allocate_kernel_region(paddr.page_base(), mapping_length, {}, access);
+    table.offset = paddr.offset_in_page();
+    return table;
+}
+
+template<typename T>
+static TypedMapping<T> map_typed(PhysicalAddress paddr)
+{
+    return map_typed<T>(paddr, sizeof(T));
+}
+
+template<typename T>
+static TypedMapping<T> map_typed_writable(PhysicalAddress paddr)
+{
+    return map_typed<T>(paddr, sizeof(T), Region::Access::Read | Region::Access::Write);
 }
 
 }
