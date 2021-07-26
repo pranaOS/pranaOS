@@ -92,4 +92,33 @@ public:
 
     }
 
+
+public:
+    using ListInMemoryManager = IntrusiveList<Region, RawPtr<Region>, &Region::m_memory_manager_list_node>;
+    using ListInVMObject = IntrusiveList<Region, RawPtr<Region>, &Region::m_vmobject_list_node>;
+
+}
+
+inline Region::Access prot_to_region_access_flags(int prot)
+{
+    Region::Access access = Region::Access::None;
+    if (prot & PROT_READ)
+        access |= Region::Access::Read;
+    if (prot & PROT_WRITE)
+        access |= Region::Access::Write;
+    if (prot & PROT_EXEC)
+        access |= Region::Access::Execute;
+    return access;
+}
+
+inline int region_access_flags_to_prot(Region::Access access)
+{
+    int prot = 0;
+    if (access & Region::Access::Read)
+        prot |= PROT_READ;
+    if (access & Region::Access::Write)
+        prot |= PROT_WRITE;
+    if (access & Region::Access::Execute)
+        prot |= PROT_EXEC;
+    return prot;
 }
