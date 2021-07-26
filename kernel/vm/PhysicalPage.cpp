@@ -32,8 +32,12 @@ void PhysicalPage::free_this()
     auto paddr = MM.get_physical_address(*this);
     if (m_may_return_to_freelist == MayReturnToFreeList::Yes) {
         auto& this_as_freelist_entry = MM.get_physical_page_entry(paddr).freelist;
+        this->~PhysicalPage(); // delete in place
+        this_as_freelist_entry.next_index = -1;
+        this_as_freelist_entry.prev_index = -1;
+        MM.deallocate_physical_page(paddr);
     } else {
-        this->~PhysicalPage();
+        this->~PhysicalPage(); // delete in place
     }
 }
 
