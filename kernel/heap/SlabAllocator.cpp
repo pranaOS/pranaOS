@@ -42,14 +42,12 @@ public:
     {
         FreeSlab* free_slab;
         {
-
             ScopedCritical critical;
             FreeSlab* next_free;
             free_slab = m_freelist.load(Base::memory_order_consume);
             do {
                 if (!free_slab)
                     return kmalloc(slab_size());
-
                 next_free = free_slab->next;
             } while (!m_freelist.compare_exchange_strong(free_slab, next_free, Base::memory_order_acq_rel));
 
@@ -101,5 +99,73 @@ private:
 
     static_assert(sizeof(FreeSlab) == templated_slab_size);
 };
+
+static SlabAllocator<16> s_slab_allocator_16;
+static SlabAllocator<32> s_slab_allocator_32;
+static SlabAllocator<64> s_slab_allocator_64;
+static SlabAllocator<128> s_slab_allocator_128;
+static SlabAllocator<256> s_slab_allocator_256;
+
+#if ARCH(I386)
+static_assert(sizeof(Region) <= s_slab_allocator_128.slab_size());
+#endif
+
+template<typename Callback>
+void for_each_allocator(Callback callback)
+{
+    callback(s_slab_allocator_16);
+    callback(s_slab_allocator_32);
+    callback(s_slab_allocator_64);
+    callback(s_slab_allocator_128);
+    callback(s_slab_allocator_256);
+}
+
+UNMAP_AFTER_INIT void slab_alloc_init()
+{
+    s_slab_allocator_16.init(128 * KiB);
+    s_slab_allocator_32.init(128 * KiB);
+    s_slab_allocator_64.init(512 * KiB);
+    s_slab_allocator_128.init(512 * KiB);
+    s_slab_allocator_256.init(128 * KiB);
+}
+
+void* slab_alloc(size_t slab_size)
+{
+    if (slab_size <= 16)
+        return s_slab_allocator_16.alloc();
+    if (slab_size <= 32)
+        return s_slab_allocator_32.alloc();
+    if (slab_size <= 64)
+        return s_slab_allocator_64.alloc();
+    if (slab_size <= 128)
+        return s_slab_allocator_128.alloc();
+    if (slab_size <= 256)
+        return s_slab_allocator_256.alloc();
+    VERIFY_NOT_REACHED();
+}
+
+void slab_dealloc(void* ptr, size_t slab_size)
+{
+    if (slab_size <= 16)
+        return s_slab_allocator_16.dealloc(ptr);
+    if (slab_size <= 32)
+        return s_slab_allocator_32.dealloc(ptr);
+    if (slab_size <= 64)
+        return s_slab_allocator_64.dealloc(ptr);
+    if (slab_size <= 128)
+        return s_slab_allocator_128.dealloc(ptr);
+    if (slab_size <= 256)
+        return s_slab_allocator_256.dealloc(ptr);
+    VERIFY_NOT_REACHED();
+}
+
+void slab_alloc_stats(Function<void(size_t slab_size, size_t allocated, size_t free)> callback)
+{
+    for_each_allocator([&](auto& allocator) {
+        auto num_allocated = allocator.num_allocated();
+        auto num_free = allocator.slab_count() - num_allocated;
+        callback(allocator.slab_size(), num_allocated, num_free);
+    });
+}
 
 }
