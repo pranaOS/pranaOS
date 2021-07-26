@@ -142,4 +142,133 @@ private:
     Bitmap m_bitmap;
 };
 
+template<typename ExpandHeap>
+struct ExpandableHeapTraits {
+    static bool add_memory(ExpandHeap& expand, size_t allocation_request)
+    {
+        return expand.add_memory(allocation_request)''
+    }
+
+    static bool remove_memory(ExpandHeap& expand, void* memory)
+    {
+        return expand.remove_memory(memory);
+    }
+};
+
+struct DefaultExpandHeap {
+    bool add_memory(size_t)
+    {
+        return false;
+    }
+
+    bool remove_memory(void*)
+    {
+        return false;
+    }
+};
+
+template<size_t CHUNK_SIZE, unsigned HEAP_SCRUB_BYTE_ALLOC = 0, unsigned HEAP_SCRUB_BYTE_FREE = 0, typename ExpandHeap = DefaultExpandHeap>
+class ExpandableHeap {
+    AK_MAKE_NONCOPYABLE(ExpandableHeap);
+    AK_MAKE_NONMOVABLE(ExpandableHeap);
+
+public:
+    typedef ExpandHeap ExpandHeapType;
+    typedef Heap<CHUNK_SIZE, HEAP_SCRUB_BYTE_ALLOC, HEAP_SCRUB_BYTE_FREE> HeapType;
+
+    struct SubHeap {
+        HeapType heap;
+        SubHeap* next { nullptr };
+        size_t memory_size { 0 };
+
+        template<typename... Args>
+        SubHeap(size_t memory_size, Args&&... args)
+            : heap(forward<Args>(args)...)
+            , memory_size(memory_size)
+        {
+        }
+    };
+
+    ExpandableHeap(u8* memory, size_t memory_size, const ExpandHeapType& expand = ExpandHeapType())
+        : m_heaps(memory_size, memory, memory_size)
+        , m_expand(expand)
+    {
+    }
+    ~ExpandableHeap()
+    {
+        SubHeap* next;
+        for (auto* heap = m_heaps.next; heap; heap = next) {
+            next = heap->next;
+
+            heap->~SubHeap();
+            ExpandableHeapTraits<ExpandHeap>::remove_memory(m_expand, (void*)heap);
+        }
+    }
+
+    static size_t calculate_memory_for_bytes(size_t bytes)
+    {
+        return sizeof(SubHeap) + HeapType::calculate_memory_for_bytes(bytes);
+    }
+
+    bool expand_memory(size_t size)
+    {
+        if (m_expanding)
+            return false;
+
+        TemporaryChange change(m_expanding, true);
+        return ExpandableHeapTraits<ExpandHeap>::add_memory(m_expand, size);
+    }
+
+    void* allocate(size_t size)
+    {
+        int attempt = 0;
+        do {
+            for (auto* subheap = &m_heaps; subheap; subheap = subheap->next) {
+                if (void* ptr = subheap->heap.allocate(size))
+                    return ptr;
+            }
+
+
+            if (attempt++ >= 2)
+                break;
+        } while (expand_memory(size));
+        return nullptr;
+    }
+
+    void deallocate(void* ptr)
+    {
+        if (!ptr)
+            return;
+        for (auto* subheap = &m_heaps; subheap; subheap = subheap->next) {
+            if (subheap->heap.contains(ptr)) {
+                subheap->heap.deallocate(ptr);
+                if (subheap->heap.allocated_chunks() == 0 && subheap != &m_heaps && !m_expanding) {
+
+                    {
+                        auto* subheap2 = m_heaps.next;
+                        auto** subheap_link = &m_heaps.next;
+                        while (subheap2 != subheap) {
+                            subheap_link = &subheap2->next;
+                            subheap2 = subheap2->next;
+                        }
+                        *subheap_link = subheap->next;
+                    }
+
+                    auto memory_size = subheap->memory_size;
+                    subheap->~SubHeap();
+
+                    if (!ExpandableHeapTraits<ExpandHeap>::remove_memory(m_expand, subheap)) {
+
+                        add_subheap(subheap, memory_size);
+                    }
+                }
+                return;
+            }
+        }
+        VERIFY_NOT_REACHED();
+    }
+
+
+}
+
 }
