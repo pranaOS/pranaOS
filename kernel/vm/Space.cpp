@@ -37,6 +37,168 @@ Space::~Space()
 {
 }
 
+KResult Space::unmap_mmap_range(VirtualAddress addr, size_t size)
+{
+    if (!size)
+        return EINVAL;
+
+    auto range_or_error = Range::expand_to_page_boundaries(addr.get(), size);
+    if (range_or_error.is_error())
+        return range_or_error.error();
+
+    auto range_to_unmap = range_or_error.value();
+
+    if (!is_user_range(range_to_unmap))
+        return EFAULT;
+
+    if (auto* whole_region = find_region_from_range(range_to_unmap)) {
+        if (!whole_region->is_mmap())
+            return EPERM;
+
+        PerformanceManager::add_unmap_perf_event(*Process::current(), whole_region->range());
+
+        deallocate_region(*whole_region);
+        return KSuccess;
+    }
+
+    if (auto* old_region = find_region_containing(range_to_unmap)) {
+        if (!old_region->is_mmap())
+            return EPERM;
+
+        auto region = take_region(*old_region);
+
+        region->unmap(Region::ShouldDeallocateVirtualMemoryRange::No);
+
+        auto new_regions_or_error = try_split_region_around_range(*region, range_to_unmap);
+        if (new_regions_or_error.is_error())
+            return new_regions_or_error.error();
+        auto& new_regions = new_regions_or_error.value();
+
+        page_directory().range_allocator().deallocate(range_to_unmap);
+
+        for (auto* new_region : new_regions) {
+            new_region->map(page_directory());
+        }
+
+        PerformanceManager::add_unmap_perf_event(*Process::current(), range_to_unmap);
+
+        return KSuccess;
+    }
+
+    const auto& regions = find_regions_intersecting(range_to_unmap);
+
+    for (auto* region : regions) {
+        if (!region->is_mmap())
+            return EPERM;
+    }
+
+    Vector<Region*, 2> new_regions;
+
+    for (auto* old_region : regions) {
+        if (old_region->range().intersect(range_to_unmap).size() == old_region->size()) {
+            deallocate_region(*old_region);
+            continue;
+        }
+
+        auto region = take_region(*old_region);
+
+        region->unmap(Region::ShouldDeallocateVirtualMemoryRange::No);
+        auto split_regions_or_error = try_split_region_around_range(*region, range_to_unmap);
+        if (split_regions_or_error.is_error())
+            return split_regions_or_error.error();
+
+        if (new_regions.try_extend(split_regions_or_error.value()))
+            return ENOMEM;
+    }
+
+    page_directory().range_allocator().deallocate(range_to_unmap);
+
+    for (auto* new_region : new_regions) {
+        new_region->map(page_directory());
+    }
+
+    PerformanceManager::add_unmap_perf_event(*Process::current(), range_to_unmap);
+
+    return KSuccess;
+}
+
+Optional<Range> Space::allocate_range(VirtualAddress vaddr, size_t size, size_t alignment)
+{
+    vaddr.mask(PAGE_MASK);
+    size = page_round_up(size);
+    if (vaddr.is_null())
+        return page_directory().range_allocator().allocate_anywhere(size, alignment);
+    return page_directory().range_allocator().allocate_specific(vaddr, size);
+}
+
+KResultOr<Region*> Space::try_allocate_split_region(Region const& source_region, Range const& range, size_t offset_in_vmobject)
+{
+    auto new_region = Region::try_create_user_accessible(
+        range, source_region.vmobject(), offset_in_vmobject, KString::try_create(source_region.name()), source_region.access(), source_region.is_cacheable() ? Region::Cacheable::Yes : Region::Cacheable::No, source_region.is_shared());
+    if (!new_region)
+        return ENOMEM;
+    auto* region = add_region(new_region.release_nonnull());
+    if (!region)
+        return ENOMEM;
+    region->set_syscall_region(source_region.is_syscall_region());
+    region->set_mmap(source_region.is_mmap());
+    region->set_stack(source_region.is_stack());
+    size_t page_offset_in_source_region = (offset_in_vmobject - source_region.offset_in_vmobject()) / PAGE_SIZE;
+    for (size_t i = 0; i < region->page_count(); ++i) {
+        if (source_region.should_cow(page_offset_in_source_region + i))
+            region->set_should_cow(i, true);
+    }
+    return region;
+}
+
+KResultOr<Region*> Space::allocate_region(Range const& range, StringView name, int prot, AllocationStrategy strategy)
+{
+    VERIFY(range.is_valid());
+    auto vmobject = AnonymousVMObject::try_create_with_size(range.size(), strategy);
+    if (!vmobject)
+        return ENOMEM;
+    auto region = Region::try_create_user_accessible(range, vmobject.release_nonnull(), 0, KString::try_create(name), prot_to_region_access_flags(prot), Region::Cacheable::Yes, false);
+    if (!region)
+        return ENOMEM;
+    if (!region->map(page_directory()))
+        return ENOMEM;
+    auto* added_region = add_region(region.release_nonnull());
+    if (!added_region)
+        return ENOMEM;
+    return added_region;
+}
+
+KResultOr<Region*> Space::allocate_region_with_vmobject(Range const& range, NonnullRefPtr<VMObject> vmobject, size_t offset_in_vmobject, StringView name, int prot, bool shared)
+{
+    VERIFY(range.is_valid());
+    size_t end_in_vmobject = offset_in_vmobject + range.size();
+    if (end_in_vmobject <= offset_in_vmobject) {
+        dbgln("allocate_region_with_vmobject: Overflow (offset + size)");
+        return EINVAL;
+    }
+    if (offset_in_vmobject >= vmobject->size()) {
+        dbgln("allocate_region_with_vmobject: Attempt to allocate a region with an offset past the end of its VMObject.");
+        return EINVAL;
+    }
+    if (end_in_vmobject > vmobject->size()) {
+        dbgln("allocate_region_with_vmobject: Attempt to allocate a region with an end past the end of its VMObject.");
+        return EINVAL;
+    }
+    offset_in_vmobject &= PAGE_MASK;
+    auto region = Region::try_create_user_accessible(range, move(vmobject), offset_in_vmobject, KString::try_create(name), prot_to_region_access_flags(prot), Region::Cacheable::Yes, shared);
+    if (!region) {
+        dbgln("allocate_region_with_vmobject: Unable to allocate Region");
+        return ENOMEM;
+    }
+    auto* added_region = add_region(region.release_nonnull());
+    if (!added_region)
+        return ENOMEM;
+    if (!added_region->map(page_directory())) {
+        return ENOMEM;
+    }
+    return added_region;
+}
+
 void Space::deallocate_region(Region& region)
 {
     take_region(region);
@@ -81,6 +243,29 @@ Region* Space::find_region_containing(const Range& range)
     return (*candidate)->range().contains(range) ? candidate->ptr() : nullptr;
 }
 
+Vector<Region*> Space::find_regions_intersecting(const Range& range)
+{
+    Vector<Region*> regions = {};
+    size_t total_size_collected = 0;
+
+    ScopedSpinLock lock(m_lock);
+
+    auto found_region = m_regions.find_largest_not_above(range.base().get());
+    if (!found_region)
+        return regions;
+    for (auto iter = m_regions.begin_from((*found_region)->vaddr().get()); !iter.is_end(); ++iter) {
+        if ((*iter)->range().base() < range.end() && (*iter)->range().end() > range.base()) {
+            regions.append(*iter);
+
+            total_size_collected += (*iter)->size() - (*iter)->range().intersect(range).size();
+            if (total_size_collected == range.size())
+                break;
+        }
+    }
+
+    return regions;
+}
+
 Region* Space::add_region(NonnullOwnPtr<Region> region)
 {
     auto* ptr = region.ptr();
@@ -108,6 +293,51 @@ KResultOr<Vector<Region*, 2>> Space::try_split_region_around_range(const Region&
         new_regions.unchecked_append(new_region_or_error.value());
     }
     return new_regions;
+}
+
+void Space::dump_regions()
+{
+    dbgln("Process regions:");
+#if ARCH(I386)
+    auto addr_padding = "";
+#else
+    auto addr_padding = "        ";
+#endif
+    dbgln("BEGIN{}         END{}        SIZE{}       ACCESS NAME",
+        addr_padding, addr_padding, addr_padding);
+
+    ScopedSpinLock lock(m_lock);
+
+    for (auto& sorted_region : m_regions) {
+        auto& region = *sorted_region;
+        dbgln("{:p} -- {:p} {:p} {:c}{:c}{:c}{:c}{:c}{:c} {}", region.vaddr().get(), region.vaddr().offset(region.size() - 1).get(), region.size(),
+            region.is_readable() ? 'R' : ' ',
+            region.is_writable() ? 'W' : ' ',
+            region.is_executable() ? 'X' : ' ',
+            region.is_shared() ? 'S' : ' ',
+            region.is_stack() ? 'T' : ' ',
+            region.is_syscall_region() ? 'C' : ' ',
+            region.name());
+    }
+    MM.dump_kernel_regions();
+}
+
+void Space::remove_all_regions(Badge<Process>)
+{
+    ScopedSpinLock lock(m_lock);
+    m_regions.clear();
+}
+
+size_t Space::amount_dirty_private() const
+{
+    ScopedSpinLock lock(m_lock);
+
+    size_t amount = 0;
+    for (auto& region : m_regions) {
+        if (!region->is_shared())
+            amount += region->amount_dirty();
+    }
+    return amount;
 }
 
 size_t Space::amount_clean_inode() const
@@ -182,6 +412,5 @@ size_t Space::amount_purgeable_nonvolatile() const
     }
     return amount;
 }
-
 
 }
