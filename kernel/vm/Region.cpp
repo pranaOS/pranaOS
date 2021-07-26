@@ -310,4 +310,64 @@ PageFaultResponse Region::handle_cow_fault(size_t page_index_in_region)
     return response;
 }
 
+PageFaultResponse Region::handle_inode_fault(size_t page_index_in_region)
+{
+    VERIFY_INTERRUPTS_DISABLED();
+    VERIFY(vmobject().is_inode());
+    VERIFY(!s_mm_lock.own_lock());
+    VERIFY(!g_scheduler_lock.own_lock());
+
+    auto& inode_vmobject = static_cast<InodeVMObject&>(vmobject());
+
+    auto page_index_in_vmobject = translate_to_vmobject_page(page_index_in_region);
+    auto& vmobject_physical_page_entry = inode_vmobject.physical_pages()[page_index_in_vmobject];
+    VERIFY(vmobject_physical_page_entry.is_null());
+
+    dbgln_if(PAGE_FAULT_DEBUG, "Inode fault in {} page index: {}", name(), page_index_in_region);
+
+    auto current_thread = Thread::current();
+    if (current_thread)
+        current_thread->did_inode_fault();
+
+    u8 page_buffer[PAGE_SIZE];
+    auto& inode = inode_vmobject.inode();
+
+    auto buffer = UserOrKernelBuffer::for_kernel_buffer(page_buffer);
+    auto result = inode.read_bytes(page_index_in_vmobject * PAGE_SIZE, PAGE_SIZE, buffer, nullptr);
+
+    if (result.is_error()) {
+        dmesgln("handle_inode_fault: Error ({}) while reading from inode", result.error());
+        return PageFaultResponse::ShouldCrash;
+    }
+
+    auto nread = result.value();
+    if (nread < PAGE_SIZE) {
+        memset(page_buffer + nread, 0, PAGE_SIZE - nread);
+    }
+
+    ScopedSpinLock locker(inode_vmobject.m_lock);
+
+    if (!vmobject_physical_page_entry.is_null()) {
+
+        dbgln_if(PAGE_FAULT_DEBUG, "handle_inode_fault: Page faulted in by someone else, remapping.");
+        if (!remap_vmobject_page(page_index_in_vmobject))
+            return PageFaultResponse::OutOfMemory;
+        return PageFaultResponse::Continue;
+    }
+
+    vmobject_physical_page_entry = MM.allocate_user_physical_page(MemoryManager::ShouldZeroFill::No);
+
+    if (vmobject_physical_page_entry.is_null()) {
+        dmesgln("MM: handle_inode_fault was unable to allocate a physical page");
+        return PageFaultResponse::OutOfMemory;
+    }
+
+    u8* dest_ptr = MM.quickmap_page(*vmobject_physical_page_entry);
+    memcpy(dest_ptr, page_buffer, PAGE_SIZE);
+    MM.unquickmap_page();
+
+    remap_vmobject_page(page_index_in_vmobject);
+    return PageFaultResponse::Continue;
+}
+
 }
