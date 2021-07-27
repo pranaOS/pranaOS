@@ -190,4 +190,142 @@ struct alignas(16) TransferDescriptor final {
 
         m_link_ptr |= static_cast<u32>(LinkPointerBits::DepthFlag);
     }
+
+        void terminate() { m_link_ptr |= static_cast<u32>(LinkPointerBits::Terminate); }
+
+    void set_buffer_address(Ptr32<u8> buffer)
+    {
+        u8* buffer_address = &*buffer;
+        m_buffer_ptr = reinterpret_cast<uintptr_t>(buffer_address);
+    }
+
+    void set_token(u32 token)
+    {
+        m_token = token;
+    }
+
+    void set_status(u32 status)
+    {
+        m_control_status = status;
+    }
+
+    void free()
+    {
+        m_link_ptr = 0;
+        m_control_status = 0;
+        m_token = 0;
+        m_in_use = false;
+    }
+
+private:
+    u32 m_link_ptr;                
+    volatile u32 m_control_status; 
+    u32 m_token;                   
+    u32 m_buffer_ptr;              
+
+    u32 m_paddr;                                     
+    Ptr32<TransferDescriptor> m_next_td { nullptr }; 
+    Ptr32<TransferDescriptor> m_prev_td { nullptr }; 
+    bool m_in_use;                                   
+};
+
+static_assert(sizeof(TransferDescriptor) == 32); 
+
+struct alignas(16) QueueHead {
+    enum class LinkPointerBits : u32 {
+        Terminate = 1,
+        QHSelect = 2,
+    };
+
+    QueueHead() = delete;
+    QueueHead(u32 paddr)
+        : m_paddr(paddr)
+    {
+    }
+    ~QueueHead() = delete; 
+
+    u32 link_ptr() const { return m_link_ptr; }
+    u32 element_link_ptr() const { return m_element_link_ptr; }
+    u32 paddr() const { return m_paddr; }
+    bool in_use() const { return m_in_use; }
+
+    void set_in_use(bool in_use) { m_in_use = in_use; }
+    void set_link_ptr(u32 val) { m_link_ptr = val; }
+
+    QueueHead* next_qh() { return m_next_qh; }
+    const QueueHead* next_qh() const { return m_next_qh; }
+    void set_next_qh(QueueHead* qh) { m_next_qh = qh; }
+
+    QueueHead* prev_qh() { return m_prev_qh; }
+    const QueueHead* prev_qh() const { return m_prev_qh; }
+    void set_previous_qh(QueueHead* qh)
+    {
+        m_prev_qh = qh;
+    }
+
+    void link_next_queue_head(QueueHead* qh)
+    {
+        m_link_ptr = qh->paddr();
+        m_link_ptr |= static_cast<u32>(LinkPointerBits::QHSelect);
+    }
+
+    void attach_transfer_queue(QueueHead& qh)
+    {
+        m_element_link_ptr = qh.paddr();
+        m_element_link_ptr = m_element_link_ptr | static_cast<u32>(LinkPointerBits::QHSelect);
+    }
+
+    void free_transfer_queue([[maybe_unused]] QueueHead* qh)
+    {
+        TODO();
+    }
+
+    void terminate_with_stray_descriptor(TransferDescriptor* td)
+    {
+        m_link_ptr = td->paddr();
+        m_link_ptr |= static_cast<u32>(LinkPointerBits::Terminate);
+    }
+
+    void attach_transfer_descriptor_chain(TransferDescriptor* td)
+    {
+        m_first_td = td;
+        m_element_link_ptr = td->paddr();
+    }
+
+    TransferDescriptor* get_first_td()
+    {
+        return m_first_td;
+    }
+
+    void terminate() { m_link_ptr |= static_cast<u32>(LinkPointerBits::Terminate); }
+
+    void terminate_element_link_ptr()
+    {
+        m_element_link_ptr = static_cast<u32>(LinkPointerBits::Terminate);
+    }
+
+    void set_transfer(Transfer* transfer)
+    {
+        m_transfer = transfer;
+    }
+
+    Transfer* transfer()
+    {
+        return m_transfer;
+    }
+
+    void print()
+    {
+        dbgln("UHCI: QH({:#04x}) @ {:#04x}: link_ptr={:#04x}, element_link_ptr={:#04x}", this, m_paddr, m_link_ptr, (FlatPtr)m_element_link_ptr);
+    }
+
+    void free()
+    {
+        m_link_ptr = 0;
+        m_element_link_ptr = 0;
+        m_first_td = nullptr;
+        m_transfer = nullptr;
+        m_in_use = false;
+    }
+
 }
