@@ -18,15 +18,32 @@ class PageTableEntry;
 
 class PageDirectoryEntry {
 public:
-
-    PhysicalPtr page_table_base() const { return PhysicalAddress::phyiscal_page_base(m_raw); }
+    PhysicalPtr page_table_base() const { return PhysicalAddress::physical_page_base(m_raw); }
+    void set_page_table_base(u32 value)
+    {
+        m_raw &= 0x8000000000000fffULL;
+        m_raw |= PhysicalAddress::physical_page_base(value);
+    }
 
     bool is_null() const { return m_raw == 0; }
     void clear() { m_raw = 0; }
 
+    u64 raw() const { return m_raw; }
     void copy_from(Badge<PageDirectory>, const PageDirectoryEntry& other) { m_raw = other.m_raw; }
 
-        void set_present(bool b) { set_bit(Present, b); }
+    enum Flags {
+        Present = 1 << 0,
+        ReadWrite = 1 << 1,
+        UserSupervisor = 1 << 2,
+        WriteThrough = 1 << 3,
+        CacheDisabled = 1 << 4,
+        Huge = 1 << 7,
+        Global = 1 << 8,
+        NoExecute = 0x8000000000000000ULL,
+    };
+
+    bool is_present() const { return raw() & Present; }
+    void set_present(bool b) { set_bit(Present, b); }
 
     bool is_user_allowed() const { return raw() & UserSupervisor; }
     void set_user_allowed(bool b) { set_bit(UserSupervisor, b); }
@@ -56,13 +73,33 @@ public:
         else
             m_raw &= ~bit;
     }
+
 private:
-    u32 m_raw;
+    u64 m_raw;
 };
 
 class PageTableEntry {
 public:
-        bool is_present() const { return raw() & Present; }
+    PhysicalPtr physical_page_base() { return PhysicalAddress::physical_page_base(m_raw); }
+    void set_physical_page_base(PhysicalPtr value)
+    {
+        m_raw &= 0x8000000000000fffULL;
+        m_raw |= PhysicalAddress::physical_page_base(value);
+    }
+
+    u64 raw() const { return (u32)m_raw; }
+
+    enum Flags {
+        Present = 1 << 0,
+        ReadWrite = 1 << 1,
+        UserSupervisor = 1 << 2,
+        WriteThrough = 1 << 3,
+        CacheDisabled = 1 << 4,
+        Global = 1 << 8,
+        NoExecute = 0x8000000000000000ULL,
+    };
+
+    bool is_present() const { return raw() & Present; }
     void set_present(bool b) { set_bit(Present, b); }
 
     bool is_user_allowed() const { return raw() & UserSupervisor; }
@@ -96,7 +133,20 @@ public:
 
 private:
     u64 m_raw;
+};
 
+static_assert(sizeof(PageDirectoryEntry) == 8);
+static_assert(sizeof(PageTableEntry) == 8);
+
+class PageDirectoryPointerTable {
+public:
+    PageDirectoryEntry* directory(size_t index)
+    {
+        VERIFY(index <= (NumericLimits<size_t>::max() << 30));
+        return (PageDirectoryEntry*)(PhysicalAddress::physical_page_base(raw[index]));
+    }
+
+    u64 raw[512];
 };
 
 }
