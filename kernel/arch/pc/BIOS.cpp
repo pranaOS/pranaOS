@@ -1,0 +1,113 @@
+/*
+ * Copyright (c) 2021, Krisna Pranav
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+*/
+
+// includes
+#include <base/StringView.h>
+#include <kernel/arch/pc/BIOS.h>
+#include <kernel/filesystem/FileDescription.h>
+#include <kernel/KBufferBuilder.h>
+#include <kernel/Sections.h>
+#include <kernel/vm/MemoryManager.h>
+#include <kernel/vm/TypedMapping.h>
+
+namespace Kernel {
+
+#define SMBIOS_BASE_SEARCH_ADDR 0xf0000
+#define SMBIOS_END_SEARCH_ADDR 0xfffff
+#define SMBIOS_SEARCH_AREA_SIZE (SMBIOS_END_SEARCH_ADDR - SMBIOS_BASE_SEARCH_ADDR)
+
+UNMAP_AFTER_INIT NonnullRefPtr<DMIEntryPointExposedBlob> DMIEntryPointExposedBlob::create(PhysicalAddress dmi_entry_point, size_t blob_size)
+{
+    return adopt_ref(*new (nothrow) DMIEntryPointExposedBlob(dmi_entry_point, blob_size));
+}
+
+UNMAP_AFTER_INIT BIOSSysFSComponent::BIOSSysFSComponent(String name)
+    : SysFSComponent(name)
+{
+}
+
+KResultOr<size_t> BIOSSysFSComponent::read_bytes(off_t offset, size_t count, UserOrKernelBuffer& buffer, FileDescription*) const
+
+{
+    auto blob = try_to_generate_buffer();
+    if (!blob)
+        return KResult(EFAULT);
+
+    if ((size_t)offset >= blob->size())
+        return KSuccess;
+
+    ssize_t nread = min(static_cast<off_t>(blob->size() - offset), static_cast<off_t>(count));
+    if (!buffer.write(blob->data() + offset, nread))
+        return KResult(EFAULT);
+    return nread;
+}
+
+UNMAP_AFTER_INIT DMIEntryPointExposedBlob::DMIEntryPointExposedBlob(PhysicalAddress dmi_entry_point, size_t blob_size)
+    : BIOSSysFSComponent("smbios_entry_point")
+    , m_dmi_entry_point(dmi_entry_point)
+    , m_dmi_entry_point_length(blob_size)
+{
+}
+
+OwnPtr<KBuffer> DMIEntryPointExposedBlob::try_to_generate_buffer() const
+{
+    auto dmi_blob = map_typed<u8>((m_dmi_entry_point), m_dmi_entry_point_length);
+    return KBuffer::try_create_with_bytes(Span<u8> { dmi_blob.ptr(), m_dmi_entry_point_length });
+}
+
+UNMAP_AFTER_INIT NonnullRefPtr<SMBIOSExposedTable> SMBIOSExposedTable::create(PhysicalAddress smbios_structure_table, size_t smbios_structure_table_length)
+{
+    return adopt_ref(*new (nothrow) SMBIOSExposedTable(smbios_structure_table, smbios_structure_table_length));
+}
+
+UNMAP_AFTER_INIT SMBIOSExposedTable::SMBIOSExposedTable(PhysicalAddress smbios_structure_table, size_t smbios_structure_table_length)
+    : BIOSSysFSComponent("DMI")
+    , m_smbios_structure_table(smbios_structure_table)
+    , m_smbios_structure_table_length(smbios_structure_table_length)
+{
+}
+
+OwnPtr<KBuffer> SMBIOSExposedTable::try_to_generate_buffer() const
+{
+    auto dmi_blob = map_typed<u8>((m_smbios_structure_table), m_smbios_structure_table_length);
+    return KBuffer::try_create_with_bytes(Span<u8> { dmi_blob.ptr(), m_smbios_structure_table_length });
+}
+
+UNMAP_AFTER_INIT void BIOSSysFSDirectory::set_dmi_64_bit_entry_initialization_values()
+{
+    dbgln("BIOSSysFSDirectory: SMBIOS 64bit Entry point @ {}", m_dmi_entry_point);
+    auto smbios_entry = map_typed<SMBIOS::EntryPoint64bit>(m_dmi_entry_point, SMBIOS_SEARCH_AREA_SIZE);
+    m_smbios_structure_table = PhysicalAddress(smbios_entry.ptr()->table_ptr);
+    m_dmi_entry_point_length = smbios_entry.ptr()->length;
+    m_smbios_structure_table_length = smbios_entry.ptr()->table_maximum_size;
+}
+
+UNMAP_AFTER_INIT void BIOSSysFSDirectory::set_dmi_32_bit_entry_initialization_values()
+{
+    dbgln("BIOSSysFSDirectory: SMBIOS 32bit Entry point @ {}", m_dmi_entry_point);
+    auto smbios_entry = map_typed<SMBIOS::EntryPoint32bit>(m_dmi_entry_point, SMBIOS_SEARCH_AREA_SIZE);
+    m_smbios_structure_table = PhysicalAddress(smbios_entry.ptr()->legacy_structure.smbios_table_ptr);
+    m_dmi_entry_point_length = smbios_entry.ptr()->length;
+    m_smbios_structure_table_length = smbios_entry.ptr()->legacy_structure.smboios_table_length;
+}
+
+UNMAP_AFTER_INIT void BIOSSysFSDirectory::initialize()
+{
+    auto bios_directory = adopt_ref(*new (nothrow) BIOSSysFSDirectory());
+    SysFSComponentRegistry::the().register_new_component(bios_directory);
+    bios_directory->create_components();
+}
+
+void BIOSSysFSDirectory::create_components()
+{
+    auto dmi_entry_point = DMIEntryPointExposedBlob::create(m_dmi_entry_point, m_dmi_entry_point_length);
+    m_components.append(dmi_entry_point);
+    auto smbios_table = SMBIOSExposedTable::create(m_smbios_structure_table, m_smbios_structure_table_length);
+    m_components.append(smbios_table);
+}
+
+
+}
