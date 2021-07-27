@@ -4,13 +4,13 @@ set -e
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 export PATH="/usr/local/opt/m4/bin:$PATH"
 
-quit() {
-    echo "quit: $*"
+die() {
+    echo "die: $*"
     exit 1
 }
 
 if [[ "$OSTYPE" != "darwin"* ]]; then
-    quit "This Script Works Only In Mac"
+    die "This Script Works Only In Mac"
 fi
 
 
