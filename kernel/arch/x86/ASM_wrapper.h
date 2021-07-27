@@ -78,3 +78,36 @@ ALWAYS_INLINE void write_gs_ptr(u32 offset, FlatPtr val)
         "mov %[val], %%gs:%a[off]" ::[off] "ir"(offset), [val] "ir"(val)
         : "memory");
 }
+
+ALWAYS_INLINE bool are_interrupts_enabled()
+{
+    return cpu_flags() & 0x200;
+}
+
+FlatPtr read_cr0();
+FlatPtr read_cr2();
+FlatPtr read_cr3();
+FlatPtr read_cr4();
+u64 read_xcr0();
+
+void write_cr0(FlatPtr);
+void write_cr3(FlatPtr);
+void write_cr4(FlatPtr);
+void write_xcr0(u64);
+
+void flush_idt();
+
+ALWAYS_INLINE void load_task_register(u16 selector)
+{
+    asm("ltr %0" ::"r"(selector));
+}
+
+void stac();
+void clac();
+
+[[noreturn]] ALWAYS_INLINE void halt_this()
+{
+    for (;;) {
+        asm volatile("cli; hlt")
+    }
+}
