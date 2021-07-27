@@ -2,14 +2,14 @@
 
 # imports
 import struct
-import re
-import math
-import json
 from sys import argv, stderr
 from os import path
 from string import whitespace
+import re
+import math
 from tempfile import NamedTemporaryFile
 from subprocess import call
+import json
 
 atom_end = set('()"' + whitespace)
 
@@ -110,7 +110,7 @@ def generate(ast):
     for entry in ast:
         if len(entry) > 0 and entry[0] == ('module',):
             name = None
-            mode = 'ast'  
+            mode = 'ast'  # binary, quote
             start_index = 1
             if len(entry) > 1:
                 if isinstance(entry[1], tuple) and isinstance(entry[1][0], str) and entry[1][0].startswith('$'):
@@ -129,6 +129,7 @@ def generate(ast):
                 "module": {
                     'ast': lambda: ('parse', generate_module_source_for_compilation(entry)),
                     'binary': lambda: ('literal', generate_binary_source(entry[start_index:])),
+                    # FIXME: Make this work when we have a WAT parser
                     'quote': lambda: ('literal', entry[start_index]),
                 }[mode](),
                 "tests": []
@@ -187,6 +188,7 @@ def generate(ast):
                     "reason": f"Unknown assertion {entry[0][0][len('assert_'):]}"
                 })
         elif len(entry) >= 2 and entry[0][0] == 'invoke':
+            # toplevel invoke :shrug:
             arg, name, module = 0, None, None
             if not isinstance(entry[1], str) and isinstance(entry[1][1], str):
                 name = entry[1][1]
@@ -230,3 +232,170 @@ def generate(ast):
                 "reason": f"Unknown command {entry[0][0]}"
             })
     return tests
+
+
+def genarg(spec):
+    if spec['type'] == 'error':
+        return '0'
+
+    def gen():
+        x = spec['value']
+        if x == 'nan':
+            return 'NaN'
+        if x == '-nan':
+            return '-NaN'
+
+        try:
+            x = float(x)
+            if math.isnan(x):
+                # FIXME: This is going to mess up the different kinds of nan
+                return '-NaN' if math.copysign(1.0, x) < 0 else 'NaN'
+            if math.isinf(x):
+                return 'Infinity' if x > 0 else '-Infinity'
+            return x
+        except ValueError:
+            try:
+                x = float.fromhex(x)
+                if math.isnan(x):
+                    # FIXME: This is going to mess up the different kinds of nan
+                    return '-NaN' if math.copysign(1.0, x) < 0 else 'NaN'
+                if math.isinf(x):
+                    return 'Infinity' if x > 0 else '-Infinity'
+                return x
+            except ValueError:
+                try:
+                    x = int(x, 0)
+                    return x
+                except ValueError:
+                    return x
+
+    x = gen()
+    if isinstance(x, str):
+        if x.startswith('nan'):
+            return 'NaN'
+        if x.startswith('-nan'):
+            return '-NaN'
+        return x
+    if spec['type'] == 'i32':
+        # cast back to i32 to get the correct sign
+        return str(struct.unpack('>i', struct.pack('>q', int(x))[4:])[0])
+    return str(x)
+
+
+all_names_in_main = {}
+
+
+def genresult(ident, entry):
+    expectation = f'expect().fail("Unknown result structure " + {json.dumps(entry)})'
+    if "function" in entry:
+        tmodule = 'module'
+        if entry['function']['module'] is not None:
+            tmodule = f'namedModules[{json.dumps(named_modules_inverse[entry["function"]["module"]][0])}]'
+        expectation = (
+            f'{tmodule}.invoke({ident}, {", ".join(genarg(x) for x in entry["function"]["args"])})'
+        )
+    elif "get" in entry:
+        expectation = f'module.getExport({ident})'
+
+    if entry['kind'] == 'return':
+        return (
+            f'let {ident}_result = {expectation};\n    ' +
+            (f'expect({ident}_result).toBe({genarg(entry["result"])})\n    ' if entry["result"] is not None else '')
+        )
+
+    if entry['kind'] == 'trap':
+        return (
+            f'expect(() => {expectation}).toThrow(TypeError, "Execution trapped");\n    '
+        )
+
+    if entry['kind'] == 'ignore':
+        return expectation
+
+    if entry['kind'] == 'unlinkable':
+        return
+
+    if entry['kind'] == 'testgen_fail':
+        return f'throw Exception("Test Generator Failure: " + {json.dumps(entry["reason"])});\n    '
+
+    return f'throw Exception("(Test Generator) Unknown test kind {entry["kind"]}");\n    '
+
+
+def gentest(entry, main_name):
+    isfunction = 'function' in entry
+    name = json.dumps((entry["function"] if isfunction else entry["get"])["name"])[1:-1]
+    if type(name) != str:
+        print("Unsupported test case (call to", name, ")", file=stderr)
+        return '\n    '
+    ident = '_' + re.sub("[^a-zA-Z_0-9]", "_", name)
+    count = all_names_in_main.get(name, 0)
+    all_names_in_main[name] = count + 1
+    test_name = f'execution of {main_name}: {name} (instance {count})'
+    tmodule = 'module'
+    key = "function" if "function" in entry else "get"
+    if entry[key]['module'] is not None:
+        tmodule = f'namedModules[{json.dumps(named_modules_inverse[entry[key]["module"]][0])}]'
+    source = (
+        f'test({json.dumps(test_name)}, () => {{\n'
+        f'let {ident} = {tmodule}.getExport({json.dumps(name)});\n        '
+        f'expect({ident}).not.toBeUndefined();\n        '
+        f'{genresult(ident, entry)}'
+        '});\n\n    '
+    )
+    return source
+
+
+def gen_parse_module(name, index):
+    export_string = ''
+    if index in named_modules_inverse:
+        entry = named_modules_inverse[index]
+        export_string += f'namedModules[{json.dumps(entry[0])}] = module;\n    '
+        if entry[1]:
+            export_string += f'globalImportObject[{json.dumps(entry[1])}] = module;\n    '
+
+    return (
+        f'let content = readBinaryWasmFile("Fixtures/SpecTests/{name}.wasm");\n    '
+        f'const module = parseWebAssemblyModule(content, globalImportObject)\n    '
+        f'{export_string}\n     '
+    )
+
+
+def nth(a, x, y=None):
+    if y:
+        return a[x:y]
+    return a[x]
+
+
+def main():
+    with open(argv[1]) as f:
+        sexp = f.read()
+    name = argv[2]
+    module_output_path = argv[3]
+    ast = parse(sexp)
+    print('let globalImportObject = {};')
+    print('let namedModules = {};\n')
+    for index, description in enumerate(generate(ast)):
+        testname = f'{name}_{index}'
+        outpath = path.join(module_output_path, f'{testname}.wasm')
+        mod = description["module"]
+        if mod[0] == 'literal':
+            with open('outpath', 'wb+') as f:
+                f.write(mod[1])
+        elif mod[0] == 'parse':
+            with NamedTemporaryFile("w+") as temp:
+                temp.write(mod[1])
+                temp.flush()
+                rc = call(["wat2wasm", temp.name, "-o", outpath])
+                if rc != 0:
+                    print("Failed to compile", name, "module index", index, "skipping that test", file=stderr)
+                    continue
+
+        sep = ""
+        print(f'''describe({json.dumps(testname)}, () => {{
+{gen_parse_module(testname, index)}
+{sep.join(gentest(x, testname) for x in description["tests"])}
+}});
+''')
+
+
+if __name__ == "__main__":
+    main()
