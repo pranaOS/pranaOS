@@ -143,7 +143,11 @@ enum KeyModifier {
 
 struct KeyEvent {
     KeyCode key { Key_Invalid };
+    u32 scancode { 0 };
+    u32 code_point { 0 };
+    u8 flags { 0 };
     bool caps_lock_on { false };
+    bool e0_prefix { false };
     bool alt() const { return flags & Mod_Alt; }
     bool ctrl() const { return flags & Mod_Ctrl; }
     bool shift() const { return flags & Mod_Shift; }
@@ -157,10 +161,11 @@ inline const char* key_code_to_string(KeyCode key)
 {
     switch (key) {
 #define __ENUMERATE_KEY_CODE(name, ui_name) \
-        case Key_##name:                    \
-            return ui_name;
+    case Key_##name:                        \
+        return ui_name;
+        ENUMERATE_KEY_CODES
 #undef __ENUMERATE_KEY_CODE
     default:
-        return nullptr;        
+        return nullptr;
     }
 }
