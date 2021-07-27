@@ -1,16 +1,17 @@
 /*
- * Copyright (c) 2020, nuke123-sudo
+ * Copyright (c) 2021, Krisna Pranav
  *
  * SPDX-License-Identifier: BSD-2-Clause
- */
+*/
+
 
 #pragma once
 
 // includes
-#include <base/OwnPtr.h>
-#include <base/Ptr32.h>
-#include <base/Types.h>
-#include <kernel/bus/usb/USBTransfer.h>
+#include <AK/OwnPtr.h>
+#include <AK/Ptr32.h>
+#include <AK/Types.h>
+#include <Kernel/Bus/USB/USBTransfer.h>
 
 namespace Kernel::USB {
 
@@ -191,7 +192,7 @@ struct alignas(16) TransferDescriptor final {
         m_link_ptr |= static_cast<u32>(LinkPointerBits::DepthFlag);
     }
 
-        void terminate() { m_link_ptr |= static_cast<u32>(LinkPointerBits::Terminate); }
+    void terminate() { m_link_ptr |= static_cast<u32>(LinkPointerBits::Terminate); }
 
     void set_buffer_address(Ptr32<u8> buffer)
     {
@@ -224,8 +225,8 @@ private:
     u32 m_buffer_ptr;              
 
     u32 m_paddr;                                     
-    Ptr32<TransferDescriptor> m_next_td { nullptr }; 
-    Ptr32<TransferDescriptor> m_prev_td { nullptr }; 
+    Ptr32<TransferDescriptor> m_next_td { nullptr };
+    Ptr32<TransferDescriptor> m_prev_td { nullptr };
     bool m_in_use;                                   
 };
 
@@ -328,4 +329,17 @@ struct alignas(16) QueueHead {
         m_in_use = false;
     }
 
+private:
+    u32 m_link_ptr { 0 };                  
+    volatile u32 m_element_link_ptr { 0 }; 
+
+    u32 m_paddr { 0 };                                
+    Ptr32<QueueHead> m_next_qh { nullptr };           
+    Ptr32<QueueHead> m_prev_qh { nullptr };          
+    Ptr32<TransferDescriptor> m_first_td { nullptr }; 
+    Ptr32<Transfer> m_transfer { nullptr };           
+    bool m_in_use { false };                         
+};
+
+static_assert(sizeof(QueueHead) == 32); 
 }
