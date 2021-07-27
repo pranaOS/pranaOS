@@ -31,14 +31,21 @@ public:
     {
     }
 
-    void set(u64 value)
+    [[nodiscard]] u64 get()
     {
-        u32 low = value >> 32;
-        asm volatile("wrmsr" ::"a"(low), "b"(m_msr));
-
+        u32 low, high;
+        asm volatile("rdmsr"
+                     : "=a"(low), "=d"(high)
+                     : "c"(m_msr));
+        return ((u64)high << 32) | low;
     }
 
-
+    void set(u64 value)
+    {
+        u32 low = value & 0xffffffff;
+        u32 high = value >> 32;
+        asm volatile("wrmsr" ::"a"(low), "d"(high), "c"(m_msr));
+    }
 };
 
 }
