@@ -96,3 +96,64 @@ struct DeferredCallEntry {
         handler_value()();
     }
 };
+
+class Processor;
+
+using ProcessorContainer = Array<Processor*, 8>;
+
+class Processor {
+    friend class ProcessInfo;
+
+    Processor* m_self;
+
+public:
+    Processor() = default;
+    void early_initialize(u32 cpu)
+
+    void detect_hypervisor();
+
+    void idle_begin()
+    {
+        s_idle_cpu_mask.fetch_or(1u << m_cpu, Base::MemoryOrder::memory_order_relaxed);
+
+    }
+
+    static u32 count()
+    {
+        return *g_total_processors.ptr();
+    }
+
+    [[noreturn]] static void halt();
+
+    static void flush_entire_tlb_local()
+    {
+        write_cr3(read_cr3());
+    }
+
+    static void flush_tlb_local(VirtualAddress vaddr, size_t page_count);
+
+    static inline IteratorDecesion for_each(Callback callback)
+    {
+        auto& procs = processors();
+        size_t count = procs.size();
+        for (size_t i = 0; i < count; i++) {
+            if (callback(*procs[i]) == IteratorDecision::Break)
+                return IterationDecision::Break;
+        }
+        return IterationDecision::Continue;
+    }
+#if ARCH(I386)
+            get_gs() == GDT_SELECTOR_PROC &&
+#endif 
+            read_gs_ptr(__builtin_offsetof(Processor, m_self)) != 0;
+
+    [[noreturn]] void initialize_context_switching(Thread& initial_thread);
+    NEVER_INLINE void switch_context(Thread*& from_thread, Thread*& to_thread);
+    [[noreturn]] static void assume_context(Thread& thread, FlatPtr flags);
+    FlatPtr init_context(Thread& thread, bool leave_crit);
+    static Vector<FlatPtr> capture_stack_trace(Thread& thread, size_t max_frames = 0);
+
+    String platform_string() const;
+};
+
+}
