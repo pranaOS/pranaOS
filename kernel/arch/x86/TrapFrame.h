@@ -14,14 +14,28 @@
 
 namespace Kernel {
 
+struct TrapFrame {
+    FlatPtr prev_irq_level;
+    TrapFrame* next_trap;
+    RegisterState* regs; 
+
+    TrapFrame() = delete;
+    TrapFrame(const TrapFrame&) = delete;
+    TrapFrame(TrapFrame&&) = delete;
+    TrapFrame& operator=(const TrapFrame&) = delete;
+    TrapFrame& operator=(TrapFrame&&) = delete;
+};
+
 #if ARCH(I386)
-#   define TRAP_FRAME_SIZE (3 * 4)
+#    define TRAP_FRAME_SIZE (3 * 4)
 #else
-#   define TRAP_FRAME_SIZE (3 * 8)
+#    define TRAP_FRAME_SIZE (3 * 8)
 #endif
 
 static_assert(TRAP_FRAME_SIZE == sizeof(TrapFrame));
 
 extern "C" void enter_trap_no_irq(TrapFrame* trap) __attribute__((used));
+extern "C" void enter_trap(TrapFrame*) __attribute__((used));
+extern "C" void exit_trap(TrapFrame*) __attribute__((used));
 
 }
