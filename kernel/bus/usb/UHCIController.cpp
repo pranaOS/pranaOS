@@ -270,4 +270,326 @@ RefPtr<USB::Device> const UHCIController::get_device_from_address(u8 device_addr
     return nullptr;
 }
 
+void UHCIController::reset()
+{
+    stop();
+
+    write_usbcmd(UHCI_USBCMD_HOST_CONTROLLER_RESET);
+
+    for (;;) {
+        if (read_usbcmd() & UHCI_USBCMD_HOST_CONTROLLER_RESET)
+            continue;
+        break;
+    }
+
+    auto framelist_vmobj = AnonymousVMObject::try_create_physically_contiguous_with_size(PAGE_SIZE);
+    m_framelist = MemoryManager::the().allocate_kernel_region_with_vmobject(*framelist_vmobj, PAGE_SIZE, "UHCI Framelist", Region::Access::Write);
+    dbgln("UHCI: Allocated framelist at physical address {}", m_framelist->physical_page(0)->paddr());
+    dbgln("UHCI: Framelist is at virtual address {}", m_framelist->vaddr());
+    write_sofmod(64); 
+
+    create_structures();
+    setup_schedule();
+
+    write_flbaseadd(m_framelist->physical_page(0)->paddr().get());
+    write_frnum(0);                                               
+
+    write_usbintr(0);
+    dbgln("UHCI: Reset completed");
+}
+
+UNMAP_AFTER_INIT void UHCIController::create_structures()
+{
+
+    auto qh_pool_vmobject = AnonymousVMObject::try_create_physically_contiguous_with_size(2 * PAGE_SIZE);
+    m_qh_pool = MemoryManager::the().allocate_kernel_region_with_vmobject(*qh_pool_vmobject, 2 * PAGE_SIZE, "UHCI Queue Head Pool", Region::Access::Write);
+    memset(m_qh_pool->vaddr().as_ptr(), 0, 2 * PAGE_SIZE); 
+
+    m_free_qh_pool.resize(MAXIMUM_NUMBER_OF_TDS);
+    for (size_t i = 0; i < m_free_qh_pool.size(); i++) {
+        auto placement_addr = reinterpret_cast<void*>(m_qh_pool->vaddr().get() + (i * sizeof(QueueHead)));
+        auto paddr = static_cast<u32>(m_qh_pool->physical_page(0)->paddr().get() + (i * sizeof(QueueHead)));
+        m_free_qh_pool.at(i) = new (placement_addr) QueueHead(paddr);
+    }
+
+    m_interrupt_transfer_queue = allocate_queue_head();
+    m_lowspeed_control_qh = allocate_queue_head();
+    m_fullspeed_control_qh = allocate_queue_head();
+    m_bulk_qh = allocate_queue_head();
+    m_dummy_qh = allocate_queue_head();
+
+    auto td_pool_vmobject = AnonymousVMObject::try_create_physically_contiguous_with_size(2 * PAGE_SIZE);
+    m_td_pool = MemoryManager::the().allocate_kernel_region_with_vmobject(*td_pool_vmobject, 2 * PAGE_SIZE, "UHCI Transfer Descriptor Pool", Region::Access::Write);
+    memset(m_td_pool->vaddr().as_ptr(), 0, 2 * PAGE_SIZE);
+
+    m_iso_td_list.resize(UHCI_NUMBER_OF_ISOCHRONOUS_TDS);
+    for (size_t i = 0; i < m_iso_td_list.size(); i++) {
+        auto placement_addr = reinterpret_cast<void*>(m_td_pool->vaddr().get() + (i * sizeof(Kernel::USB::TransferDescriptor)));
+        auto paddr = static_cast<u32>(m_td_pool->physical_page(0)->paddr().get() + (i * sizeof(Kernel::USB::TransferDescriptor)));
+
+
+        m_iso_td_list.at(i) = new (placement_addr) Kernel::USB::TransferDescriptor(paddr);
+        auto transfer_descriptor = m_iso_td_list.at(i);
+        transfer_descriptor->set_in_use(true); 
+        transfer_descriptor->set_isochronous();
+        transfer_descriptor->link_queue_head(m_interrupt_transfer_queue->paddr());
+
+        if constexpr (UHCI_VERBOSE_DEBUG)
+            transfer_descriptor->print();
+    }
+
+    m_free_td_pool.resize(MAXIMUM_NUMBER_OF_TDS);
+    for (size_t i = 0; i < m_free_td_pool.size(); i++) {
+        auto placement_addr = reinterpret_cast<void*>(m_td_pool->vaddr().offset(PAGE_SIZE).get() + (i * sizeof(Kernel::USB::TransferDescriptor)));
+        auto paddr = static_cast<u32>(m_td_pool->physical_page(1)->paddr().get() + (i * sizeof(Kernel::USB::TransferDescriptor)));
+
+        m_free_td_pool.at(i) = new (placement_addr) Kernel::USB::TransferDescriptor(paddr);
+
+        if constexpr (UHCI_VERBOSE_DEBUG) {
+            auto transfer_descriptor = m_free_td_pool.at(i);
+            transfer_descriptor->print();
+        }
+    }
+
+    if constexpr (UHCI_DEBUG) {
+        dbgln("UHCI: Pool information:");
+        dbgln("    qh_pool: {}, length: {}", PhysicalAddress(m_qh_pool->physical_page(0)->paddr()), m_qh_pool->range().size());
+        dbgln("    td_pool: {}, length: {}", PhysicalAddress(m_td_pool->physical_page(0)->paddr()), m_td_pool->range().size());
+    }
+}
+
+UNMAP_AFTER_INIT void UHCIController::setup_schedule()
+{
+
+    m_interrupt_transfer_queue->link_next_queue_head(m_lowspeed_control_qh);
+    m_interrupt_transfer_queue->terminate_element_link_ptr();
+
+    m_lowspeed_control_qh->link_next_queue_head(m_fullspeed_control_qh);
+    m_lowspeed_control_qh->terminate_element_link_ptr();
+
+    m_fullspeed_control_qh->link_next_queue_head(m_bulk_qh);
+    m_fullspeed_control_qh->terminate_element_link_ptr();
+
+    m_bulk_qh->link_next_queue_head(m_dummy_qh);
+    m_bulk_qh->terminate_element_link_ptr();
+
+    auto piix4_td_hack = allocate_transfer_descriptor();
+    piix4_td_hack->terminate();
+    piix4_td_hack->set_max_len(0x7ff); 
+    piix4_td_hack->set_device_address(0x7f);
+    piix4_td_hack->set_packet_id(PacketID::IN);
+    m_dummy_qh->terminate_with_stray_descriptor(piix4_td_hack);
+    m_dummy_qh->terminate_element_link_ptr();
+
+    u32* framelist = reinterpret_cast<u32*>(m_framelist->vaddr().as_ptr());
+    for (int frame = 0; frame < UHCI_NUMBER_OF_FRAMES; frame++) {
+        framelist[frame] = m_iso_td_list.at(frame % UHCI_NUMBER_OF_ISOCHRONOUS_TDS)->paddr();
+    }
+
+    m_interrupt_transfer_queue->print();
+    m_lowspeed_control_qh->print();
+    m_fullspeed_control_qh->print();
+    m_bulk_qh->print();
+    m_dummy_qh->print();
+}
+
+QueueHead* UHCIController::allocate_queue_head() const
+{
+    for (QueueHead* queue_head : m_free_qh_pool) {
+        if (!queue_head->in_use()) {
+            queue_head->set_in_use(true);
+            dbgln_if(UHCI_DEBUG, "UHCI: Allocated a new Queue Head! Located @ {} ({})", VirtualAddress(queue_head), PhysicalAddress(queue_head->paddr()));
+            return queue_head;
+        }
+    }
+
+    return nullptr; 
+}
+
+TransferDescriptor* UHCIController::allocate_transfer_descriptor() const
+{
+    for (TransferDescriptor* transfer_descriptor : m_free_td_pool) {
+        if (!transfer_descriptor->in_use()) {
+            transfer_descriptor->set_in_use(true);
+            dbgln_if(UHCI_DEBUG, "UHCI: Allocated a new Transfer Descriptor! Located @ {} ({})", VirtualAddress(transfer_descriptor), PhysicalAddress(transfer_descriptor->paddr()));
+            return transfer_descriptor;
+        }
+    }
+
+    return nullptr; 
+}
+
+void UHCIController::stop()
+{
+    write_usbcmd(read_usbcmd() & ~UHCI_USBCMD_RUN);
+    for (;;) {
+        if (read_usbsts() & UHCI_USBSTS_HOST_CONTROLLER_HALTED)
+            break;
+    }
+}
+
+void UHCIController::start()
+{
+    write_usbcmd(read_usbcmd() | UHCI_USBCMD_RUN);
+    for (;;) {
+        if (!(read_usbsts() & UHCI_USBSTS_HOST_CONTROLLER_HALTED))
+            break;
+    }
+    dbgln("UHCI: Started");
+}
+
+TransferDescriptor* UHCIController::create_transfer_descriptor(Pipe& pipe, PacketID direction, size_t data_len)
+{
+    TransferDescriptor* td = allocate_transfer_descriptor();
+    if (td == nullptr) {
+        return nullptr;
+    }
+
+    u16 max_len = (data_len > 0) ? (data_len - 1) : 0x7ff;
+    VERIFY(max_len <= 0x4FF || max_len == 0x7FF); 
+
+    td->set_token((max_len << TD_TOKEN_MAXLEN_SHIFT) | ((pipe.data_toggle() ? 1 : 0) << TD_TOKEN_DATA_TOGGLE_SHIFT) | (pipe.endpoint_address() << TD_TOKEN_ENDPOINT_SHIFT) | (pipe.device_address() << TD_TOKEN_DEVICE_ADDR_SHIFT) | (static_cast<u8>(direction)));
+    pipe.set_toggle(!pipe.data_toggle());
+
+    if (pipe.type() == Pipe::Type::Isochronous) {
+        td->set_isochronous();
+    } else {
+        if (direction == PacketID::IN) {
+            td->set_short_packet_detect();
+        }
+    }
+
+    if (pipe.device_speed() == Pipe::DeviceSpeed::LowSpeed) {
+        td->set_lowspeed();
+    }
+
+    td->set_active();
+    td->set_error_retry_counter(RETRY_COUNTER_RELOAD);
+
+    return td;
+}
+
+KResult UHCIController::create_chain(Pipe& pipe, PacketID direction, Ptr32<u8>& buffer_address, size_t max_size, size_t transfer_size, TransferDescriptor** td_chain, TransferDescriptor** last_td)
+{
+    size_t byte_count = 0;
+    TransferDescriptor* current_td = nullptr;
+    TransferDescriptor* prev_td = nullptr;
+    TransferDescriptor* first_td = nullptr;
+
+    while (byte_count < transfer_size) {
+        size_t packet_size = transfer_size - byte_count;
+        if (packet_size > max_size) {
+            packet_size = max_size;
+        }
+
+        current_td = create_transfer_descriptor(pipe, direction, packet_size);
+        if (current_td == nullptr) {
+            free_descriptor_chain(first_td);
+            return ENOMEM;
+        }
+
+        if (Checked<FlatPtr>::addition_would_overflow(reinterpret_cast<FlatPtr>(&*buffer_address), byte_count))
+            return EOVERFLOW;
+
+        auto buffer_pointer = Ptr32<u8>(buffer_address + byte_count);
+        current_td->set_buffer_address(buffer_pointer);
+        byte_count += packet_size;
+
+        if (prev_td != nullptr)
+            prev_td->insert_next_transfer_descriptor(current_td);
+        else
+            first_td = current_td;
+
+        prev_td = current_td;
+    }
+
+    *last_td = current_td;
+    *td_chain = first_td;
+    return KSuccess;
+}
+
+void UHCIController::free_descriptor_chain(TransferDescriptor* first_descriptor)
+{
+    TransferDescriptor* descriptor = first_descriptor;
+
+    while (descriptor) {
+        descriptor->free();
+        descriptor = descriptor->next_td();
+    }
+}
+
+KResultOr<size_t> UHCIController::submit_control_transfer(Transfer& transfer)
+{
+    Pipe& pipe = transfer.pipe(); 
+    bool direction_in = (transfer.request().request_type & USB_DEVICE_REQUEST_DEVICE_TO_HOST) == USB_DEVICE_REQUEST_DEVICE_TO_HOST;
+
+    TransferDescriptor* setup_td = create_transfer_descriptor(pipe, PacketID::SETUP, sizeof(USBRequestData));
+    if (!setup_td)
+        return ENOMEM;
+
+    setup_td->set_buffer_address(transfer.buffer_physical().as_ptr());
+
+    TransferDescriptor* last_data_descriptor;
+    TransferDescriptor* data_descriptor_chain;
+    auto buffer_address = Ptr32<u8>(transfer.buffer_physical().as_ptr() + sizeof(USBRequestData));
+    auto transfer_chain_create_result = create_chain(pipe,
+        direction_in ? PacketID::IN : PacketID::OUT,
+        buffer_address,
+        pipe.max_packet_size(),
+        transfer.transfer_data_size(),
+        &data_descriptor_chain,
+        &last_data_descriptor);
+
+    if (transfer_chain_create_result != KSuccess)
+        return transfer_chain_create_result;
+
+    pipe.set_toggle(true);
+
+    TransferDescriptor* status_td = create_transfer_descriptor(pipe, direction_in ? PacketID::OUT : PacketID::IN, 0);
+    if (!status_td) {
+        free_descriptor_chain(data_descriptor_chain);
+        return ENOMEM;
+    }
+    status_td->terminate();
+
+    if (data_descriptor_chain) {
+        setup_td->insert_next_transfer_descriptor(data_descriptor_chain);
+        last_data_descriptor->insert_next_transfer_descriptor(status_td);
+    } else {
+        setup_td->insert_next_transfer_descriptor(status_td);
+    }
+
+    if constexpr (UHCI_VERBOSE_DEBUG) {
+        dbgln("Setup TD");
+        setup_td->print();
+        if (data_descriptor_chain) {
+            dbgln("Data TD");
+            data_descriptor_chain->print();
+        }
+        dbgln("Status TD");
+        status_td->print();
+    }
+
+    QueueHead* transfer_queue = allocate_queue_head();
+    if (!transfer_queue) {
+        free_descriptor_chain(data_descriptor_chain);
+        return 0;
+    }
+
+    transfer_queue->attach_transfer_descriptor_chain(setup_td);
+    transfer_queue->set_transfer(&transfer);
+
+    m_fullspeed_control_qh->attach_transfer_queue(*transfer_queue);
+
+    size_t transfer_size = 0;
+    while (!transfer.complete())
+        transfer_size = poll_transfer_queue(*transfer_queue);
+
+    free_descriptor_chain(transfer_queue->get_first_td());
+    transfer_queue->free();
+
+    return transfer_size;
+}
+
+
 }
