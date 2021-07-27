@@ -81,7 +81,7 @@
 #    define ASAN_UNPOISON_MEMORY_REGION(addr, size)
 #endif
 
-#ifndef __serenity__
+#ifndef __pranaos__
 #    include <unistd.h>
 #    undef PAGE_SIZE
 #    define PAGE_SIZE sysconf(_SC_PAGESIZE)

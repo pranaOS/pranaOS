@@ -11,7 +11,7 @@
 #include <base/Optional.h>
 #include <base/Vector.h>
 
-#ifndef SERENITY_LIBC_BUILD
+#ifndef PRANAOS_LIBC_BUILD
 #    include <initializer_list>
 #endif
 
@@ -36,7 +36,7 @@ public:
 
     HashMap() = default;
 
-#ifndef SERENITY_LIBC_BUILD
+#ifndef PRANAOS_LIBC_BUILD
     HashMap(std::initializer_list<Entry> list)
     {
         ensure_capacity(list.size());

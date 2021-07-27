@@ -12,7 +12,7 @@
 #include <base/Types.h>
 #include <stdarg.h>
 
-#ifdef __serenity__
+#ifdef __pranaos__
 extern "C" size_t strlen(const char*);
 #else
 #    include <string.h>
