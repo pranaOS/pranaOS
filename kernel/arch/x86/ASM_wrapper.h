@@ -6,6 +6,7 @@
 
 #pragma once
 
+// includes
 #include <base/Types.h>
 
 namespace Kernel {
@@ -102,12 +103,50 @@ ALWAYS_INLINE void load_task_register(u16 selector)
     asm("ltr %0" ::"r"(selector));
 }
 
+FlatPtr read_dr0();
+void write_dr0(FlatPtr);
+FlatPtr read_dr1();
+void write_dr1(FlatPtr);
+FlatPtr read_dr2();
+void write_dr2(FlatPtr);
+FlatPtr read_dr3();
+void write_dr3(FlatPtr);
+FlatPtr read_dr6();
+void write_dr6(FlatPtr);
+FlatPtr read_dr7();
+void write_dr7(FlatPtr);
+
+ALWAYS_INLINE static bool is_kernel_mode()
+{
+    u16 cs;
+    asm volatile(
+        "mov %%cs, %[cs] \n"
+        : [cs] "=g"(cs));
+    return (cs & 3) == 0;
+}
+
+ALWAYS_INLINE void read_tsc(u32& lsw, u32& msw)
+{
+    asm volatile("rdtsc"
+                 : "=d"(msw), "=a"(lsw));
+}
+
+ALWAYS_INLINE u64 read_tsc()
+{
+    u32 lsw;
+    u32 msw;
+    read_tsc(lsw, msw);
+    return ((u64)msw << 32) | lsw;
+}
+
 void stac();
 void clac();
 
 [[noreturn]] ALWAYS_INLINE void halt_this()
 {
     for (;;) {
-        asm volatile("cli; hlt")
+        asm volatile("cli; hlt");
     }
+}
+
 }
