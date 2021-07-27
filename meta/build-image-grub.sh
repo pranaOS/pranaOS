@@ -1,3 +1,5 @@
+#!/bin/sh
+
 set -e
 
 die() {
@@ -29,7 +31,7 @@ else
 fi
 }
 
-DISK_SIZE=$(($(disk_usage "$SERENITY_SOURCE_DIR/Base") + $(disk_usage Root) + 300))
+DISK_SIZE=$(($(disk_usage "$PRANAOS_SOURCE_DIR/Base") + $(disk_usage Root) + 300))
 
 echo "setting up disk image..."
 if [ "$1" = "ebr" ]; then
@@ -81,4 +83,36 @@ else
     partition_scheme="mbr"
 fi
 
+echo "done"
+
+printf "destroying old filesystem... "
+dd if=/dev/zero of="${dev}${partition_number}" bs=1M count=1 status=none || die "couldn't destroy old filesystem"
+echo "done"
+
+printf "creating new filesystem... "
+mke2fs -q -I 128 "${dev}${partition_number}" || die "couldn't create filesystem"
+echo "done"
+
+printf "mounting filesystem... "
+mkdir -p mnt
+mount "${dev}${partition_number}" mnt/ || die "couldn't mount filesystem"
+echo "done"
+
+script_path=$(cd -P -- "$(dirname -- "$0")" && pwd -P)
+"$script_path/build-root-filesystem.sh"
+
+if [ -z "$2" ]; then
+    grub_cfg="$PRANAOS_SOURCE_DIR"/Meta/grub-"${partition_scheme}".cfg
+else
+    grub_cfg=$2
+fi
+
+echo "installing grub using $grub with $grub_cfg..."
+$grub --boot-directory=mnt/boot --target=i386-pc --modules="ext2 part_msdos" "${dev}"
+
+if [ -d mnt/boot/grub2 ]; then
+    cp "$grub_cfg" mnt/boot/grub2/grub.cfg
+else
+    cp "$grub_cfg" mnt/boot/grub/grub.cfg
+fi
 echo "done"
