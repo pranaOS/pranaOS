@@ -128,3 +128,39 @@ enum KeyCode : u8 {
     = Key_LeftShift,
 };
 const int key_code_count = Key_Super;
+
+enum KeyModifier {
+    Mod_None = 0x00,
+    Mod_Alt = 0x01,
+    Mod_Ctrl = 0x02,
+    Mod_Shift = 0x04,
+    Mod_Super = 0x08,
+    Mod_AltGr = 0x10,
+    Mod_Mask = 0x1f,
+
+    Is_Press = 0x80,
+};
+
+struct KeyEvent {
+    KeyCode key { Key_Invalid };
+    bool caps_lock_on { false };
+    bool alt() const { return flags & Mod_Alt; }
+    bool ctrl() const { return flags & Mod_Ctrl; }
+    bool shift() const { return flags & Mod_Shift; }
+    bool super() const { return flags & Mod_Super; }
+    bool altgr() const { return flags & Mod_AltGr; }
+    unsigned modifiers() const { return flags & Mod_Mask; }
+    bool is_press() const { return flags & Is_Press; }
+};
+
+inline const char* key_code_to_string(KeyCode key)
+{
+    switch (key) {
+#define __ENUMERATE_KEY_CODE(name, ui_name) \
+        case Key_##name:                    \
+            return ui_name;
+#undef __ENUMERATE_KEY_CODE
+    default:
+        return nullptr;        
+    }
+}
