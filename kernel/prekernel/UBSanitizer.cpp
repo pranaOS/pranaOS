@@ -4,8 +4,9 @@
  * SPDX-License-Identifier: BSD-2-Clause
 */
 
+// includes
 #include <base/UBSanitizer.h>
-#include <kernel/arch/x86/Processor.h>
+#include <kernel/Arch/x86/Processor.h>
 #include <kernel/KSyms.h>
 
 using namespace AK::UBSanitizer;
@@ -103,5 +104,39 @@ void __ubsan_handle_type_mismatch_v1(const TypeMismatchData& data, ValueHandle)
     print_location(data.location);
 }
 
+void __ubsan_handle_alignment_assumption(const AlignmentAssumptionData&, ValueHandle, ValueHandle, ValueHandle) __attribute__((used));
+void __ubsan_handle_alignment_assumption(const AlignmentAssumptionData& data, ValueHandle, ValueHandle, ValueHandle)
+{
+    print_location(data.location);
+}
 
+void __ubsan_handle_builtin_unreachable(const UnreachableData&) __attribute__((used));
+void __ubsan_handle_builtin_unreachable(const UnreachableData& data)
+{
+    print_location(data.location);
+}
+
+void __ubsan_handle_missing_return(const UnreachableData&) __attribute__((used));
+void __ubsan_handle_missing_return(const UnreachableData& data)
+{
+    print_location(data.location);
+}
+
+void __ubsan_handle_implicit_conversion(const ImplicitConversionData&, ValueHandle, ValueHandle) __attribute__((used));
+void __ubsan_handle_implicit_conversion(const ImplicitConversionData& data, ValueHandle, ValueHandle)
+{
+    print_location(data.location);
+}
+
+void __ubsan_handle_invalid_builtin(const InvalidBuiltinData) __attribute__((used));
+void __ubsan_handle_invalid_builtin(const InvalidBuiltinData data)
+{
+    print_location(data.location);
+}
+
+void __ubsan_handle_pointer_overflow(const PointerOverflowData&, ValueHandle, ValueHandle) __attribute__((used));
+void __ubsan_handle_pointer_overflow(const PointerOverflowData& data, ValueHandle, ValueHandle)
+{
+    print_location(data.location);
+}
 }
