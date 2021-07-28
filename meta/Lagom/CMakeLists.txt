@@ -190,7 +190,7 @@ if (BUILD_LAGOM)
             WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         )
         set_tests_properties(WasmParser PROPERTIES
-            ENVIRONMENT SERENITY_SOURCE_DIR=${CMAKE_CURRENT_SOURCE_DIR}/../..
+            ENVIRONMENT PRANAOS_SOURCE_DIR=${CMAKE_CURRENT_SOURCE_DIR}/../..
             SKIP_RETURN_CODE 1)
 
         add_executable(disasm_lagom ../../userland/Utilities/disasm.cpp)
