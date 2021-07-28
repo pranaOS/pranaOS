@@ -67,5 +67,55 @@ Optional<VirtualAddress> WindowedMMIOAccess::get_device_configuration_space(Addr
     return {};
 }
 
+u8 WindowedMMIOAccess::read8_field(Address address, u32 field)
+{
+    InterruptDisabler disabler;
+    VERIFY(field <= 0xfff);
+    dbgln_if(PCI_DEBUG, "PCI: MMIO Reading 8-bit field {:#08x} for {}", field, address);
+    return *((u8*)(get_device_configuration_space(address).value().get() + (field & 0xfff)));
+}
+
+u16 WindowedMMIOAccess::read16_field(Address address, u32 field)
+{
+    InterruptDisabler disabler;
+    VERIFY(field < 0xfff);
+    dbgln_if(PCI_DEBUG, "PCI: MMIO Reading 16-bit field {:#08x} for {}", field, address);
+    u16 data = 0;
+    ByteReader::load<u16>(get_device_configuration_space(address).value().offset(field & 0xfff).as_ptr(), data);
+    return data;
+}
+
+u32 WindowedMMIOAccess::read32_field(Address address, u32 field)
+{
+    InterruptDisabler disabler;
+    VERIFY(field <= 0xffc);
+    dbgln_if(PCI_DEBUG, "PCI: MMIO Reading 32-bit field {:#08x} for {}", field, address);
+    u32 data = 0;
+    ByteReader::load<u32>(get_device_configuration_space(address).value().offset(field & 0xfff).as_ptr(), data);
+    return data;
+}
+
+void WindowedMMIOAccess::write8_field(Address address, u32 field, u8 value)
+{
+    InterruptDisabler disabler;
+    VERIFY(field <= 0xfff);
+    dbgln_if(PCI_DEBUG, "PCI: MMIO Writing 8-bit field {:#08x}, value={:#02x} for {}", field, value, address);
+    *((u8*)(get_device_configuration_space(address).value().get() + (field & 0xfff))) = value;
+}
+void WindowedMMIOAccess::write16_field(Address address, u32 field, u16 value)
+{
+    InterruptDisabler disabler;
+    VERIFY(field < 0xfff);
+    dbgln_if(PCI_DEBUG, "PCI: MMIO Writing 16-bit field {:#08x}, value={:#02x} for {}", field, value, address);
+    ByteReader::store<u16>(get_device_configuration_space(address).value().offset(field & 0xfff).as_ptr(), value);
+}
+void WindowedMMIOAccess::write32_field(Address address, u32 field, u32 value)
+{
+    InterruptDisabler disabler;
+    VERIFY(field <= 0xffc);
+    dbgln_if(PCI_DEBUG, "PCI: MMIO Writing 32-bit field {:#08x}, value={:#02x} for {}", field, value, address);
+    ByteReader::store<u32>(get_device_configuration_space(address).value().offset(field & 0xfff).as_ptr(), value);
+}
+
 }
 }
