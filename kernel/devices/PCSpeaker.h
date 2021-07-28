@@ -7,6 +7,7 @@
 #pragma once
 
 class PCSpeaker {
-private:
+public:
     static void tone_on(int frequency);
-}
+    static void tone_off();
+};
