@@ -99,7 +99,6 @@ public:
     bool is_null() const { return !m_bus && !m_device && !m_function; }
     operator bool() const { return !is_null(); }
 
-    // Disable default implementations that would use surprising integer promotion.
     bool operator<=(const Address&) const = delete;
     bool operator>=(const Address&) const = delete;
     bool operator<(const Address&) const = delete;
