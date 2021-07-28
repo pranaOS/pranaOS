@@ -12,17 +12,17 @@
 namespace Kernel {
 
 class CharacterDevice : public Device {
-
 public:
-    virtual CharacterDevice(unsigned major, unsigned minor) override;
+    virtual ~CharacterDevice() override;
 
 protected:
     CharacterDevice(unsigned major, unsigned minor)
         : Device(major, minor)
     {
     }
+
 private:
-    virtual is_character_device() const { return true; }
+    virtual bool is_character_device() const final { return true; }
 };
 
 }
