@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, AakeshDarsh
+ * Copyright (c) 2021, AakeshDarsh, Krisna Pranav
  *
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -39,9 +39,29 @@ void SB16::dsp_write(u8 value)
     IO::out8(DSP_WRITE, value);
 }
 
+u8 SB16::dsp_read()
+{
+    while (!(IO::in8(DSP_STATUS) & 0x80)) {
+        ;
+    }
+    return IO::in8(DSP_READ);
+}
+
+void SB16::set_sample_rate(uint16_t hz)
+{
+    dsp_write(0x41); 
+    dsp_write((u8)(hz >> 8));
+    dsp_write((u8)hz);
+    dsp_write(0x42); 
+    dsp_write((u8)(hz >> 8));
+    dsp_write((u8)hz);
+}
+
+static AK::Singleton<SB16> s_the;
+
 UNMAP_AFTER_INIT SB16::SB16()
     : IRQHandler(SB16_DEFAULT_IRQ)
-    , CharacterDevice(42, 42) // ### ?
+    , CharacterDevice(42, 42) 
 {
     initialize();
 }
@@ -157,7 +177,7 @@ KResultOr<size_t> SB16::read(FileDescription&, u64, UserOrKernelBuffer&, size_t)
 void SB16::dma_start(uint32_t length)
 {
     const auto addr = m_dma_region->physical_page(0)->paddr().get();
-    const u8 channel = 5;
+    const u8 channel = 5; 
     const u8 mode = 0x48;
 
     IO::out8(0xd4, 4 + (channel % 4));
@@ -179,4 +199,76 @@ void SB16::dma_start(uint32_t length)
     IO::out8(0x8b, page_number);
 
     IO::out8(0xd4, (channel % 4));
+}
+
+bool SB16::handle_irq(const RegisterState&)
+{
+
+    dsp_write(0xd5);
+
+    IO::in8(DSP_STATUS); 
+    if (m_major_version >= 4)
+        IO::in8(DSP_R_ACK); 
+
+    m_irq_queue.wake_all();
+    return true;
+}
+
+void SB16::wait_for_irq()
+{
+    m_irq_queue.wait_forever("SB16");
+    disable_irq();
+}
+
+KResultOr<size_t> SB16::write(FileDescription&, u64, const UserOrKernelBuffer& data, size_t length)
+{
+    if (!m_dma_region) {
+        auto page = MM.allocate_supervisor_physical_page();
+        if (!page)
+            return ENOMEM;
+        auto nonnull_page = page.release_nonnull();
+        auto vmobject = AnonymousVMObject::try_create_with_physical_pages({ &nonnull_page, 1 });
+        if (!vmobject)
+            return ENOMEM;
+        m_dma_region = MM.allocate_kernel_region_with_vmobject(*vmobject, PAGE_SIZE, "SB16 DMA buffer", Region::Access::Write);
+        if (!m_dma_region)
+            return ENOMEM;
+    }
+
+    dbgln_if(SB16_DEBUG, "SB16: Writing buffer of {} bytes", length);
+
+    VERIFY(length <= PAGE_SIZE);
+    const int BLOCK_SIZE = 32 * 1024;
+    if (length > BLOCK_SIZE) {
+        return ENOSPC;
+    }
+
+    u8 mode = (u8)SampleFormat::Signed | (u8)SampleFormat::Stereo;
+
+    const int sample_rate = 44100;
+    set_sample_rate(sample_rate);
+    if (!data.read(m_dma_region->vaddr().as_ptr(), length))
+        return EFAULT;
+    dma_start(length);
+
+    u8 command = 0xb0;
+
+    u16 sample_count = length / sizeof(i16);
+    if (mode & (u8)SampleFormat::Stereo)
+        sample_count /= 2;
+
+    sample_count -= 1;
+
+    cli();
+    enable_irq();
+
+    dsp_write(command);
+    dsp_write(mode);
+    dsp_write((u8)sample_count);
+    dsp_write((u8)(sample_count >> 8));
+
+    wait_for_irq();
+    return length;
+}
+
 }
