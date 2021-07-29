@@ -8,11 +8,11 @@
 // includes
 #include <base/OwnPtr.h>
 #include <base/Singleton.h>
-#include <kernel/API/MousePacket.h>
-#include <kernel/Arch/x86/InterruptDisabler.h>
+#include <kernel/api/MousePacket.h>
+#include <kernel/arch/x86/InterruptDisabler.h>
 #include <kernel/CommandLine.h>
 #include <kernel/Debug.h>
-#include <kernel/Devices/VMWareBackdoor.h>
+#include <kernel/devices/VMWareBackdoor.h>
 #include <kernel/Sections.h>
 
 namespace Kernel {
@@ -87,5 +87,147 @@ private:
 
     OwnPtr<VMWareBackdoor> m_backdoor;
 };
+
+static Base::Singleton<VMWareBackdoorDetector> s_vmware_backdoor;
+
+VMWareBackdoor* VMWareBackdoor::the()
+{
+    return s_vmware_backdoor->get_instance();
+}
+
+UNMAP_AFTER_INIT VMWareBackdoor::VMWareBackdoor()
+{
+    if (kernel_command_line().is_vmmouse_enabled())
+        enable_absolute_vmmouse();
+}
+
+bool VMWareBackdoor::detect_vmmouse()
+{
+    VMWareCommand command;
+    command.bx = VMMOUSE_READ_ID;
+    command.command = VMMOUSE_COMMAND;
+    send(command);
+    command.bx = 1;
+    command.command = VMMOUSE_DATA;
+    send(command);
+    if (command.ax != VMMOUSE_QEMU_VERSION)
+        return false;
+    return true;
+}
+bool VMWareBackdoor::vmmouse_is_absolute() const
+{
+    return m_vmmouse_absolute;
+}
+
+void VMWareBackdoor::enable_absolute_vmmouse()
+{
+    InterruptDisabler disabler;
+    if (!detect_vmmouse())
+        return;
+    dmesgln("VMWareBackdoor: Enabling absolute mouse mode");
+
+    VMWareCommand command;
+
+    command.bx = 0;
+    command.command = VMMOUSE_STATUS;
+    send(command);
+    if (command.ax == 0xFFFF0000) {
+        dmesgln("VMWareBackdoor: VMMOUSE_STATUS got bad status");
+        return;
+    }
+
+    // Enable absolute vmmouse
+    command.bx = VMMOUSE_REQUEST_ABSOLUTE;
+    command.command = VMMOUSE_COMMAND;
+    send(command);
+    m_vmmouse_absolute = true;
+}
+void VMWareBackdoor::disable_absolute_vmmouse()
+{
+    InterruptDisabler disabler;
+    VMWareCommand command;
+    command.bx = VMMOUSE_REQUEST_RELATIVE;
+    command.command = VMMOUSE_COMMAND;
+    send(command);
+    m_vmmouse_absolute = false;
+}
+
+void VMWareBackdoor::send_high_bandwidth(VMWareCommand& command)
+{
+    vmware_high_bandwidth_send(command);
+
+    dbgln_if(VMWARE_BACKDOOR_DEBUG, "VMWareBackdoor Command High bandwidth Send Results: EAX {:#x} EBX {:#x} ECX {:#x} EDX {:#x}",
+        command.ax,
+        command.bx,
+        command.cx,
+        command.dx);
+}
+
+void VMWareBackdoor::get_high_bandwidth(VMWareCommand& command)
+{
+    vmware_high_bandwidth_get(command);
+
+    dbgln_if(VMWARE_BACKDOOR_DEBUG, "VMWareBackdoor Command High bandwidth Get Results: EAX {:#x} EBX {:#x} ECX {:#x} EDX {:#x}",
+        command.ax,
+        command.bx,
+        command.cx,
+        command.dx);
+}
+
+void VMWareBackdoor::send(VMWareCommand& command)
+{
+    vmware_out(command);
+
+    dbgln_if(VMWARE_BACKDOOR_DEBUG, "VMWareBackdoor Command Send Results: EAX {:#x} EBX {:#x} ECX {:#x} EDX {:#x}",
+        command.ax,
+        command.bx,
+        command.cx,
+        command.dx);
+}
+
+Optional<MousePacket> VMWareBackdoor::receive_mouse_packet()
+{
+    VMWareCommand command;
+    command.bx = 0;
+    command.command = VMMOUSE_STATUS;
+    send(command);
+    if (command.ax == 0xFFFF0000) {
+        dbgln_if(PS2MOUSE_DEBUG, "PS2MouseDevice: Resetting VMWare mouse");
+        disable_absolute_vmmouse();
+        enable_absolute_vmmouse();
+        return {};
+    }
+    int words = command.ax & 0xFFFF;
+
+    if (!words || words % 4)
+        return {};
+    command.size = 4;
+    command.command = VMMOUSE_DATA;
+    send(command);
+
+    int buttons = (command.ax & 0xFFFF);
+    int x = (command.bx);
+    int y = (command.cx);
+    int z = (i8)(command.dx); // signed 8 bit value only!
+
+    if constexpr (PS2MOUSE_DEBUG) {
+        dbgln("Absolute Mouse: Buttons {:x}", buttons);
+        dbgln("Mouse: x={}, y={}, z={}", x, y, z);
+    }
+
+    MousePacket packet;
+    packet.x = x;
+    packet.y = y;
+    packet.z = z;
+    if (buttons & VMMOUSE_LEFT_CLICK)
+        packet.buttons |= MousePacket::LeftButton;
+    if (buttons & VMMOUSE_RIGHT_CLICK)
+        packet.buttons |= MousePacket::RightButton;
+    if (buttons & VMMOUSE_MIDDLE_CLICK)
+        packet.buttons |= MousePacket::MiddleButton;
+
+    packet.is_relative = false;
+    return packet;
+}
 
 }
