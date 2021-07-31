@@ -1,0 +1,460 @@
+/*
+ * Copyright (c) 2021, Krisna Pranav
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+*/
+
+// includes
+#include <base/MACAddress.h>
+#include <kernel/bus/pci/IDs.h>
+#include <kernel/Debug.h>
+#include <kernel/net/E1000NetworkAdapter.h>
+#include <kernel/Sections.h>
+
+namespace Kernel {
+
+#define REG_CTRL 0x0000
+#define REG_STATUS 0x0008
+#define REG_EEPROM 0x0014
+#define REG_CTRL_EXT 0x0018
+#define REG_INTERRUPT_CAUSE_READ 0x00C0
+#define REG_INTERRUPT_RATE 0x00C4
+#define REG_INTERRUPT_MASK_SET 0x00D0
+#define REG_INTERRUPT_MASK_CLEAR 0x00D8
+#define REG_RCTRL 0x0100
+#define REG_RXDESCLO 0x2800
+#define REG_RXDESCHI 0x2804
+#define REG_RXDESCLEN 0x2808
+#define REG_RXDESCHEAD 0x2810
+#define REG_RXDESCTAIL 0x2818
+#define REG_TCTRL 0x0400
+#define REG_TXDESCLO 0x3800
+#define REG_TXDESCHI 0x3804
+#define REG_TXDESCLEN 0x3808
+#define REG_TXDESCHEAD 0x3810
+#define REG_TXDESCTAIL 0x3818
+#define REG_RDTR 0x2820              
+#define REG_RXDCTL 0x3828            
+#define REG_RADV 0x282C              
+#define REG_RSRPD 0x2C00             
+#define REG_TIPG 0x0410              
+#define ECTRL_SLU 0x40               
+#define RCTL_EN (1 << 1)             
+#define RCTL_SBP (1 << 2)            
+#define RCTL_UPE (1 << 3)            
+#define RCTL_MPE (1 << 4)            
+#define RCTL_LPE (1 << 5)            
+#define RCTL_LBM_NONE (0 << 6)       
+#define RCTL_LBM_PHY (3 << 6)        
+#define RTCL_RDMTS_HALF (0 << 8)    
+#define RTCL_RDMTS_QUARTER (1 << 8) 
+#define RTCL_RDMTS_EIGHTH (2 << 8)   
+#define RCTL_MO_36 (0 << 12)         
+#define RCTL_MO_35 (1 << 12)         
+#define RCTL_MO_34 (2 << 12)        
+#define RCTL_MO_32 (3 << 12)         
+#define RCTL_BAM (1 << 15)           
+#define RCTL_VFE (1 << 18)           
+#define RCTL_CFIEN (1 << 19)         
+#define RCTL_CFI (1 << 20)           
+#define RCTL_DPF (1 << 22)           
+#define RCTL_PMCF (1 << 23)          
+#define RCTL_SECRC (1 << 26)         
+
+#define RCTL_BSIZE_256 (3 << 16)
+#define RCTL_BSIZE_512 (2 << 16)
+#define RCTL_BSIZE_1024 (1 << 16)
+#define RCTL_BSIZE_2048 (0 << 16)
+#define RCTL_BSIZE_4096 ((3 << 16) | (1 << 25))
+#define RCTL_BSIZE_8192 ((2 << 16) | (1 << 25))
+#define RCTL_BSIZE_16384 ((1 << 16) | (1 << 25))
+
+
+#define CMD_EOP (1 << 0)   
+#define CMD_IFCS (1 << 1)  
+#define CMD_IC (1 << 2)    
+#define CMD_RS (1 << 3)    
+#define CMD_RPS (1 << 4)  
+#define CMD_VLE (1 << 6)   
+#define CMD_IDE (1 << 7)   
+
+
+#define TCTL_EN (1 << 1)       
+#define TCTL_PSP (1 << 3)      
+#define TCTL_CT_SHIFT 4        
+#define TCTL_COLD_SHIFT 12     
+#define TCTL_SWXOFF (1 << 22)  
+#define TCTL_RTLC (1 << 24)    
+
+#define TSTA_DD (1 << 0)  
+#define TSTA_EC (1 << 1)  
+#define TSTA_LC (1 << 2)  
+#define LSTA_TU (1 << 3)  
+
+
+#define STATUS_FD 0x01
+#define STATUS_LU 0x02
+#define STATUS_TXOFF 0x08
+#define STATUS_SPEED 0xC0
+#define STATUS_SPEED_10MB 0x00
+#define STATUS_SPEED_100MB 0x40
+#define STATUS_SPEED_1000MB1 0x80
+#define STATUS_SPEED_1000MB2 0xC0
+
+
+#define INTERRUPT_TXDW (1 << 0)
+#define INTERRUPT_TXQE (1 << 1)
+#define INTERRUPT_LSC (1 << 2)
+#define INTERRUPT_RXSEQ (1 << 3)
+#define INTERRUPT_RXDMT0 (1 << 4)
+#define INTERRUPT_RXO (1 << 6)
+#define INTERRUPT_RXT0 (1 << 7)
+#define INTERRUPT_MDAC (1 << 9)
+#define INTERRUPT_RXCFG (1 << 10)
+#define INTERRUPT_PHYINT (1 << 12)
+#define INTERRUPT_TXD_LOW (1 << 15)
+#define INTERRUPT_SRPD (1 << 16)
+
+// https://www.intel.com/content/dam/doc/manual/pci-pci-x-family-gbe-controllers-software-dev-manual.pdf Section 5.2
+UNMAP_AFTER_INIT static bool is_valid_device_id(u16 device_id)
+{
+    switch (device_id) {
+    case 0x1019: 
+    case 0x101A: 
+    case 0x1010: 
+    case 0x1012:  
+    case 0x101D:  
+    case 0x1079:  
+    case 0x107A:  
+    case 0x107B:  
+    case 0x100F:  
+    case 0x1011:  
+    case 0x1026:  
+    case 0x1027:  
+    case 0x1028:  
+    case 0x1107:  
+    case 0x1112:  
+    case 0x1013:  
+    case 0x1018:  
+    case 0x1076:  
+    case 0x1077:  
+    case 0x1078:  
+    case 0x1017:  
+    case 0x1016:  
+    case 0x100E:  
+    case 0x1015:  
+        return true;
+    default:
+        return false;
+    }
+}
+
+UNMAP_AFTER_INIT RefPtr<E1000NetworkAdapter> E1000NetworkAdapter::try_to_initialize(PCI::Address address)
+{
+    auto id = PCI::get_id(address);
+    if (id.vendor_id != PCI::VendorID::Intel)
+        return {};
+    if (!is_valid_device_id(id.device_id))
+        return {};
+    u8 irq = PCI::get_interrupt_line(address);
+    auto adapter = adopt_ref_if_nonnull(new (nothrow) E1000NetworkAdapter(address, irq));
+    if (!adapter)
+        return {};
+    if (adapter->initialize())
+        return adapter;
+    return {};
+}
+
+UNMAP_AFTER_INIT void E1000NetworkAdapter::setup_link()
+{
+    u32 flags = in32(REG_CTRL);
+    out32(REG_CTRL, flags | ECTRL_SLU);
+}
+
+UNMAP_AFTER_INIT void E1000NetworkAdapter::setup_interrupts()
+{
+    out32(REG_INTERRUPT_RATE, 6000); 
+    out32(REG_INTERRUPT_MASK_SET, INTERRUPT_LSC | INTERRUPT_RXT0 | INTERRUPT_RXO);
+    in32(REG_INTERRUPT_CAUSE_READ);
+    enable_irq();
+}
+
+UNMAP_AFTER_INIT bool E1000NetworkAdapter::initialize()
+{
+    dmesgln("E1000: Found @ {}", pci_address());
+    enable_bus_mastering(pci_address());
+
+    m_io_base = IOAddress(PCI::get_BAR1(pci_address()) & ~1);
+
+    size_t mmio_base_size = PCI::get_BAR_space_size(pci_address(), 0);
+    m_mmio_region = MM.allocate_kernel_region(PhysicalAddress(page_base_of(PCI::get_BAR0(pci_address()))), page_round_up(mmio_base_size), "E1000 MMIO", Region::Access::Read | Region::Access::Write, Region::Cacheable::No);
+    if (!m_mmio_region)
+        return false;
+    m_mmio_base = m_mmio_region->vaddr();
+    m_use_mmio = true;
+    m_interrupt_line = PCI::get_interrupt_line(pci_address());
+    dmesgln("E1000: port base: {}", m_io_base);
+    dmesgln("E1000: MMIO base: {}", PhysicalAddress(PCI::get_BAR0(pci_address()) & 0xfffffffc));
+    dmesgln("E1000: MMIO base size: {} bytes", mmio_base_size);
+    dmesgln("E1000: Interrupt line: {}", m_interrupt_line);
+    detect_eeprom();
+    dmesgln("E1000: Has EEPROM? {}", m_has_eeprom);
+    read_mac_address();
+    const auto& mac = mac_address();
+    dmesgln("E1000: MAC address: {}", mac.to_string());
+
+    initialize_rx_descriptors();
+    initialize_tx_descriptors();
+
+    setup_link();
+    setup_interrupts();
+    return true;
+}
+
+UNMAP_AFTER_INIT E1000NetworkAdapter::E1000NetworkAdapter(PCI::Address address, u8 irq)
+    : PCI::Device(address, irq)
+    , m_rx_descriptors_region(MM.allocate_contiguous_kernel_region(page_round_up(sizeof(e1000_rx_desc) * number_of_rx_descriptors + 16), "E1000 RX Descriptors", Region::Access::Read | Region::Access::Write))
+    , m_tx_descriptors_region(MM.allocate_contiguous_kernel_region(page_round_up(sizeof(e1000_tx_desc) * number_of_tx_descriptors + 16), "E1000 TX Descriptors", Region::Access::Read | Region::Access::Write))
+{
+    set_interface_name(pci_address());
+}
+
+UNMAP_AFTER_INIT E1000NetworkAdapter::~E1000NetworkAdapter()
+{
+}
+
+bool E1000NetworkAdapter::handle_irq(const RegisterState&)
+{
+    u32 status = in32(REG_INTERRUPT_CAUSE_READ);
+
+    m_entropy_source.add_random_event(status);
+
+    if (status == 0)
+        return false;
+
+    if (status & INTERRUPT_LSC) {
+        u32 flags = in32(REG_CTRL);
+        out32(REG_CTRL, flags | ECTRL_SLU);
+    }
+    if (status & INTERRUPT_RXDMT0) {
+    }
+    if (status & INTERRUPT_RXO) {
+        dbgln_if(E1000_DEBUG, "E1000: RX buffer overrun");
+    }
+    if (status & INTERRUPT_RXT0) {
+        receive();
+    }
+
+    m_wait_queue.wake_all();
+
+    out32(REG_INTERRUPT_CAUSE_READ, 0xffffffff);
+    return true;
+}
+
+UNMAP_AFTER_INIT void E1000NetworkAdapter::detect_eeprom()
+{
+    out32(REG_EEPROM, 0x1);
+    for (int i = 0; i < 999; ++i) {
+        u32 data = in32(REG_EEPROM);
+        if (data & 0x10) {
+            m_has_eeprom = true;
+            return;
+        }
+    }
+    m_has_eeprom = false;
+}
+
+UNMAP_AFTER_INIT u32 E1000NetworkAdapter::read_eeprom(u8 address)
+{
+    u16 data = 0;
+    u32 tmp = 0;
+    if (m_has_eeprom) {
+        out32(REG_EEPROM, ((u32)address << 8) | 1);
+        while (!((tmp = in32(REG_EEPROM)) & (1 << 4)))
+            ;
+    } else {
+        out32(REG_EEPROM, ((u32)address << 2) | 1);
+        while (!((tmp = in32(REG_EEPROM)) & (1 << 1)))
+            ;
+    }
+    data = (tmp >> 16) & 0xffff;
+    return data;
+}
+
+UNMAP_AFTER_INIT void E1000NetworkAdapter::read_mac_address()
+{
+    if (m_has_eeprom) {
+        MACAddress mac {};
+        u32 tmp = read_eeprom(0);
+        mac[0] = tmp & 0xff;
+        mac[1] = tmp >> 8;
+        tmp = read_eeprom(1);
+        mac[2] = tmp & 0xff;
+        mac[3] = tmp >> 8;
+        tmp = read_eeprom(2);
+        mac[4] = tmp & 0xff;
+        mac[5] = tmp >> 8;
+        set_mac_address(mac);
+    } else {
+        VERIFY_NOT_REACHED();
+    }
+}
+
+bool E1000NetworkAdapter::link_up()
+{
+    return (in32(REG_STATUS) & STATUS_LU);
+}
+
+UNMAP_AFTER_INIT void E1000NetworkAdapter::initialize_rx_descriptors()
+{
+    auto* rx_descriptors = (e1000_tx_desc*)m_rx_descriptors_region->vaddr().as_ptr();
+    constexpr auto rx_buffer_size = 8192;
+    constexpr auto rx_buffer_page_count = rx_buffer_size / PAGE_SIZE;
+
+    m_rx_buffer_region = MM.allocate_contiguous_kernel_region(rx_buffer_size * number_of_rx_descriptors, "E1000 RX buffers", Region::Access::Read | Region::Access::Write);
+    for (size_t i = 0; i < number_of_rx_descriptors; ++i) {
+        auto& descriptor = rx_descriptors[i];
+        m_rx_buffers[i] = m_rx_buffer_region->vaddr().as_ptr() + rx_buffer_size * i;
+        descriptor.addr = m_rx_buffer_region->physical_page(rx_buffer_page_count * i)->paddr().get();
+        descriptor.status = 0;
+    }
+
+    out32(REG_RXDESCLO, m_rx_descriptors_region->physical_page(0)->paddr().get());
+    out32(REG_RXDESCHI, 0);
+    out32(REG_RXDESCLEN, number_of_rx_descriptors * sizeof(e1000_rx_desc));
+    out32(REG_RXDESCHEAD, 0);
+    out32(REG_RXDESCTAIL, number_of_rx_descriptors - 1);
+
+    out32(REG_RCTRL, RCTL_EN | RCTL_SBP | RCTL_UPE | RCTL_MPE | RCTL_LBM_NONE | RTCL_RDMTS_HALF | RCTL_BAM | RCTL_SECRC | RCTL_BSIZE_8192);
+}
+
+UNMAP_AFTER_INIT void E1000NetworkAdapter::initialize_tx_descriptors()
+{
+    auto* tx_descriptors = (e1000_tx_desc*)m_tx_descriptors_region->vaddr().as_ptr();
+
+    constexpr auto tx_buffer_size = 8192;
+    constexpr auto tx_buffer_page_count = tx_buffer_size / PAGE_SIZE;
+    m_tx_buffer_region = MM.allocate_contiguous_kernel_region(tx_buffer_size * number_of_tx_descriptors, "E1000 TX buffers", Region::Access::Read | Region::Access::Write);
+
+    for (size_t i = 0; i < number_of_tx_descriptors; ++i) {
+        auto& descriptor = tx_descriptors[i];
+        m_tx_buffers[i] = m_tx_buffer_region->vaddr().as_ptr() + tx_buffer_size * i;
+        descriptor.addr = m_tx_buffer_region->physical_page(tx_buffer_page_count * i)->paddr().get();
+        descriptor.cmd = 0;
+    }
+
+    out32(REG_TXDESCLO, m_tx_descriptors_region->physical_page(0)->paddr().get());
+    out32(REG_TXDESCHI, 0);
+    out32(REG_TXDESCLEN, number_of_tx_descriptors * sizeof(e1000_tx_desc));
+    out32(REG_TXDESCHEAD, 0);
+    out32(REG_TXDESCTAIL, 0);
+
+    out32(REG_TCTRL, in32(REG_TCTRL) | TCTL_EN | TCTL_PSP);
+    out32(REG_TIPG, 0x0060200A);
+}
+
+void E1000NetworkAdapter::out8(u16 address, u8 data)
+{
+    dbgln_if(E1000_DEBUG, "E1000: OUT8 {:#02x} @ {:#04x}", data, address);
+    if (m_use_mmio) {
+        auto* ptr = (volatile u8*)(m_mmio_base.get() + address);
+        *ptr = data;
+        return;
+    }
+    m_io_base.offset(address).out(data);
+}
+
+void E1000NetworkAdapter::out16(u16 address, u16 data)
+{
+    dbgln_if(E1000_DEBUG, "E1000: OUT16 {:#04x} @ {:#04x}", data, address);
+    if (m_use_mmio) {
+        auto* ptr = (volatile u16*)(m_mmio_base.get() + address);
+        *ptr = data;
+        return;
+    }
+    m_io_base.offset(address).out(data);
+}
+
+void E1000NetworkAdapter::out32(u16 address, u32 data)
+{
+    dbgln_if(E1000_DEBUG, "E1000: OUT32 {:#08x} @ {:#04x}", data, address);
+    if (m_use_mmio) {
+        auto* ptr = (volatile u32*)(m_mmio_base.get() + address);
+        *ptr = data;
+        return;
+    }
+    m_io_base.offset(address).out(data);
+}
+
+u8 E1000NetworkAdapter::in8(u16 address)
+{
+    dbgln_if(E1000_DEBUG, "E1000: IN8 @ {:#04x}", address);
+    if (m_use_mmio)
+        return *(volatile u8*)(m_mmio_base.get() + address);
+    return m_io_base.offset(address).in<u8>();
+}
+
+u16 E1000NetworkAdapter::in16(u16 address)
+{
+    dbgln_if(E1000_DEBUG, "E1000: IN16 @ {:#04x}", address);
+    if (m_use_mmio)
+        return *(volatile u16*)(m_mmio_base.get() + address);
+    return m_io_base.offset(address).in<u16>();
+}
+
+u32 E1000NetworkAdapter::in32(u16 address)
+{
+    dbgln_if(E1000_DEBUG, "E1000: IN32 @ {:#04x}", address);
+    if (m_use_mmio)
+        return *(volatile u32*)(m_mmio_base.get() + address);
+    return m_io_base.offset(address).in<u32>();
+}
+
+void E1000NetworkAdapter::send_raw(ReadonlyBytes payload)
+{
+    disable_irq();
+    size_t tx_current = in32(REG_TXDESCTAIL) % number_of_tx_descriptors;
+    dbgln_if(E1000_DEBUG, "E1000: Sending packet ({} bytes)", payload.size());
+    auto* tx_descriptors = (e1000_tx_desc*)m_tx_descriptors_region->vaddr().as_ptr();
+    auto& descriptor = tx_descriptors[tx_current];
+    VERIFY(payload.size() <= 8192);
+    auto* vptr = (void*)m_tx_buffers[tx_current];
+    memcpy(vptr, payload.data(), payload.size());
+    descriptor.length = payload.size();
+    descriptor.status = 0;
+    descriptor.cmd = CMD_EOP | CMD_IFCS | CMD_RS;
+    dbgln_if(E1000_DEBUG, "E1000: Using tx descriptor {} (head is at {})", tx_current, in32(REG_TXDESCHEAD));
+    tx_current = (tx_current + 1) % number_of_tx_descriptors;
+    cli();
+    enable_irq();
+    out32(REG_TXDESCTAIL, tx_current);
+    for (;;) {
+        if (descriptor.status) {
+            sti();
+            break;
+        }
+        m_wait_queue.wait_forever("E1000NetworkAdapter");
+    }
+    dbgln_if(E1000_DEBUG, "E1000: Sent packet, status is now {:#02x}!", (u8)descriptor.status);
+}
+
+void E1000NetworkAdapter::receive()
+{
+    auto* rx_descriptors = (e1000_tx_desc*)m_rx_descriptors_region->vaddr().as_ptr();
+    u32 rx_current;
+    for (;;) {
+        rx_current = in32(REG_RXDESCTAIL) % number_of_rx_descriptors;
+        rx_current = (rx_current + 1) % number_of_rx_descriptors;
+        if (!(rx_descriptors[rx_current].status & 1))
+            break;
+        auto* buffer = m_rx_buffers[rx_current];
+        u16 length = rx_descriptors[rx_current].length;
+        VERIFY(length <= 8192);
+        dbgln_if(E1000_DEBUG, "E1000: Received 1 packet @ {:p} ({} bytes)", buffer, length);
+        did_receive({ buffer, length });
+        rx_descriptors[rx_current].status = 0;
+        out32(REG_RXDESCTAIL, rx_current);
+    }
+}
+
+}
