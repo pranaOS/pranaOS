@@ -11,12 +11,12 @@
 #include <kernel/graphics/GraphicsManagement.h>
 #include <kernel/Process.h>
 #include <kernel/Sections.h>
-#include <kernel/VM/AnonymousVMObject.h>
-#include <kernel/VM/MemoryManager.h>
+#include <kernel/vm/AnonymousVMObject.h>
+#include <kernel/vm/MemoryManager.h>
 #include <libc/errno_numbers.h>
 #include <libc/sys/ioctl_numbers.h>
 
-#define MAX_RESOLUTION_WITH 4096
+#define MAX_RESOLUTION_WIDTH 4096
 #define MAX_RESOLUTION_HEIGHT 2160
 
 namespace Kernel {
@@ -139,6 +139,106 @@ size_t FramebufferDevice::framebuffer_size_in_bytes() const
     if (m_graphics_adapter->double_framebuffering_capable())
         return m_framebuffer_pitch * m_framebuffer_height * 2;
     return m_framebuffer_pitch * m_framebuffer_height;
+}
+
+KResult FramebufferDevice::ioctl(FileDescription&, unsigned request, Userspace<void*> arg)
+{
+    REQUIRE_PROMISE(video);
+    switch (request) {
+    case FB_IOCTL_GET_SIZE_IN_BYTES: {
+        auto user_size = static_ptr_cast<size_t*>(arg);
+        size_t value = framebuffer_size_in_bytes();
+        if (!copy_to_user(user_size, &value))
+            return EFAULT;
+        return KSuccess;
+    }
+    case FB_IOCTL_GET_BUFFER: {
+        auto user_index = static_ptr_cast<int*>(arg);
+        int value = m_y_offset == 0 ? 0 : 1;
+        if (!copy_to_user(user_index, &value))
+            return EFAULT;
+        if (!m_graphics_adapter->double_framebuffering_capable())
+            return ENOTIMPL;
+        return KSuccess;
+    }
+    case FB_IOCTL_SET_BUFFER: {
+        auto buffer = static_cast<int>(arg.ptr());
+        if (buffer != 0 && buffer != 1)
+            return EINVAL;
+        if (!m_graphics_adapter->double_framebuffering_capable())
+            return ENOTIMPL;
+        m_graphics_adapter->set_y_offset(m_output_port_index, buffer == 0 ? 0 : m_framebuffer_height);
+        return KSuccess;
+    }
+    case FB_IOCTL_GET_RESOLUTION: {
+        auto user_resolution = static_ptr_cast<FBResolution*>(arg);
+        FBResolution resolution {};
+        resolution.pitch = m_framebuffer_pitch;
+        resolution.width = m_framebuffer_width;
+        resolution.height = m_framebuffer_height;
+        if (!copy_to_user(user_resolution, &resolution))
+            return EFAULT;
+        return KSuccess;
+    }
+    case FB_IOCTL_SET_RESOLUTION: {
+        auto user_resolution = static_ptr_cast<FBResolution*>(arg);
+        FBResolution resolution;
+        if (!copy_from_user(&resolution, user_resolution))
+            return EFAULT;
+        if (resolution.width > MAX_RESOLUTION_WIDTH || resolution.height > MAX_RESOLUTION_HEIGHT)
+            return EINVAL;
+
+        if (!m_graphics_adapter->modesetting_capable()) {
+            resolution.pitch = m_framebuffer_pitch;
+            resolution.width = m_framebuffer_width;
+            resolution.height = m_framebuffer_height;
+            if (!copy_to_user(user_resolution, &resolution))
+                return EFAULT;
+            return ENOTIMPL;
+        }
+
+        if (!m_graphics_adapter->try_to_set_resolution(m_output_port_index, resolution.width, resolution.height)) {
+            m_framebuffer_pitch = m_framebuffer_width * sizeof(u32);
+            dbgln_if(FRAMEBUFFER_DEVICE_DEBUG, "Reverting resolution: [{}x{}]", m_framebuffer_width, m_framebuffer_height);
+            if (!m_graphics_adapter->try_to_set_resolution(m_output_port_index, m_framebuffer_width, m_framebuffer_height)) {
+                VERIFY_NOT_REACHED();
+            }
+            resolution.pitch = m_framebuffer_pitch;
+            resolution.width = m_framebuffer_width;
+            resolution.height = m_framebuffer_height;
+            if (!copy_to_user(user_resolution, &resolution))
+                return EFAULT;
+            return EINVAL;
+        }
+        m_framebuffer_width = resolution.width;
+        m_framebuffer_height = resolution.height;
+        m_framebuffer_pitch = m_framebuffer_width * sizeof(u32);
+
+        dbgln_if(FRAMEBUFFER_DEVICE_DEBUG, "New resolution: [{}x{}]", m_framebuffer_width, m_framebuffer_height);
+        resolution.pitch = m_framebuffer_pitch;
+        resolution.width = m_framebuffer_width;
+        resolution.height = m_framebuffer_height;
+        if (!copy_to_user(user_resolution, &resolution))
+            return EFAULT;
+        return KSuccess;
+    }
+    case FB_IOCTL_GET_BUFFER_OFFSET: {
+        auto user_buffer_offset = static_ptr_cast<FBBufferOffset*>(arg);
+        FBBufferOffset buffer_offset;
+        if (!copy_from_user(&buffer_offset, user_buffer_offset))
+            return EFAULT;
+        if (buffer_offset.buffer_index != 0 && buffer_offset.buffer_index != 1)
+            return EINVAL;
+        buffer_offset.offset = (size_t)buffer_offset.buffer_index * m_framebuffer_pitch * m_framebuffer_height;
+        if (!copy_to_user(user_buffer_offset, &buffer_offset))
+            return EFAULT;
+        return KSuccess;
+    }
+    case FB_IOCTL_FLUSH_BUFFERS:
+        return ENOTSUP;
+    default:
+        return EINVAL;
+    };
 }
 
 }
