@@ -134,3 +134,183 @@ function R(fmt, ...args) {
 function randRange(min, max) {
     return Math.random() * (max - min) + min;
 }
+
+function reduce(op, accmulator, cells) {
+    for (let name of cells) {
+        let cell = thisSheet[name];
+        accmulator = op(accmulator, cell);
+    }
+
+    return accmulator
+}
+
+function numericReduce(op, accumulator, cells) {
+    return reduce((acc, x) => op(acc, Number(x)), accumulator, cells);
+}
+
+function numericResolve(cells) {
+    const values = [];
+    for (let name of cells) values.push(Number(thisSheet[name]));
+    return values;
+}
+
+function resolve(cells) {
+    const values = [];
+    for (let name of cells) values.push(thisSheet[name]);
+    return values;
+}
+
+// Statistics
+
+function sum(cells) {
+    return numericReduce((acc, x) => acc + x, 0, cells);
+}
+
+function sumIf(condition, cells) {
+    return numericReduce((acc, x) => (condition(x) ? acc + x : acc), 0, cells);
+}
+
+function count(cells) {
+    return reduce((acc, x) => acc + 1, 0, cells);
+}
+
+function countIf(condition, cells) {
+    return reduce((acc, x) => (condition(x) ? acc + 1 : acc), 0, cells);
+}
+
+function average(cells) {
+    const sumAndCount = numericReduce((acc, x) => [acc[0] + x, acc[1] + 1], [0, 0], cells);
+    return sumAndCount[0] / sumAndCount[1];
+}
+
+function averageIf(condition, cells) {
+    const sumAndCount = numericReduce(
+        (acc, x) => (condition(x) ? [acc[0] + x, acc[1] + 1] : acc),
+        [0, 0],
+        cells
+    );
+    return sumAndCount[0] / sumAndCount[1];
+}
+
+function median(cells) {
+    const values = numericResolve(cells);
+
+    if (values.length == 0) return 0;
+
+    function qselect(arr, idx) {
+        if (arr.length == 1) return arr[0];
+
+        const pivot = arr[0];
+        const ls = arr.filter(x => x < pivot);
+        const hs = arr.filter(x => x > pivot);
+        const eqs = arr.filter(x => x === pivot);
+
+        if (idx < ls.length) return qselect(ls, k);
+
+        if (idx < ls.length + eqs.length) return pivot;
+
+        return qselect(hs, idx - ls.length - eqs.length);
+    }
+
+    if (values.length % 2) return qselect(values, values.length / 2);
+
+    return (qselect(values, values.length / 2) + qselect(values, values.length / 2 - 1)) / 2;
+}
+
+function variance(cells) {
+    const sumsAndSquaresAndCount = numericReduce(
+        (acc, x) => [acc[0] + x, acc[1] + x * x, acc[2] + 1],
+        [0, 0, 0],
+        cells
+    );
+    let sums = sumsAndSquaresAndCount[0];
+    let squares = sumsAndSquaresAndCount[1];
+    let count = sumsAndSquaresAndCount[2];
+
+    return (count * squares - sums * sums) / count;
+}
+
+function stddev(cells) {
+    return Math.sqrt(variance(cells));
+}
+
+// Lookup
+
+function row() {
+    return thisSheet.current_cell_position().row;
+}
+
+function column() {
+    return thisSheet.current_cell_position().column;
+}
+
+function here() {
+    const position = current_cell_position();
+    return new Position(position.column, position.row, thisSheet);
+}
+
+function internal_lookup(
+    req_lookup_value,
+    lookup_inputs,
+    lookup_outputs,
+    if_missing,
+    mode,
+    reference
+) {
+    lookup_outputs = lookup_outputs ?? lookup_inputs;
+
+    if (lookup_inputs.length > lookup_outputs.length)
+        throw new Error(
+            `Uneven lengths in outputs and inputs: ${lookup_inputs.length} > ${lookup_outputs.length}`
+        );
+
+    let references = lookup_outputs;
+    lookup_inputs = resolve(lookup_inputs);
+    lookup_outputs = resolve(lookup_outputs);
+    if_missing = if_missing ?? undefined;
+    mode = mode ?? "exact";
+    const lookup_value = req_lookup_value;
+    let matches = null;
+
+    if (mode === "exact") {
+        matches = value => value === lookup_value;
+    } else if (mode === "nextlargest") {
+        matches = value => value >= lookup_value;
+    } else if (mode === "nextsmallest") {
+        matches = value => value <= lookup_value;
+    } else {
+        throw new Error(`Match mode '${mode}' not supported`);
+    }
+
+    let retval = if_missing;
+    for (let i = 0; i < lookup_inputs.length; ++i) {
+        if (matches(lookup_inputs[i])) {
+            retval = reference ? Position.from_name(references[i]) : lookup_outputs[i];
+            break;
+        }
+    }
+
+    return retval;
+}
+
+function lookup(req_lookup_value, lookup_inputs, lookup_outputs, if_missing, mode) {
+    return internal_lookup(
+        req_lookup_value,
+        lookup_inputs,
+        lookup_outputs,
+        if_missing,
+        mode,
+        false
+    );
+}
+
+function reflookup(req_lookup_value, lookup_inputs, lookup_outputs, if_missing, mode) {
+    return internal_lookup(
+        req_lookup_value,
+        lookup_inputs,
+        lookup_outputs,
+        if_missing ?? here(),
+        mode,
+        true
+    );
+}
