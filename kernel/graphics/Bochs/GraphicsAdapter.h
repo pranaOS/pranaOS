@@ -10,7 +10,7 @@
 #include <base/String.h>
 #include <base/Types.h>
 #include <kernel/bus/pci/DeviceController.h>
-#include <kernel/graphics/Console/GenericFramebufferConsole.h>
+#include <kernel/graphics/console/GenericFramebufferConsole.h>
 #include <kernel/graphics/FramebufferDevice.h>
 #include <kernel/graphics/GraphicsDevice.h>
 #include <kernel/PhysicalAddress.h>
@@ -35,7 +35,6 @@ public:
     virtual bool double_framebuffering_capable() const override { return true; }
 
 private:
-
     virtual bool try_to_set_resolution(size_t output_port_index, size_t width, size_t height) override;
     virtual bool set_y_offset(size_t output_port_index, size_t y) override;
 
