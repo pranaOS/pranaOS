@@ -14,7 +14,6 @@
 #include <kernel/KResult.h>
 #include <kernel/net/IPv4Socket.h>
 
-
 namespace Kernel {
 
 class TCPSocket final : public IPv4Socket {
@@ -147,6 +146,76 @@ public:
 
     static Lockable<HashMap<IPv4SocketTuple, RefPtr<TCPSocket>>>& closing_sockets();
 
+    RefPtr<TCPSocket> create_client(const IPv4Address& local_address, u16 local_port, const IPv4Address& peer_address, u16 peer_port);
+    void set_originator(TCPSocket& originator) { m_originator = originator; }
+    bool has_originator() { return !!m_originator; }
+    void release_to_originator();
+    void release_for_accept(RefPtr<TCPSocket>);
+
+    static Lockable<HashTable<TCPSocket*>>& sockets_for_retransmit();
+    void retransmit_packets();
+
+    virtual KResult close() override;
+
+    virtual bool can_write(const FileDescription&, size_t) const override;
+
+    static NetworkOrdered<u16> compute_tcp_checksum(IPv4Address const& source, IPv4Address const& destination, TCPPacket const&, u16 payload_size);
+
+protected:
+    void set_direction(Direction direction) { m_direction = direction; }
+
+private:
+    explicit TCPSocket(int protocol);
+    virtual StringView class_name() const override { return "TCPSocket"; }
+
+    virtual void shut_down_for_writing() override;
+
+    virtual KResultOr<size_t> protocol_receive(ReadonlyBytes raw_ipv4_packet, UserOrKernelBuffer& buffer, size_t buffer_size, int flags) override;
+    virtual KResultOr<size_t> protocol_send(const UserOrKernelBuffer&, size_t) override;
+    virtual KResult protocol_connect(FileDescription&, ShouldBlock) override;
+    virtual KResultOr<u16> protocol_allocate_local_port() override;
+    virtual bool protocol_is_disconnected() const override;
+    virtual KResult protocol_bind() override;
+    virtual KResult protocol_listen(bool did_allocate_port) override;
+
+    void enqueue_for_retransmit();
+    void dequeue_for_retransmit();
+
+    WeakPtr<TCPSocket> m_originator;
+    HashMap<IPv4SocketTuple, NonnullRefPtr<TCPSocket>> m_pending_release_for_accept;
+    Direction m_direction { Direction::Unspecified };
+    Error m_error { Error::None };
+    RefPtr<NetworkAdapter> m_adapter;
+    u32 m_sequence_number { 0 };
+    u32 m_ack_number { 0 };
+    State m_state { State::Closed };
+    u32 m_packets_in { 0 };
+    u32 m_bytes_in { 0 };
+    u32 m_packets_out { 0 };
+    u32 m_bytes_out { 0 };
+
+    struct OutgoingPacket {
+        u32 ack_number { 0 };
+        RefPtr<PacketWithTimestamp> buffer;
+        size_t ipv4_payload_offset;
+        WeakPtr<NetworkAdapter> adapter;
+        int tx_counter { 0 };
+    };
+
+    mutable Mutex m_not_acked_lock { "TCPSocket unacked packets" };
+    SinglyLinkedList<OutgoingPacket> m_not_acked;
+    size_t m_not_acked_size { 0 };
+
+    u32 m_duplicate_acks { 0 };
+
+    u32 m_last_ack_number_sent { 0 };
+    Time m_last_ack_sent_time;
+
+    static constexpr u32 maximum_retransmits = 5;
+    Time m_last_retransmit_time;
+    u32 m_retransmit_attempts { 0 };
+
+    u32 m_send_window_size { 64 * KiB };
 };
 
 }
