@@ -267,3 +267,27 @@ void GPU::flush_dirty_rectangle(ScanoutID scanout_id, Protocol::Rect const& dirt
     transfer_framebuffer_data_to_host(scanout_id, dirty_rect, resource_id);
     flush_displayed_image(dirty_rect, resource_id);
 }
+
+ResourceID GPU::allocate_resource_id()
+{
+    VERIFY(m_operation_lock.is_locked());
+    m_resource_id_counter = m_resource_id_counter.value() + 1;
+    return m_resource_id_counter;
+}
+
+void GPU::delete_resource(ResourceID resource_id)
+{
+    VERIFY(m_operation_lock.is_locked());
+    auto writer = create_scratchspace_writer();
+    auto& request = writer.append_structure<Protocol::ResourceUnref>();
+    auto& response = writer.append_structure<Protocol::ControlHeader>();
+
+    populate_virtio_gpu_request_header(request.header, Protocol::CommandType::VIRTIO_GPU_CMD_RESOURCE_UNREF, VIRTIO_GPU_FLAG_FENCE);
+    request.resource_id = resource_id.value();
+
+    synchronous_virtio_gpu_command(start_of_scratch_space(), sizeof(request), sizeof(response));
+
+    VERIFY(response.type == static_cast<u32>(Protocol::CommandType::VIRTIO_GPU_RESP_OK_NODATA));
+}
+
+}
