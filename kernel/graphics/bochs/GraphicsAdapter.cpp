@@ -15,7 +15,7 @@
 #include <kernel/graphics/GraphicsManagement.h>
 #include <kernel/IO.h>
 #include <kernel/Sections.h>
-#include <kernel/VM/TypedMapping.h>
+#include <kernel/vm/TypedMapping.h>
 
 #define VBE_DISPI_IOPORT_INDEX 0x01CE
 #define VBE_DISPI_IOPORT_DATA 0x01CF
@@ -131,6 +131,93 @@ void BochsGraphicsAdapter::set_resolution_registers_via_io(size_t width, size_t 
     set_register_with_io(VBE_DISPI_INDEX_BPP, 32);
     set_register_with_io(VBE_DISPI_INDEX_ENABLE, VBE_DISPI_ENABLED | VBE_DISPI_LFB_ENABLED);
     set_register_with_io(VBE_DISPI_INDEX_BANK, 0);
+}
+
+void BochsGraphicsAdapter::set_resolution_registers(size_t width, size_t height)
+{
+    dbgln_if(BXVGA_DEBUG, "BochsGraphicsAdapter resolution registers set to - {}x{}", width, height);
+    m_registers->bochs_regs.enable = VBE_DISPI_DISABLED;
+    full_memory_barrier();
+    m_registers->bochs_regs.xres = width;
+    m_registers->bochs_regs.yres = height;
+    m_registers->bochs_regs.virt_width = width;
+    m_registers->bochs_regs.virt_height = height * 2;
+    m_registers->bochs_regs.bpp = 32;
+    full_memory_barrier();
+    m_registers->bochs_regs.enable = VBE_DISPI_ENABLED | VBE_DISPI_LFB_ENABLED;
+    full_memory_barrier();
+    m_registers->bochs_regs.bank = 0;
+}
+
+bool BochsGraphicsAdapter::try_to_set_resolution(size_t output_port_index, size_t width, size_t height)
+{
+    VERIFY(output_port_index == 0);
+    VERIFY(m_framebuffer_console);
+    if (Checked<size_t>::multiplication_would_overflow(width, height, sizeof(u32)))
+        return false;
+
+    if (m_io_required)
+        set_resolution_registers_via_io(width, height);
+    else
+        set_resolution_registers(width, height);
+    dbgln_if(BXVGA_DEBUG, "BochsGraphicsAdapter resolution test - {}x{}", width, height);
+    if (m_io_required) {
+        if (!validate_setup_resolution_with_io(width, height))
+            return false;
+    } else {
+        if (!validate_setup_resolution(width, height))
+            return false;
+    }
+
+    dbgln("BochsGraphicsAdapter: resolution set to {}x{}", width, height);
+    m_framebuffer_console->set_resolution(width, height, width * sizeof(u32));
+    return true;
+}
+
+bool BochsGraphicsAdapter::validate_setup_resolution_with_io(size_t width, size_t height)
+{
+    if ((u16)width != get_register_with_io(VBE_DISPI_INDEX_XRES) || (u16)height != get_register_with_io(VBE_DISPI_INDEX_YRES)) {
+        return false;
+    }
+    return true;
+}
+
+bool BochsGraphicsAdapter::validate_setup_resolution(size_t width, size_t height)
+{
+    if ((u16)width != m_registers->bochs_regs.xres || (u16)height != m_registers->bochs_regs.yres) {
+        return false;
+    }
+    return true;
+}
+
+bool BochsGraphicsAdapter::set_y_offset(size_t output_port_index, size_t y_offset)
+{
+    VERIFY(output_port_index == 0);
+    if (m_console_enabled)
+        return false;
+    m_registers->bochs_regs.y_offset = y_offset;
+    return true;
+}
+
+void BochsGraphicsAdapter::enable_consoles()
+{
+    ScopedSpinLock lock(m_console_mode_switch_lock);
+    VERIFY(m_framebuffer_console);
+    m_console_enabled = true;
+    m_registers->bochs_regs.y_offset = 0;
+    if (m_framebuffer_device)
+        m_framebuffer_device->deactivate_writes();
+    m_framebuffer_console->enable();
+}
+void BochsGraphicsAdapter::disable_consoles()
+{
+    ScopedSpinLock lock(m_console_mode_switch_lock);
+    VERIFY(m_framebuffer_console);
+    VERIFY(m_framebuffer_device);
+    m_console_enabled = false;
+    m_registers->bochs_regs.y_offset = 0;
+    m_framebuffer_console->disable();
+    m_framebuffer_device->activate_writes();
 }
 
 }
