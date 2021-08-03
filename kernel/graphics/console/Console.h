@@ -16,6 +16,7 @@ namespace Kernel::Graphics {
 
 class Console : public RefCounted<Console> {
 public:
+
     enum Color : u8 {
         Black = 0,
         Blue,
@@ -62,5 +63,20 @@ public:
 
     virtual ~Console() { }
 
+protected:
+    Console(size_t width, size_t height)
+        : m_width(width)
+        , m_height(height)
+    {
+        m_enabled.store(true);
+    }
+
+    Atomic<bool> m_enabled;
+    Color m_default_foreground_color { Color::White };
+    Color m_default_background_color { Color::Black };
+    size_t m_width;
+    size_t m_height;
+    mutable size_t m_x { 0 };
+    mutable size_t m_y { 0 };
 };
 }
