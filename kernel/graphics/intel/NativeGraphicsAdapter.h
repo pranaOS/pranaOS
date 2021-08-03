@@ -47,9 +47,9 @@ enum RegisterIndex {
 };
 }
 
-class IntelNativeGraphicsAdapter final 
+class IntelNativeGraphicsAdapter final
     : public VGACompatibleAdapter {
-    BASE_MAKE_ETERNEL
+    AK_MAKE_ETERNAL
 public:
     struct PLLSettings {
         bool is_valid() const { return (n != 0 && m1 != 0 && m2 != 0 && p1 != 0 && p2 != 0); }
@@ -84,6 +84,90 @@ public:
     struct PLLMaxSettings {
         PLLParameterLimit dot_clock, vco, n, m, m1, m2, p, p1, p2;
     };
+
+private:
+    enum GMBusPinPair : u8 {
+        None = 0,
+        DedicatedControl = 1,
+        DedicatedAnalog = 0b10,
+        IntegratedDigital = 0b11,
+        sDVO = 0b101,
+        Dconnector = 0b111,
     };
+
+    enum class GMBusStatus {
+        TransactionCompletion,
+        HardwareReady
+    };
+
+    enum GMBusCycle {
+        Wait = 1,
+        Stop = 4,
+    };
+
+public:
+    static RefPtr<IntelNativeGraphicsAdapter> initialize(PCI::Address);
+
+private:
+    explicit IntelNativeGraphicsAdapter(PCI::Address);
+
+    void write_to_register(IntelGraphics::RegisterIndex, u32 value) const;
+    u32 read_from_register(IntelGraphics::RegisterIndex) const;
+
+    virtual void initialize_framebuffer_devices() override;
+    virtual Type type() const override { return Type::VGACompatible; }
+
+    bool pipe_a_enabled() const;
+    bool pipe_b_enabled() const;
+
+    bool is_resolution_valid(size_t width, size_t height);
+
+    bool set_crt_resolution(size_t width, size_t height);
+
+    void disable_output();
+    void enable_output(PhysicalAddress fb_address, size_t width);
+
+    void disable_vga_emulation();
+    void enable_vga_plane();
+
+    void disable_dac_output();
+    void enable_dac_output();
+
+    void disable_all_planes();
+    void disable_pipe_a();
+    void disable_pipe_b();
+    void disable_dpll();
+
+    void set_dpll_registers(const PLLSettings&);
+
+    void enable_dpll_without_vga(const PLLSettings&, size_t dac_multiplier);
+    void set_display_timings(const Graphics::Modesetting&);
+    void enable_pipe_a();
+    void set_framebuffer_parameters(size_t, size_t);
+    void enable_primary_plane(PhysicalAddress fb_address, size_t stride);
+
+    bool wait_for_enabled_pipe_a(size_t milliseconds_timeout) const;
+    bool wait_for_disabled_pipe_a(size_t milliseconds_timeout) const;
+    bool wait_for_disabled_pipe_b(size_t milliseconds_timeout) const;
+
+    void set_gmbus_default_rate();
+    void set_gmbus_pin_pair(GMBusPinPair pin_pair);
+
+    void gmbus_read_edid();
+    void gmbus_write(unsigned address, u32 byte);
+    void gmbus_read(unsigned address, u8* buf, size_t length);
+    bool gmbus_wait_for(GMBusStatus desired_status, Optional<size_t> milliseconds_timeout);
+
+    Optional<PLLSettings> create_pll_settings(u64 target_frequency, u64 reference_clock, const PLLMaxSettings&);
+
+    SpinLock<u8> m_control_lock;
+    SpinLock<u8> m_modeset_lock;
+    mutable SpinLock<u8> m_registers_lock;
+
+    Graphics::VideoInfoBlock m_crt_edid;
+    const PhysicalAddress m_registers;
+    const PhysicalAddress m_framebuffer_addr;
+    OwnPtr<Region> m_registers_region;
+};
 
 }
