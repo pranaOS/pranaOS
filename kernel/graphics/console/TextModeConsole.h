@@ -9,7 +9,7 @@
 // includes
 #include <base/RefCounted.h>
 #include <base/Types.h>
-#include <kernel/graphics/Console/VGAConsole.h>
+#include <kernel/graphics/console/VGAConsole.h>
 #include <kernel/SpinLock.h>
 
 namespace Kernel::Graphics {
@@ -34,4 +34,17 @@ public:
     virtual void enable() override { }
     virtual void disable() override { VERIFY_NOT_REACHED(); }
 
+private:
+    void clear_vga_row(u16 row);
+    void set_vga_start_row(u16 row);
+
+    explicit TextModeConsole(const VGACompatibleAdapter&);
+
+    mutable SpinLock<u8> m_vga_lock;
+    u16 m_vga_start_row { 0 };
+    u16 m_current_vga_start_address { 0 };
+    u8* m_current_vga_window { nullptr };
+    u16 m_cursor_x { 0 };
+    u16 m_cursor_y { 0 };
+};
 }
