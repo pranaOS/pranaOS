@@ -1,0 +1,136 @@
+/*
+ * Copyright (c) 2021, Krisna Pranav
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+*/
+
+// includes
+#include <base/Atomic.h>
+#include <base/Checked.h>
+#include <kernel/bus/pci/Access.h>
+#include <kernel/bus/pci/IDs.h>
+#include <kernel/Debug.h>
+#include <kernel/graphics/bochs/GraphicsAdapter.h>
+#include <kernel/graphics/console/ContiguousFramebufferConsole.h>
+#include <kernel/graphics/GraphicsManagement.h>
+#include <kernel/IO.h>
+#include <kernel/Sections.h>
+#include <kernel/VM/TypedMapping.h>
+
+#define VBE_DISPI_IOPORT_INDEX 0x01CE
+#define VBE_DISPI_IOPORT_DATA 0x01CF
+
+#define VBE_DISPI_INDEX_ID 0x0
+#define VBE_DISPI_INDEX_XRES 0x1
+#define VBE_DISPI_INDEX_YRES 0x2
+#define VBE_DISPI_INDEX_BPP 0x3
+#define VBE_DISPI_INDEX_ENABLE 0x4
+#define VBE_DISPI_INDEX_BANK 0x5
+#define VBE_DISPI_INDEX_VIRT_WIDTH 0x6
+#define VBE_DISPI_INDEX_VIRT_HEIGHT 0x7
+#define VBE_DISPI_INDEX_X_OFFSET 0x8
+#define VBE_DISPI_INDEX_Y_OFFSET 0x9
+#define VBE_DISPI_DISABLED 0x00
+#define VBE_DISPI_ENABLED 0x01
+#define VBE_DISPI_LFB_ENABLED 0x40
+
+namespace Kernel {
+
+struct [[gnu::packed]] DISPIInterface {
+    u16 index_id;
+    u16 xres;
+    u16 yres;
+    u16 bpp;
+    u16 enable;
+    u16 bank;
+    u16 virt_width;
+    u16 virt_height;
+    u16 x_offset;
+    u16 y_offset;
+};
+
+struct [[gnu::packed]] BochsDisplayMMIORegisters {
+    u8 edid_data[0x400];
+    u16 vga_ioports[0x10];
+    u8 reserved[0xE0];
+    DISPIInterface bochs_regs;
+};
+
+UNMAP_AFTER_INIT NonnullRefPtr<BochsGraphicsAdapter> BochsGraphicsAdapter::initialize(PCI::Address address)
+{
+    PCI::ID id = PCI::get_id(address);
+    VERIFY((id.vendor_id == PCI::VendorID::QEMUOld && id.device_id == 0x1111) || (id.vendor_id == PCI::VendorID::VirtualBox && id.device_id == 0xbeef));
+    return adopt_ref(*new BochsGraphicsAdapter(address));
+}
+
+UNMAP_AFTER_INIT BochsGraphicsAdapter::BochsGraphicsAdapter(PCI::Address pci_address)
+    : PCI::DeviceController(pci_address)
+    , m_mmio_registers(PCI::get_BAR2(pci_address) & 0xfffffff0)
+    , m_registers(map_typed_writable<BochsDisplayMMIORegisters volatile>(m_mmio_registers))
+{
+    m_framebuffer_console = Graphics::ContiguousFramebufferConsole::initialize(PhysicalAddress(PCI::get_BAR0(pci_address) & 0xfffffff0), 1024, 768, 1024 * sizeof(u32));
+
+    GraphicsManagement::the().m_console = m_framebuffer_console;
+
+    auto id = PCI::get_id(pci_address);
+    if (id.vendor_id == 0x80ee && id.device_id == 0xbeef)
+        m_io_required = true;
+
+    unblank();
+    set_safe_resolution();
+}
+
+UNMAP_AFTER_INIT void BochsGraphicsAdapter::initialize_framebuffer_devices()
+{
+    m_framebuffer_device = FramebufferDevice::create(*this, 0, PhysicalAddress(PCI::get_BAR0(pci_address()) & 0xfffffff0), 1024, 768, 1024 * sizeof(u32));
+    m_framebuffer_device->initialize();
+}
+
+GraphicsDevice::Type BochsGraphicsAdapter::type() const
+{
+    if (PCI::get_class(pci_address()) == 0x3 && PCI::get_subclass(pci_address()) == 0x0)
+        return Type::VGACompatible;
+    return Type::Bochs;
+}
+
+void BochsGraphicsAdapter::unblank()
+{
+    full_memory_barrier();
+    m_registers->vga_ioports[0] = 0x20;
+    full_memory_barrier();
+}
+
+void BochsGraphicsAdapter::set_safe_resolution()
+{
+    VERIFY(m_framebuffer_console);
+    auto result = try_to_set_resolution(0, 1024, 768);
+    VERIFY(result);
+}
+
+static void set_register_with_io(u16 index, u16 data)
+{
+    IO::out16(VBE_DISPI_IOPORT_INDEX, index);
+    IO::out16(VBE_DISPI_IOPORT_DATA, data);
+}
+
+static u16 get_register_with_io(u16 index)
+{
+    IO::out16(VBE_DISPI_IOPORT_INDEX, index);
+    return IO::in16(VBE_DISPI_IOPORT_DATA);
+}
+
+void BochsGraphicsAdapter::set_resolution_registers_via_io(size_t width, size_t height)
+{
+    dbgln_if(BXVGA_DEBUG, "BochsGraphicsAdapter resolution registers set to - {}x{}", width, height);
+
+    set_register_with_io(VBE_DISPI_INDEX_ENABLE, VBE_DISPI_DISABLED);
+    set_register_with_io(VBE_DISPI_INDEX_XRES, (u16)width);
+    set_register_with_io(VBE_DISPI_INDEX_YRES, (u16)height);
+    set_register_with_io(VBE_DISPI_INDEX_VIRT_WIDTH, (u16)width);
+    set_register_with_io(VBE_DISPI_INDEX_VIRT_HEIGHT, (u16)height * 2);
+    set_register_with_io(VBE_DISPI_INDEX_BPP, 32);
+    set_register_with_io(VBE_DISPI_INDEX_ENABLE, VBE_DISPI_ENABLED | VBE_DISPI_LFB_ENABLED);
+    set_register_with_io(VBE_DISPI_INDEX_BANK, 0);
+}
+
+}
