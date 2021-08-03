@@ -9,7 +9,7 @@
 #include <base/Singleton.h>
 #include <kernel/bus/pci/IDs.h>
 #include <kernel/CommandLine.h>
-#include <kernel/graphics/bochs/GraphicsAdapter.h>
+#include <kernel/graphics/Bochs/GraphicsAdapter.h>
 #include <kernel/graphics/GraphicsManagement.h>
 #include <kernel/graphics/intel/NativeGraphicsAdapter.h>
 #include <kernel/graphics/VGACompatibleAdapter.h>
@@ -17,7 +17,7 @@
 #include <kernel/IO.h>
 #include <kernel/Multiboot.h>
 #include <kernel/Sections.h>
-#include <kernel/VM/AnonymousVMObject.h>
+#include <kernel/vm/AnonymousVMObject.h>
 
 namespace Kernel {
 
@@ -96,6 +96,7 @@ UNMAP_AFTER_INIT bool GraphicsManagement::determine_and_initialize_graphics_devi
     default:
         if (!is_vga_compatible_pci_device(address))
             break;
+
         if (!m_vga_adapter && PCI::is_io_space_enabled(address)) {
             if (multiboot_framebuffer_type == MULTIBOOT_FRAMEBUFFER_TYPE_RGB) {
                 dmesgln("Graphics: Using a preset resolution from the bootloader");
@@ -111,5 +112,79 @@ UNMAP_AFTER_INIT bool GraphicsManagement::determine_and_initialize_graphics_devi
         }
         break;
     }
+    if (!adapter)
+        return false;
+    add_and_configure_adapter(*adapter);
 
+    if (!m_vga_adapter && PCI::is_io_space_enabled(address) && adapter->type() == GraphicsDevice::Type::VGACompatible) {
+        dbgln("Graphics adapter @ {} is operating in VGA mode", address);
+        m_vga_adapter = adapter;
+    }
+    return true;
+}
+
+UNMAP_AFTER_INIT bool GraphicsManagement::initialize()
+{
+
+    /* Explanation on the flow when not requesting to force not creating any 
+     * framebuffer devices:
+     * If the user wants to use a Console instead of the graphical environment,
+     * they doesn't need to request text mode.
+     * Graphical mode might not be accessible on bare-metal hardware because
+     * the bootloader didn't set a framebuffer and we don't have a native driver
+     * to set a framebuffer for it. We don't have VBE modesetting capabilities
+     * in the kernel yet, so what will happen is one of the following situations:
+     * 1. The bootloader didn't specify settings of a pre-set framebuffer. The
+     * kernel has a native driver for a detected display adapter, therefore
+     * the kernel can still set a framebuffer.
+     * 2. The bootloader specified settings of a pre-set framebuffer, and the 
+     * kernel has a native driver for a detected display adapter, therefore
+     * the kernel can still set a framebuffer and change the settings of it.
+     * In that situation, the kernel will simply ignore the Multiboot pre-set 
+     * framebuffer.
+     * 2. The bootloader specified settings of a pre-set framebuffer, and the 
+     * kernel does not have a native driver for a detected display adapter, 
+     * therefore the kernel will use the pre-set framebuffer. Modesetting is not
+     * available in this situation.
+     * 3. The bootloader didn't specify settings of a pre-set framebuffer, and 
+     * the kernel does not have a native driver for a detected display adapter, 
+     * therefore the kernel will try to initialize a VGA text mode console.
+     * In that situation, the kernel will assume that VGA text mode was already
+     * initialized, but will still try to modeset it. No switching to graphical 
+     * environment is allowed in this case.
+     * 
+     * By default, the kernel assumes that no framebuffer was created until it
+     * was proven that there's an existing framebuffer or we can modeset the 
+     * screen resolution to create a framebuffer.
+     * 
+     * If the user requests to force no initialization of framebuffer devices
+     * the same flow above will happen, except that no framebuffer device will
+     * be created, so SystemServer will not try to initialize WindowServer.
+     */
+
+    if (kernel_command_line().is_no_framebuffer_devices_mode()) {
+        dbgln("Forcing no initialization of framebuffer devices");
+    }
+
+    PCI::enumerate([&](const PCI::Address& address, PCI::ID id) {
+        if (!is_vga_compatible_pci_device(address) && !is_display_controller_pci_device(address))
+            return;
+        determine_and_initialize_graphics_device(address, id);
+    });
+
+    if (m_graphics_devices.is_empty()) {
+        dbgln("No graphics adapter was initialized.");
+        return false;
+    }
+    return true;
+}
+
+bool GraphicsManagement::framebuffer_devices_exist() const
+{
+    for (auto& graphics_device : m_graphics_devices) {
+        if (graphics_device.framebuffer_devices_initialized())
+            return true;
+    }
+    return false;
+}
 }
