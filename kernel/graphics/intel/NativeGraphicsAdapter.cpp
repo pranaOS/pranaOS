@@ -5,20 +5,20 @@
 */
 
 // incldues
-#include <kernel/graphics/console/ContiguousFramebufferConsole.h>
+#include <kernel/Graphics/console/ContiguousFramebufferConsole.h>
 #include <kernel/graphics/Definitions.h>
 #include <kernel/graphics/GraphicsManagement.h>
 #include <kernel/graphics/intel/NativeGraphicsAdapter.h>
 #include <kernel/IO.h>
 #include <kernel/PhysicalAddress.h>
 
-namespace Kerenl {
+namespace Kernel {
 
 static constexpr IntelNativeGraphicsAdapter::PLLMaxSettings G35Limits {
     { 20'000'000, 400'000'000 },      
     { 1'400'000'000, 2'800'000'000 }, 
     { 3, 8 },                         
-    { 70, 120 },                     
+    { 70, 120 },                      
     { 10, 20 },                       
     { 5, 9 },                         
     { 5, 80 },                        
@@ -148,4 +148,488 @@ static size_t find_absolute_difference(u64 target_frequency, u64 checked_frequen
     return checked_frequency - target_frequency;
 }
 
+Optional<IntelNativeGraphicsAdapter::PLLSettings> IntelNativeGraphicsAdapter::create_pll_settings(u64 target_frequency, u64 reference_clock, const PLLMaxSettings& limits)
+{
+    IntelNativeGraphicsAdapter::PLLSettings settings;
+    IntelNativeGraphicsAdapter::PLLSettings best_settings;
+    settings.p2 = 10;
+    dbgln_if(INTEL_GRAPHICS_DEBUG, "Check PLL settings for ref clock of {} Hz, for target of {} Hz", reference_clock, target_frequency);
+    u64 best_difference = 0xffffffff;
+    for (settings.n = limits.n.min; settings.n <= limits.n.max; ++settings.n) {
+        for (settings.m1 = limits.m1.max; settings.m1 >= limits.m1.min; --settings.m1) {
+            for (settings.m2 = limits.m2.max; settings.m2 >= limits.m2.min; --settings.m2) {
+                for (settings.p1 = limits.p1.max; settings.p1 >= limits.p1.min; --settings.p1) {
+                    dbgln_if(INTEL_GRAPHICS_DEBUG, "Check PLL settings for {} {} {} {} {}", settings.n, settings.m1, settings.m2, settings.p1, settings.p2);
+                    if (!check_pll_settings(settings, reference_clock, limits))
+                        continue;
+                    auto current_dot_clock = settings.compute_dot_clock(reference_clock);
+                    if (current_dot_clock == target_frequency)
+                        return settings;
+                    auto difference = find_absolute_difference(target_frequency, current_dot_clock);
+                    if (difference < best_difference && (current_dot_clock > target_frequency)) {
+                        best_settings = settings;
+                        best_difference = difference;
+                    }
+                }
+            }
+        }
+    }
+    if (best_settings.is_valid())
+        return best_settings;
+    return {};
+}
+
+IntelNativeGraphicsAdapter::IntelNativeGraphicsAdapter(PCI::Address address)
+    : VGACompatibleAdapter(address)
+    , m_registers(PCI::get_BAR0(address) & 0xfffffffc)
+    , m_framebuffer_addr(PCI::get_BAR2(address) & 0xfffffffc)
+{
+    dbgln_if(INTEL_GRAPHICS_DEBUG, "Intel Native Graphics Adapter @ {}", address);
+    auto bar0_space_size = PCI::get_BAR_space_size(address, 0);
+    VERIFY(bar0_space_size == 0x80000);
+    dmesgln("Intel Native Graphics Adapter @ {}, MMIO @ {}, space size is {:x} bytes", address, PhysicalAddress(PCI::get_BAR0(address)), bar0_space_size);
+    dmesgln("Intel Native Graphics Adapter @ {}, framebuffer @ {}", address, PhysicalAddress(PCI::get_BAR2(address)));
+    m_registers_region = MM.allocate_kernel_region(PhysicalAddress(PCI::get_BAR0(address)).page_base(), bar0_space_size, "Intel Native Graphics Registers", Region::Access::Read | Region::Access::Write);
+    PCI::enable_bus_mastering(address);
+    {
+        ScopedSpinLock control_lock(m_control_lock);
+        set_gmbus_default_rate();
+        set_gmbus_pin_pair(GMBusPinPair::DedicatedAnalog);
+    }
+    gmbus_read_edid();
+
+    auto modesetting = calculate_modesetting_from_edid(m_crt_edid, 0);
+    dmesgln("Intel Native Graphics Adapter @ {}, preferred resolution is {:d}x{:d}", pci_address(), modesetting.horizontal.active, modesetting.vertical.active);
+    set_crt_resolution(modesetting.horizontal.active, modesetting.vertical.active);
+    auto framebuffer_address = PhysicalAddress(PCI::get_BAR2(pci_address()) & 0xfffffff0);
+    VERIFY(!framebuffer_address.is_null());
+    VERIFY(m_framebuffer_pitch != 0);
+    VERIFY(m_framebuffer_height != 0);
+    VERIFY(m_framebuffer_width != 0);
+    m_framebuffer_console = Graphics::ContiguousFramebufferConsole::initialize(framebuffer_address, m_framebuffer_width, m_framebuffer_height, m_framebuffer_pitch);
+
+    GraphicsManagement::the().m_console = m_framebuffer_console;
+}
+
+void IntelNativeGraphicsAdapter::enable_vga_plane()
+{
+    VERIFY(m_control_lock.is_locked());
+    VERIFY(m_modeset_lock.is_locked());
+}
+
+[[maybe_unused]] static inline const char* convert_register_index_to_string(IntelGraphics::RegisterIndex index)
+{
+    switch (index) {
+    case IntelGraphics::RegisterIndex::PipeAConf:
+        return "PipeAConf";
+    case IntelGraphics::RegisterIndex::PipeBConf:
+        return "PipeBConf";
+    case IntelGraphics::RegisterIndex::GMBusData:
+        return "GMBusData";
+    case IntelGraphics::RegisterIndex::GMBusStatus:
+        return "GMBusStatus";
+    case IntelGraphics::RegisterIndex::GMBusCommand:
+        return "GMBusCommand";
+    case IntelGraphics::RegisterIndex::GMBusClock:
+        return "GMBusClock";
+    case IntelGraphics::RegisterIndex::DisplayPlaneAControl:
+        return "DisplayPlaneAControl";
+    case IntelGraphics::RegisterIndex::DisplayPlaneALinearOffset:
+        return "DisplayPlaneALinearOffset";
+    case IntelGraphics::RegisterIndex::DisplayPlaneAStride:
+        return "DisplayPlaneAStride";
+    case IntelGraphics::RegisterIndex::DisplayPlaneASurface:
+        return "DisplayPlaneASurface";
+    case IntelGraphics::RegisterIndex::DPLLDivisorA0:
+        return "DPLLDivisorA0";
+    case IntelGraphics::RegisterIndex::DPLLDivisorA1:
+        return "DPLLDivisorA1";
+    case IntelGraphics::RegisterIndex::DPLLControlA:
+        return "DPLLControlA";
+    case IntelGraphics::RegisterIndex::DPLLControlB:
+        return "DPLLControlB";
+    case IntelGraphics::RegisterIndex::DPLLMultiplierA:
+        return "DPLLMultiplierA";
+    case IntelGraphics::RegisterIndex::HTotalA:
+        return "HTotalA";
+    case IntelGraphics::RegisterIndex::HBlankA:
+        return "HBlankA";
+    case IntelGraphics::RegisterIndex::HSyncA:
+        return "HSyncA";
+    case IntelGraphics::RegisterIndex::VTotalA:
+        return "VTotalA";
+    case IntelGraphics::RegisterIndex::VBlankA:
+        return "VBlankA";
+    case IntelGraphics::RegisterIndex::VSyncA:
+        return "VSyncA";
+    case IntelGraphics::RegisterIndex::PipeASource:
+        return "PipeASource";
+    case IntelGraphics::RegisterIndex::AnalogDisplayPort:
+        return "AnalogDisplayPort";
+    case IntelGraphics::RegisterIndex::VGADisplayPlaneControl:
+        return "VGADisplayPlaneControl";
+    default:
+        VERIFY_NOT_REACHED();
+    }
+}
+
+void IntelNativeGraphicsAdapter::write_to_register(IntelGraphics::RegisterIndex index, u32 value) const
+{
+    VERIFY(m_control_lock.is_locked());
+    VERIFY(m_registers_region);
+    ScopedSpinLock lock(m_registers_lock);
+    dbgln_if(INTEL_GRAPHICS_DEBUG, "Intel Graphics {}: Write to {} value of {:x}", pci_address(), convert_register_index_to_string(index), value);
+    auto* reg = (volatile u32*)m_registers_region->vaddr().offset(index).as_ptr();
+    *reg = value;
+}
+u32 IntelNativeGraphicsAdapter::read_from_register(IntelGraphics::RegisterIndex index) const
+{
+    VERIFY(m_control_lock.is_locked());
+    VERIFY(m_registers_region);
+    ScopedSpinLock lock(m_registers_lock);
+    auto* reg = (volatile u32*)m_registers_region->vaddr().offset(index).as_ptr();
+    u32 value = *reg;
+    dbgln_if(INTEL_GRAPHICS_DEBUG, "Intel Graphics {}: Read from {} value of {:x}", pci_address(), convert_register_index_to_string(index), value);
+    return value;
+}
+
+bool IntelNativeGraphicsAdapter::pipe_a_enabled() const
+{
+    VERIFY(m_control_lock.is_locked());
+    return read_from_register(IntelGraphics::RegisterIndex::PipeAConf) & (1 << 30);
+}
+
+bool IntelNativeGraphicsAdapter::pipe_b_enabled() const
+{
+    VERIFY(m_control_lock.is_locked());
+    return read_from_register(IntelGraphics::RegisterIndex::PipeBConf) & (1 << 30);
+}
+
+bool IntelNativeGraphicsAdapter::gmbus_wait_for(GMBusStatus desired_status, Optional<size_t> milliseconds_timeout)
+{
+    VERIFY(m_control_lock.is_locked());
+    size_t milliseconds_passed = 0;
+    while (1) {
+        if (milliseconds_timeout.has_value() && milliseconds_timeout.value() < milliseconds_passed)
+            return false;
+        full_memory_barrier();
+        u32 status = read_from_register(IntelGraphics::RegisterIndex::GMBusStatus);
+        full_memory_barrier();
+        VERIFY(!(status & (1 << 10)));
+        switch (desired_status) {
+        case GMBusStatus::HardwareReady:
+            if (status & (1 << 11))
+                return true;
+            break;
+        case GMBusStatus::TransactionCompletion:
+            if (status & (1 << 14))
+                return true;
+            break;
+        default:
+            VERIFY_NOT_REACHED();
+        }
+        IO::delay(1000);
+        milliseconds_passed++;
+    }
+}
+
+void IntelNativeGraphicsAdapter::gmbus_write(unsigned address, u32 byte)
+{
+    VERIFY(m_control_lock.is_locked());
+    VERIFY(address < 256);
+    full_memory_barrier();
+    write_to_register(IntelGraphics::RegisterIndex::GMBusData, byte);
+    full_memory_barrier();
+    write_to_register(IntelGraphics::RegisterIndex::GMBusCommand, ((address << 1) | (1 << 16) | (GMBusCycle::Wait << 25) | (1 << 30)));
+    full_memory_barrier();
+    gmbus_wait_for(GMBusStatus::TransactionCompletion, {});
+}
+void IntelNativeGraphicsAdapter::gmbus_read(unsigned address, u8* buf, size_t length)
+{
+    VERIFY(address < 256);
+    VERIFY(m_control_lock.is_locked());
+    size_t nread = 0;
+    auto read_set = [&] {
+        full_memory_barrier();
+        u32 data = read_from_register(IntelGraphics::RegisterIndex::GMBusData);
+        full_memory_barrier();
+        for (size_t index = 0; index < 4; index++) {
+            if (nread == length)
+                break;
+            buf[nread] = (data >> (8 * index)) & 0xFF;
+            nread++;
+        }
+    };
+
+    full_memory_barrier();
+    write_to_register(IntelGraphics::RegisterIndex::GMBusCommand, (1 | (address << 1) | (length << 16) | (GMBusCycle::Wait << 25) | (1 << 30)));
+    full_memory_barrier();
+    while (nread < length) {
+        gmbus_wait_for(GMBusStatus::HardwareReady, {});
+        read_set();
+    }
+    gmbus_wait_for(GMBusStatus::TransactionCompletion, {});
+}
+
+void IntelNativeGraphicsAdapter::gmbus_read_edid()
+{
+    ScopedSpinLock control_lock(m_control_lock);
+    gmbus_write(DDC2_I2C_ADDRESS, 0);
+    gmbus_read(DDC2_I2C_ADDRESS, (u8*)&m_crt_edid, sizeof(Graphics::VideoInfoBlock));
+}
+
+bool IntelNativeGraphicsAdapter::is_resolution_valid(size_t, size_t)
+{
+    VERIFY(m_control_lock.is_locked());
+    VERIFY(m_modeset_lock.is_locked());
+    return true;
+}
+
+void IntelNativeGraphicsAdapter::disable_output()
+{
+    VERIFY(m_control_lock.is_locked());
+    disable_dac_output();
+    disable_all_planes();
+    disable_pipe_a();
+    disable_pipe_b();
+    disable_vga_emulation();
+    disable_dpll();
+}
+
+void IntelNativeGraphicsAdapter::enable_output(PhysicalAddress fb_address, size_t width)
+{
+    VERIFY(m_control_lock.is_locked());
+    VERIFY(!pipe_a_enabled());
+
+    enable_pipe_a();
+    enable_primary_plane(fb_address, width);
+    enable_dac_output();
+}
+
+bool IntelNativeGraphicsAdapter::set_crt_resolution(size_t width, size_t height)
+{
+    ScopedSpinLock control_lock(m_control_lock);
+    ScopedSpinLock modeset_lock(m_modeset_lock);
+    if (!is_resolution_valid(width, height)) {
+        return false;
+    }
+    auto modesetting = calculate_modesetting_from_edid(m_crt_edid, 0);
+
+    disable_output();
+
+    auto dac_multiplier = compute_dac_multiplier(modesetting.pixel_clock_in_khz);
+    auto pll_settings = create_pll_settings((1000 * modesetting.pixel_clock_in_khz * dac_multiplier), 96'000'000, G35Limits);
+    if (!pll_settings.has_value())
+        VERIFY_NOT_REACHED();
+    auto settings = pll_settings.value();
+    dbgln_if(INTEL_GRAPHICS_DEBUG, "PLL settings for {} {} {} {} {}", settings.n, settings.m1, settings.m2, settings.p1, settings.p2);
+    enable_dpll_without_vga(pll_settings.value(), dac_multiplier);
+    set_display_timings(modesetting);
+    auto address = PhysicalAddress(PCI::get_BAR2(pci_address()) & 0xfffffff0);
+    VERIFY(!address.is_null());
+    enable_output(address, width);
+
+    m_framebuffer_width = width;
+    m_framebuffer_height = height;
+    m_framebuffer_pitch = width * 4;
+
+    return true;
+}
+
+void IntelNativeGraphicsAdapter::set_display_timings(const Graphics::Modesetting& modesetting)
+{
+    VERIFY(m_control_lock.is_locked());
+    VERIFY(m_modeset_lock.is_locked());
+    VERIFY(!(read_from_register(IntelGraphics::RegisterIndex::PipeAConf) & (1 << 31)));
+    VERIFY(!(read_from_register(IntelGraphics::RegisterIndex::PipeAConf) & (1 << 30)));
+
+    dbgln_if(INTEL_GRAPHICS_DEBUG, "htotal - {}, {}", (modesetting.horizontal.active - 1), (modesetting.horizontal.total - 1));
+    write_to_register(IntelGraphics::RegisterIndex::HTotalA, (modesetting.horizontal.active - 1) | (modesetting.horizontal.total - 1) << 16);
+
+    dbgln_if(INTEL_GRAPHICS_DEBUG, "hblank - {}, {}", (modesetting.horizontal.blanking_start() - 1), (modesetting.horizontal.blanking_end() - 1));
+    write_to_register(IntelGraphics::RegisterIndex::HBlankA, (modesetting.horizontal.blanking_start() - 1) | (modesetting.horizontal.blanking_end() - 1) << 16);
+
+    dbgln_if(INTEL_GRAPHICS_DEBUG, "hsync - {}, {}", (modesetting.horizontal.sync_start - 1), (modesetting.horizontal.sync_end - 1));
+    write_to_register(IntelGraphics::RegisterIndex::HSyncA, (modesetting.horizontal.sync_start - 1) | (modesetting.horizontal.sync_end - 1) << 16);
+
+    dbgln_if(INTEL_GRAPHICS_DEBUG, "vtotal - {}, {}", (modesetting.vertical.active - 1), (modesetting.vertical.total - 1));
+    write_to_register(IntelGraphics::RegisterIndex::VTotalA, (modesetting.vertical.active - 1) | (modesetting.vertical.total - 1) << 16);
+
+    dbgln_if(INTEL_GRAPHICS_DEBUG, "vblank - {}, {}", (modesetting.vertical.blanking_start() - 1), (modesetting.vertical.blanking_end() - 1));
+    write_to_register(IntelGraphics::RegisterIndex::VBlankA, (modesetting.vertical.blanking_start() - 1) | (modesetting.vertical.blanking_end() - 1) << 16);
+
+    dbgln_if(INTEL_GRAPHICS_DEBUG, "vsync - {}, {}", (modesetting.vertical.sync_start - 1), (modesetting.vertical.sync_end - 1));
+    write_to_register(IntelGraphics::RegisterIndex::VSyncA, (modesetting.vertical.sync_start - 1) | (modesetting.vertical.sync_end - 1) << 16);
+
+    dbgln_if(INTEL_GRAPHICS_DEBUG, "sourceSize - {}, {}", (modesetting.vertical.active - 1), (modesetting.horizontal.active - 1));
+    write_to_register(IntelGraphics::RegisterIndex::PipeASource, (modesetting.vertical.active - 1) | (modesetting.horizontal.active - 1) << 16);
+
+    IO::delay(200);
+}
+
+bool IntelNativeGraphicsAdapter::wait_for_enabled_pipe_a(size_t milliseconds_timeout) const
+{
+    size_t current_time = 0;
+    while (current_time < milliseconds_timeout) {
+        if (pipe_a_enabled())
+            return true;
+        IO::delay(1000);
+        current_time++;
+    }
+    return false;
+}
+bool IntelNativeGraphicsAdapter::wait_for_disabled_pipe_a(size_t milliseconds_timeout) const
+{
+    size_t current_time = 0;
+    while (current_time < milliseconds_timeout) {
+        if (!pipe_a_enabled())
+            return true;
+        IO::delay(1000);
+        current_time++;
+    }
+    return false;
+}
+
+bool IntelNativeGraphicsAdapter::wait_for_disabled_pipe_b(size_t milliseconds_timeout) const
+{
+    size_t current_time = 0;
+    while (current_time < milliseconds_timeout) {
+        if (!pipe_b_enabled())
+            return true;
+        IO::delay(1000);
+        current_time++;
+    }
+    return false;
+}
+
+void IntelNativeGraphicsAdapter::disable_dpll()
+{
+    VERIFY(m_control_lock.is_locked());
+    VERIFY(m_modeset_lock.is_locked());
+    write_to_register(IntelGraphics::RegisterIndex::DPLLControlA, read_from_register(IntelGraphics::RegisterIndex::DPLLControlA) & ~0x80000000);
+    write_to_register(IntelGraphics::RegisterIndex::DPLLControlB, read_from_register(IntelGraphics::RegisterIndex::DPLLControlB) & ~0x80000000);
+}
+
+void IntelNativeGraphicsAdapter::disable_pipe_a()
+{
+    VERIFY(m_control_lock.is_locked());
+    VERIFY(m_modeset_lock.is_locked());
+    write_to_register(IntelGraphics::RegisterIndex::PipeAConf, read_from_register(IntelGraphics::RegisterIndex::PipeAConf) & ~0x80000000);
+    dbgln_if(INTEL_GRAPHICS_DEBUG, "Disabling Pipe A");
+    wait_for_disabled_pipe_a(100);
+    dbgln_if(INTEL_GRAPHICS_DEBUG, "Disabling Pipe A - done.");
+}
+
+void IntelNativeGraphicsAdapter::disable_pipe_b()
+{
+    VERIFY(m_control_lock.is_locked());
+    VERIFY(m_modeset_lock.is_locked());
+    write_to_register(IntelGraphics::RegisterIndex::PipeAConf, read_from_register(IntelGraphics::RegisterIndex::PipeBConf) & ~0x80000000);
+    dbgln_if(INTEL_GRAPHICS_DEBUG, "Disabling Pipe B");
+    wait_for_disabled_pipe_b(100);
+    dbgln_if(INTEL_GRAPHICS_DEBUG, "Disabling Pipe B - done.");
+}
+
+void IntelNativeGraphicsAdapter::set_gmbus_default_rate()
+{
+
+    VERIFY(m_control_lock.is_locked());
+    write_to_register(IntelGraphics::RegisterIndex::GMBusClock, read_from_register(IntelGraphics::RegisterIndex::GMBusClock) & ~(0b111 << 8));
+}
+
+void IntelNativeGraphicsAdapter::enable_pipe_a()
+{
+    VERIFY(m_control_lock.is_locked());
+    VERIFY(m_modeset_lock.is_locked());
+    VERIFY(!(read_from_register(IntelGraphics::RegisterIndex::PipeAConf) & (1 << 31)));
+    VERIFY(!(read_from_register(IntelGraphics::RegisterIndex::PipeAConf) & (1 << 30)));
+    write_to_register(IntelGraphics::RegisterIndex::PipeAConf, read_from_register(IntelGraphics::RegisterIndex::PipeAConf) | 0x80000000);
+    dbgln_if(INTEL_GRAPHICS_DEBUG, "enabling Pipe A");
+    wait_for_enabled_pipe_a(100);
+    dbgln_if(INTEL_GRAPHICS_DEBUG, "enabling Pipe A - done.");
+}
+
+void IntelNativeGraphicsAdapter::enable_primary_plane(PhysicalAddress fb_address, size_t width)
+{
+    VERIFY(m_control_lock.is_locked());
+    VERIFY(m_modeset_lock.is_locked());
+    VERIFY(((width * 4) % 64 == 0));
+
+    write_to_register(IntelGraphics::RegisterIndex::DisplayPlaneAStride, width * 4);
+    write_to_register(IntelGraphics::RegisterIndex::DisplayPlaneALinearOffset, 0);
+    write_to_register(IntelGraphics::RegisterIndex::DisplayPlaneASurface, fb_address.get());
+
+    write_to_register(IntelGraphics::RegisterIndex::DisplayPlaneAControl, (read_from_register(IntelGraphics::RegisterIndex::DisplayPlaneAControl) & (~(0b1111 << 26))) | (0b0110 << 26) | (1 << 31));
+}
+
+void IntelNativeGraphicsAdapter::set_dpll_registers(const PLLSettings& settings)
+{
+    VERIFY(m_control_lock.is_locked());
+    VERIFY(m_modeset_lock.is_locked());
+    write_to_register(IntelGraphics::RegisterIndex::DPLLDivisorA0, (settings.m2 - 2) | ((settings.m1 - 2) << 8) | ((settings.n - 2) << 16));
+    write_to_register(IntelGraphics::RegisterIndex::DPLLDivisorA1, (settings.m2 - 2) | ((settings.m1 - 2) << 8) | ((settings.n - 2) << 16));
+
+    write_to_register(IntelGraphics::RegisterIndex::DPLLControlA, read_from_register(IntelGraphics::RegisterIndex::DPLLControlA) & ~0x80000000);
+}
+
+void IntelNativeGraphicsAdapter::enable_dpll_without_vga(const PLLSettings& settings, size_t dac_multiplier)
+{
+    VERIFY(m_control_lock.is_locked());
+    VERIFY(m_modeset_lock.is_locked());
+
+    set_dpll_registers(settings);
+
+    IO::delay(200);
+
+    write_to_register(IntelGraphics::RegisterIndex::DPLLControlA, (6 << 9) | (settings.p1) << 16 | (1 << 26) | (1 << 28) | (1 << 31));
+    write_to_register(IntelGraphics::RegisterIndex::DPLLMultiplierA, (dac_multiplier - 1) | ((dac_multiplier - 1) << 8));
+
+    IO::delay(200);
+    VERIFY(read_from_register(IntelGraphics::RegisterIndex::DPLLControlA) & (1 << 31));
+}
+
+void IntelNativeGraphicsAdapter::set_gmbus_pin_pair(GMBusPinPair pin_pair)
+{
+    VERIFY(m_control_lock.is_locked());
+    write_to_register(IntelGraphics::RegisterIndex::GMBusClock, (read_from_register(IntelGraphics::RegisterIndex::GMBusClock) & (~0b111)) | (pin_pair & 0b111));
+}
+
+void IntelNativeGraphicsAdapter::disable_dac_output()
+{
+    VERIFY(m_control_lock.is_locked());
+    VERIFY(m_modeset_lock.is_locked());
+    write_to_register(IntelGraphics::RegisterIndex::AnalogDisplayPort, 0b11 << 10);
+}
+
+void IntelNativeGraphicsAdapter::enable_dac_output()
+{
+    VERIFY(m_control_lock.is_locked());
+    VERIFY(m_modeset_lock.is_locked());
+    write_to_register(IntelGraphics::RegisterIndex::AnalogDisplayPort, (read_from_register(IntelGraphics::RegisterIndex::AnalogDisplayPort) & (~(0b11 << 10))) | 0x80000000);
+}
+
+void IntelNativeGraphicsAdapter::disable_vga_emulation()
+{
+    VERIFY(m_control_lock.is_locked());
+    VERIFY(m_modeset_lock.is_locked());
+    write_to_register(IntelGraphics::RegisterIndex::VGADisplayPlaneControl, (read_from_register(IntelGraphics::RegisterIndex::VGADisplayPlaneControl) & (~(1 << 30))) | 0x80000000);
+}
+
+void IntelNativeGraphicsAdapter::disable_all_planes()
+{
+    VERIFY(m_control_lock.is_locked());
+    VERIFY(m_modeset_lock.is_locked());
+    write_to_register(IntelGraphics::RegisterIndex::DisplayPlaneAControl, read_from_register(IntelGraphics::RegisterIndex::DisplayPlaneAControl) & ~(1 << 31));
+}
+
+void IntelNativeGraphicsAdapter::initialize_framebuffer_devices()
+{
+    auto address = PhysicalAddress(PCI::get_BAR2(pci_address()) & 0xfffffff0);
+    VERIFY(!address.is_null());
+    VERIFY(m_framebuffer_pitch != 0);
+    VERIFY(m_framebuffer_height != 0);
+    VERIFY(m_framebuffer_width != 0);
+    m_framebuffer_device = FramebufferDevice::create(*this, 0, address, m_framebuffer_width, m_framebuffer_height, m_framebuffer_pitch);
+    m_framebuffer_device->initialize();
+}
 }
