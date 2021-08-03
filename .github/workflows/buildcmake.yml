@@ -110,10 +110,10 @@ jobs:
         # about 0.25 GB, so 1.5 GB (0.5GB after compression) should be plenty, all while comfortly fitting in the cache.
         ccache -M 1500M
         ccache -s
-    - name: Create build directory
-      run: |
-        mkdir -p ${{ github.workspace }}/Build
-        mkdir -p ${{ github.workspace }}/Build/UCD
+    # - name: Create build directory
+    #   run: |
+    #     mkdir -p ${{ github.workspace }}/Build
+    #     mkdir -p ${{ github.workspace }}/Build/UCD
     - name: UnicodeData cache
       # TODO: Change the version to the released version when https://github.com/actions/cache/pull/489 (or 571) is merged.
       uses: actions/cache@03e00da99d75a2204924908e1cca7902cafce66b
@@ -221,10 +221,10 @@ jobs:
 
     # === PREPARE FOR BUILDING ===
 
-    - name: Create build directory
-      run: |
-        mkdir -p ${{ github.workspace }}/Meta/Lagom/Build
-        mkdir -p ${{ github.workspace }}/Meta/Lagom/Build/UCD
+    # - name: Create build directory
+    #   run: |
+    #     mkdir -p ${{ github.workspace }}/Meta/Lagom/Build
+    #     mkdir -p ${{ github.workspace }}/Meta/Lagom/Build/UCD
 
     - name: UnicodeData cache
       # TODO: Change the version to the released version when https://github.com/actions/cache/pull/489 (or 571) is merged.
