@@ -14,7 +14,7 @@ namespace Kernel::Graphics {
 
 UNMAP_AFTER_INIT NonnullRefPtr<TextModeConsole> TextModeConsole::initialize(const VGACompatibleAdapter& adapter)
 {
-    return adpot_ref(*new TextModeConsole(adapter));
+    return adopt_ref(*new TextModeConsole(adapter));
 }
 
 UNMAP_AFTER_INIT TextModeConsole::TextModeConsole(const VGACompatibleAdapter& adapter)
@@ -98,6 +98,20 @@ void TextModeConsole::set_cursor(size_t x, size_t y)
     IO::out8(0x3d4, 0x0f);
     IO::out8(0x3d5, LSB(value));
 }
+void TextModeConsole::hide_cursor()
+{
+    ScopedSpinLock main_lock(GraphicsManagement::the().main_vga_lock());
+    ScopedSpinLock lock(m_vga_lock);
+    IO::out8(0x3D4, 0xA);
+    IO::out8(0x3D5, 0x20);
+}
+void TextModeConsole::show_cursor()
+{
+    ScopedSpinLock main_lock(GraphicsManagement::the().main_vga_lock());
+    ScopedSpinLock lock(m_vga_lock);
+    IO::out8(0x3D4, 0xA);
+    IO::out8(0x3D5, 0x20);
+}
 
 void TextModeConsole::clear(size_t x, size_t y, size_t length)
 {
@@ -107,11 +121,59 @@ void TextModeConsole::clear(size_t x, size_t y, size_t length)
         buf[index] = 0x0720;
     }
 }
+void TextModeConsole::write(size_t x, size_t y, char ch, bool critical)
+{
+    write(x, y, ch, m_default_background_color, m_default_foreground_color, critical);
+}
+
+void TextModeConsole::write(size_t x, size_t y, char ch, Color background, Color foreground, bool critical)
+{
+    ScopedSpinLock lock(m_vga_lock);
+    if (critical && (ch == '\r' || ch == '\n')) {
+
+        ScopedSpinLock main_lock(GraphicsManagement::the().main_vga_lock());
+        IO::out8(0x3D4, 0xA);
+        IO::out8(0x3D5, 0x20);
+
+        m_x = 0;
+        m_y += 1;
+        if (m_y >= max_row())
+            m_y = 0;
+        return;
+    }
+
+    auto* buf = (u16*)(m_current_vga_window + (x * 2) + (y * width() * 2));
+    *buf = foreground << 8 | background << 12 | ch;
+    m_x = x + 1;
+
+    if (m_x >= max_column()) {
+        m_x = 0;
+        m_y = y + 1;
+        if (m_y >= max_row())
+            m_y = 0;
+    }
+}
 
 void TextModeConsole::clear_vga_row(u16 row)
 {
     clear(row * width(), width(), width());
 }
 
-    
+void TextModeConsole::set_vga_start_row(u16 row)
+{
+    ScopedSpinLock lock(m_vga_lock);
+    m_vga_start_row = row;
+    m_current_vga_start_address = row * width();
+    m_current_vga_window = m_current_vga_window + row * width() * bytes_per_base_glyph();
+    IO::out8(0x3d4, 0x0c);
+    IO::out8(0x3d5, MSB(m_current_vga_start_address));
+    IO::out8(0x3d4, 0x0d);
+    IO::out8(0x3d5, LSB(m_current_vga_start_address));
+}
+
+void TextModeConsole::write(char ch, bool critical)
+{
+    write(m_x, m_y, ch, critical);
+}
+
 }
