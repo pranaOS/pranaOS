@@ -74,7 +74,7 @@ void IOAPIC::map_interrupt_redirection(u8 interrupt_vector)
             trigger_level_mode = false;
             break;
         case 2:
-            VERIFY_NOT_REACHED();
+            VERIFY_NOT_REACHED(); 
         case 3:
             trigger_level_mode = true;
             break;
@@ -133,7 +133,6 @@ void IOAPIC::map_isa_interrupts()
         }
 
         bool trigger_level_mode = false;
-
         switch (((redirection_override.flags() >> 2) & 0b11)) {
         case 0:
             trigger_level_mode = false;
@@ -195,5 +194,117 @@ void IOAPIC::mask_all_redirection_entries() const
         mask_redirection_entry(index);
 }
 
+void IOAPIC::mask_redirection_entry(u8 index) const
+{
+    VERIFY((u32)index < m_redirection_entries_count);
+    u32 redirection_entry = read_register((index << 1) + IOAPIC_REDIRECTION_ENTRY_OFFSET);
+    if (redirection_entry & (1 << 16))
+        return;
+    write_register((index << 1) + IOAPIC_REDIRECTION_ENTRY_OFFSET, redirection_entry | (1 << 16));
+}
+
+bool IOAPIC::is_redirection_entry_masked(u8 index) const
+{
+    VERIFY((u32)index < m_redirection_entries_count);
+    return (read_register((index << 1) + IOAPIC_REDIRECTION_ENTRY_OFFSET) & (1 << 16)) != 0;
+}
+
+void IOAPIC::unmask_redirection_entry(u8 index) const
+{
+    VERIFY((u32)index < m_redirection_entries_count);
+    u32 redirection_entry = read_register((index << 1) + IOAPIC_REDIRECTION_ENTRY_OFFSET);
+    if (!(redirection_entry & (1 << 16)))
+        return;
+    write_register((index << 1) + IOAPIC_REDIRECTION_ENTRY_OFFSET, redirection_entry & ~(1 << 16));
+}
+
+bool IOAPIC::is_vector_enabled(u8 interrupt_vector) const
+{
+    InterruptDisabler disabler;
+    return is_redirection_entry_masked(interrupt_vector);
+}
+
+u8 IOAPIC::read_redirection_entry_vector(u8 index) const
+{
+    VERIFY((u32)index < m_redirection_entries_count);
+    return (read_register((index << 1) + IOAPIC_REDIRECTION_ENTRY_OFFSET) & 0xFF);
+}
+
+Optional<int> IOAPIC::find_redirection_entry_by_vector(u8 vector) const
+{
+    InterruptDisabler disabler;
+    for (size_t index = 0; index < m_redirection_entries_count; index++) {
+        if (read_redirection_entry_vector(index) == (InterruptManagement::acquire_mapped_interrupt_number(vector) + IRQ_VECTOR_BASE))
+            return index;
+    }
+    return {};
+}
+
+void IOAPIC::disable(const GenericInterruptHandler& handler)
+{
+    InterruptDisabler disabler;
+    VERIFY(!is_hard_disabled());
+    u8 interrupt_vector = handler.interrupt_number();
+    VERIFY(interrupt_vector >= gsi_base() && interrupt_vector < interrupt_vectors_count());
+    auto found_index = find_redirection_entry_by_vector(interrupt_vector);
+    if (!found_index.has_value()) {
+        map_interrupt_redirection(interrupt_vector);
+        found_index = find_redirection_entry_by_vector(interrupt_vector);
+    }
+    VERIFY(found_index.has_value());
+    mask_redirection_entry(found_index.value());
+}
+
+void IOAPIC::enable(const GenericInterruptHandler& handler)
+{
+    InterruptDisabler disabler;
+    VERIFY(!is_hard_disabled());
+    u8 interrupt_vector = handler.interrupt_number();
+    VERIFY(interrupt_vector >= gsi_base() && interrupt_vector < interrupt_vectors_count());
+    auto found_index = find_redirection_entry_by_vector(interrupt_vector);
+    if (!found_index.has_value()) {
+        map_interrupt_redirection(interrupt_vector);
+        found_index = find_redirection_entry_by_vector(interrupt_vector);
+    }
+    VERIFY(found_index.has_value());
+    unmask_redirection_entry(found_index.value());
+}
+
+void IOAPIC::eoi(const GenericInterruptHandler& handler) const
+{
+    InterruptDisabler disabler;
+    VERIFY(!is_hard_disabled());
+    VERIFY(handler.interrupt_number() >= gsi_base() && handler.interrupt_number() < interrupt_vectors_count());
+    VERIFY(handler.type() != HandlerType::SpuriousInterruptHandler);
+    APIC::the().eoi();
+}
+
+u16 IOAPIC::get_isr() const
+{
+    InterruptDisabler disabler;
+    VERIFY_NOT_REACHED();
+}
+
+u16 IOAPIC::get_irr() const
+{
+    InterruptDisabler disabler;
+    VERIFY_NOT_REACHED();
+}
+
+void IOAPIC::write_register(u32 index, u32 value) const
+{
+    InterruptDisabler disabler;
+    m_regs->select = index;
+    m_regs->window = value;
+
+    dbgln_if(IOAPIC_DEBUG, "IOAPIC Writing, Value {:#x} @ offset {:#x}", (u32)m_regs->window, (u32)m_regs->select);
+}
+u32 IOAPIC::read_register(u32 index) const
+{
+    InterruptDisabler disabler;
+    m_regs->select = index;
+    dbgln_if(IOAPIC_DEBUG, "IOAPIC Reading, Value {:#x} @ offset {:#x}", (u32)m_regs->window, (u32)m_regs->select);
+    return m_regs->window;
+}
 
 }
