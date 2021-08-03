@@ -61,8 +61,6 @@ jobs:
             ${{ runner.os }}-pranaOS-toolchain-${{ hashFiles('~/llvm-hash.txt') }}-
             ${{ runner.os }}-pranaOS-toolchain-${{ hashFiles('~/llvm-hash.txt') }}-${{ hashFiles('**/Toolchain/buildtoolchain.sh', '**/Toolchain/pranaOS-binutils-2.32.patch') }}
 
-      - name: Build the toolchain
-        run: Toolchain/buildtoolchain.sh build
 
       - name: Configure dependencies
         run: Scripts/configure.sh
@@ -117,8 +115,6 @@ jobs:
             ${{ runner.os }}-pranaOS-toolchain-${{ hashFiles('~/llvm-hash.txt') }}-
             ${{ runner.os }}-pranaOS-toolchain-${{ hashFiles('~/llvm-hash.txt') }}-${{ hashFiles('**/Toolchain/buildtoolchain.sh', '**/Toolchain/pranaOS-binutils-2.32.patch') }}
 
-      - name: Build the toolchain
-        run: Toolchain/buildtoolchain.sh build
 
       - name: Configure dependencies
         run: Scripts/configure.sh
