@@ -64,6 +64,61 @@ public:
             return m_scanouts[m_default_scanout.value().value()].console;
         return {};
     }
+    auto& display_info(ScanoutID scanout) const
+    {
+        VERIFY(scanout.value() < VIRTIO_GPU_MAX_SCANOUTS);
+        return m_scanouts[scanout.value()].display_info;
+    }
+    auto& display_info(ScanoutID scanout)
+    {
+        VERIFY(scanout.value() < VIRTIO_GPU_MAX_SCANOUTS);
+        return m_scanouts[scanout.value()].display_info;
+    }
 
+    void flush_dirty_rectangle(ScanoutID, Protocol::Rect const& dirty_rect, ResourceID);
+
+private:
+    struct Scanout {
+        RefPtr<FrameBufferDevice> framebuffer;
+        RefPtr<Console> console;
+        Protocol::DisplayInfoResponse::Display display_info {};
     };
+
+    virtual bool handle_device_config_change() override;
+    virtual void handle_queue_update(u16 queue_index) override;
+    u32 get_pending_events();
+    void clear_pending_events(u32 event_bitmask);
+
+    auto& operation_lock() { return m_operation_lock; }
+    ResourceID allocate_resource_id();
+
+    PhysicalAddress start_of_scratch_space() const { return m_scratch_space->physical_page(0)->paddr(); }
+    AK::BinaryBufferWriter create_scratchspace_writer()
+    {
+        return { Bytes(m_scratch_space->vaddr().as_ptr(), m_scratch_space->size()) };
+    }
+    void synchronous_virtio_gpu_command(PhysicalAddress buffer_start, size_t request_size, size_t response_size);
+    void populate_virtio_gpu_request_header(Protocol::ControlHeader& header, Protocol::CommandType ctrl_type, u32 flags = 0);
+
+    void query_display_information();
+    ResourceID create_2d_resource(Protocol::Rect rect);
+    void delete_resource(ResourceID resource_id);
+    void ensure_backing_storage(Region const& region, size_t buffer_offset, size_t buffer_length, ResourceID resource_id);
+    void detach_backing_storage(ResourceID resource_id);
+    void set_scanout_resource(ScanoutID scanout, ResourceID resource_id, Protocol::Rect rect);
+    void transfer_framebuffer_data_to_host(ScanoutID scanout, Protocol::Rect const& rect, ResourceID resource_id);
+    void flush_displayed_image(Protocol::Rect const& dirty_rect, ResourceID resource_id);
+
+    Optional<ScanoutID> m_default_scanout;
+    size_t m_num_scanouts { 0 };
+    Scanout m_scanouts[VIRTIO_GPU_MAX_SCANOUTS];
+
+    Configuration const* m_device_configuration { nullptr };
+    ResourceID m_resource_id_counter { 0 };
+
+    WaitQueue m_outstanding_request;
+    Mutex m_operation_lock;
+    OwnPtr<Region> m_scratch_space;
+};
+
 }
