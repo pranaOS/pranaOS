@@ -197,15 +197,15 @@ enum Limits : u16 {
 };
 
 enum CommandHeaderAttributes : u16 {
-    C = (1 << 10), 
-    P = (1 << 7),  
-    W = (1 << 6),  
-    A = (1 << 5),  
-    R = (1 << 8)   
+    C = (1 << 10),  
+    P = (1 << 7),   
+    W = (1 << 6),   
+    A = (1 << 5),   
+    R = (1 << 8)    
 };
 
 enum HBACapabilities : u32 {
-    S64A = (u32)1 << 31, 
+    S64A = (u32)1 << 31,  
     SNCQ = 1 << 30,      
     SSNTF = 1 << 29,     
     SMPS = 1 << 28,      
@@ -279,39 +279,39 @@ enum class DeviceDetectionInitialization {
 enum PortInterruptFlag : u32 {
     CPD = (u32)1 << 31, 
     TFE = 1 << 30,      
-    HBF = 1 << 29,       
-    HBD = 1 << 28,      
+    HBF = 1 << 29,     
+    HBD = 1 << 28,     
     IF = 1 << 27,       
     INF = 1 << 26,      
     OF = 1 << 24,       
-    IPM = 1 << 23,    
-    PRC = 1 << 22,      
+    IPM = 1 << 23,      
+    PRC = 1 << 22,       
     DMP = 1 << 7,        
-    PC = 1 << 6,        
-    DP = 1 << 5,        
+    PC = 1 << 6,         
+    DP = 1 << 5,         
     UF = 1 << 4,         
-    SDB = 1 << 3,      
-    DS = 1 << 2,        
-    PS = 1 << 1,        
-    DHR = 1 << 0         
+    SDB = 1 << 3,        
+    DS = 1 << 2,         
+    PS = 1 << 1,         
+    DHR = 1 << 0        
 };
 
 enum SErr : u32 {
-    DIAG_X = 1 << 26, 
-    DIAG_F = 1 << 25, 
-    DIAG_T = 1 << 24, 
-    DIAG_S = 1 << 23, 
-    DIAG_H = 1 << 22, 
-    DIAG_C = 1 << 21, 
-    DIAG_D = 1 << 20, 
-    DIAG_B = 1 << 19, 
+    DIAG_X = 1 << 26,  
+    DIAG_F = 1 << 25,  
+    DIAG_T = 1 << 24,  
+    DIAG_S = 1 << 23,  
+    DIAG_H = 1 << 22,  
+    DIAG_C = 1 << 21,  
+    DIAG_D = 1 << 20,  
+    DIAG_B = 1 << 19,  
     DIAG_W = 1 << 18, 
     DIAG_I = 1 << 17, 
     DIAG_N = 1 << 16, 
     ERR_E = 1 << 11,  
     ERR_P = 1 << 10,  
     ERR_C = 1 << 9,   
-    ERR_T = 1 << 8,   
+    ERR_T = 1 << 8,    
     ERR_M = 1 << 1,    
     ERR_I = 1 << 0,    
 };
@@ -364,40 +364,40 @@ private:
 };
 
 struct [[gnu::packed]] PortRegisters {
-    u32 clb;   
-    u32 clbu;  
-    u32 fb;    
-    u32 fbu;   
-    u32 is;    
-    u32 ie;    
-    u32 cmd;   
+    u32 clb;  
+    u32 clbu; 
+    u32 fb;   
+    u32 fbu;  
+    u32 is;   
+    u32 ie;   
+    u32 cmd;  
     u32 reserved;
     u32 tfd;    
-    u32 sig;    
+    u32 sig;   
     u32 ssts;   
     u32 sctl;   
     u32 serr;   
     u32 sact;   
     u32 ci;     
     u32 sntf;   
-    u32 fbs;     
-    u32 devslp;  
+    u32 fbs;    
+    u32 devslp; 
     u8 reserved2[0x70 - 0x48];
-    u8 vs[16];  
+    u8 vs[16]; 
 };
 
 struct [[gnu::packed]] GenericHostControl {
-    u32 cap;  
-    u32 ghc;  
-    u32 is;   
-    u32 pi;   
+    u32 cap; 
+    u32 ghc; 
+    u32 is;  
+    u32 pi;  
     u32 version;
-    u32 ccc_ctl;    
-    u32 ccc_ports;  
-    u32 em_loc;     
-    u32 em_ctl;     
-    u32 cap2;       
-    u32 bohc;       
+    u32 ccc_ctl;  
+    u32 ccc_ports;
+    u32 em_loc;    
+    u32 em_ctl;    
+    u32 cap2;      
+    u32 bohc;      
 };
 
 struct [[gnu::packed]] HBA {
@@ -410,10 +410,10 @@ struct [[gnu::packed]] HBA {
 
 struct [[gnu::packed]] CommandHeader {
     u16 attributes;
-    u16 prdtl;  
-    u32 prdbc;  
-    u32 ctba;   
-    u32 ctbau;  
+    u16 prdtl; 
+    u32 prdbc; 
+    u32 ctba;  
+    u32 ctbau; 
     u32 reserved[4];
 };
 
