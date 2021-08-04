@@ -1,0 +1,155 @@
+/*
+ * Copyright (c) 2021, Krisna Pranav
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+*/
+
+
+#pragma once
+
+// includes
+#include <base/RefPtr.h>
+#include <kernel/devices/Device.h>
+#include <kernel/IO.h>
+#include <kernel/interrupts/IRQHandler.h>
+#include <kernel/Mutex.h>
+#include <kernel/PhysicalAddress.h>
+#include <kernel/Random.h>
+#include <kernel/storage/StorageDevice.h>
+#include <kernel/vm/PhysicalPage.h>
+#include <kernel/WaitQueue.h>
+
+namespace Kernel {
+
+class AsyncBlockDeviceRequest;
+
+class IDEController;
+class IDEChannel : public RefCounted<IDEChannel>
+    , public IRQHandler {
+    friend class IDEController;
+    friend class PATADiskDevice;
+    AK_MAKE_ETERNAL
+public:
+    enum class ChannelType : u8 {
+        Primary,
+        Secondary
+    };
+
+    struct IOAddressGroup {
+        IOAddressGroup(IOAddress io_base, IOAddress control_base, IOAddress bus_master_base)
+            : m_io_base(io_base)
+            , m_control_base(control_base)
+            , m_bus_master_base(bus_master_base)
+        {
+        }
+
+        IOAddressGroup(IOAddress io_base, IOAddress control_base)
+            : m_io_base(io_base)
+            , m_control_base(control_base)
+            , m_bus_master_base()
+        {
+        }
+
+        IOAddressGroup(const IOAddressGroup& other, IOAddress bus_master_base)
+            : m_io_base(other.io_base())
+            , m_control_base(other.control_base())
+            , m_bus_master_base(bus_master_base)
+        {
+        }
+
+        bool operator==(const IOAddressGroup&) const = delete;
+        bool operator<=(const IOAddressGroup&) const = delete;
+        bool operator>=(const IOAddressGroup&) const = delete;
+        bool operator<(const IOAddressGroup&) const = delete;
+        bool operator>(const IOAddressGroup&) const = delete;
+
+        IOAddress io_base() const { return m_io_base; };
+        IOAddress control_base() const { return m_control_base; }
+        Optional<IOAddress> bus_master_base() const { return m_bus_master_base; }
+
+        const IOAddressGroup& operator=(const IOAddressGroup& group)
+        {
+            m_io_base = group.io_base();
+            m_control_base = group.control_base();
+            m_bus_master_base = group.bus_master_base();
+            return *this;
+        }
+
+    private:
+        IOAddress m_io_base;
+        IOAddress m_control_base;
+        Optional<IOAddress> m_bus_master_base;
+    };
+
+public:
+    static NonnullRefPtr<IDEChannel> create(const IDEController&, IOAddressGroup, ChannelType type);
+    static NonnullRefPtr<IDEChannel> create(const IDEController&, u8 irq, IOAddressGroup, ChannelType type);
+    virtual ~IDEChannel() override;
+
+    RefPtr<StorageDevice> master_device() const;
+    RefPtr<StorageDevice> slave_device() const;
+
+    virtual StringView purpose() const override { return "PATA Channel"; }
+
+    virtual bool is_dma_enabled() const { return false; }
+
+private:
+    void complete_current_request(AsyncDeviceRequest::RequestResult);
+    void initialize();
+
+protected:
+    enum class LBAMode : u8 {
+        None, 
+        TwentyEightBit,
+        FortyEightBit,
+    };
+
+    enum class Direction : u8 {
+        Read,
+        Write,
+    };
+
+    IDEChannel(const IDEController&, IOAddressGroup, ChannelType type);
+    IDEChannel(const IDEController&, u8 irq, IOAddressGroup, ChannelType type);
+
+    virtual bool handle_irq(const RegisterState&) override;
+
+    virtual void send_ata_io_command(LBAMode lba_mode, Direction direction) const;
+
+    virtual void ata_read_sectors(bool, u16);
+    virtual void ata_write_sectors(bool, u16);
+
+    void detect_disks();
+    String channel_type_string() const;
+
+    void try_disambiguate_error();
+    bool wait_until_not_busy(bool slave, size_t milliseconds_timeout);
+    bool wait_until_not_busy(size_t milliseconds_timeout);
+
+    void start_request(AsyncBlockDeviceRequest&, bool, u16);
+
+    void clear_pending_interrupts() const;
+
+    void ata_access(Direction, bool, u64, u8, u16);
+
+    bool ata_do_read_sector();
+    void ata_do_write_sector();
+
+    ChannelType m_channel_type { ChannelType::Primary };
+
+    volatile u8 m_device_error { 0 };
+    EntropySource m_entropy_source;
+
+    RefPtr<StorageDevice> m_master;
+    RefPtr<StorageDevice> m_slave;
+
+    RefPtr<AsyncBlockDeviceRequest> m_current_request;
+    u64 m_current_request_block_index { 0 };
+    bool m_current_request_flushing_cache { false };
+    SpinLock<u8> m_request_lock;
+    Mutex m_lock { "IDEChannel" };
+
+    IOAddressGroup m_io_group;
+    NonnullRefPtr<IDEController> m_parent_controller;
+};
+}
