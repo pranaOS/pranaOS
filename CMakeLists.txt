@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(pranaOS C CXX ASM)
+project(pranaos C CXX ASM)
 
 if(NOT "${CMAKE_BUILD_TYPE}" STREQUAL "")
   message(FATAL_ERROR
@@ -144,7 +144,7 @@ set(CMAKE_INSTALL_DATAROOTDIR ${CMAKE_BINARY_DIR}/Root/res)
 
 set(GCC_VERSION 11.1.0)
 
-if (${CMAKE_HOST_SYSTEM_NAME} MATCHES pranaOS)
+if (${CMAKE_HOST_SYSTEM_NAME} MATCHES pranaos)
     message("Good job on building cmake!")
 else()
     set(TOOLCHAIN_ROOT ${CMAKE_SOURCE_DIR}/toolchain/Local/${PRANAOS_ARCH}/)
@@ -187,7 +187,7 @@ set(CMAKE_SKIP_RPATH TRUE)
 add_compile_options(-Wformat=2)
 add_compile_options(-fdiagnostics-color=always)
 
-if (NOT ${CMAKE_HOST_SYSTEM_NAME} MATCHES pranaOS)
+if (NOT ${CMAKE_HOST_SYSTEM_NAME} MATCHES pranaos)
     add_compile_options(-Werror)
 endif()
 
