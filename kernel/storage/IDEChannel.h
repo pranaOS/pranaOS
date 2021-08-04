@@ -28,7 +28,7 @@ class IDEChannel : public RefCounted<IDEChannel>
     , public IRQHandler {
     friend class IDEController;
     friend class PATADiskDevice;
-    AK_MAKE_ETERNAL
+    BASE_MAKE_ETERNAL
 public:
     enum class ChannelType : u8 {
         Primary,

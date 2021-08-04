@@ -19,7 +19,7 @@ class AsyncBlockDeviceRequest;
 
 class IDEController final : public StorageController
     , public PCI::DeviceController {
-    BASe_MAKE_ETERNAL
+    BASE_MAKE_ETERNAL
 public:
     static NonnullRefPtr<IDEController> initialize(PCI::Address address, bool force_pio);
     virtual ~IDEController() override;
