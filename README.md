@@ -9,6 +9,8 @@ A unix operating system made from scratch using c++
 </p>
 
 
+- You can see the future plans and updates [here](https://github.com/pranaOS/pranaOS/blob/master/plans/futureplans.pdf)
+
 # Dependencies
 ```
 g++ version should be more than 10.0.0
