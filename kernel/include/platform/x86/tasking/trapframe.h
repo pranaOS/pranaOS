@@ -7,7 +7,7 @@
 #ifndef _KERNEL_PLATFORM_X86_TASKING_TRAPFRAME_H
 #define _KERNEL_PLATFORM_X86_TASKING_TRAPFRAME_H
 
-// incldues
+// includes
 #include <libkernel/c_attrs.h>
 #include <libkernel/types.h>
 #include <platform/x86/gdt.h>
@@ -44,7 +44,6 @@ struct PACKED trapframe {
     uint16_t ss;
     uint16_t padding6;
 };
-
 typedef struct trapframe trapframe_t;
 
 static inline uint32_t get_stack_pointer(trapframe_t* tf)
@@ -57,13 +56,71 @@ static inline void set_stack_pointer(trapframe_t* tf, uint32_t sp)
     tf->esp = sp;
 }
 
-static inline void tf_setup_as_kernel_thread(trapframe_t* tf)
+static inline uint32_t get_base_pointer(trapframe_t* tf)
 {
-    tf->cs      = (SEG_KCODE << 3);
-    tf->ds      = (SEG_KDATA << 3);
-    tf->es      = tf->ds;
-    tf->ss      = tf->ds;
-    tf->eflags  = FL_IF;
+    return tf->ebp;
 }
 
-#endif
+static inline void set_base_pointer(trapframe_t* tf, uint32_t bp)
+{
+    tf->ebp = bp;
+}
+
+static inline uint32_t get_instruction_pointer(trapframe_t* tf)
+{
+    return tf->eip;
+}
+
+static inline void set_instruction_pointer(trapframe_t* tf, uint32_t ip)
+{
+    tf->eip = ip;
+}
+
+static inline uint32_t get_syscall_result(trapframe_t* tf)
+{
+    return tf->eax;
+}
+
+static inline void set_syscall_result(trapframe_t* tf, uint32_t val)
+{
+    tf->eax = val;
+}
+
+
+static inline void tf_push_to_stack(trapframe_t* tf, uint32_t val)
+{
+    tf->esp -= 4;
+    *((uint32_t*)tf->esp) = val;
+}
+
+static inline uint32_t tf_pop_to_stack(trapframe_t* tf)
+{
+    uint32_t val = *((uint32_t*)tf->esp);
+    tf->esp += 4;
+    return val;
+}
+
+static inline void tf_move_stack_pointer(trapframe_t* tf, int32_t val)
+{
+    tf->esp += val;
+}
+
+static inline void tf_setup_as_user_thread(trapframe_t* tf)
+{
+    tf->cs = (SEG_UCODE << 3) | DPL_USER;
+    tf->ds = (SEG_UDATA << 3) | DPL_USER;
+    tf->es = tf->ds;
+    tf->ss = tf->ds;
+    tf->eflags = FL_IF;
+}
+
+static inline void tf_setup_as_kernel_thread(trapframe_t* tf)
+{
+    tf->cs = (SEG_KCODE << 3);
+    tf->ds = (SEG_KDATA << 3);
+    tf->es = tf->ds;
+    tf->ss = tf->ds;
+    tf->eflags = FL_IF;
+}
+
+#endif 
