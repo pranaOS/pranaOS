@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, Krisna Pranav
+ * Copyright (c) 2021, NukeWilliams
  *
  * SPDX-License-Identifier: BSD-2-Clause
 */
