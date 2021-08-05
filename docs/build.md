@@ -18,7 +18,6 @@ $ sudo apt install build-essential curl libmpfr-dev libmpc-dev libgmp-dev e2fspr
 wget https://apt.llvm.org/llvm.sh
 chmod +x llvm.sh
 sudo ./llvm.sh 12
-
 ```
 
 - Macos:
@@ -42,7 +41,6 @@ brew install pranaOS/homebrew-formulae-arm-gcc
 ```
 
 - Toolchain for Linux:
-```
 
 x86
 ```
@@ -54,7 +52,6 @@ Aarch32
 ./toolchains/scripts/arm-none-eabi-tools.sh
 ```
 
-```
 
 # Building pranaOS
 
