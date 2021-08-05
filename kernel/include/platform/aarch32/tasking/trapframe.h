@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, Krisna Pranav
+ * Copyright (c) 2021, Krisna Pranav, OliviaCE
  *
  * SPDX-License-Identifier: BSD-2-Clause
 */
@@ -22,9 +22,7 @@
 #define CPSR_M_UND 0x1BU
 #define CPSR_M_SYS 0x1FU
 
-
-typedef struct 
-{
+typedef struct {
     uint32_t user_flags;
     uint32_t user_sp;
     uint32_t user_lr;
@@ -51,10 +49,66 @@ static inline void set_base_pointer(trapframe_t* tf, uint32_t bp)
 {
 }
 
-static inline uint32_t get_instructions_pointer(trapframe_t* tf)
+static inline uint32_t get_instruction_pointer(trapframe_t* tf)
 {
     return tf->user_ip;
 }
 
+static inline void set_instruction_pointer(trapframe_t* tf, uint32_t ip)
+{
+    tf->user_ip = ip;
+}
 
-#endif 
+static inline uint32_t get_syscall_result(trapframe_t* tf)
+{
+    return tf->r[0];
+}
+
+static inline void set_syscall_result(trapframe_t* tf, uint32_t val)
+{
+    tf->r[0] = val;
+}
+
+/**
+ * STACK FUNCTIONS
+ */
+
+static inline void tf_push_to_stack(trapframe_t* tf, uint32_t val)
+{
+    tf->user_sp -= 4;
+    *((uint32_t*)tf->user_sp) = val;
+}
+
+static inline uint32_t tf_pop_to_stack(trapframe_t* tf)
+{
+    uint32_t val = *((uint32_t*)tf->user_sp);
+    tf->user_sp += 4;
+    return val;
+}
+
+static inline void tf_move_stack_pointer(trapframe_t* tf, int32_t val)
+{
+    tf->user_sp += val;
+}
+
+static inline void tf_setup_as_user_thread(trapframe_t* tf)
+{
+    tf->user_flags = 0x60000100 | CPSR_M_USR;
+}
+
+static inline void tf_setup_as_kernel_thread(trapframe_t* tf)
+{
+    tf->user_flags = 0x60000100 | CPSR_M_SYS;
+}
+
+static void dump_tf(trapframe_t* tf)
+{
+    for (int i = 0; i < 13; i++) {
+        log("r[%d]: %x", i, tf->r[i]);
+    }
+    log("sp: %x", tf->user_sp);
+    log("ip: %x", tf->user_ip);
+    log("fl: %x", tf->user_flags);
+}
+
+#endif
