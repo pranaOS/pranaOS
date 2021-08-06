@@ -1,4 +1,3 @@
-
 /*
  * Copyright (c) 2021, OliviaCE
  *
@@ -71,7 +70,6 @@ struct dentry {
     struct dentry* parent;
     struct dentry* mountpoint;
     struct dentry* mounted_dentry;
-
     struct socket* sock;
 };
 
