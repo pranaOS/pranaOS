@@ -7,8 +7,7 @@
 #ifndef _KERNEL_MEM_PMM_H
 #define _KERNEL_MEM_PMM_H
 
-// includes
-#include <libkernel/types.h>
+#include <libkern/types.h>
 #include <platform/generic/pmm/settings.h>
 
 typedef struct {
@@ -30,5 +29,21 @@ static uint32_t pmm_max_blocks;
 static uint32_t pmm_used_blocks;
 static uint8_t* pmm_mat;
 static uint32_t pmm_mat_size;
+
+void pmm_setup(mem_desc_t* mem_desc);
+
+void* pmm_alloc(uint32_t act_size);
+void* pmm_alloc_aligned(uint32_t act_size, uint32_t alignment);
+void* pmm_alloc_block();
+void* pmm_alloc_blocks(uint32_t t_size);
+bool pmm_free(void* block, uint32_t act_size);
+bool pmm_free_block(void* t_block);
+bool pmm_free_blocks(void* t_block, uint32_t t_size);
+
+uint32_t pmm_get_ram_size();
+uint32_t pmm_get_max_blocks();
+uint32_t pmm_get_used_blocks();
+uint32_t pmm_get_free_blocks();
+uint32_t pmm_get_block_size();
 
 #endif 
