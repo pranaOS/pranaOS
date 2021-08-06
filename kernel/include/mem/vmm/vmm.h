@@ -29,9 +29,28 @@ enum PAGE_FLAGS {
 #define KERNEL_PAGE false
 #define PAGE_CHOOSE_OWNER(vaddr) (vaddr >= KERNEL_BASE ? 0 : PAGE_USER)
 
+enum VMM_ERR_CODES {
+    VMM_ERR_PDIR,
+    VMM_ERR_PTABLE,
+    VMM_ERR_NO_SPACE,
+    VMM_ERR_BAD_ADDR,
+};
+
 typedef struct {
     page_desc_t entities[VMM_PTE_COUNT];
 } ptable_t;
+
+typedef struct pdirectory {
+    table_desc_t entities[VMM_PDE_COUNT];
+} pdirectory_t;
+
+enum VMM_PF_HANDLER {
+    OK = 0,
+    SHOULD_CRASH = -1,
+};
+
+struct dynamic_array;
+
 
 int vmm_setup();
 
@@ -52,5 +71,19 @@ void vmm_prepare_active_pdir_for_copying_at(uint32_t dest_vaddr, uint32_t length
 void vmm_copy_to_user(void* dest, void* src, uint32_t length);
 void vmm_copy_to_pdir(pdirectory_t* pdir, void* src, uint32_t dest_vaddr, uint32_t length);
 void vmm_zero_user_pages(pdirectory_t* pdir);
+
+pdirectory_t* vmm_get_active_pdir();
+pdirectory_t* vmm_get_kernel_pdir();
+
+int vmm_load_page(uint32_t vaddr, uint32_t settings);
+int vmm_tune_page(uint32_t vaddr, uint32_t settings);
+int vmm_tune_pages(uint32_t vaddr, uint32_t length, uint32_t settings);
+int vmm_free_page(uint32_t vaddr, page_desc_t* page, struct dynamic_array* zones);
+
+int vmm_switch_pdir(pdirectory_t* pdir);
+void vmm_enable_paging();
+void vmm_disable_paging();
+
+int vmm_page_fault_handler(uint32_t info, uint32_t vaddr);
 
 #endif 
