@@ -7,7 +7,6 @@
 #ifndef _KERNEL_TASKING_ELF_H
 #define _KERNEL_TASKING_ELF_H
 
-
 #define ELF_CLASS_32 1
 #define ELF_CLASS_64 2
 
@@ -146,7 +145,7 @@ typedef struct {
     uint32_t st_value; 
     uint32_t st_size; 
     unsigned char st_info; 
-    unsigned char st_other; 
+    unsigned char st_other;
     uint16_t st_shndx; 
 } elf_sym_32_t;
 
@@ -169,5 +168,13 @@ enum ST_TYPE_FIELDS {
     STT_LOPROC = 13,
     STT_HIPROC = 15
 };
+
+struct proc;
+struct file_descriptor;
+
+int elf_check_header(elf_header_32_t* header);
+int elf_load(struct proc* p, struct file_descriptor* fd);
+int elf_find_symtab_unchecked(void* mapped_data, void** symtab, size_t* symtab_entries, char** strtab);
+ssize_t elf_find_function_in_symtab(void* symtab, size_t syms_n, uint32_t ip);
 
 #endif 
