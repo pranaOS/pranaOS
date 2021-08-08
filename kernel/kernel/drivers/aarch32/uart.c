@@ -24,6 +24,10 @@ void uart_setup()
 {
 }
 
+void uart_remap()
+{
+    _uart_map_itself();
+}
 
 int uart_write(int port, uint8_t data)
 {
@@ -34,10 +38,4 @@ int uart_write(int port, uint8_t data)
 int uart_read(int port, uint8_t* data)
 {
     return 0;
-}
-
-int uart_overwrite(int port, uint8_t* data)
-{
-    *output = uint8_t(data);
-    return data;
 }
