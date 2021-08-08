@@ -15,7 +15,7 @@
 #include <time/time_manager.h>
 
 static zone_t mapped_zone;
-volatile sp804_registers_t* timer1 = (sp804_registers_t)SP804_TIMER1_BASE;
+volatile sp804_registers_t* timer1 = (sp804_registers_t*)SP804_TIMER1_BASE;
 
 static inline int _sp804_map_itself()
 {
@@ -25,9 +25,17 @@ static inline int _sp804_map_itself()
     return 0;
 }
 
-static inline void _sp804_clear_interrupt(volatile sp804_registers_t)
+static inline void _sp804_clear_interrupt(volatile sp804_registers_t* timer)
 {
     timer->intclr = 1;
+}
+
+static void _sp804_int_handler()
+{
+    _sp804_clear_interrupt(timer1);
+    cpu_tick();
+    timeman_timer_tick();
+    sched_tick();
 }
 
 void sp804_install()
