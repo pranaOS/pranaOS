@@ -19,7 +19,7 @@
 #include <tasking/tasking.h>
 
 static ringbuffer_t mouse_buffer;
-static zone mapped_zone;
+static zone_t mapped_zone;
 static volatile pl050_registers_t* registers = (pl050_registers_t*)PL050_MOUSE_BASE;
 
 static inline int _pl050_map_itself()
@@ -35,16 +35,30 @@ static bool _mouse_can_read(dentry_t* dentry, uint32_t start)
     return ringbuffer_space_to_read(&mouse_buffer) >= 1;
 }
 
-void pl050_mouse_install()
+static int _mouse_read(dentry_t* dentry, uint8_t* buf, uint32_t start, uint32_t len)
 {
-    if (_pl050_map_itself()) {
-#ifndef DEBUG_PL050
-        log_error("PL050 MOUSE: Can't map itself!!");
-#endif
-        return;
+    uint32_t leno = ringbuffer_space_to_read(&mouse_buffer);
+    if (leno > len) {
+        leno = len;
     }
-    driver_install(_pl050_mouse_driver_info(), "pl050ms");
+    int res = ringbuffer_read(&mouse_buffer, buf, leno);
+    return leno;
+}
+static void pl050_mouse_recieve_notification(uint32_t msg, uint32_t param)
+{
+    if (msg == DM_NOTIFICATION_DEVFS_READY) {
+        dentry_t* mp;
+        if (vfs_resolve_path("/dev", &mp) < 0) {
+            kpanic("Can't init pl050_mouse in /dev");
+        }
 
+        file_ops_t fops = { 0 };
+        fops.can_read = _mouse_can_read;
+        fops.read = _mouse_read;
+        devfs_inode_t* res = devfs_register(mp, MKDEV(10, 1), "mouse", 5, 0, &fops);
+
+        dentry_put(mp);
+    }
 }
 
 static inline void _mouse_send_cmd(uint8_t cmd)
@@ -58,6 +72,64 @@ static inline void _mouse_send_cmd(uint8_t cmd)
 #define KMIIR_RXINTR (1 << 0)
 #define RXFULL (1 << 4)
 
+static void _pl050_mouse_int_handler()
+{
+    uint32_t statusrx = registers->stat;
+    uint32_t status = registers->ir;
+    uint32_t buffer[15];
+    int indx = 0;
+
+    if (!(status & KMIIR_RXINTR)) {
+        return;
+    }
+
+    while (status & KMIIR_RXINTR) {
+        buffer[indx++] = registers->data;
+        status = registers->ir;
+    }
+
+    uint8_t resp = buffer[0];
+    uint8_t xm = buffer[1];
+    uint8_t ym = buffer[2];
+
+    uint8_t y_overflow = (resp >> 7) & 1;
+    uint8_t x_overflow = (resp >> 6) & 1;
+    uint8_t y_sign = (resp >> 5) & 1;
+    uint8_t x_sign = (resp >> 4) & 1;
+
+    mouse_packet_t packet;
+    packet.x_offset = xm;
+    packet.y_offset = ym;
+    packet.button_states = resp & 0b111;
+
+    if (packet.x_offset && x_sign) {
+        packet.x_offset -= 0x100;
+    }
+    if (packet.y_offset && y_sign) {
+        packet.y_offset -= 0x100;
+    }
+    if (x_overflow || y_overflow) {
+        packet.x_offset = 0;
+        packet.y_offset = 0;
+    }
+
+    ringbuffer_write(&mouse_buffer, (uint8_t*)&packet, sizeof(mouse_packet_t));
+
+#ifdef MOUSE_DRIVER_DEBUG
+    log("%x ", packet.button_states);
+    if (packet.x_offset < 0) {
+        log("-%d ", -packet.x_offset);
+    } else {
+        log("%d ", packet.x_offset);
+    }
+    if (packet.y_offset < 0) {
+        log("-%d\n", -packet.y_offset);
+    } else {
+        log("%d\n", packet.y_offset);
+    }
+#endif
+}
+
 void pl050_mouse_init(device_t* dev)
 {
 #ifdef DEBUG_PL050
@@ -68,4 +140,35 @@ void pl050_mouse_init(device_t* dev)
     _mouse_send_cmd(0xF4);
     irq_register_handler(PL050_MOUSE_IRQ_LINE, 0, 0, _pl050_mouse_int_handler, BOOT_CPU_MASK);
     mouse_buffer = ringbuffer_create_std();
+}
+
+static driver_desc_t _pl050_mouse_driver_info()
+{
+    driver_desc_t desc = { 0 };
+    desc.type = DRIVER_INPUT_SYSTEMS_DEVICE;
+    desc.auto_start = true;
+    desc.is_device_driver = false;
+    desc.is_device_needed = false;
+    desc.is_driver_needed = false;
+    desc.functions[DRIVER_NOTIFICATION] = pl050_mouse_recieve_notification;
+    desc.functions[DRIVER_INPUT_SYSTEMS_ADD_DEVICE] = pl050_mouse_init;
+    desc.functions[DRIVER_INPUT_SYSTEMS_GET_LAST_KEY] = 0;
+    desc.functions[DRIVER_INPUT_SYSTEMS_DISCARD_LAST_KEY] = 0;
+    desc.pci_serve_class = 0xff;
+    desc.pci_serve_subclass = 0xff;
+    desc.pci_serve_vendor_id = 0x00;
+    desc.pci_serve_device_id = 0x00;
+    return desc;
+}
+
+void pl050_mouse_install()
+{
+    if (_pl050_map_itself()) {
+#ifdef DEBUG_PL050
+        log_error("PL050 MOUSE: Can't map itself!");
+#endif
+        return;
+    }
+
+    driver_install(_pl050_mouse_driver_info(), "pl050ms");
 }
