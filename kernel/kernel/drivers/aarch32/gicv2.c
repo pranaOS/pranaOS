@@ -13,7 +13,6 @@
 #include <platform/aarch32/interrupts.h>
 #include <platform/aarch32/registers.h>
 
-
 #define IS_SGI(id) ((id) < 16)
 #define IS_PPI(id) ((id) < 32 && (id) >= 16)
 #define IS_SGI_OR_PPI(id) ((id) < 32)
@@ -71,4 +70,35 @@ void gicv2_enable_irq(irq_line_t id, irq_priority_t prior, irq_type_t type, int 
     }
 
     distributor_registers->isenabler[id_1bit_offset] |= (1 << id_1bit_bitpos);
+}
+
+void gicv2_install()
+{
+    if (_gicv2_map_itself()) {
+#ifdef DEBUG_GICv2
+        log_error("GICv2: Can't map itself!");
+#endif
+        return;
+    }
+
+    irq_set_gic_desc(gicv2_descriptor);
+
+#ifdef DEBUG_GICv2
+    log("Gic type %x", distributor_registers->typer);
+#endif
+
+    distributor_registers->control = GICD_ENABLE_MASK;
+    cpu_interface_registers->pmr = 0xff;
+    cpu_interface_registers->bpr = 0x0;
+    cpu_interface_registers->control = GICC_ENABLE_GR1_MASK;
+}
+
+uint32_t gicv2_interrupt_descriptor()
+{
+    return cpu_interface_registers->iar;
+}
+
+void gicv2_end(uint32_t int_disc)
+{
+    cpu_interface_registers->eoir = int_disc;
 }
