@@ -147,7 +147,7 @@ halt_cpu:
 reset_handler:
     mrc     p15, #0, r0, c0, c0, #5 
     and     r0, r0, #3 
-    cmp     r0, #0
+    cmp     r0, #0 
     beq     _reset_cpu0 
 
     cmp     r0, #1 
@@ -156,7 +156,126 @@ reset_handler:
     cmp     r0, #2 
     beq     _reset_cpu2 
 
-    cmp     r0, #3
+    cmp     r0, #3 
     beq     _reset_cpu3 
 
     ldr     pc,=halt_cpu
+
+_reset_cpu0:
+    push    {r4, r5, r6, r7, r8, r9}
+
+    ldr     r0, =vector_table
+
+    mcr     P15, 0, r0, c12, c0, 0
+
+    mov     r1, #0x0000
+    ldmia   r0!,{r2, r3, r4, r5, r6, r7, r8, r9}
+    stmia   r1!,{r2, r3, r4, r5, r6, r7, r8, r9}
+    ldmia   r0!,{r2, r3, r4, r5, r6, r7, r8}
+    stmia   r1!,{r2, r3, r4, r5, r6, r7, r8}
+    pop     {r4, r5, r6, r7, r8, r9}
+    ldr     pc, =_start
+
+_reset_cpu1:
+    push    {r4, r5, r6, r7, r8, r9}
+
+    ldr     r0, =vector_table
+
+    mcr     P15, 0, r0, c12, c0, 0
+
+    mov     r1, #0x0000
+    ldmia   r0!,{r2, r3, r4, r5, r6, r7, r8, r9}
+    stmia   r1!,{r2, r3, r4, r5, r6, r7, r8, r9}
+    ldmia   r0!,{r2, r3, r4, r5, r6, r7, r8}
+    stmia   r1!,{r2, r3, r4, r5, r6, r7, r8}
+    pop     {r4, r5, r6, r7, r8, r9}
+    ldr     pc, =_start
+
+_reset_cpu2:
+    push    {r4, r5, r6, r7, r8, r9}
+
+    ldr     r0, =vector_table
+
+    mcr     P15, 0, r0, c12, c0, 0
+
+    mov     r1, #0x0000
+    ldmia   r0!,{r2, r3, r4, r5, r6, r7, r8, r9}
+    stmia   r1!,{r2, r3, r4, r5, r6, r7, r8, r9}
+    ldmia   r0!,{r2, r3, r4, r5, r6, r7, r8}
+    stmia   r1!,{r2, r3, r4, r5, r6, r7, r8}
+    pop     {r4, r5, r6, r7, r8, r9}
+    ldr     pc, =_start
+
+_reset_cpu3:
+    push    {r4, r5, r6, r7, r8, r9}
+
+    ldr     r0, =vector_table
+
+    mcr     P15, 0, r0, c12, c0, 0
+
+    mov     r1, #0x0000
+    ldmia   r0!,{r2, r3, r4, r5, r6, r7, r8, r9}
+    stmia   r1!,{r2, r3, r4, r5, r6, r7, r8, r9}
+    ldmia   r0!,{r2, r3, r4, r5, r6, r7, r8}
+    stmia   r1!,{r2, r3, r4, r5, r6, r7, r8}
+    pop     {r4, r5, r6, r7, r8, r9}
+    ldr     pc, =_start
+
+.svc_handler_addr:
+    .word svc_handler
+
+.irq_handler_addr:
+    .word irq_handler
+
+.undefined_handler_addr:
+    .word undefined_handler
+
+.data_abort_handler_addr:
+    .word data_abort_handler
+
+.fast_irq_handler_addr:
+    .word fast_irq_handler
+
+.prefetch_abort_handler_addr:
+    .word prefetch_abort_handler
+
+.section ".text"
+.global set_svc_stack
+set_svc_stack:
+    mov     r1, sp
+    mov     r2, lr
+    cps	    #0x13       
+    mov	    sp, r0
+    cps	    #0x1F		
+    mov     sp, r1
+    bx      r2
+
+.global set_irq_stack
+set_irq_stack:
+    mov     r1, sp
+    mov     r2, lr
+    cps	    #0x12       
+    mov	    sp, r0
+    cps	    #0x1F		
+    mov     sp, r1
+    bx      r2
+
+.global set_abort_stack
+set_abort_stack:
+    mov     r1, sp
+    mov     r2, lr
+    cps	    #0x17       
+    mov	    sp, r0
+    cps	    #0x1F		
+    mov     sp, r1
+    bx      r2
+
+.global set_undefined_stack
+set_undefined_stack:
+    mov     r1, sp
+    mov     r2, lr
+    cps	    #0x1B       
+    mov	    sp, r0
+    cps	    #0x1F		
+    mov     sp, r1
+    bx      r2
