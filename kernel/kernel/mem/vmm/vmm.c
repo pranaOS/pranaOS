@@ -18,7 +18,6 @@
 #include <platform/generic/vmm/pf_types.h>
 #include <tasking/tasking.h>
 
-
 #define pdir_t pdirectory_t
 #define VMM_TOTAL_PAGES_PER_TABLE VMM_PTE_COUNT
 #define VMM_TOTAL_TABLES_PER_DIRECTORY VMM_PDE_COUNT
@@ -67,6 +66,31 @@ static bool _vmm_is_zeroing_on_demand(uint32_t vaddr);
 static void _vmm_resolve_zeroing_on_demand(uint32_t vaddr);
 
 static int _vmm_self_test();
+
+static int vmm_allocate_ptable_lockless(uint32_t vaddr);
+static ALWAYS_INLINE int vmm_force_allocate_ptable_lockless(uint32_t vaddr);
+static ALWAYS_INLINE int vmm_free_ptable_lockless(uint32_t vaddr, dynamic_array_t* zones);
+static ALWAYS_INLINE int vmm_free_pdir_lockless(pdirectory_t* pdir, dynamic_array_t* zones);
+
+static ALWAYS_INLINE int vmm_map_page_lockless(uint32_t vaddr, uint32_t paddr, uint32_t settings);
+static ALWAYS_INLINE int vmm_map_pages_lockless(uint32_t vaddr, uint32_t paddr, uint32_t n_pages, uint32_t settings);
+static ALWAYS_INLINE int vmm_unmap_page_lockless(uint32_t vaddr);
+static ALWAYS_INLINE int vmm_unmap_pages_lockless(uint32_t vaddr, uint32_t n_pages);
+static ALWAYS_INLINE int vmm_copy_page_lockless(uint32_t to_vaddr, uint32_t src_vaddr, ptable_t* src_ptable);
+
+static ALWAYS_INLINE pdirectory_t* vmm_new_user_pdir_lockless();
+static ALWAYS_INLINE pdirectory_t* vmm_new_forked_user_pdir_lockless();
+static ALWAYS_INLINE void vmm_prepare_active_pdir_for_copying_at_lockless(uint32_t dest_vaddr, uint32_t length);
+static ALWAYS_INLINE void vmm_copy_to_user_lockless(void* dest, void* src, uint32_t length);
+static ALWAYS_INLINE void vmm_copy_to_pdir_lockless(pdirectory_t* pdir, void* src, uint32_t dest_vaddr, uint32_t length);
+
+static ALWAYS_INLINE int vmm_load_page_lockless(uint32_t vaddr, uint32_t settings);
+static ALWAYS_INLINE int vmm_tune_page_lockless(uint32_t vaddr, uint32_t settings);
+static ALWAYS_INLINE int vmm_tune_pages_lockless(uint32_t vaddr, uint32_t length, uint32_t settings);
+static ALWAYS_INLINE int vmm_free_page_lockless(uint32_t vaddr, page_desc_t* page, dynamic_array_t* zones);
+
+static ALWAYS_INLINE int vmm_switch_pdir_lockless(pdirectory_t* pdir);
+
 
 inline static void* _vmm_alloc_kernel_pdir()
 {
@@ -147,7 +171,6 @@ inline static void _vmm_free_pdir(pdirectory_t* pdir)
     _vmm_free_mapped_zone(zone);
 }
 
-
 inline static void* _vmm_pspace_get_vaddr_of_active_pdir()
 {
     return (void*)THIS_CPU->pdir;
@@ -179,12 +202,14 @@ static int _vmm_split_pspace()
 
 static void _vmm_pspace_init()
 {
+
     uint32_t kernel_ptabels_vaddr = pspace_zone.start + VMM_KERNEL_TABLES_START * PTABLE_SIZE; 
     uint32_t kernel_ptabels_paddr = kernel_ptables_start_paddr; 
     uint32_t ptables_per_page = VMM_PAGE_SIZE / PTABLE_SIZE;
     for (int i = VMM_KERNEL_TABLES_START; i < VMM_TOTAL_TABLES_PER_DIRECTORY; i += ptables_per_page) {
         table_desc_t* ptable_desc = _vmm_pdirectory_lookup(THIS_CPU->pdir, kernel_ptabels_vaddr);
         if (!table_desc_is_present(*ptable_desc)) {
+
             kpanic("PSPACE_6335 : BUG\n");
         }
         ptable_t* ptable_vaddr = (ptable_t*)(kernel_ptables_start_paddr + (VMM_OFFSET_IN_DIRECTORY(kernel_ptabels_vaddr) - VMM_KERNEL_TABLES_START) * PTABLE_SIZE);
@@ -359,7 +384,6 @@ inline static table_desc_t* _vmm_pdirectory_lookup(pdirectory_t* pdir, uint32_t 
     }
     return 0;
 }
-
 
 inline static page_desc_t* _vmm_ptable_lookup(ptable_t* ptable, uint32_t vaddr)
 {
@@ -791,6 +815,7 @@ static int _vmm_copy_page_to_resolve_cow(proc_t* p, uint32_t vaddr, ptable_t* sr
     uint32_t old_page_paddr = page_desc_get_frame(*old_page_desc);
     vmm_map_page_lockless(old_page_vaddr, old_page_paddr, PAGE_READABLE);
 
+
     memcpy((uint8_t*)vaddr, (uint8_t*)old_page_vaddr, VMM_PAGE_SIZE);
 
     vmm_unmap_page_lockless(old_page_vaddr);
@@ -798,43 +823,265 @@ static int _vmm_copy_page_to_resolve_cow(proc_t* p, uint32_t vaddr, ptable_t* sr
     return 0;
 }
 
-static ALWAYS_INLINE int vmm_switch_pdir_lockless(pdirectory_t* pdir)
+
+static ALWAYS_INLINE pdirectory_t* vmm_new_user_pdir_lockless()
 {
-    if (!pdir) {
-        return -1;
+    pdirectory_t* pdir = _vmm_alloc_pdir();
+
+    for (int i = VMM_USER_TABLES_START; i < VMM_KERNEL_TABLES_START; i++) {
+        table_desc_clear(&pdir->entities[i]);
     }
 
-    if (((uint32_t)pdir & (PDIR_SIZE - 1)) != 0) {
-        kpanic("vmm_switch_pdir: wrong pdir");
+    for (int i = VMM_KERNEL_TABLES_START; i < VMM_TOTAL_TABLES_PER_DIRECTORY; i++) {
+        if (!IS_INDIVIDUAL_PER_DIR(i)) {
+            pdir->entities[i] = _vmm_kernel_pdir->entities[i];
+        }
     }
 
-    system_disable_interrupts();
-    if (THIS_CPU->pdir == pdir) {
-        system_enable_interrupts();
-        return 0;
-    }
-    THIS_CPU->pdir = pdir;
-    system_set_pdir((uint32_t)_vmm_convert_vaddr2paddr((uint32_t)pdir));
-    system_enable_interrupts();
-    return 0;
+    _vmm_pspace_gen(pdir);
+    return pdir;
 }
 
-int vmm_switch_pdir(pdirectory_t* pdir)
+pdirectory_t* vmm_new_user_pdir()
 {
     lock_acquire(&_vmm_lock);
-    int res = vmm_switch_pdir_lockless(pdir);
+    pdirectory_t* res = vmm_new_user_pdir_lockless();
     lock_release(&_vmm_lock);
     return res;
 }
 
-void vmm_enable_paging()
+static ALWAYS_INLINE pdirectory_t* vmm_new_forked_user_pdir_lockless()
 {
-    system_enable_paging();
+    pdirectory_t* new_pdir = _vmm_alloc_pdir();
+
+    for (int i = 0; i < VMM_TOTAL_TABLES_PER_DIRECTORY; i++) {
+        new_pdir->entities[i] = THIS_CPU->pdir->entities[i];
+    }
+    _vmm_pspace_gen(new_pdir);
+
+    for (int i = 0; i < VMM_KERNEL_TABLES_START; i++) {
+        table_desc_t* act_ptable_desc = &THIS_CPU->pdir->entities[i];
+        if (table_desc_has_attrs(*act_ptable_desc, TABLE_DESC_PRESENT)) {
+            table_desc_t* new_ptable_desc = &new_pdir->entities[i];
+            _vmm_tables_set_cow(i, act_ptable_desc, new_ptable_desc);
+        }
+    }
+
+    system_flush_whole_tlb();
+    return new_pdir;
 }
 
-void vmm_disable_paging()
+pdirectory_t* vmm_new_forked_user_pdir()
 {
-    system_disable_paging();
+    lock_acquire(&_vmm_lock);
+    pdirectory_t* res = vmm_new_forked_user_pdir_lockless();
+    lock_release(&_vmm_lock);
+    return res;
+}
+
+static ALWAYS_INLINE int vmm_free_pdir_lockless(pdirectory_t* pdir, dynamic_array_t* zones)
+{
+    if (!pdir) {
+        return -EINVAL;
+    }
+
+    if (pdir == _vmm_kernel_pdir) {
+        return -EACCES;
+    }
+
+    pdirectory_t* cur_pdir = vmm_get_active_pdir();
+    vmm_switch_pdir_lockless(pdir);
+
+    uint32_t table_coverage = VMM_PAGE_SIZE * VMM_TOTAL_PAGES_PER_TABLE;
+    for (int i = 0; i < VMM_KERNEL_TABLES_START; i++) {
+        vmm_free_ptable_lockless(table_coverage * i, zones);
+    }
+
+    if (cur_pdir == pdir) {
+        vmm_switch_pdir_lockless(_vmm_kernel_pdir);
+    } else {
+        vmm_switch_pdir_lockless(cur_pdir);
+    }
+    _vmm_free_pspace(pdir);
+    _vmm_free_pdir(pdir);
+    return 0;
+}
+
+int vmm_free_pdir(pdirectory_t* pdir, dynamic_array_t* zones)
+{
+    lock_acquire(&_vmm_lock);
+    int res = vmm_free_pdir_lockless(pdir, zones);
+    lock_release(&_vmm_lock);
+    return res;
+}
+
+void* vmm_bring_to_kernel(uint8_t* src, uint32_t length)
+{
+    if ((uint32_t)src >= KERNEL_BASE) {
+        return src;
+    }
+    uint8_t* kaddr = kmalloc(length);
+    _vmm_ensure_write_to_range((uint32_t)kaddr, length);
+    memcpy(kaddr, src, length);
+    return (void*)kaddr;
+}
+
+static ALWAYS_INLINE void vmm_prepare_active_pdir_for_copying_at_lockless(uint32_t dest_vaddr, uint32_t length)
+{
+    _vmm_ensure_cow_for_range(dest_vaddr, length);
+}
+
+void vmm_prepare_active_pdir_for_copying_at(uint32_t dest_vaddr, uint32_t length)
+{
+    lock_acquire(&_vmm_lock);
+    vmm_prepare_active_pdir_for_copying_at_lockless(dest_vaddr, length);
+    lock_release(&_vmm_lock);
+}
+
+static ALWAYS_INLINE void vmm_copy_to_user_lockless(void* dest, void* src, uint32_t length)
+{
+    _vmm_ensure_cow_for_range((uint32_t)dest, length);
+    memcpy(dest, src, length);
+}
+
+void vmm_copy_to_user(void* dest, void* src, uint32_t length)
+{
+    lock_acquire(&_vmm_lock);
+    _vmm_ensure_cow_for_range((uint32_t)dest, length);
+    lock_release(&_vmm_lock);
+    memcpy(dest, src, length);
+}
+
+static ALWAYS_INLINE void vmm_copy_to_pdir_lockless(pdirectory_t* pdir, void* src, uint32_t dest_vaddr, uint32_t length)
+{
+    pdirectory_t* prev_pdir = vmm_get_active_pdir();
+    uint8_t* ksrc;
+    if ((uint32_t)src < KERNEL_BASE) {
+
+        ksrc = vmm_bring_to_kernel(src, length);
+    } else {
+        ksrc = src;
+    }
+
+    vmm_switch_pdir_lockless(pdir);
+
+    _vmm_ensure_write_to_range(dest_vaddr, length);
+    uint8_t* dest = (uint8_t*)dest_vaddr;
+    memcpy(dest, ksrc, length);
+
+    if ((uint32_t)src < KERNEL_BASE) {
+        kfree(ksrc);
+    }
+
+    vmm_switch_pdir_lockless(prev_pdir);
+}
+
+void vmm_copy_to_pdir(pdirectory_t* pdir, void* src, uint32_t dest_vaddr, uint32_t length)
+{
+    pdirectory_t* prev_pdir = vmm_get_active_pdir();
+    uint8_t* ksrc;
+    if ((uint32_t)src < KERNEL_BASE) {
+        ksrc = vmm_bring_to_kernel(src, length);
+    } else {
+        ksrc = src;
+    }
+
+    lock_acquire(&_vmm_lock);
+    vmm_switch_pdir_lockless(pdir);
+    _vmm_ensure_cow_for_range(dest_vaddr, length);
+    lock_release(&_vmm_lock);
+
+    uint8_t* dest = (uint8_t*)dest_vaddr;
+    memcpy(dest, ksrc, length);
+
+    if ((uint32_t)src < KERNEL_BASE) {
+        kfree(ksrc);
+    }
+
+    vmm_switch_pdir_lockless(prev_pdir);
+}
+
+void vmm_zero_user_pages(pdirectory_t* pdir)
+{
+    lock_acquire(&_vmm_lock);
+    for (int i = 0; i < VMM_KERNEL_TABLES_START; i++) {
+        table_desc_t* ptable_desc = &pdir->entities[i];
+        table_desc_del_attrs(ptable_desc, TABLE_DESC_WRITABLE);
+        table_desc_set_attrs(ptable_desc, TABLE_DESC_ZEROING_ON_DEMAND);
+    }
+    lock_release(&_vmm_lock);
+}
+
+pdirectory_t* vmm_get_active_pdir()
+{
+    return THIS_CPU->pdir;
+}
+
+pdirectory_t* vmm_get_kernel_pdir()
+{
+    return _vmm_kernel_pdir;
+}
+
+static ALWAYS_INLINE int vmm_tune_page_lockless(uint32_t vaddr, uint32_t settings)
+{
+    bool is_writable = ((settings & PAGE_WRITABLE) > 0);
+    bool is_readable = ((settings & PAGE_READABLE) > 0);
+    bool is_executable = ((settings & PAGE_EXECUTABLE) > 0);
+    bool is_not_cacheable = ((settings & PAGE_NOT_CACHEABLE) > 0);
+    bool is_cow = ((settings & PAGE_COW) > 0);
+    bool is_user = ((settings & PAGE_USER) > 0);
+
+    ptable_t* ptable = (ptable_t*)_vmm_pspace_get_vaddr_of_active_ptable(vaddr);
+    page_desc_t* page = _vmm_ptable_lookup(ptable, vaddr);
+
+    if (page_desc_is_present(*page)) {
+        is_user ? page_desc_set_attrs(page, PAGE_DESC_USER) : page_desc_del_attrs(page, PAGE_DESC_USER);
+        is_writable ? page_desc_set_attrs(page, PAGE_DESC_WRITABLE) : page_desc_del_attrs(page, PAGE_DESC_WRITABLE);
+        is_not_cacheable ? page_desc_set_attrs(page, PAGE_DESC_NOT_CACHEABLE) : page_desc_del_attrs(page, PAGE_DESC_NOT_CACHEABLE);
+    } else {
+        vmm_load_page_lockless(vaddr, settings);
+    }
+
+    system_flush_tlb_entry(vaddr);
+    return 0;
+}
+
+int vmm_tune_page(uint32_t vaddr, uint32_t settings)
+{
+    lock_acquire(&_vmm_lock);
+    int res = vmm_tune_page_lockless(vaddr, settings);
+    lock_release(&_vmm_lock);
+    return res;
+}
+
+static ALWAYS_INLINE int vmm_tune_pages_lockless(uint32_t vaddr, uint32_t length, uint32_t settings)
+{
+    uint32_t page_addr = PAGE_START(vaddr);
+    while (page_addr < vaddr + length) {
+        vmm_tune_page_lockless(page_addr, settings);
+        page_addr += VMM_PAGE_SIZE;
+    }
+    return 0;
+}
+
+int vmm_tune_pages(uint32_t vaddr, uint32_t length, uint32_t settings)
+{
+    lock_acquire(&_vmm_lock);
+    int res = vmm_tune_pages_lockless(vaddr, length, settings);
+    lock_release(&_vmm_lock);
+    return res;
+}
+
+static ALWAYS_INLINE int vmm_load_page_lockless(uint32_t vaddr, uint32_t settings)
+{
+    uint32_t paddr = _vmm_alloc_page_paddr();
+    if (!paddr) { 
+        kpanic("NO PHYSICAL SPACE");
+    }
+    int res = vmm_map_page_lockless(vaddr, paddr, settings);
+    uint8_t* dest = (uint8_t*)_vmm_round_floor_to_page(vaddr);
+    memset(dest, 0, VMM_PAGE_SIZE);
+    return res;
 }
 
 int vmm_load_page(uint32_t vaddr, uint32_t settings)
@@ -842,7 +1089,7 @@ int vmm_load_page(uint32_t vaddr, uint32_t settings)
     lock_acquire(&_vmm_lock);
     uint32_t paddr = _vmm_alloc_page_paddr();
     if (!paddr) {
-
+        
         kpanic("NO PHYSICAL SPACE");
     }
     int res = vmm_map_page_lockless(vaddr, paddr, settings);
@@ -871,6 +1118,7 @@ static ALWAYS_INLINE int vmm_copy_page_lockless(uint32_t to_vaddr, uint32_t src_
     vmm_map_page_lockless(old_page_vaddr, old_page_paddr, PAGE_READABLE | PAGE_WRITABLE | PAGE_EXECUTABLE);
 
     memcpy((uint8_t*)to_vaddr, (uint8_t*)old_page_vaddr, VMM_PAGE_SIZE);
+
 
     vmm_unmap_page_lockless(old_page_vaddr);
     zoner_free_zone(tmp_zone);
@@ -958,6 +1206,47 @@ int vmm_page_fault_handler(uint32_t info, uint32_t vaddr)
     return OK;
 }
 
+
+static ALWAYS_INLINE int vmm_switch_pdir_lockless(pdirectory_t* pdir)
+{
+    if (!pdir) {
+        return -1;
+    }
+
+    if (((uint32_t)pdir & (PDIR_SIZE - 1)) != 0) {
+        kpanic("vmm_switch_pdir: wrong pdir");
+    }
+
+    system_disable_interrupts();
+    if (THIS_CPU->pdir == pdir) {
+        system_enable_interrupts();
+        return 0;
+    }
+    THIS_CPU->pdir = pdir;
+    system_set_pdir((uint32_t)_vmm_convert_vaddr2paddr((uint32_t)pdir));
+    system_enable_interrupts();
+    return 0;
+}
+
+int vmm_switch_pdir(pdirectory_t* pdir)
+{
+    lock_acquire(&_vmm_lock);
+    int res = vmm_switch_pdir_lockless(pdir);
+    lock_release(&_vmm_lock);
+    return res;
+}
+
+void vmm_enable_paging()
+{
+    system_enable_paging();
+}
+
+void vmm_disable_paging()
+{
+    system_disable_paging();
+}
+
+
 static int _vmm_self_test()
 {
     vmm_map_pages(0x00f0000, 0x8f000000, 1, PAGE_READABLE | PAGE_WRITABLE | PAGE_EXECUTABLE);
@@ -980,7 +1269,6 @@ static bool vmm_test_pspace_vaddr_of_active_ptable()
     page_desc_del_attrs(ppage, PAGE_DESC_PRESENT);
     uint32_t* kek1 = (uint32_t*)vaddr;
     *kek1 = 1;
-
     while (1) {
     }
     return true;
