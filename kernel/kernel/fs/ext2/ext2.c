@@ -323,3 +323,155 @@ static int _ext2_allocate_block_for_inode(dentry_t* dentry, uint32_t pref_group,
     }
     return -ENOSPC;
 }
+
+int ext2_read_inode(dentry_t* dentry)
+{
+    uint32_t inodes_per_group = dentry->fsdata.sb->inodes_per_group;
+    uint32_t holder_group = (dentry->inode_indx - 1) / inodes_per_group;
+    uint32_t pos_inside_group = (dentry->inode_indx - 1) % inodes_per_group;
+    uint32_t inode_start = _ext2_get_block_offset(dentry->fsdata.sb, dentry->fsdata.gt->table[holder_group].inode_table) + (pos_inside_group * INODE_LEN);
+    _ext2_read_from_dev(dentry->dev, (uint8_t*)dentry->inode, inode_start, INODE_LEN);
+    return 0;
+}
+
+int ext2_write_inode(dentry_t* dentry)
+{
+    uint32_t inodes_per_group = dentry->fsdata.sb->inodes_per_group;
+    uint32_t holder_group = (dentry->inode_indx - 1) / inodes_per_group;
+    uint32_t pos_inside_group = (dentry->inode_indx - 1) % inodes_per_group;
+    uint32_t inode_start = _ext2_get_block_offset(dentry->fsdata.sb, dentry->fsdata.gt->table[holder_group].inode_table) + (pos_inside_group * INODE_LEN);
+    _ext2_write_to_dev(dentry->dev, (uint8_t*)dentry->inode, inode_start, INODE_LEN);
+    return 0;
+}
+
+static int _ext2_find_free_inode_index(vfs_device_t* dev, fsdata_t fsdata, uint32_t* inode_index, uint32_t group_index)
+{
+    uint8_t inode_bitmap[MAX_BLOCK_LEN];
+    _ext2_read_from_dev(dev, inode_bitmap, _ext2_get_block_offset(fsdata.sb, fsdata.gt->table[group_index].inode_bitmap), BLOCK_LEN(fsdata.sb));
+
+    for (uint32_t off = 0; off < 8 * BLOCK_LEN(fsdata.sb); off++) {
+        if (!_ext2_bitmap_get(inode_bitmap, off)) {
+            *inode_index = SUPERBLOCK->inodes_per_group * group_index + off + 1;
+            _ext2_bitmap_set_bit(inode_bitmap, off);
+            _ext2_write_to_dev(dev, inode_bitmap, _ext2_get_block_offset(fsdata.sb, fsdata.gt->table[group_index].inode_bitmap), BLOCK_LEN(fsdata.sb));
+            return 0;
+        }
+    }
+    return -ENOSPC;
+}
+
+static int _ext2_allocate_inode_index(vfs_device_t* dev, fsdata_t fsdata, uint32_t* inode_index, uint32_t pref_group)
+{
+    uint32_t groups_cnt = GROUPS_COUNT;
+    for (int i = 0; i < groups_cnt; i++) {
+        uint32_t group_id = (pref_group + i) % groups_cnt;
+        if (fsdata.gt->table[group_id].free_inodes_count) {
+            if (_ext2_find_free_inode_index(dev, fsdata, inode_index, group_id) == 0) {
+                return 0;
+            }
+        }
+    }
+    return -ENOSPC;
+}
+
+static int _ext2_free_inode_index(vfs_device_t* dev, fsdata_t fsdata, uint32_t inode_index)
+{
+    inode_index--;
+    uint32_t block_len = BLOCK_LEN(fsdata.sb);
+    uint32_t inodes_per_group = fsdata.sb->inodes_per_group;
+    uint32_t group_index = inode_index / inodes_per_group;
+    uint32_t off = inode_index % inodes_per_group;
+
+    uint8_t inode_bitmap[MAX_BLOCK_LEN];
+    _ext2_read_from_dev(dev, inode_bitmap, _ext2_get_block_offset(fsdata.sb, fsdata.gt->table[group_index].inode_bitmap), block_len);
+
+    _ext2_bitmap_unset_bit(inode_bitmap, off);
+    _ext2_write_to_dev(dev, inode_bitmap, _ext2_get_block_offset(fsdata.sb, fsdata.gt->table[group_index].inode_bitmap), block_len);
+    return 0;
+}
+
+int ext2_free_inode(dentry_t* dentry)
+{
+    ASSERT(dentry->d_count == 0 && dentry->inode->links_count == 0);
+    uint32_t block_per_dir = TO_EXT_BLOCKS_CNT(dentry->fsdata.sb, dentry->inode->blocks);
+
+    for (int block_index = 0; block_index < block_per_dir; block_index++) {
+        uint32_t data_block_index = _ext2_get_block_of_inode(dentry, block_index);
+        _ext2_free_block_index(dentry->dev, dentry->fsdata, data_block_index);
+    }
+
+    _ext2_free_inode_index(dentry->dev, dentry->fsdata, dentry->inode_indx);
+    return 0;
+}
+
+static int _ext2_decriment_links_count(dentry_t* dentry)
+{
+    return (--dentry->inode->links_count) == 0;
+}
+
+static int _ext2_lookup_block(vfs_device_t* dev, fsdata_t fsdata, uint32_t block_index, const char* name, uint32_t len, uint32_t* found_inode_index)
+{
+    if (block_index == 0) {
+        return -EINVAL;
+    }
+
+    uint8_t tmp_buf[MAX_BLOCK_LEN];
+    _ext2_read_from_dev(dev, tmp_buf, _ext2_get_block_offset(fsdata.sb, block_index), BLOCK_LEN(fsdata.sb));
+    dir_entry_t* start_of_entry = (dir_entry_t*)tmp_buf;
+    for (;;) {
+        if (start_of_entry->inode == 0) {
+            return -EFAULT;
+        }
+
+        if (start_of_entry->name_len == len) {
+            bool is_name_same = true;
+            for (int i = 0; i < start_of_entry->name_len; i++) {
+                is_name_same &= (name[i] == *((char*)start_of_entry + 8 + i));
+            }
+
+            if (is_name_same) {
+                *found_inode_index = start_of_entry->inode;
+                return 0;
+            }
+        }
+
+        start_of_entry = (dir_entry_t*)((uint32_t)start_of_entry + start_of_entry->rec_len);
+        if ((uint32_t)start_of_entry >= (uint32_t)tmp_buf + BLOCK_LEN(fsdata.sb)) {
+            return -EFAULT;
+        }
+    }
+    return -EFAULT;
+}
+
+static int _ext2_getdirent_block(vfs_device_t* dev, fsdata_t fsdata, uint32_t block_index, uint32_t* offset, dirent_t* dirent)
+{
+    if (block_index == 0) {
+        return -EINVAL;
+    }
+    const uint32_t block_len = BLOCK_LEN(fsdata.sb);
+    uint32_t internal_offset = *offset % block_len;
+
+    uint8_t tmp_buf[MAX_BLOCK_LEN];
+    _ext2_read_from_dev(dev, tmp_buf, _ext2_get_block_offset(fsdata.sb, block_index), block_len);
+    for (;;) {
+        dir_entry_t* start_of_entry = (dir_entry_t*)((uint32_t)tmp_buf + internal_offset);
+        internal_offset += start_of_entry->rec_len;
+        *offset += start_of_entry->rec_len;
+
+        if (start_of_entry->inode != 0) {
+            int name_len = start_of_entry->name_len;
+            if (name_len > 251) {
+                log_warn("[VFS] Full name len is unsupported\n");
+                name_len = 251;
+            }
+            memcpy(dirent->name, (char*)start_of_entry + 8, name_len);
+            dirent->name[name_len] = '\0';
+            return 0;
+        }
+
+        if (internal_offset >= block_len) {
+            return -EFAULT;
+        }
+    }
+    return -EFAULT;
+}
