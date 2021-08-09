@@ -160,3 +160,29 @@ void _pmm_deinit_mat()
 {
     _pmm_deinit_region((uint32_t)pmm_mat, pmm_mat_size);
 }
+
+
+uint32_t pmm_get_ram_size()
+{
+    return pmm_ram_size;
+}
+
+uint32_t pmm_get_max_blocks()
+{
+    return pmm_max_blocks;
+}
+
+uint32_t pmm_get_used_blocks()
+{
+    return pmm_used_blocks;
+}
+
+uint32_t pmm_get_free_blocks()
+{
+    return pmm_max_blocks - pmm_used_blocks;
+}
+
+uint32_t pmm_geblock_size()
+{
+    return PMM_BLOCK_SIZE;
+}
