@@ -718,3 +718,82 @@ static void _vmm_ensure_cow_for_page(uint32_t vaddr)
         _vmm_resolve_copy_on_write(holder_proc, vaddr);
     }
 }
+
+static void _vmm_ensure_cow_for_range(uint32_t vaddr, uint32_t length)
+{
+    uint32_t page_addr = PAGE_START(vaddr);
+    while (page_addr < vaddr + length) {
+        _vmm_ensure_cow_for_page(page_addr);
+        page_addr += VMM_PAGE_SIZE;
+    }
+}
+
+static int _vmm_load_page_with_perm(uint32_t vaddr)
+{
+    if (PAGE_CHOOSE_OWNER(vaddr) == PAGE_USER && vmm_get_active_pdir() != vmm_get_kernel_pdir()) {
+        proc_t* holder_proc = tasking_get_proc_by_pdir(vmm_get_active_pdir());
+        if (!holder_proc) {
+            kpanic("No proc with the pdir\n");
+        }
+
+        proc_zone_t* zone = proc_find_zone(holder_proc, vaddr);
+        if (!zone) {
+            return SHOULD_CRASH;
+        }
+
+#ifdef VMM_DEBUG
+        log("Mmap[ensure_write_to] page %x for %d pid: %x", vaddr, RUNNING_THREAD->process->pid, zone->flags);
+#endif
+        vmm_load_page_lockless(vaddr, zone->flags);
+    } else {
+
+        vmm_load_page_lockless(vaddr, PAGE_READABLE | PAGE_WRITABLE | PAGE_EXECUTABLE);
+    }
+    return OK;
+}
+
+static void _vmm_ensure_write_to_page(uint32_t vaddr)
+{
+    if (!_vmm_is_page_present(vaddr)) {
+        _vmm_load_page_with_perm(vaddr);
+    }
+    _vmm_ensure_cow_for_page(vaddr);
+}
+
+static void _vmm_ensure_write_to_range(uint32_t vaddr, uint32_t length)
+{
+    uint32_t page_addr = PAGE_START(vaddr);
+    while (page_addr < vaddr + length) {
+        _vmm_ensure_write_to_page(page_addr);
+        page_addr += VMM_PAGE_SIZE;
+    }
+}
+
+static int _vmm_copy_page_to_resolve_cow(proc_t* p, uint32_t vaddr, ptable_t* src_ptable, int page_index)
+{
+    page_desc_t* old_page_desc = &src_ptable->entities[page_index];
+
+    proc_zone_t* zone = proc_find_zone(p, vaddr);
+    if (!zone) {
+        log_error("Cow: No page in zone");
+        return SHOULD_CRASH;
+    }
+
+    if ((zone->type & ZONE_TYPE_MAPPED_FILE_SHAREDLY)) {
+        uint32_t old_page_paddr = page_desc_get_frame(*old_page_desc);
+        return vmm_map_page_lockless(vaddr, old_page_paddr, zone->flags);
+    }
+
+    vmm_load_page_lockless(vaddr, zone->flags);
+
+    zone_t tmp_zone = zoner_new_zone(VMM_PAGE_SIZE);
+    uint32_t old_page_vaddr = (uint32_t)tmp_zone.start;
+    uint32_t old_page_paddr = page_desc_get_frame(*old_page_desc);
+    vmm_map_page_lockless(old_page_vaddr, old_page_paddr, PAGE_READABLE);
+
+    memcpy((uint8_t*)vaddr, (uint8_t*)old_page_vaddr, VMM_PAGE_SIZE);
+
+    vmm_unmap_page_lockless(old_page_vaddr);
+    zoner_free_zone(tmp_zone);
+    return 0;
+}
