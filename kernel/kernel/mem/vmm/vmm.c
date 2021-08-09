@@ -797,3 +797,71 @@ static int _vmm_copy_page_to_resolve_cow(proc_t* p, uint32_t vaddr, ptable_t* sr
     zoner_free_zone(tmp_zone);
     return 0;
 }
+
+static ALWAYS_INLINE int vmm_switch_pdir_lockless(pdirectory_t* pdir)
+{
+    if (!pdir) {
+        return -1;
+    }
+
+    if (((uint32_t)pdir & (PDIR_SIZE - 1)) != 0) {
+        kpanic("vmm_switch_pdir: wrong pdir");
+    }
+
+    system_disable_interrupts();
+    if (THIS_CPU->pdir == pdir) {
+        system_enable_interrupts();
+        return 0;
+    }
+    THIS_CPU->pdir = pdir;
+    system_set_pdir((uint32_t)_vmm_convert_vaddr2paddr((uint32_t)pdir));
+    system_enable_interrupts();
+    return 0;
+}
+
+int vmm_switch_pdir(pdirectory_t* pdir)
+{
+    lock_acquire(&_vmm_lock);
+    int res = vmm_switch_pdir_lockless(pdir);
+    lock_release(&_vmm_lock);
+    return res;
+}
+
+void vmm_enable_paging()
+{
+    system_enable_paging();
+}
+
+void vmm_disable_paging()
+{
+    system_disable_paging();
+}
+
+
+static int _vmm_self_test()
+{
+    vmm_map_pages(0x00f0000, 0x8f000000, 1, PAGE_READABLE | PAGE_WRITABLE | PAGE_EXECUTABLE);
+    bool correct = true;
+    correct &= ((uint32_t)_vmm_convert_vaddr2paddr(KERNEL_BASE) == KERNEL_PM_BASE);
+    correct &= ((uint32_t)_vmm_convert_vaddr2paddr(0xffc00000) == 0x0);
+    correct &= ((uint32_t)_vmm_convert_vaddr2paddr(0x100) == 0x100);
+    correct &= ((uint32_t)_vmm_convert_vaddr2paddr(0x8f000000) == 0x00f0000);
+    if (correct) {
+        return 0;
+    }
+    return 1;
+}
+
+static bool vmm_test_pspace_vaddr_of_active_ptable()
+{
+    uint32_t vaddr = 0xc0000000;
+    ptable_t* pt = _vmm_pspace_get_vaddr_of_active_ptable(vaddr);
+    page_desc_t* ppage = _vmm_ptable_lookup(pt, vaddr);
+    page_desc_del_attrs(ppage, PAGE_DESC_PRESENT);
+    uint32_t* kek1 = (uint32_t*)vaddr;
+    *kek1 = 1;
+
+    while (1) {
+    }
+    return true;
+}
