@@ -4,12 +4,13 @@
  * SPDX-License-Identifier: BSD-2-Clause
 */
 
+// includes
 #include <fs/vfs.h>
 #include <io/tty/pty_master.h>
 #include <io/tty/pty_slave.h>
-#include <libkern/bits/errno.h>
-#include <libkern/libkern.h>
-#include <libkern/log.h>
+#include <libkernel/bits/errno.h>
+#include <libkernel/libkernel.h>
+#include <libkernel/log.h>
 
 #define INODE2PTSNO(x) (x - 1)
 #define PTSNO2INODE(x) (x + 1)
@@ -84,7 +85,6 @@ bool pty_master_can_write(dentry_t* dentry, uint32_t start)
     return sync_ringbuffer_space_to_write(&ptm->pts->buffer) >= 0;
 }
 
-
 int pty_master_read(dentry_t* dentry, uint8_t* buf, uint32_t start, uint32_t len)
 {
     pty_master_entry_t* ptm = _ptm_get(dentry);
@@ -124,4 +124,23 @@ int pty_master_alloc(file_descriptor_t* fd)
         }
     }
 
+    if (!ptm) {
+        return -EBUSY;
+    }
+
+    ptm->dentry.d_count = 1;
+    ptm->dentry.flags = 0;
+    dentry_set_flag(&ptm->dentry, DENTRY_CUSTOM);
+    ptm->dentry.ops = &pty_master_ops;
+
+    fd->dentry = &ptm->dentry;
+    fd->ops = &pty_master_ops.file;
+    fd->flags = 0;
+    fd->offset = 0;
+    fd->type = FD_TYPE_FILE;
+
+    pty_slave_create(INODE2PTSNO(ptm->dentry.inode_indx), ptm);
+    ptm->buffer = sync_ringbuffer_create_std();
+
+    return 0;
 }
