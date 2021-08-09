@@ -837,6 +837,126 @@ void vmm_disable_paging()
     system_disable_paging();
 }
 
+int vmm_load_page(uint32_t vaddr, uint32_t settings)
+{
+    lock_acquire(&_vmm_lock);
+    uint32_t paddr = _vmm_alloc_page_paddr();
+    if (!paddr) {
+
+        kpanic("NO PHYSICAL SPACE");
+    }
+    int res = vmm_map_page_lockless(vaddr, paddr, settings);
+    uint8_t* dest = (uint8_t*)_vmm_round_floor_to_page(vaddr);
+    lock_release(&_vmm_lock);
+    memset(dest, 0, VMM_PAGE_SIZE);
+    return res;
+}
+
+static ALWAYS_INLINE int vmm_copy_page_lockless(uint32_t to_vaddr, uint32_t src_vaddr, ptable_t* src_ptable)
+{
+    page_desc_t* old_page_desc = _vmm_ptable_lookup(src_ptable, src_vaddr);
+
+    ptable_t* cur_ptable = (ptable_t*)_vmm_pspace_get_vaddr_of_active_ptable(to_vaddr);
+    page_desc_t* cur_page = _vmm_ptable_lookup(cur_ptable, to_vaddr);
+
+    if (!page_desc_is_present(*cur_page)) {
+        vmm_load_page_lockless(to_vaddr, page_desc_get_settings_ignore_cow(*old_page_desc));
+    } else {
+        _vmm_ensure_cow_for_page(to_vaddr);
+    }
+
+    zone_t tmp_zone = zoner_new_zone(VMM_PAGE_SIZE);
+    uint32_t old_page_vaddr = (uint32_t)tmp_zone.start;
+    uint32_t old_page_paddr = page_desc_get_frame(*old_page_desc);
+    vmm_map_page_lockless(old_page_vaddr, old_page_paddr, PAGE_READABLE | PAGE_WRITABLE | PAGE_EXECUTABLE);
+
+    memcpy((uint8_t*)to_vaddr, (uint8_t*)old_page_vaddr, VMM_PAGE_SIZE);
+
+    vmm_unmap_page_lockless(old_page_vaddr);
+    zoner_free_zone(tmp_zone);
+    return 0;
+}
+
+int vmm_copy_page(uint32_t to_vaddr, uint32_t src_vaddr, ptable_t* src_ptable)
+{
+    lock_acquire(&_vmm_lock);
+    int res = vmm_copy_page_lockless(to_vaddr, src_vaddr, src_ptable);
+    lock_release(&_vmm_lock);
+    return res;
+}
+
+static ALWAYS_INLINE int vmm_free_page_lockless(uint32_t vaddr, page_desc_t* page, dynamic_array_t* zones)
+{
+    if (!page_desc_has_attrs(*page, PAGE_DESC_PRESENT)) {
+        return 0;
+    }
+    page_desc_del_attrs(page, PAGE_DESC_PRESENT);
+
+    proc_zone_t* zone = proc_find_zone_no_proc(zones, vaddr);
+    if (zone) {
+        if (zone->type & ZONE_TYPE_DEVICE) {
+            return 0;
+        }
+    }
+    _vmm_free_page_paddr(page_desc_get_frame(*page));
+    return 0;
+}
+
+int vmm_free_page(uint32_t vaddr, page_desc_t* page, dynamic_array_t* zones)
+{
+    lock_acquire(&_vmm_lock);
+    int res = vmm_free_page_lockless(vaddr, page, zones);
+    lock_release(&_vmm_lock);
+    return res;
+}
+
+int vmm_page_fault_handler(uint32_t info, uint32_t vaddr)
+{
+    lock_acquire(&_vmm_lock);
+    if (_vmm_is_table_not_present(info) || _vmm_is_page_not_present(info)) {
+        int res = _vmm_load_page_with_perm(vaddr);
+        lock_release(&_vmm_lock);
+        if (PAGE_CHOOSE_OWNER(vaddr) == PAGE_USER && vmm_get_active_pdir() != vmm_get_kernel_pdir()) {
+            proc_t* holder_proc = tasking_get_proc_by_pdir(vmm_get_active_pdir());
+            if (!holder_proc) {
+                kpanic("No proc with the pdir\n");
+            }
+
+            proc_zone_t* zone = proc_find_zone(holder_proc, vaddr);
+            if (!zone) {
+                return SHOULD_CRASH;
+            }
+
+            if (zone->type & ZONE_TYPE_MAPPED_FILE_PRIVATLY) {
+                uint32_t offset = zone->offset + (PAGE_START(vaddr) - zone->start);
+                lock_acquire(&zone->file->lock);
+                zone->file->ops->file.read(zone->file, (void*)PAGE_START(vaddr), offset, VMM_PAGE_SIZE);
+                lock_release(&zone->file->lock);
+            }
+        }
+        return res;
+    }
+
+    if (_vmm_is_caused_writing(info)) {
+        int visited = 0;
+        if (_vmm_is_copy_on_write(vaddr)) {
+            proc_t* holder_proc = tasking_get_proc_by_pdir(vmm_get_active_pdir());
+            if (!holder_proc) {
+                kpanic("No proc with the pdir\n");
+            }
+            _vmm_resolve_copy_on_write(holder_proc, vaddr);
+            visited++;
+        }
+
+        if (!visited) {
+            lock_release(&_vmm_lock);
+            return SHOULD_CRASH;
+        }
+    }
+
+    lock_release(&_vmm_lock);
+    return OK;
+}
 
 static int _vmm_self_test()
 {
