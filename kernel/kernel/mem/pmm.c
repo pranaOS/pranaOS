@@ -55,10 +55,12 @@ uint32_t _pmm_first_free_block()
 {
     uint32_t* mat_big = (uint32_t*)pmm_mat;
     for (uint32_t i = last_i; i < pmm_mat_size / 4; i++) {
+
         if (mat_big[i] != 0xffffffff) {
             for (uint8_t j = 0; j < 32; j++) {
                 uint32_t currenblock = i * 32 + j;
                 if (!_pmm_mat_tesblock(currenblock)) {
+
                     return currenblock;
                 }
             }
@@ -84,6 +86,7 @@ uint32_t _pmm_first_free_block_n(uint32_t t_size)
                     }
                 }
                 if (free == t_size) {
+
                     return currenblock;
                 }
             }
@@ -161,6 +164,136 @@ void _pmm_deinit_mat()
     _pmm_deinit_region((uint32_t)pmm_mat, pmm_mat_size);
 }
 
+void _pmm_calc_ram_size(mem_desc_t* mem_desc)
+{
+    pmm_ram_size = 0;
+    memory_map_t* memory_map = (memory_map_t*)MEMORY_MAP_REGION;
+    for (int i = 0; i < mem_desc->memory_map_size; i++) {
+        if (memory_map[i].type == 1) {
+            pmm_ram_size = memory_map[i].startLo + memory_map[i].sizeLo;
+        }
+    }
+}
+
+void _pmm_allocate_mat(void* t_mat_base)
+{
+    pmm_mat = t_mat_base;
+    pmm_mat_size = pmm_ram_size / PMM_BLOCK_SIZE / PMM_BLOCKS_PER_BYTE;
+    pmm_max_blocks = pmm_ram_size / PMM_BLOCK_SIZE;
+    pmm_used_blocks = pmm_max_blocks;
+
+    for (uint32_t i = 0; i < pmm_mat_size; ++i) {
+        pmm_mat[i] = 0xff;
+    }
+}
+
+void pmm_setup(mem_desc_t* mem_desc)
+{
+    uint32_t kernel_base_c = _pmm_round_ceil(KERNEL_BASE);
+    uint32_t kernel_size = _pmm_round_ceil(mem_desc->kernel_size * 1024);
+    _pmm_calc_ram_size(mem_desc);
+    _pmm_allocate_mat((void*)(kernel_base_c + kernel_size));
+
+    memory_map_t* memory_map = (memory_map_t*)MEMORY_MAP_REGION;
+    for (int i = 0; i < mem_desc->memory_map_size; i++) {
+        if (memory_map[i].type == 1) {
+            log("  %d: %x - %x\n", i, memory_map[i].startLo, memory_map[i].sizeLo);
+            _pmm_init_region(memory_map[i].startLo, memory_map[i].sizeLo);
+        }
+    }
+
+    log("PMM: MAT size: %x", pmm_mat_size);
+
+
+#ifdef __i386__
+    _pmm_deinit_region(0x0, 0x200000);
+#elif __arm__
+    _pmm_deinit_region(0x0, 0x80200000);
+#endif
+    _pmm_deinit_mat(); 
+    _pmm_deinit_region(0x0, KERNEL_PM_BASE); 
+    _pmm_deinit_region(KERNEL_PM_BASE, mem_desc->kernel_size * 1024); 
+}
+
+void* pmm_alloc_blocks(uint32_t t_size)
+{
+    uint32_t block_id = _pmm_first_free_block_n(t_size);
+    if (block_id == 0) {
+        return 0x0;
+    }
+    for (uint32_t i = 0; i < t_size; i++) {
+        _pmm_mat_alloc_block(block_id + i);
+        pmm_used_blocks++;
+    }
+    return (void*)(block_id * PMM_BLOCK_SIZE);
+}
+
+void* pmm_alloc_blocks_aligned(uint32_t t_size, uint32_t al)
+{
+    uint32_t block_id = _pmm_first_free_block_n_aligned(t_size, al);
+    if (block_id == 0) {
+        return 0x0;
+    }
+    for (uint32_t i = 0; i < t_size; i++) {
+        _pmm_mat_alloc_block(block_id + i);
+        pmm_used_blocks++;
+    }
+    return (void*)(block_id * PMM_BLOCK_SIZE);
+}
+
+bool pmm_free_blocks(void* block, uint32_t t_size)
+{
+    if (((uint32_t)block & (PMM_BLOCK_SIZE - 1)) != 0) {
+        return false;
+    }
+    uint32_t block_id = (uint32_t)block / PMM_BLOCK_SIZE;
+    for (uint32_t i = 0; i < t_size; i++) {
+        _pmm_mat_free_block(block_id + i);
+        pmm_used_blocks--;
+    }
+    return true;
+}
+
+void* pmm_alloc_block()
+{
+    uint32_t block_id = _pmm_first_free_block();
+    if (block_id == 0) {
+        return 0x0;
+    }
+    _pmm_mat_alloc_block(block_id);
+    pmm_used_blocks++;
+    return (void*)(block_id * PMM_BLOCK_SIZE);
+}
+
+void* pmm_alloc(uint32_t act_size)
+{
+    uint32_t n = (act_size + PMM_BLOCK_SIZE - 1) / PMM_BLOCK_SIZE;
+    return pmm_alloc_blocks(n);
+}
+
+void* pmm_alloc_aligned(uint32_t act_size, uint32_t alignment)
+{
+    uint32_t n = (act_size + PMM_BLOCK_SIZE - 1) / PMM_BLOCK_SIZE;
+    uint32_t al = (alignment + PMM_BLOCK_SIZE - 1) / PMM_BLOCK_SIZE;
+    return pmm_alloc_blocks_aligned(n, al);
+}
+
+bool pmm_free(void* block, uint32_t act_size)
+{
+    uint32_t n = (act_size + PMM_BLOCK_SIZE - 1) / PMM_BLOCK_SIZE;
+    return pmm_free_blocks(block, n);
+}
+
+bool pmm_free_block(void* block)
+{
+    if (((uint32_t)block & (PMM_BLOCK_SIZE - 1)) != 0) {
+        return false;
+    }
+    uint32_t block_id = (uint32_t)block / PMM_BLOCK_SIZE;
+    _pmm_mat_free_block(block_id);
+    pmm_used_blocks--;
+    return true;
+}
 
 uint32_t pmm_get_ram_size()
 {
