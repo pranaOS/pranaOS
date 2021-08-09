@@ -30,9 +30,43 @@ void fpu_setup(void)
     asm volatile("mov %0, %%cr4" ::"r"(tmp));
 }
 
+void fpu_handler()
+{
+    if (!RUNNING_THREAD) {
+#ifdef DEBUG_FPU
+        log_warn("FPU: no running thread, but handler is called");
+#endif
+        return;
+    }
+
+    if (fpu_is_avail()) {
+#ifdef DEBUG_FPU
+        log_warn("FPU: is avail, but handler is called");
+#endif
+        return;
+    }
+
+    fpu_make_avail();
+
+    if (RUNNING_THREAD->tid == THIS_CPU->fpu_for_pid) {
+        return;
+    }
+
+    if (THIS_CPU->fpu_for_thread && THIS_CPU->fpu_for_thread->tid == THIS_CPU->fpu_for_pid) {
+        fpu_save(THIS_CPU->fpu_for_thread->fpu_state);
+    }
+
+    fpu_restore(RUNNING_THREAD->fpu_state);
+    THIS_CPU->fpu_for_thread = RUNNING_THREAD;
+    THIS_CPU->fpu_for_pid = RUNNING_THREAD->tid;
+}
+
 void fpu_init()
 {
     fpu_setup();
+    asm volatile("fninit");
+    asm volatile("fxsave %0"
+                 : "=m"(fpu_state));
 }
 
 void fpu_init_state(fpu_state_t* new_fpu_state)
