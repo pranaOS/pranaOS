@@ -1,0 +1,41 @@
+/*
+ * Copyright (c) 2021, Krisna Pranav
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+*/
+
+// includes
+#include <drivers/x86/fpu.h>
+#include <libkernel/log.h>
+#include <libkernel/mem.h>
+#include <platform/x86/idt.h>
+#include <tasking/tasking.h>
+
+static fpu_state_t fpu_state;
+
+#define DEBUG_FPU
+
+void fpu_setup(void)
+{
+    uint32_t tmp;
+    asm volatile("mov %%cr0, %0"
+                 : "=r"(tmp));
+    tmp &= ~(1 << 2);
+    tmp |= (1 << 1);
+    asm volatile("mov %0, %%cr0" ::"r"(tmp));
+
+    asm volatile("mov %%cr4, %0"
+                 : "=r"(tmp));
+    tmp |= 3 << 9;
+    asm volatile("mov %0, %%cr4" ::"r"(tmp));
+}
+
+void fpu_init()
+{
+    fpu_setup();
+}
+
+void fpu_init_state(fpu_state_t* new_fpu_state)
+{
+    memcpy(new_fpu_state, &fpu_state, sizeof(fpu_state_t));
+}
