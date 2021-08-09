@@ -177,3 +177,186 @@ static int _vmm_split_pspace()
     memset((void*)THIS_CPU->pdir, 0, PDIR_SIZE);
     return 0;
 }
+
+static void _vmm_pspace_init()
+{
+    uint32_t kernel_ptabels_vaddr = pspace_zone.start + VMM_KERNEL_TABLES_START * PTABLE_SIZE; 
+    uint32_t kernel_ptabels_paddr = kernel_ptables_start_paddr; 
+    uint32_t ptables_per_page = VMM_PAGE_SIZE / PTABLE_SIZE;
+    for (int i = VMM_KERNEL_TABLES_START; i < VMM_TOTAL_TABLES_PER_DIRECTORY; i += ptables_per_page) {
+        table_desc_t* ptable_desc = _vmm_pdirectory_lookup(THIS_CPU->pdir, kernel_ptabels_vaddr);
+        if (!table_desc_is_present(*ptable_desc)) {
+            kpanic("PSPACE_6335 : BUG\n");
+        }
+        ptable_t* ptable_vaddr = (ptable_t*)(kernel_ptables_start_paddr + (VMM_OFFSET_IN_DIRECTORY(kernel_ptabels_vaddr) - VMM_KERNEL_TABLES_START) * PTABLE_SIZE);
+        page_desc_t* page = _vmm_ptable_lookup(ptable_vaddr, kernel_ptabels_vaddr);
+        page_desc_set_attrs(page, PAGE_DESC_PRESENT | PAGE_DESC_WRITABLE);
+        page_desc_set_frame(page, kernel_ptabels_paddr);
+        kernel_ptabels_vaddr += VMM_PAGE_SIZE;
+        kernel_ptabels_paddr += VMM_PAGE_SIZE;
+    }
+}
+
+static void _vmm_pspace_gen(pdirectory_t* pdir)
+{
+    ptable_t* cur_ptable = (ptable_t*)_vmm_pspace_get_nth_active_ptable(VMM_OFFSET_IN_DIRECTORY(pspace_zone.start));
+    uint32_t ptables_per_page = VMM_PAGE_SIZE / PTABLE_SIZE;
+    uint32_t ptable_paddr = _vmm_alloc_ptables_to_cover_page();
+    zone_t tmp_zone = zoner_new_zone(VMM_PAGE_SIZE);
+    ptable_t* new_ptable = (ptable_t*)tmp_zone.start;
+
+    vmm_map_page_lockless((uint32_t)new_ptable, ptable_paddr, PAGE_READABLE | PAGE_WRITABLE);
+
+    memcpy(new_ptable, cur_ptable, VMM_PAGE_SIZE);
+
+    page_desc_t pspace_page;
+    page_desc_init(&pspace_page);
+    page_desc_set_attrs(&pspace_page, PAGE_DESC_PRESENT | PAGE_DESC_WRITABLE);
+    page_desc_set_frame(&pspace_page, ptable_paddr);
+
+    new_ptable->entities[VMM_OFFSET_IN_DIRECTORY(pspace_zone.start) / ptables_per_page] = pspace_page;
+
+    uint32_t table_coverage = VMM_PAGE_SIZE * VMM_TOTAL_PAGES_PER_TABLE;
+    uint32_t ptable_vaddr_for = pspace_zone.start;
+    uint32_t ptable_paddr_for = ptable_paddr;
+    for (int i = 0; i < ptables_per_page; i++, ptable_vaddr_for += table_coverage, ptable_paddr_for += PTABLE_SIZE) {
+        table_desc_t pspace_table;
+        table_desc_init(&pspace_table);
+        table_desc_set_attrs(&pspace_table, TABLE_DESC_PRESENT | TABLE_DESC_WRITABLE);
+        table_desc_set_frame(&pspace_table, ptable_paddr_for);
+        pdir->entities[VMM_OFFSET_IN_DIRECTORY(ptable_vaddr_for)] = pspace_table;
+    }
+    vmm_unmap_page_lockless((uint32_t)new_ptable);
+    zoner_free_zone(tmp_zone);
+}
+
+static void _vmm_free_pspace(pdirectory_t* pdir)
+{
+    table_desc_t* ptable_desc = &pdir->entities[VMM_OFFSET_IN_DIRECTORY(pspace_zone.start)];
+    if (!table_desc_has_attrs(*ptable_desc, TABLE_DESC_PRESENT)) {
+        return;
+    }
+    pmm_free_block((void*)table_desc_get_frame(*ptable_desc));
+    table_desc_del_frame(ptable_desc);
+}
+
+static void* _vmm_kernel_convert_vaddr2paddr(uint32_t vaddr)
+{
+    ptable_t* ptable_paddr = (ptable_t*)(kernel_ptables_start_paddr + (VMM_OFFSET_IN_DIRECTORY(vaddr) - VMM_KERNEL_TABLES_START) * PTABLE_SIZE);
+    page_desc_t* page_desc = _vmm_ptable_lookup(ptable_paddr, vaddr);
+    return (void*)((page_desc_get_frame(*page_desc)) | (vaddr & 0xfff));
+}
+
+static void* _vmm_convert_vaddr2paddr(uint32_t vaddr)
+{
+    ptable_t* ptable_vaddr = (ptable_t*)_vmm_pspace_get_vaddr_of_active_ptable(vaddr);
+    page_desc_t* page_desc = _vmm_ptable_lookup(ptable_vaddr, vaddr);
+    return (void*)((page_desc_get_frame(*page_desc)) | (vaddr & 0xfff));
+}
+
+static bool _vmm_init_switch_to_kernel_pdir()
+{
+    THIS_CPU->pdir = _vmm_kernel_pdir;
+    system_disable_interrupts();
+    system_set_pdir((uint32_t)_vmm_kernel_convert_vaddr2paddr((uint32_t)THIS_CPU->pdir));
+    system_enable_interrupts();
+    return true;
+}
+
+static void _vmm_map_init_kernel_pages(uint32_t paddr, uint32_t vaddr)
+{
+    ptable_t* ptable_paddr = (ptable_t*)(kernel_ptables_start_paddr + (VMM_OFFSET_IN_DIRECTORY(vaddr) - VMM_KERNEL_TABLES_START) * PTABLE_SIZE);
+    for (uint32_t phyz = paddr, virt = vaddr, i = 0; i < VMM_TOTAL_PAGES_PER_TABLE; phyz += VMM_PAGE_SIZE, virt += VMM_PAGE_SIZE, i++) {
+        page_desc_t new_page;
+        page_desc_init(&new_page);
+        page_desc_set_attrs(&new_page, PAGE_DESC_PRESENT | PAGE_DESC_WRITABLE);
+        page_desc_set_frame(&new_page, phyz);
+        ptable_paddr->entities[i] = new_page;
+    }
+}
+
+static bool _vmm_create_kernel_ptables()
+{
+    uint32_t table_coverage = VMM_PAGE_SIZE * VMM_TOTAL_PAGES_PER_TABLE;
+    uint32_t kernel_ptabels_vaddr = VMM_KERNEL_TABLES_START * table_coverage;
+
+    for (int i = VMM_KERNEL_TABLES_START; i < VMM_TOTAL_TABLES_PER_DIRECTORY; i++, kernel_ptabels_vaddr += table_coverage) {
+
+        table_desc_t* ptable_desc = _vmm_pdirectory_lookup(_vmm_kernel_pdir, kernel_ptabels_vaddr);
+        uint32_t paddr = _vmm_alloc_ptable_paddr();
+        if (!paddr) {
+            kpanic("PADDR_5546 : BUG\n");
+        }
+
+        if (!kernel_ptables_start_paddr) {
+            kernel_ptables_start_paddr = paddr;
+        }
+        table_desc_init(ptable_desc);
+        table_desc_set_attrs(ptable_desc, TABLE_DESC_PRESENT | TABLE_DESC_WRITABLE);
+
+        if (i > VMM_OFFSET_IN_DIRECTORY(pspace_zone.start)) {
+            table_desc_set_attrs(ptable_desc, TABLE_DESC_USER);
+        }
+
+        table_desc_set_frame(ptable_desc, paddr);
+    }
+
+    int te = 0;
+    do {
+        _vmm_map_init_kernel_pages(kernel_mapping_table[te].paddr, kernel_mapping_table[te].vaddr);
+    } while (!kernel_mapping_table[te++].last);
+
+    return true;
+}
+
+static bool _vmm_map_kernel()
+{
+    int te = 0;
+    do {
+        vmm_map_pages(extern_mapping_table[te].paddr, extern_mapping_table[te].vaddr, extern_mapping_table[te].pages, extern_mapping_table[te].flags);
+    } while (!extern_mapping_table[te++].last);
+    return true;
+}
+
+int vmm_setup()
+{
+    lock_init(&_vmm_lock);
+    zoner_init(0xc0400000);
+    _vmm_split_pspace();
+    _vmm_create_kernel_ptables();
+    _vmm_pspace_init();
+    _vmm_init_switch_to_kernel_pdir();
+    _vmm_map_kernel();
+    zoner_place_bitmap();
+    kmalloc_init();
+    return 0;
+}
+
+int vmm_setup_secondary_cpu()
+{
+    _vmm_init_switch_to_kernel_pdir();
+    return 0;
+}
+
+
+inline static uint32_t _vmm_round_ceil_to_page(uint32_t value)
+{
+    if ((value & (VMM_PAGE_SIZE - 1)) != 0) {
+        value += VMM_PAGE_SIZE;
+        value &= (0xffffffff - (VMM_PAGE_SIZE - 1));
+    }
+    return value;
+}
+
+inline static uint32_t _vmm_round_floor_to_page(uint32_t value)
+{
+    return (value & (0xffffffff - (VMM_PAGE_SIZE - 1)));
+}
+
+inline static table_desc_t* _vmm_pdirectory_lookup(pdirectory_t* pdir, uint32_t vaddr)
+{
+    if (pdir) {
+        return &pdir->entities[VMM_OFFSET_IN_DIRECTORY(vaddr)];
+    }
+    return 0;
+}
