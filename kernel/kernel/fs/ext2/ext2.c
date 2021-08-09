@@ -1,14 +1,14 @@
 /*
- * Copyright (c) 2021, Krisna Pranav
+ * Copyright (c) 2021, Krisna Pranav, OliviaCE
  *
  * SPDX-License-Identifier: BSD-2-Clause
 */
 
 #include <fs/vfs.h>
-#include <libkern/bits/errno.h>
-#include <libkern/libkern.h>
-#include <libkern/lock.h>
-#include <libkern/log.h>
+#include <libkernel/bits/errno.h>
+#include <libkernel/libkern.h>
+#include <libkernel/lock.h>
+#include <libkernel/log.h>
 #include <mem/kmalloc.h>
 #include <time/time_manager.h>
 
@@ -475,3 +475,192 @@ static int _ext2_getdirent_block(vfs_device_t* dev, fsdata_t fsdata, uint32_t bl
     }
     return -EFAULT;
 }
+
+static int _ext2_get_dir_entries_count_in_block(vfs_device_t* dev, fsdata_t fsdata, uint32_t block_index)
+{
+    ASSERT(block_index != 0);
+
+    const uint32_t block_len = BLOCK_LEN(fsdata.sb);
+    uint32_t internal_offset = 0;
+    int result = 0;
+
+    uint8_t tmp_buf[MAX_BLOCK_LEN];
+    _ext2_read_from_dev(dev, tmp_buf, _ext2_get_block_offset(fsdata.sb, block_index), block_len);
+    for (;;) {
+        dir_entry_t* start_of_entry = (dir_entry_t*)((uint32_t)tmp_buf + internal_offset);
+        internal_offset += start_of_entry->rec_len;
+
+        if (start_of_entry->inode != 0) {
+            result++;
+        }
+
+        if (internal_offset >= block_len) {
+            return result;
+        }
+    }
+    return result;
+}
+
+static bool _ext2_is_dir_empty(dentry_t* dir)
+{
+    const uint32_t block_len = BLOCK_LEN(dir->fsdata.sb);
+    uint32_t end_block_index = TO_EXT_BLOCKS_CNT(dir->fsdata.sb, dir->inode->blocks);
+    int result = 0;
+
+    for (uint32_t block_index = 0; block_index < end_block_index; block_index++) {
+        uint32_t data_block_index = _ext2_get_block_of_inode(dir, block_index);
+        result += _ext2_get_dir_entries_count_in_block(dir->dev, dir->fsdata, data_block_index);
+
+        if (result > 2) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+static int _ext2_getdents_block(vfs_device_t* dev, fsdata_t fsdata, uint32_t block_index, uint8_t* buf, uint32_t len, uint32_t inner_offset, uint32_t* scanned_bytes)
+{
+    if (block_index == 0) {
+        return -EINVAL;
+    }
+    const uint32_t block_len = BLOCK_LEN(fsdata.sb);
+    int already_read = 0;
+
+    uint8_t tmp_buf[MAX_BLOCK_LEN];
+    _ext2_read_from_dev(dev, tmp_buf, _ext2_get_block_offset(fsdata.sb, block_index), block_len);
+    for (;;) {
+        dir_entry_t* start_of_entry = (dir_entry_t*)((uint32_t)tmp_buf + inner_offset);
+        uint32_t record_name_len = NORM_FILENAME(start_of_entry->name_len);
+        uint32_t real_rec_len = 8 + record_name_len + 1;
+
+        if (real_rec_len > len) {
+
+            if (already_read == 0) {
+                return -EINVAL;
+            }
+            return already_read;
+        }
+
+        inner_offset += start_of_entry->rec_len;
+        *scanned_bytes += start_of_entry->rec_len;
+        if (start_of_entry->inode != 0) {
+
+            start_of_entry->rec_len = real_rec_len;
+            memcpy(buf + already_read, (uint8_t*)start_of_entry, real_rec_len);
+            buf[already_read + real_rec_len - 1] = '\0';
+
+            already_read += real_rec_len;
+            len -= real_rec_len;
+        }
+
+        if (inner_offset >= block_len) {
+            return already_read;
+        }
+    }
+    return already_read;
+}
+
+static int _ext2_add_first_entry_to_dir_block(vfs_device_t* dev, fsdata_t fsdata, uint32_t block_index, dentry_t* child_dentry, const char* filename, uint32_t len)
+{
+    if (block_index == 0) {
+        return -EINVAL;
+    }
+
+    uint32_t record_name_len = NORM_FILENAME(len);
+    uint32_t min_rec_len = 8 + record_name_len;
+    dir_entry_t new_entry;
+
+    uint8_t tmp_buf[DIR_ENTRY_LEN];
+    _ext2_read_from_dev(dev, tmp_buf, _ext2_get_block_offset(fsdata.sb, block_index), DIR_ENTRY_LEN);
+    dir_entry_t* start_of_entry = (dir_entry_t*)tmp_buf;
+    new_entry.inode = child_dentry->inode_indx;
+    new_entry.rec_len = BLOCK_LEN(fsdata.sb);
+    new_entry.name_len = len;
+    memcpy((void*)start_of_entry, (void*)&new_entry, 8);
+    memcpy((void*)((uint32_t)start_of_entry + 8), (void*)filename, len);
+    memset((void*)((uint32_t)start_of_entry + 8 + len), 0, record_name_len - len);
+    _ext2_write_to_dev(dev, tmp_buf, _ext2_get_block_offset(fsdata.sb, block_index), DIR_ENTRY_LEN);
+    return 0;
+}
+
+static int _ext2_add_to_dir_block(vfs_device_t* dev, fsdata_t fsdata, uint32_t block_index, dentry_t* child_dentry, const char* filename, uint32_t len)
+{
+    if (block_index == 0) {
+        return -EINVAL;
+    }
+
+    uint32_t record_name_len = NORM_FILENAME(len);
+    uint32_t min_rec_len = 8 + record_name_len;
+    dir_entry_t new_entry;
+
+    uint8_t tmp_buf[MAX_BLOCK_LEN];
+    _ext2_read_from_dev(dev, tmp_buf, _ext2_get_block_offset(fsdata.sb, block_index), BLOCK_LEN(fsdata.sb));
+    dir_entry_t* start_of_entry = (dir_entry_t*)tmp_buf;
+    dir_entry_t* start_of_new_entry;
+
+    if (start_of_entry->inode == 0) {
+        kpanic("Ext2: can't add as first entry with help of that function.");
+    }
+
+    for (;;) {
+        uint32_t cur_filename_len = NORM_FILENAME(start_of_entry->name_len);
+        uint32_t cur_rec_len = 8 + cur_filename_len;
+
+        if (start_of_entry->rec_len >= cur_rec_len + min_rec_len) {
+            new_entry.inode = child_dentry->inode_indx;
+            new_entry.rec_len = start_of_entry->rec_len - cur_rec_len;
+            new_entry.name_len = len;
+            start_of_new_entry = (dir_entry_t*)((uint32_t)start_of_entry + cur_rec_len);
+            start_of_entry->rec_len = cur_rec_len;
+            goto update_res;
+        }
+
+        start_of_entry = (dir_entry_t*)((uint32_t)start_of_entry + start_of_entry->rec_len);
+        if ((uint32_t)start_of_entry >= (uint32_t)tmp_buf + BLOCK_LEN(fsdata.sb)) {
+            return -EFAULT;
+        }
+    }
+
+update_res:
+    memcpy((void*)start_of_new_entry, (void*)&new_entry, 8);
+    memcpy((void*)((uint32_t)start_of_new_entry + 8), (void*)filename, len);
+    memset((void*)((uint32_t)start_of_new_entry + 8 + len), 0, record_name_len - len);
+    _ext2_write_to_dev(dev, tmp_buf, _ext2_get_block_offset(fsdata.sb, block_index), BLOCK_LEN(fsdata.sb));
+    return 0;
+}
+
+static int _ext2_rm_from_dir_block(vfs_device_t* dev, fsdata_t fsdata, uint32_t block_index, dentry_t* child_dentry)
+{
+    if (block_index == 0) {
+        return -EINVAL;
+    }
+
+    uint8_t tmp_buf[MAX_BLOCK_LEN];
+    _ext2_read_from_dev(dev, tmp_buf, _ext2_get_block_offset(fsdata.sb, block_index), BLOCK_LEN(fsdata.sb));
+    dir_entry_t* start_of_entry = (dir_entry_t*)tmp_buf;
+    dir_entry_t* prev_entry = (dir_entry_t*)0;
+
+    for (;;) {
+
+        if (start_of_entry->inode == child_dentry->inode_indx) {
+            if (!prev_entry) {
+                kpanic("Ext2: can't delete first entry.");
+            }
+
+            start_of_entry->inode = 0;
+            prev_entry->rec_len += start_of_entry->rec_len;
+
+            _ext2_write_to_dev(dev, tmp_buf, _ext2_get_block_offset(fsdata.sb, block_index), BLOCK_LEN(fsdata.sb));
+
+            return 0;
+        }
+
+        prev_entry = start_of_entry;
+        start_of_entry = (dir_entry_t*)((uint32_t)start_of_entry + start_of_entry->rec_len);
+        if ((uint32_t)start_of_entry >= (uint32_t)tmp_buf + BLOCK_LEN(fsdata.sb)) {
+            return -EFAULT;
+        }
+    }
+}
+
