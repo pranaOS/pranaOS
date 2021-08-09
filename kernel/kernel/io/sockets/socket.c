@@ -23,24 +23,33 @@ static socket_t* _socket_create(int domain, int type, int protocol)
     return &socket_list[next_socket++];
 }
 
-
 int socket_create(int domain, int type, int protocol, file_descriptor_t* fd, file_ops_t* ops)
 {
     fd->type = FD_TYPE_SOCKET;
     fd->sock_entry = _socket_create(domain, type, protocol);
+    fd->ops = ops;
     if (!fd->sock_entry) {
         return -1;
     }
     return 0;
 }
 
+socket_t* socket_duplicate(socket_t* sock)
+{
+    lock_acquire(&sock->lock);
+    sock->d_count++;
+    lock_release(&sock->lock);
+    return sock;
+}
+
 int socket_put(socket_t* sock)
 {
     lock_acquire(&sock->lock);
     sock->d_count--;
+    ASSERT(sock->d_count > 0);
     if (sock->d_count == 0) {
-        sync_ringbuffer_free(&sock);
+        sync_ringbuffer_free(&sock->buffer);
     }
-    lock_release(&sock);
+    lock_release(&sock->lock);
     return 0;
 }
