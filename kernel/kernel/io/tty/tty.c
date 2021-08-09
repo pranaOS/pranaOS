@@ -18,6 +18,7 @@
 #include <tasking/signal.h>
 #include <tasking/tasking.h>
 
+
 static int next_tty = 0;
 static tty_entry_t* active_tty = 0;
 tty_entry_t ttys[TTY_MAX_COUNT];
@@ -70,7 +71,6 @@ int tty_read(dentry_t* dentry, uint8_t* buf, uint32_t start, uint32_t len)
     }
     return leno;
 }
-
 
 int _tty_process_esc_seq(uint8_t* buf)
 {
@@ -131,7 +131,6 @@ int tty_write(dentry_t* dentry, uint8_t* buf, uint32_t start, uint32_t len)
             i += _tty_process_esc_seq(&buf[i]);
         } else {
             log_not_formatted("%c", buf[i]);
-
         }
     }
 
@@ -162,4 +161,74 @@ int tty_ioctl(dentry_t* dentry, uint32_t cmd, uint32_t arg)
     }
 
     return -EINVAL;
+}
+
+static void _tty_setup_termios(tty_entry_t* tty)
+{
+    tty->termios.c_lflag |= ECHO | ICANON;
+}
+
+tty_entry_t* tty_new()
+{
+    dentry_t* mp;
+    if (vfs_resolve_path("/dev", &mp) < 0) {
+        return 0;
+    }
+
+    char* name = "tty ";
+    name[3] = next_tty + '0';
+    file_ops_t fops = { 0 };
+    fops.can_read = tty_can_read;
+    fops.can_write = tty_can_write;
+    fops.read = tty_read;
+    fops.write = tty_write;
+    fops.ioctl = tty_ioctl;
+    devfs_inode_t* res = devfs_register(mp, MKDEV(4, next_tty), name, 4, 0, &fops);
+    ttys[next_tty].id = next_tty;
+    ttys[next_tty].inode_indx = res->index;
+    ttys[next_tty].buffer = sync_ringbuffer_create_std();
+    ttys[next_tty].lines_avail = 0;
+    _tty_setup_termios(&ttys[next_tty]);
+    if (!ttys[next_tty].buffer.ringbuffer.zone.start) {
+        log_error("Error: tty buffer allocation");
+        while (1) { }
+    }
+    active_tty = &ttys[next_tty];
+    next_tty++;
+
+    dentry_put(mp);
+    return &ttys[next_tty - 1];
+}
+
+static void _tty_echo_key(tty_entry_t* tty, key_t key)
+{
+    if (tty->termios.c_lflag & ECHO) {
+    }
+}
+
+void tty_eat_key(key_t key)
+{
+    tty_entry_t* tty = _tty_active();
+    if (key == KEY_CTRLC) {
+        proc_t* p = tasking_get_proc(tty->pgid);
+        if (p) {
+            signal_set_pending(p->main_thread, SIGINT);
+            signal_dispatch_pending(p->main_thread);
+        }
+        return;
+    }
+
+    if (key == KEY_RETURN) {
+        _tty_echo_key(tty, '\n');
+        sync_ringbuffer_write_one(&tty->buffer, '\n');
+        tty->lines_avail++;
+    } else if (key == KEY_BACKSPACE) {
+        if (sync_ringbuffer_space_to_read(&tty->buffer) > 0) {
+
+            tty->buffer.ringbuffer.end--;
+        }
+    } else {
+        sync_ringbuffer_write_one(&tty->buffer, (char)key);
+        _tty_echo_key(tty, key);
+    }
 }
