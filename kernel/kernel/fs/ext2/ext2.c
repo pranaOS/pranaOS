@@ -664,3 +664,74 @@ static int _ext2_rm_from_dir_block(vfs_device_t* dev, fsdata_t fsdata, uint32_t 
     }
 }
 
+int ext2_save_state(vfs_device_t* dev)
+{
+    lock_acquire(&VFS_DEVICE_LOCK);
+    if (!_ext2_superblocks[dev->dev->id]) {
+        lock_release(&VFS_DEVICE_LOCK);
+        return -1;
+    }
+
+    superblock_t* superblock = _ext2_superblocks[dev->dev->id];
+
+    uint32_t group_table_len = _ext2_group_table_info[dev->dev->id].count * GROUP_LEN;
+    group_desc_t* group_table = _ext2_group_table_info[dev->dev->id].table;
+    _ext2_write_to_dev(dev, (uint8_t*)group_table, _ext2_get_block_offset(superblock, 2), group_table_len);
+    kfree(group_table);
+
+    _ext2_write_to_dev(dev, (uint8_t*)superblock, SUPERBLOCK_START, SUPERBLOCK_LEN);
+    kfree(superblock);
+    lock_release(&VFS_DEVICE_LOCK);
+    return 0;
+}
+
+fsdata_t get_fsdata(dentry_t* dentry)
+{
+    fsdata_t fsdata;
+    fsdata.sb = _ext2_superblocks[dentry->dev_indx];
+    fsdata.gt = &_ext2_group_table_info[dentry->dev_indx];
+    return fsdata;
+}
+
+driver_desc_t _ext2_driver_info()
+{
+    driver_desc_t fs_desc = { 0 };
+    fs_desc.type = DRIVER_FILE_SYSTEM;
+    fs_desc.auto_start = false;
+    fs_desc.is_device_driver = false;
+    fs_desc.is_device_needed = false;
+    fs_desc.is_driver_needed = false;
+    fs_desc.functions[DRIVER_NOTIFICATION] = NULL;
+    fs_desc.functions[DRIVER_FILE_SYSTEM_RECOGNIZE] = ext2_recognize_drive;
+    fs_desc.functions[DRIVER_FILE_SYSTEM_PREPARE_FS] = ext2_prepare_fs;
+    fs_desc.functions[DRIVER_FILE_SYSTEM_CAN_READ] = ext2_can_read;
+    fs_desc.functions[DRIVER_FILE_SYSTEM_CAN_WRITE] = ext2_can_write;
+    fs_desc.functions[DRIVER_FILE_SYSTEM_READ] = ext2_read;
+    fs_desc.functions[DRIVER_FILE_SYSTEM_WRITE] = ext2_write;
+    fs_desc.functions[DRIVER_FILE_SYSTEM_OPEN] = NULL; /* No custom open, vfs will use its code */
+    fs_desc.functions[DRIVER_FILE_SYSTEM_TRUNCATE] = ext2_truncate;
+    fs_desc.functions[DRIVER_FILE_SYSTEM_MKDIR] = ext2_mkdir;
+    fs_desc.functions[DRIVER_FILE_SYSTEM_RMDIR] = ext2_rmdir;
+    fs_desc.functions[DRIVER_FILE_SYSTEM_EJECT_DEVICE] = ext2_save_state;
+
+    fs_desc.functions[DRIVER_FILE_SYSTEM_READ_INODE] = ext2_read_inode;
+    fs_desc.functions[DRIVER_FILE_SYSTEM_WRITE_INODE] = ext2_write_inode;
+    fs_desc.functions[DRIVER_FILE_SYSTEM_FREE_INODE] = ext2_free_inode;
+    fs_desc.functions[DRIVER_FILE_SYSTEM_GET_FSDATA] = get_fsdata;
+    fs_desc.functions[DRIVER_FILE_SYSTEM_LOOKUP] = ext2_lookup;
+    fs_desc.functions[DRIVER_FILE_SYSTEM_GETDENTS] = ext2_getdents;
+    fs_desc.functions[DRIVER_FILE_SYSTEM_CREATE] = ext2_create;
+    fs_desc.functions[DRIVER_FILE_SYSTEM_UNLINK] = ext2_rm;
+
+    fs_desc.functions[DRIVER_FILE_SYSTEM_FSTAT] = NULL;
+    fs_desc.functions[DRIVER_FILE_SYSTEM_IOCTL] = NULL;
+    fs_desc.functions[DRIVER_FILE_SYSTEM_MMAP] = NULL;
+
+    return fs_desc;
+}
+
+void ext2_install()
+{
+    driver_install(_ext2_driver_info(), "ext2");
+}
+
