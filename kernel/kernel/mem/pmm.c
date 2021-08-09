@@ -66,3 +66,97 @@ uint32_t _pmm_first_free_block()
     }
     return 0x0;
 }
+
+uint32_t _pmm_first_free_block_n(uint32_t t_size)
+{
+    if (t_size == 1) {
+        return _pmm_first_free_block();
+    }
+    uint32_t* mat_big = (uint32_t*)pmm_mat;
+    for (uint32_t i = last_i; i < pmm_mat_size / 4; i++) {
+        if (mat_big[i] != 0xffffffff) {
+            for (uint8_t j = 0; j < 32; j++) {
+                uint32_t currenblock = i * 32 + j;
+                uint32_t free = 0;
+                for (uint32_t x = 0; x < t_size; x++) {
+                    if (!_pmm_mat_tesblock(currenblock + x)) {
+                        free++;
+                    }
+                }
+                if (free == t_size) {
+                    return currenblock;
+                }
+            }
+        }
+    }
+    return 0x0;
+}
+
+uint32_t _pmm_first_free_block_n_aligned(uint32_t t_size, uint32_t alignment)
+{
+    uint32_t* mat_big = (uint32_t*)pmm_mat;
+    for (uint32_t i = last_i; i < pmm_mat_size / 4; i++) {
+        if (mat_big[i] != 0xffffffff) {
+            for (uint8_t j = 0; j < 32; j++) {
+                uint32_t currenblock = i * 32 + j;
+                uint32_t free = 0;
+                if (currenblock % alignment == 0) {
+                    for (uint32_t x = 0; x < t_size; x++) {
+                        if (!_pmm_mat_tesblock(currenblock + x)) {
+                            free++;
+                        }
+                    }
+                    if (free == t_size) {
+                        return currenblock;
+                    }
+                }
+            }
+        }
+    }
+    return 0x0;
+}
+
+void _pmm_init_region(uint32_t t_region_start, uint32_t t_region_length)
+{
+    t_region_start = _pmm_round_ceil(t_region_start);
+    t_region_length = _pmm_round_floor(t_region_length);
+    uint32_t block_id = t_region_start / PMM_BLOCK_SIZE;
+    uint32_t blocks_count = t_region_length / PMM_BLOCK_SIZE;
+    pmm_used_blocks -= blocks_count;
+    while (blocks_count) {
+        if (blocks_count >= PMM_BLOCKS_PER_BYTE && block_id % PMM_BLOCKS_PER_BYTE == 0) {
+            pmm_mat[block_id / PMM_BLOCKS_PER_BYTE] = 0;
+            blocks_count -= PMM_BLOCKS_PER_BYTE;
+            block_id += PMM_BLOCKS_PER_BYTE;
+        } else {
+            _pmm_mat_free_block(block_id);
+            blocks_count -= 1;
+            block_id += 1;
+        }
+    }
+}
+
+void _pmm_deinit_region(uint32_t t_region_start, uint32_t t_region_length)
+{
+    t_region_start = _pmm_round_floor(t_region_start);
+    t_region_length = _pmm_round_ceil(t_region_length);
+    uint32_t block_id = t_region_start / PMM_BLOCK_SIZE;
+    uint32_t blocks_count = t_region_length / PMM_BLOCK_SIZE;
+    pmm_used_blocks += blocks_count;
+    while (blocks_count) {
+        if (blocks_count >= PMM_BLOCKS_PER_BYTE && block_id % PMM_BLOCKS_PER_BYTE == 0) {
+            pmm_mat[block_id / PMM_BLOCKS_PER_BYTE] = 0xff;
+            blocks_count -= PMM_BLOCKS_PER_BYTE;
+            block_id += PMM_BLOCKS_PER_BYTE;
+        } else {
+            _pmm_mat_alloc_block(block_id);
+            blocks_count -= 1;
+            block_id += 1;
+        }
+    }
+}
+
+void _pmm_deinit_mat()
+{
+    _pmm_deinit_region((uint32_t)pmm_mat, pmm_mat_size);
+}
