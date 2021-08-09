@@ -67,3 +67,113 @@ static bool _vmm_is_zeroing_on_demand(uint32_t vaddr);
 static void _vmm_resolve_zeroing_on_demand(uint32_t vaddr);
 
 static int _vmm_self_test();
+
+inline static void* _vmm_alloc_kernel_pdir()
+{
+    uint32_t paddr = (uint32_t)pmm_alloc_aligned(PDIR_SIZE, PDIR_SIZE);
+    return vmm_kernel_pdir_phys2virt(paddr);
+}
+
+inline static uint32_t _vmm_alloc_pdir_paddr()
+{
+    return (uint32_t)pmm_alloc_aligned(PDIR_SIZE, PDIR_SIZE);
+}
+
+inline static uint32_t _vmm_alloc_ptable_paddr()
+{
+    return (uint32_t)pmm_alloc(PTABLE_SIZE);
+}
+
+inline static uint32_t _vmm_alloc_ptables_to_cover_page()
+{
+    return (uint32_t)pmm_alloc_aligned(VMM_PAGE_SIZE, VMM_PAGE_SIZE);
+}
+
+inline static void _vmm_free_ptables_to_cover_page(uint32_t addr)
+{
+    pmm_free((void*)addr, VMM_PAGE_SIZE);
+}
+
+inline static uint32_t _vmm_alloc_page_paddr()
+{
+    return (uint32_t)pmm_alloc_aligned(VMM_PAGE_SIZE, VMM_PAGE_SIZE);
+}
+
+inline static void _vmm_free_page_paddr(uint32_t addr)
+{
+    pmm_free((void*)addr, VMM_PAGE_SIZE);
+}
+
+static zone_t _vmm_alloc_mapped_zone(uint32_t size, uint32_t alignment)
+{
+    if (size % VMM_PAGE_SIZE) {
+        size += VMM_PAGE_SIZE - (size % VMM_PAGE_SIZE);
+    }
+    if (alignment % VMM_PAGE_SIZE) {
+        alignment += VMM_PAGE_SIZE - (alignment % VMM_PAGE_SIZE);
+    }
+
+    // TODO: Currently only sequence allocation is implemented.
+    zone_t zone = zoner_new_zone_aligned(size, alignment);
+    uint32_t paddr = (uint32_t)pmm_alloc_aligned(size, alignment);
+    vmm_map_pages_lockless(zone.start, paddr, size / VMM_PAGE_SIZE, PAGE_READABLE | PAGE_WRITABLE);
+    return zone;
+}
+
+static int _vmm_free_mapped_zone(zone_t zone)
+{
+    ptable_t* ptable = (ptable_t*)_vmm_pspace_get_vaddr_of_active_ptable(zone.start);
+    page_desc_t* page = _vmm_ptable_lookup(ptable, zone.start);
+    pmm_free((void*)page_desc_get_frame(*page), zone.len);
+    vmm_unmap_pages_lockless(zone.start, zone.len / VMM_PAGE_SIZE);
+    zoner_free_zone(zone);
+    return 0;
+}
+
+inline static pdirectory_t* _vmm_alloc_pdir()
+{
+    zone_t zone = _vmm_alloc_mapped_zone(PDIR_SIZE, PDIR_SIZE);
+    return (pdirectory_t*)zone.ptr;
+}
+
+inline static void _vmm_free_pdir(pdirectory_t* pdir)
+{
+    if (pdir == _vmm_kernel_pdir) {
+        return;
+    }
+
+    zone_t zone;
+    zone.start = (uint32_t)pdir;
+    zone.len = PDIR_SIZE;
+    _vmm_free_mapped_zone(zone);
+}
+
+
+inline static void* _vmm_pspace_get_vaddr_of_active_pdir()
+{
+    return (void*)THIS_CPU->pdir;
+}
+
+inline static void* _vmm_pspace_get_nth_active_ptable(uint32_t n)
+{
+    return (void*)(pspace_zone.start + n * PTABLE_SIZE);
+}
+
+inline static void* _vmm_pspace_get_vaddr_of_active_ptable(uint32_t vaddr)
+{
+    return (void*)_vmm_pspace_get_nth_active_ptable(VMM_OFFSET_IN_DIRECTORY(vaddr));
+}
+
+static int _vmm_split_pspace()
+{
+    pspace_zone = zoner_new_zone(4 * MB);
+
+    if (VMM_OFFSET_IN_TABLE(pspace_zone.start) != 0) {
+        kpanic("WRONG PSPACE START ADDR");
+    }
+
+    _vmm_kernel_pdir = (pdir_t*)_vmm_alloc_kernel_pdir();
+    THIS_CPU->pdir = (pdir_t*)_vmm_kernel_pdir;
+    memset((void*)THIS_CPU->pdir, 0, PDIR_SIZE);
+    return 0;
+}
