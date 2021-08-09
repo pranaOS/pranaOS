@@ -83,3 +83,45 @@ bool pty_master_can_write(dentry_t* dentry, uint32_t start)
     ASSERT(ptm);
     return sync_ringbuffer_space_to_write(&ptm->pts->buffer) >= 0;
 }
+
+
+int pty_master_read(dentry_t* dentry, uint8_t* buf, uint32_t start, uint32_t len)
+{
+    pty_master_entry_t* ptm = _ptm_get(dentry);
+    ASSERT(ptm);
+    uint32_t leno = sync_ringbuffer_space_to_read(&ptm->buffer);
+    if (leno > len) {
+        leno = len;
+    }
+    int res = sync_ringbuffer_read(&ptm->buffer, buf, leno);
+    return leno;
+}
+
+int pty_master_write(dentry_t* dentry, uint8_t* buf, uint32_t start, uint32_t len)
+{
+    pty_master_entry_t* ptm = _ptm_get(dentry);
+    ASSERT(ptm);
+    sync_ringbuffer_write(&ptm->pts->buffer, buf, len);
+    return len;
+}
+
+int pty_master_fstat(dentry_t* dentry, fstat_t* stat)
+{
+    pty_master_entry_t* ptm = _ptm_get(dentry);
+    ASSERT(ptm);
+    stat->dev = MKDEV(128, INODE2PTSNO(dentry->inode_indx));
+    return 0;
+}
+
+int pty_master_alloc(file_descriptor_t* fd)
+{
+    pty_master_entry_t* ptm = 0;
+    for (int i = 0; i < PTYS_COUNT; i++) {
+        if (pty_masters[i].dentry.inode_indx == 0) {
+            ptm = &pty_masters[i];
+            ptm->dentry.inode_indx = PTSNO2INODE(i);
+            break;
+        }
+    }
+
+}
