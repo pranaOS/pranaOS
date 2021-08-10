@@ -22,7 +22,7 @@ concept TimeSpecType = requires(T t)
     t.tv_nsec;
 };
 
-namespace AK {
+namespace Base {
 
 unsigned day_of_week(int year, unsigned month, int day);
 
