@@ -19,11 +19,11 @@
 #include <base/TypedTransfer.h>
 #include <base/kmalloc.h>
 
-#ifndef BASE_LIBC_BUILD
+#ifndef PRANAOS_LIBC_BUILD
 #    include <initializer_list>
 #endif
 
-#ifndef __base__
+#ifndef __pranaos__
 #    include <new>
 #endif
 
@@ -63,7 +63,7 @@ public:
     {
     }
 
-#ifndef BASE_LIBC_BUILD
+#ifndef PRANAOS_LIBC_BUILD
     Vector(std::initializer_list<T> list) requires(!IsLvalueReference<T>)
     {
         ensure_capacity(list.size());
