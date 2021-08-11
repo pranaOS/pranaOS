@@ -33,6 +33,6 @@ struct [[gnu::packed]] InodeWatcherEvent {
     const char name[];
 };
 
-AK_ENUM_BITWISE_OPERATORS(InodeWatcherEvent::Type);
+BASE_ENUM_BITWISE_OPERATORS(InodeWatcherEvent::Type);
 
 constexpr unsigned MAXIMUM_EVENT_SIZE = sizeof(InodeWatcherEvent) + NAME_MAX + 1;
