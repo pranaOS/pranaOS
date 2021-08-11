@@ -7,11 +7,11 @@ A unix operating system written from scratch in C++ / C
 
 # Installation:
 - how to build pranaOS?
-- [check out the build.md]()
+- [check out the build.md](https://github.com/pranaOS/pranaOS/blob/master/docs/build.md)
 
 # Contribution:
 - want to contribute to pranaOS??
-- [check out the contributing guide]()
+- [check out the contributing guide](https://github.com/pranaOS/pranaOS/blob/master/docs/contributing.md)
 
 ## Contributors
 
