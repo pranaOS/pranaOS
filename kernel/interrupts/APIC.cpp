@@ -353,12 +353,12 @@ UNMAP_AFTER_INIT void APIC::do_boot_aps()
     }
 
 
-    if (m_apic_ap_count.load(AK::MemoryOrder::memory_order_consume) != aps_to_enable) {
+    if (m_apic_ap_count.load(Base::MemoryOrder::memory_order_consume) != aps_to_enable) {
         dbgln_if(APIC_DEBUG, "APIC: Waiting for {} AP(s) to finish initialization...", aps_to_enable);
         do {
             // Wait a little bit
             IO::delay(200);
-        } while (m_apic_ap_count.load(AK::MemoryOrder::memory_order_consume) != aps_to_enable);
+        } while (m_apic_ap_count.load(Base::MemoryOrder::memory_order_consume) != aps_to_enable);
     }
 
     dbgln_if(APIC_DEBUG, "APIC: {} processors are initialized and running", m_processor_enabled_cnt);
@@ -373,18 +373,13 @@ UNMAP_AFTER_INIT void APIC::boot_aps()
     if (m_processor_enabled_cnt <= 1)
         return;
 
-    // We split this into another call because do_boot_aps() will cause
-    // MM calls upon exit, and we don't want to call smp_enable before that
     do_boot_aps();
 
-    // Enable SMP, which means IPIs may now be sent
     Processor::smp_enable();
 
     dbgln_if(APIC_DEBUG, "All processors initialized and waiting, trigger all to continue");
 
-    // Now trigger all APs to continue execution (need to do this after
-    // the regions have been freed so that we don't trigger IPIs
-    m_apic_ap_continue.store(1, AK::MemoryOrder::memory_order_release);
+    m_apic_ap_continue.store(1, Base::MemoryOrder::memory_order_release);
 }
 
 UNMAP_AFTER_INIT void APIC::enable(u32 cpu)
@@ -445,14 +440,13 @@ UNMAP_AFTER_INIT void APIC::init_finished(u32 cpu)
     // scheduler lock
     VERIFY(!g_scheduler_lock.own_lock());
 
-    // Notify the BSP that we are done initializing. It will unmap the startup data at P8000
-    m_apic_ap_count.fetch_add(1, AK::MemoryOrder::memory_order_acq_rel);
+    m_apic_ap_count.fetch_add(1, Base::MemoryOrder::memory_order_acq_rel);
     dbgln_if(APIC_DEBUG, "APIC: CPU #{} initialized, waiting for all others", cpu);
 
     // The reason we're making all APs wait until the BSP signals them is that
     // we don't want APs to trigger IPIs (e.g. through MM) while the BSP
     // is unable to process them
-    while (!m_apic_ap_continue.load(AK::MemoryOrder::memory_order_consume)) {
+    while (!m_apic_ap_continue.load(Base::MemoryOrder::memory_order_consume)) {
         IO::delay(200);
     }
 

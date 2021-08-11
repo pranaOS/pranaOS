@@ -13,6 +13,6 @@
 namespace Kernel {
 
 template<typename T, size_t inline_capacity = 0>
-using NonnullRefContendedPtrVector = AK::NonnullPtrVector<NonnullRefContendedPtr<T>, inline_capacity>;
+using NonnullRefContendedPtrVector = Base::NonnullPtrVector<NonnullRefContendedPtr<T>, inline_capacity>;
 
 }

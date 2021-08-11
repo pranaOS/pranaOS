@@ -229,7 +229,7 @@ void Mutex::unblock_waiters(Mode previous_mode)
         for (auto& thread : m_blocked_threads_list_shared) {
             auto requested_locks = thread.unblock_from_lock(*this);
             auto set_result = m_shared_holders.set(&thread, requested_locks);
-            VERIFY(set_result == AK::HashSetResult::InsertedNewEntry);
+            VERIFY(set_result == Base::HashSetResult::InsertedNewEntry);
             m_times_locked += requested_locks;
         }
         return true;
@@ -399,7 +399,7 @@ void Mutex::restore_lock(Mode mode, u32 lock_count)
                 m_times_locked += lock_count;
                 auto set_result = m_shared_holders.set(current_thread, lock_count);
 
-                VERIFY(set_result == AK::HashSetResult::InsertedNewEntry);
+                VERIFY(set_result == Base::HashSetResult::InsertedNewEntry);
             } else if (m_mode == Mode::Shared) {
                 m_times_locked += lock_count;
                 if (auto it = m_shared_holders.find(current_thread); it != m_shared_holders.end()) {
@@ -407,7 +407,7 @@ void Mutex::restore_lock(Mode mode, u32 lock_count)
                 } else {
                     auto set_result = m_shared_holders.set(current_thread, lock_count);
 
-                    VERIFY(set_result == AK::HashSetResult::InsertedNewEntry);
+                    VERIFY(set_result == Base::HashSetResult::InsertedNewEntry);
                 }
             } else {
                 VERIFY(m_mode == Mode::Exclusive);
