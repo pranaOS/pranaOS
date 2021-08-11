@@ -1,18 +1,19 @@
 /*
- * Copyright (c) 2021, Liav A. <liavalb@hotmail.co.il>
+ * Copyright (c) 2021, Krisna Pranav
  *
  * SPDX-License-Identifier: BSD-2-Clause
- */
+*/
 
 #pragma once
 
-#include <AK/String.h>
-#include <AK/Types.h>
-#include <Kernel/Bus/PCI/DeviceController.h>
-#include <Kernel/Graphics/Definitions.h>
-#include <Kernel/Graphics/FramebufferDevice.h>
-#include <Kernel/Graphics/VGACompatibleAdapter.h>
-#include <Kernel/PhysicalAddress.h>
+// includes
+#include <base/String.h>
+#include <base/Types.h>
+#include <kernel/bus/pci/DeviceController.h>
+#include <kernel/graphics/Definitions.h>
+#include <kernel/graphics/FramebufferDevice.h>
+#include <kernel/graphics/VGACompatibleAdapter.h>
+#include <kernel/PhysicalAddress.h>
 
 namespace Kernel {
 
