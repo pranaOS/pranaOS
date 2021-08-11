@@ -2,7 +2,7 @@
 
 - contributing to pranaOS
 - pranaOS is a open source operating system and you can contribute to it
-- before contributing to pranaOS make sure you [forked it](https://github.com/pranaOS/pranaOS/forks)
+- before contributing to pranaOS make sure you [forked it](https://github.com/pranaOS/pranaOS/fork)
 
 - clone your own fork and the features
 
