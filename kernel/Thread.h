@@ -135,8 +135,8 @@ struct ThreadRegisters {
 class Thread
     : public RefCounted<Thread>
     , public Weakable<Thread> {
-    AK_MAKE_NONCOPYABLE(Thread);
-    AK_MAKE_NONMOVABLE(Thread);
+    BASE_MAKE_NONCOPYABLE(Thread);
+    BASE_MAKE_NONMOVABLE(Thread);
 
     friend class Mutex;
     friend class Process;
@@ -391,8 +391,8 @@ public:
     };
 
     class BlockCondition {
-        AK_MAKE_NONCOPYABLE(BlockCondition);
-        AK_MAKE_NONMOVABLE(BlockCondition);
+        BASE_MAKE_NONCOPYABLE(BlockCondition);
+        BASE_MAKE_NONMOVABLE(BlockCondition);
 
     public:
         BlockCondition() = default;
