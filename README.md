@@ -1,31 +1,19 @@
-# pranaos
-A unix operating system made from scratch using c++
+# pranaOS
+A unix operating system written from scratch in C++ / C
 
-[![forthebadge](https://forthebadge.com/images/badges/made-with-c-plus-plus.svg)](https://forthebadge.com)
-
-
-<p align='center'>
-  <img src='https://raw.githubusercontent.com/pranaOS/pranaOS/master/sysroot/res/pranaos/pranaOS.jpg'>
+<p align="center">
+<img src="https://raw.githubusercontent.com/pranaOS/pranaOS/master/sysroot/res/pranaos/pranaOS.jpg" />
 </p>
 
+# Installation:
+- how to build pranaOS?
+- [check out the build.md](https://github.com/pranaOS/pranaOS/blob/master/docs/build.md)
 
-- You can see the future plans and updates [here](https://github.com/pranaOS/pranaOS/blob/master/plans/futureplans.pdf)
+# Contribution:
+- want to contribute to pranaOS??
+- [check out the contributing guide](https://github.com/pranaOS/pranaOS/blob/master/docs/contributing.md)
 
-# Dependencies
-```
-g++ version should be more than 10.0.0
-ninja gcc compiler needed
-```
-
-- pranaOS is still in development 
-
-# Building pranaOS:
-See the [pranaOS build instructions](https://github.com/pranaOS/pranaOS/blob/master/docs/build.md)
-
-# Contributions:
-- pranaOS is a open source project rules and steps to contribute will be seen [here](https://github.com/pranaOS/pranaOS/blob/master/docs/CONTRIBUTING.md)
-
-# Contributors:
+## Contributors
 
 <a href="https://github.com/pranaOS/pranaOS/graphs/contributors">
   <img src="https://contributors-img.web.app/image?repo=pranaOS/pranaOS" />
