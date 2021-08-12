@@ -1,12 +1,13 @@
 /*
- * Copyright (c) 2018-2020, Andreas Kling <kling@serenityos.org>
+ * Copyright (c) 2021, Krisna Pranav
  *
  * SPDX-License-Identifier: BSD-2-Clause
- */
+*/
 
-#include <Kernel/Arch/x86/InterruptDisabler.h>
-#include <Kernel/Process.h>
-#include <Kernel/TTY/TTY.h>
+// includes
+#include <kernel/arch/x86/InterruptDisabler.h>
+#include <kernel/Process.h>
+#include <kernel/tty/TTY.h>
 
 namespace Kernel {
 
@@ -36,7 +37,7 @@ KResultOr<FlatPtr> Process::sys$setsid()
     });
     if (found_process_with_same_pgid_as_my_pid)
         return EPERM;
-    // Create a new Session and a new ProcessGroup.
+
     m_pg = ProcessGroup::create(ProcessGroupID(pid().value()));
     m_tty = nullptr;
     ProtectedDataMutationScope scope { *this };
@@ -65,7 +66,6 @@ KResultOr<FlatPtr> Process::sys$getpgrp()
 
 SessionID Process::get_sid_from_pgid(ProcessGroupID pgid)
 {
-    // FIXME: This xor sys$setsid() uses the wrong locking mechanism.
 
     SessionID sid { -1 };
     Process::for_each_in_pgrp(pgid, [&](auto& process) {
@@ -82,25 +82,22 @@ KResultOr<FlatPtr> Process::sys$setpgid(pid_t specified_pid, pid_t specified_pgi
     REQUIRE_PROMISE(proc);
     ProcessID pid = specified_pid ? ProcessID(specified_pid) : this->pid();
     if (specified_pgid < 0) {
-        // The value of the pgid argument is less than 0, or is not a value supported by the implementation.
+
         return EINVAL;
     }
     auto process = Process::from_pid(pid);
     if (!process)
         return ESRCH;
     if (process != this && process->ppid() != this->pid()) {
-        // The value of the pid argument does not match the process ID
-        // of the calling process or of a child process of the calling process.
+
         return ESRCH;
     }
     if (process->is_session_leader()) {
-        // The process indicated by the pid argument is a session leader.
+
         return EPERM;
     }
     if (process->ppid() == this->pid() && process->sid() != sid()) {
-        // The value of the pid argument matches the process ID of a child
-        // process of the calling process and the child process is not in
-        // the same session as the calling process.
+
         return EPERM;
     }
 
@@ -116,7 +113,7 @@ KResultOr<FlatPtr> Process::sys$setpgid(pid_t specified_pid, pid_t specified_pgi
         // the calling pid, and is not an existing process group.
         return EPERM;
     }
-    // FIXME: There are more EPERM conditions to check for here..
+
     process->m_pg = ProcessGroup::find_or_create(new_pgid);
     if (!process->m_pg) {
         return ENOMEM;
