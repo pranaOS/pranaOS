@@ -43,7 +43,7 @@ private:
 
 }
 
-namespace AK {
+namespace Base {
 
 template<>
 struct Formatter<Kernel::KString> : Formatter<StringView> {

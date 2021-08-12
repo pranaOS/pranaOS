@@ -33,7 +33,7 @@ public:
     {
 
         StringBuilder builder;
-        vformat(builder, fmtstr.view(), AK::VariadicFormatParams { parameters... });
+        vformat(builder, fmtstr.view(), Base::VariadicFormatParams { parameters... });
         append_bytes(builder.string_view().bytes());
     }
 

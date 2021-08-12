@@ -258,12 +258,12 @@ public:
     virtual bool value() const override
     {
         MutexLocker locker(m_lock);
-        return AK::UBSanitizer::g_ubsan_is_deadly;
+        return Base::UBSanitizer::g_ubsan_is_deadly;
     }
     virtual void set_value(bool new_value) override
     {
         MutexLocker locker(m_lock);
-        AK::UBSanitizer::g_ubsan_is_deadly = new_value;
+        Base::UBSanitizer::g_ubsan_is_deadly = new_value;
     }
 
 private:

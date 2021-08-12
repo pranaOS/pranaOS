@@ -153,9 +153,9 @@ KResultOr<FlatPtr> Process::sys$futex(Userspace<const Syscall::SC_futex_params*>
         if (it != global_queues.end())
             return &it->value;
         if (create_if_not_found) {
-            // TODO: is there a better way than setting and finding it again?
+
             auto result = global_queues.set(&vmobject, {});
-            VERIFY(result == AK::HashSetResult::InsertedNewEntry);
+            VERIFY(result == Base::HashSetResult::InsertedNewEntry);
             it = global_queues.find(&vmobject);
             VERIFY(it != global_queues.end());
             return &it->value;
@@ -176,7 +176,7 @@ KResultOr<FlatPtr> Process::sys$futex(Userspace<const Syscall::SC_futex_params*>
             *did_create = true;
             auto futex_queue = adopt_ref(*new FutexQueue(user_address_or_offset, vmobject));
             auto result = queues->set(user_address_or_offset, futex_queue);
-            VERIFY(result == AK::HashSetResult::InsertedNewEntry);
+            VERIFY(result == Base::HashSetResult::InsertedNewEntry);
             return futex_queue;
         }
         return {};
@@ -223,18 +223,15 @@ KResultOr<FlatPtr> Process::sys$futex(Userspace<const Syscall::SC_futex_params*>
                 dbgln_if(FUTEX_DEBUG, "futex wait: EAGAIN. user value: {:p} @ {:p} != val: {}", user_value.value(), params.userspace_address, params.val);
                 return EAGAIN;
             }
-            atomic_thread_fence(AK::MemoryOrder::memory_order_acquire);
+            atomic_thread_fence(Base::MemoryOrder::memory_order_acquire);
 
             ScopedSpinLock lock(queue_lock);
             did_create = false;
             futex_queue = find_futex_queue(vmobject.ptr(), user_address_or_offset, true, &did_create);
             VERIFY(futex_queue);
-            // We need to try again if we didn't create this queue and the existing queue
-            // was removed before we were able to queue an imminent wait.
+
         } while (!did_create && !futex_queue->queue_imminent_wait());
 
-        // We must not hold the lock before blocking. But we have a reference
-        // to the FutexQueue so that we can keep it alive.
 
         Thread::BlockResult block_result = futex_queue->wait_on(timeout, bitset);
 
@@ -255,7 +252,7 @@ KResultOr<FlatPtr> Process::sys$futex(Userspace<const Syscall::SC_futex_params*>
             return EFAULT;
         if (val3.has_value() && val3.value() != user_value.value())
             return EAGAIN;
-        atomic_thread_fence(AK::MemoryOrder::memory_order_acquire);
+        atomic_thread_fence(Base::MemoryOrder::memory_order_acquire);
 
         int woken_or_requeued = 0;
         ScopedSpinLock lock(queue_lock);
@@ -264,9 +261,7 @@ KResultOr<FlatPtr> Process::sys$futex(Userspace<const Syscall::SC_futex_params*>
             bool is_empty, is_target_empty;
             woken_or_requeued = futex_queue->wake_n_requeue(
                 params.val, [&]() -> FutexQueue* {
-                    // NOTE: futex_queue's lock is being held while this callback is called
-                    // The reason we're doing this in a callback is that we don't want to always
-                    // create a target queue, only if we actually have anything to move to it!
+
                     target_futex_queue = find_futex_queue(vmobject2.ptr(), user_address_or_offset2, true);
                     return target_futex_queue.ptr();
                 },
@@ -294,7 +289,7 @@ KResultOr<FlatPtr> Process::sys$futex(Userspace<const Syscall::SC_futex_params*>
             op_arg = 1 << op_arg;
             op &= FUTEX_OP_ARG_SHIFT;
         }
-        atomic_thread_fence(AK::MemoryOrder::memory_order_release);
+        atomic_thread_fence(Base::MemoryOrder::memory_order_release);
         switch (op) {
         case FUTEX_OP_SET:
             oldval = user_atomic_exchange_relaxed(params.userspace_address2, op_arg);
@@ -316,7 +311,7 @@ KResultOr<FlatPtr> Process::sys$futex(Userspace<const Syscall::SC_futex_params*>
         }
         if (!oldval.has_value())
             return EFAULT;
-        atomic_thread_fence(AK::MemoryOrder::memory_order_acquire);
+        atomic_thread_fence(Base::MemoryOrder::memory_order_acquire);
         int result = do_wake(vmobject.ptr(), user_address_or_offset, params.val, {});
         if (params.val2 > 0) {
             bool compare_result;

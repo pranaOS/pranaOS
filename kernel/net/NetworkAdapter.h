@@ -26,7 +26,7 @@ namespace Kernel {
 
 class NetworkAdapter;
 
-using NetworkByteBuffer = AK::Detail::ByteBuffer<1500>;
+using NetworkByteBuffer = Base::Detail::ByteBuffer<1500>;
 
 struct PacketWithTimestamp : public RefCounted<PacketWithTimestamp> {
     PacketWithTimestamp(NonnullOwnPtr<KBuffer> buffer, Time timestamp)
