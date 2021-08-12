@@ -41,7 +41,7 @@ private:
 
 }
 
-namespace AK {
+namespace Base {
 template<>
 struct Traits<Kernel::Memory::VirtualRange> : public GenericTraits<Kernel::Memory::VirtualRange> {
     static constexpr bool is_trivial() { return true; }
