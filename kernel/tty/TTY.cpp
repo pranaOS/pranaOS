@@ -66,7 +66,7 @@ KResultOr<size_t> TTY::read(FileDescription&, u64, UserOrKernelBuffer& buffer, s
                     need_evaluate_block_conditions = true;
                     break;
                 } else {
-
+                
                     data[bytes_written++] = ch;
                     m_available_lines--;
                     break;
@@ -524,7 +524,6 @@ KResult TTY::ioctl(FileDescription&, unsigned request, Userspace<void*> arg)
         return rc;
     }
     case TCFLSH: {
-        // Serenity's TTY implementation does not use an output buffer, so ignore TCOFLUSH.
         auto operation = static_cast<u8>(arg.ptr());
         if (operation == TCIFLUSH || operation == TCIOFLUSH) {
             flush_input();

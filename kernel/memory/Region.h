@@ -222,7 +222,7 @@ public:
     using ListInVMObject = IntrusiveList<Region, RawPtr<Region>, &Region::m_vmobject_list_node>;
 };
 
-AK_ENUM_BITWISE_OPERATORS(Region::Access)
+BASE_ENUM_BITWISE_OPERATORS(Region::Access)
 
 inline Region::Access prot_to_region_access_flags(int prot)
 {
