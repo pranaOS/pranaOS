@@ -2,11 +2,11 @@
  * Copyright (c) 2021, Krisna Pranav
  *
  * SPDX-License-Identifier: BSD-2-Clause
-*/
+ */
 
 #pragma once
 
-// incldues
+// includes
 #include <endian.h>
 #include <inttypes.h>
 #include <netinet/in.h>

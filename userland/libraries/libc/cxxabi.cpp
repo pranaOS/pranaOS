@@ -1,8 +1,8 @@
 /*
- * Copyright (c) 2021, OliviaCE
+ * Copyright (c) 2021, pranaOS-Team
  *
  * SPDX-License-Identifier: BSD-2-Clause
-*/
+ */
 
 // includes
 #include <base/Debug.h>
@@ -104,4 +104,4 @@ __attribute__((noreturn)) void __cxa_pure_virtual()
     VERIFY_NOT_REACHED();
 }
 
-} 
+} // extern "C"

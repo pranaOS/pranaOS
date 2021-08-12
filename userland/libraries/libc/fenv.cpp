@@ -2,12 +2,13 @@
  * Copyright (c) 2021, Krisna Pranav
  *
  * SPDX-License-Identifier: BSD-2-Clause
-*/
+ */
 
 // includes
 #include <base/Types.h>
 #include <fenv.h>
 
+// This is the size of the floating point envinronment image in protected mode
 static_assert(sizeof(__x87_floating_point_environment) == 28);
 
 static u16 read_status_register()
@@ -88,8 +89,8 @@ int feholdexcept(fenv_t* env)
     fegetenv(&current_env);
 
     current_env.__x87_fpu_env.__status_word &= ~FE_ALL_EXCEPT;
-    current_env.__x87_fpu_env.__status_word &= ~(1 << 7);      
-    current_env.__x87_fpu_env.__control_word &= FE_ALL_EXCEPT; 
+    current_env.__x87_fpu_env.__status_word &= ~(1 << 7);      // Clear the "Exception Status Summary" bit
+    current_env.__x87_fpu_env.__control_word &= FE_ALL_EXCEPT; // Masking these bits stops the corresponding exceptions from being generated according to the Intel Programmer's Manual
 
     fesetenv(&current_env);
 
@@ -123,7 +124,7 @@ int fesetexceptflag(const fexcept_t* except, int exceptions)
 
     exceptions &= FE_ALL_EXCEPT;
     current_env.__x87_fpu_env.__status_word &= exceptions;
-    current_env.__x87_fpu_env.__status_word &= ~(1 << 7); 
+    current_env.__x87_fpu_env.__status_word &= ~(1 << 7); // Make sure exceptions don't get raised
 
     fesetenv(&current_env);
     return 0;
@@ -131,6 +132,7 @@ int fesetexceptflag(const fexcept_t* except, int exceptions)
 
 int fegetround()
 {
+    // There's no way to signal whether the SSE rounding mode and x87 ones are different, so we assume they're the same
     return (read_status_register() >> 10) & 3;
 }
 
@@ -164,7 +166,7 @@ int feclearexcept(int exceptions)
     fegetenv(&current_env);
 
     current_env.__x87_fpu_env.__status_word &= ~exceptions;
-    current_env.__x87_fpu_env.__status_word &= ~(1 << 7); 
+    current_env.__x87_fpu_env.__status_word &= ~(1 << 7); // Clear the "Exception Status Summary" bit
 
     fesetenv(&current_env);
     return 0;
@@ -185,10 +187,11 @@ int feraiseexcept(int exceptions)
 
     exceptions &= FE_ALL_EXCEPT;
 
+    // While the order in which the exceptions is raised is unspecified, FE_OVERFLOW and FE_UNDERFLOW must be raised before FE_INEXACT, so handle that case in this branch
     if (exceptions & FE_INEXACT) {
         env.__x87_fpu_env.__status_word &= ((u16)exceptions & ~FE_INEXACT);
         fesetenv(&env);
-        asm volatile("fwait"); 
+        asm volatile("fwait"); // "raise" the exception by performing a floating point operation
 
         fegetenv(&env);
         env.__x87_fpu_env.__status_word &= FE_INEXACT;

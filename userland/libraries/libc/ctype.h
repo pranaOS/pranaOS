@@ -1,8 +1,8 @@
 /*
- * Copyright (c) 2021, OliviaCE
+ * Copyright (c) 2021, pranaOS-Team
  *
  * SPDX-License-Identifier: BSD-2-Clause
-*/
+ */
 
 #pragma once
 
@@ -11,6 +11,7 @@
 
 __BEGIN_DECLS
 
+/* Do what newlib does to appease GCC's --with-newlib option. */
 #define _U 01
 #define _L 02
 #define _N 04

@@ -2,7 +2,7 @@
  * Copyright (c) 2021, Krisna Pranav
  *
  * SPDX-License-Identifier: BSD-2-Clause
-*/
+ */
 
 #pragma once
 
@@ -29,21 +29,21 @@ struct ifreq {
         unsigned int ifru_index;
     } ifr_ifru;
 
-#define ifr_addr ifr_ifru.ifru_addr          
-#define ifr_dstaddr ifr_ifru.ifru_dstaddr     
-#define ifr_broadaddr ifr_ifru.ifru_broadaddr 
-#define ifr_netmask ifr_ifru.ifru_netmask     
-#define ifr_flags ifr_ifru.ifru_flags         
-#define ifr_metric ifr_ifru.ifru_metric       
-#define ifr_mtu ifr_ifru.ifru_metric          
-#define ifr_hardmtu ifr_ifru.ifru_metric      
-#define ifr_media ifr_ifru.ifru_media         
-#define ifr_rdomainid ifr_ifru.ifru_metric    
-#define ifr_vnetid ifr_ifru.ifru_vnetid       
-#define ifr_ttl ifr_ifru.ifru_metric          
-#define ifr_data ifr_ifru.ifru_data           
-#define ifr_index ifr_ifru.ifru_index         
-#define ifr_llprio ifr_ifru.ifru_metric       
+#define ifr_addr ifr_ifru.ifru_addr           
+#define ifr_dstaddr ifr_ifru.ifru_dstaddr    
+#define ifr_broadaddr ifr_ifru.ifru_broadaddr
+#define ifr_netmask ifr_ifru.ifru_netmask    
+#define ifr_flags ifr_ifru.ifru_flags        
+#define ifr_metric ifr_ifru.ifru_metric      
+#define ifr_mtu ifr_ifru.ifru_metric         
+#define ifr_hardmtu ifr_ifru.ifru_metric     
+#define ifr_media ifr_ifru.ifru_media        
+#define ifr_rdomainid ifr_ifru.ifru_metric   
+#define ifr_vnetid ifr_ifru.ifru_vnetid      
+#define ifr_ttl ifr_ifru.ifru_metric         
+#define ifr_data ifr_ifru.ifru_data          
+#define ifr_index ifr_ifru.ifru_index        
+#define ifr_llprio ifr_ifru.ifru_metric      
 #define ifr_hwaddr ifr_ifru.ifru_hwaddr       // MAC address
 };
 

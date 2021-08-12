@@ -2,10 +2,11 @@
  * Copyright (c) 2021, Krisna Pranav
  *
  * SPDX-License-Identifier: BSD-2-Clause
-*/
+ */
 
 #pragma once
 
+// Defined in fenv.cpp, but we must not include fenv.h, so here's its prototype.
 int fgetround();
 
 #define FLT_RADIX 2
@@ -44,7 +45,7 @@ int fgetround();
 #define DBL_MAX_10_EXP 308
 #define LDBL_MAX_10_EXP 4932
 
-#define FLT_ROUNDS (fegetround()) 
+#define FLT_ROUNDS (fegetround()) // Note: this not might be true for non-x86 platforms
 
 #define FLT_HAS_SUBNORM 1
 #define DBL_HAS_SUBNORM 1

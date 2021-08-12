@@ -2,10 +2,11 @@
  * Copyright (c) 2021, Krisna Pranav
  *
  * SPDX-License-Identifier: BSD-2-Clause
-*/
+ */
 
-#include <AK/StringView.h>
-#include <AK/Vector.h>
+// includes
+#include <base/StringView.h>
+#include <base/Vector.h>
 #include <getopt.h>
 #include <stdio.h>
 #include <string.h>
@@ -17,6 +18,9 @@ int optind = 1;
 int optreset = 0;
 char* optarg = nullptr;
 
+// POSIX says, "When an element of argv[] contains multiple option characters,
+// it is unspecified how getopt() determines which options have already been
+// processed". Well, this is how we do it.
 static size_t s_index_into_multioption_argument = 0;
 
 [[gnu::format(printf, 1, 2)]] static inline void report_error(const char* format, ...)
@@ -69,8 +73,16 @@ OptionParser::OptionParser(int argc, char* const* argv, const StringView& short_
     , m_long_options(long_options)
     , m_out_long_option_index(out_long_option_index)
 {
+    // In the following case:
+    // $ foo bar -o baz
+    // we want to parse the option (-o baz) first, and leave the argument (bar)
+    // in argv after we return -1 when invoked the second time. So we reorder
+    // argv to put options first and positional arguments next. To turn this
+    // behavior off, start the short options spec with a "+". This is a GNU
+    // extension that we support.
     m_stop_on_first_non_option = short_options.starts_with('+');
 
+    // See if we should reset the internal state.
     if (optreset || optind == 0) {
         optreset = 0;
         optind = 1;
@@ -96,13 +108,14 @@ int OptionParser::getopt()
         else
             m_consumed_args = 0;
     } else {
-
+        // Alright, so we have an option on our hands!
         bool is_long_option = arg.starts_with("--");
         if (is_long_option)
             res = handle_long_option();
         else
             res = handle_short_option();
 
+        // If we encountered an error, return immediately.
         if (res == '?')
             return '?';
     }
@@ -122,18 +135,19 @@ bool OptionParser::lookup_short_option(char option, int& needs_value) const
 
     VERIFY(parts.size() <= 2);
     if (parts.size() < 2) {
-
+        // Haven't found the option in the spec.
         return false;
     }
 
     if (parts[1].starts_with("::")) {
-
+        // If an option is followed by two colons, it optionally accepts an
+        // argument.
         needs_value = optional_argument;
     } else if (parts[1].starts_with(':')) {
-
+        // If it's followed by one colon, it requires an argument.
         needs_value = required_argument;
     } else {
-
+        // Otherwise, it doesn't accept arguments.
         needs_value = no_argument;
     }
     return true;
@@ -145,7 +159,7 @@ int OptionParser::handle_short_option()
     VERIFY(arg.starts_with('-'));
 
     if (s_index_into_multioption_argument == 0) {
-
+        // Just starting to parse this argument, skip the "-".
         s_index_into_multioption_argument = 1;
     }
     char option = arg[s_index_into_multioption_argument];
@@ -159,15 +173,17 @@ int OptionParser::handle_short_option()
         return '?';
     }
 
+    // Let's see if we're at the end of this argument already.
     if (s_index_into_multioption_argument < arg.length()) {
-
+        // This not yet the end.
         if (needs_value == no_argument) {
             optarg = nullptr;
             m_consumed_args = 0;
         } else {
-
+            // Treat the rest of the argument as the value, the "-ovalue"
+            // syntax.
             optarg = m_argv[m_arg_index] + s_index_into_multioption_argument;
-
+            // Next time, process the next argument.
             s_index_into_multioption_argument = 0;
             m_consumed_args = 1;
         }
@@ -177,7 +193,7 @@ int OptionParser::handle_short_option()
             optarg = nullptr;
             m_consumed_args = 1;
         } else if (m_arg_index + 1 < m_argc) {
-
+            // Treat the next argument as a value, the "-o value" syntax.
             optarg = m_argv[m_arg_index + 1];
             m_consumed_args = 2;
         } else {
@@ -200,9 +216,12 @@ const option* OptionParser::lookup_long_option(char* raw) const
         if (!arg.starts_with(name))
             continue;
 
+        // It would be better to not write out the index at all unless we're
+        // sure we've found the right option, but whatever.
         if (m_out_long_option_index)
             *m_out_long_option_index = index;
 
+        // Can either be "--option" or "--option=value".
         if (arg.length() == name.length()) {
             optarg = nullptr;
             return &option;
@@ -248,10 +267,10 @@ int OptionParser::handle_long_option()
         break;
     case required_argument:
         if (optarg) {
-            
+            // Value specified using "--option=value" syntax.
             m_consumed_args = 1;
         } else if (m_arg_index + 1 < m_argc) {
-
+            // Treat the next argument as a value in "--option value" syntax.
             optarg = m_argv[m_arg_index + 1];
             m_consumed_args = 2;
         } else {

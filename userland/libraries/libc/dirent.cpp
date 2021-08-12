@@ -1,10 +1,9 @@
 /*
- * Copyright (c) 2021, OliviaCE
+ * Copyright (c) 2021, pranaOS-Team
  *
  * SPDX-License-Identifier: BSD-2-Clause
-*/
+ */
 
-// includes
 #include <base/Assertions.h>
 #include <base/ScopeGuard.h>
 #include <base/StdLibExtras.h>
@@ -75,6 +74,9 @@ static void create_struct_dirent(sys_dirent* sys_ent, struct dirent* str_ent)
 
     VERIFY(sizeof(str_ent->d_name) > sys_ent->namelen);
 
+    // Note: We can't use any normal string function as sys_ent->name is
+    // not null terminated. All string copy functions will attempt to read
+    // the non-existent null terminator past the end of the source string.
     memcpy(str_ent->d_name, sys_ent->name, sys_ent->namelen);
     str_ent->d_name[sys_ent->namelen] = '\0';
 }
@@ -131,7 +133,7 @@ dirent* readdir(DIR* dirp)
         return nullptr;
 
     if (int new_errno = allocate_dirp_buffer(dirp)) {
-
+        // readdir is allowed to mutate errno
         errno = new_errno;
         return nullptr;
     }
@@ -149,7 +151,7 @@ dirent* readdir(DIR* dirp)
 static bool compare_sys_struct_dirent(sys_dirent* sys_ent, struct dirent* str_ent)
 {
     size_t namelen = min((size_t)256, sys_ent->namelen);
-
+    // These fields are guaranteed by create_struct_dirent to be the same
     return sys_ent->ino == str_ent->d_ino
         && sys_ent->file_type == str_ent->d_type
         && sys_ent->total_size() == str_ent->d_reclen
@@ -168,6 +170,9 @@ int readdir_r(DIR* dirp, struct dirent* entry, struct dirent** result)
         return new_errno;
     }
 
+    // This doesn't care about dirp state; seek until we find the entry.
+    // Unfortunately, we can't just compare struct dirent to sys_dirent, so
+    // manually compare the fields. This seems a bit risky, but could work.
     auto* buffer = dirp->buffer;
     auto* sys_ent = (sys_dirent*)buffer;
     bool found = false;

@@ -1,8 +1,8 @@
 /*
- * Copyright (c) 2021, emacodes
+ * Copyright (c) 2021, pranaOS-Team
  *
  * SPDX-License-Identifier: BSD-2-Clause
-*/
+ */
 
 // includes
 #include <base/Types.h>
@@ -19,7 +19,6 @@ extern size_t __stack_chk_guard;
 
 int main(int, char**, char**);
 
-// Tell the compiler that this may be called from somewhere else.
 int _entry(int argc, char** argv, char** env);
 void _start(int, char**, char**);
 
