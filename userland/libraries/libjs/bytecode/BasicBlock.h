@@ -45,7 +45,7 @@ struct UnwindInfo {
 };
 
 class BasicBlock {
-    AK_MAKE_NONCOPYABLE(BasicBlock);
+    BASE_MAKE_NONCOPYABLE(BasicBlock);
 
 public:
     static NonnullOwnPtr<BasicBlock> create(String name, size_t size = 4 * KiB);
