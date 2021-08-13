@@ -28,6 +28,7 @@
 		9F85D8DF26C654DE00C057B5 /* StringTable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F85D8C526C654DE00C057B5 /* StringTable.cpp */; };
 		9F85D8E026C654DE00C057B5 /* BasicBlock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F85D8C726C654DE00C057B5 /* BasicBlock.cpp */; };
 		9F85D8E126C654DE00C057B5 /* Instruction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F85D8C826C654DE00C057B5 /* Instruction.cpp */; };
+		9F85D8EF26C6569F00C057B5 /* Printer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F85D8ED26C6569F00C057B5 /* Printer.cpp */; };
 		9FEE223326C6377300F4083D /* LexicalPath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9FEE21A026C6377300F4083D /* LexicalPath.cpp */; };
 		9FEE223426C6377300F4083D /* Format.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9FEE21A626C6377300F4083D /* Format.cpp */; };
 		9FEE223526C6377300F4083D /* Base64.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9FEE21AE26C6377300F4083D /* Base64.cpp */; };
@@ -497,6 +498,8 @@
 		9F85D8E626C6563100C057B5 /* spec-testsuite.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "spec-testsuite.js"; sourceTree = "<group>"; };
 		9F85D8E726C6563100C057B5 /* test-basic-load.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "test-basic-load.js"; sourceTree = "<group>"; };
 		9F85D8EA26C6563100C057B5 /* empty-module.wasm */ = {isa = PBXFileReference; lastKnownFileType = file; path = "empty-module.wasm"; sourceTree = "<group>"; };
+		9F85D8EC26C6569000C057B5 /* Printer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Printer.h; sourceTree = "<group>"; };
+		9F85D8ED26C6569F00C057B5 /* Printer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Printer.cpp; sourceTree = "<group>"; };
 		9FEE218226C6371D00F4083D /* pranaOS */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = pranaOS; sourceTree = BUILT_PRODUCTS_DIR; };
 		9FEE219026C6377300F4083D /* Time.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Time.h; sourceTree = "<group>"; };
 		9FEE219126C6377300F4083D /* StringImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StringImpl.h; sourceTree = "<group>"; };
@@ -1611,6 +1614,7 @@
 		9F85D8E326C6563100C057B5 /* libwasm */ = {
 			isa = PBXGroup;
 			children = (
+				9F85D8EB26C6568100C057B5 /* printer */,
 				9F85D8E426C6563100C057B5 /* tests */,
 			);
 			path = libwasm;
@@ -1648,6 +1652,15 @@
 				9F85D8EA26C6563100C057B5 /* empty-module.wasm */,
 			);
 			path = modules;
+			sourceTree = "<group>";
+		};
+		9F85D8EB26C6568100C057B5 /* printer */ = {
+			isa = PBXGroup;
+			children = (
+				9F85D8EC26C6569000C057B5 /* Printer.h */,
+				9F85D8ED26C6569F00C057B5 /* Printer.cpp */,
+			);
+			path = printer;
 			sourceTree = "<group>";
 		};
 		9FEE217926C6371D00F4083D = {
@@ -3386,6 +3399,7 @@
 				9FEE24D926C6379000F4083D /* AddressSpace.cpp in Sources */,
 				9FEE24C826C6379000F4083D /* UDPSocket.cpp in Sources */,
 				9FEE250F26C6379000F4083D /* TmpFS.cpp in Sources */,
+				9F85D8EF26C6569F00C057B5 /* Printer.cpp in Sources */,
 				9FEE24DA26C6379000F4083D /* RingBuffer.cpp in Sources */,
 				9FEE251126C6379000F4083D /* SysFSComponent.cpp in Sources */,
 				9FEE24DD26C6379000F4083D /* KLexicalPath.cpp in Sources */,
