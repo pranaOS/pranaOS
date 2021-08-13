@@ -55,7 +55,7 @@ protected:
 };
 
 class BlockingFileWatcher final : public FileWatcherBase {
-    AK_MAKE_NONCOPYABLE(BlockingFileWatcher);
+    BASE_MAKE_NONCOPYABLE(BlockingFileWatcher);
 
 public:
     explicit BlockingFileWatcher(InodeWatcherFlags = InodeWatcherFlags::None);
@@ -66,7 +66,7 @@ public:
 
 class FileWatcher final : public FileWatcherBase
     , public RefCounted<FileWatcher> {
-    AK_MAKE_NONCOPYABLE(FileWatcher);
+    BASE_MAKE_NONCOPYABLE(FileWatcher);
 
 public:
     static Result<NonnullRefPtr<FileWatcher>, String> create(InodeWatcherFlags = InodeWatcherFlags::None);

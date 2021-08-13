@@ -126,7 +126,7 @@ public:
         : m_socket(move(socket))
         , m_client_id(s_id_allocator->allocate())
     {
-#ifdef __serenity__
+#ifdef __pranaos__
         add_child(*m_socket);
         m_socket->on_ready_to_read = [this] {
             u32 length;
@@ -149,7 +149,7 @@ public:
             handle_request(request_json.value().as_object());
         };
 #else
-        warnln("RPC Client constructed outside serenity, this is very likely a bug!");
+        warnln("RPC Client constructed outside pranaos, this is very likely a bug!");
 #endif
     }
     virtual ~InspectorServerConnection() override
@@ -179,7 +179,7 @@ public:
             JsonObject response;
             response.set("type", type);
             response.set("pid", getpid());
-#ifdef __serenity__
+#ifdef __pranaos__
             char buffer[1024];
             if (get_process_name(buffer, sizeof(buffer)) >= 0) {
                 response.set("process_name", buffer);
@@ -274,7 +274,7 @@ EventLoop::EventLoop([[maybe_unused]] MakeInspectable make_inspectable)
         VERIFY(rc == 0);
         s_event_loop_stack->append(*this);
 
-#ifdef __serenity__
+#ifdef __pranaos__
         if (getuid() != 0
             && make_inspectable == MakeInspectable::Yes
             && !s_inspector_server_connection) {
@@ -293,7 +293,7 @@ EventLoop::~EventLoop()
 
 bool connect_to_inspector_server()
 {
-#ifdef __serenity__
+#ifdef __pranaos__
     auto socket = Core::LocalSocket::construct();
     if (!socket->connect(SocketAddress::local("/tmp/portal/inspectables")))
         return false;
@@ -554,7 +554,7 @@ void EventLoop::notify_forked(ForkEvent event)
             info->next_signal_id = 0;
         }
         s_pid = 0;
-#ifdef __serenity__
+#ifdef __pranaos__
         s_inspector_server_connection = nullptr;
 #endif
         return;

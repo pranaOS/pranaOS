@@ -77,7 +77,7 @@ private:
     static void handle_signal(int);
 
     struct QueuedEvent {
-        AK_MAKE_NONCOPYABLE(QueuedEvent);
+        BASE_MAKE_NONCOPYABLE(QueuedEvent);
 
     public:
         QueuedEvent(Object& receiver, NonnullOwnPtr<Event>);
