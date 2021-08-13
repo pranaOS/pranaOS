@@ -10,5 +10,5 @@ set(GENERATED_SOURCES
 )
 
 generate_state_machine(StateMachine.txt EscapeSequenceStateMachine.h)
-pranaos_lib(LibVT vt)
-target_link_libraries(LibVT LibC LibCore LibGUI LibGfx LibDesktop)
+pranaos_lib(libvt vt)
+target_link_libraries(libvt libc libcore libgui libgfx libdesktop)
