@@ -2,5 +2,5 @@ set(SOURCES
     dlfcn.cpp
 )
 
-serenity_libc(LibDl dl)
-target_link_libraries(LibDl LibC)
+pranaos_libc(libdl dl)
+target_link_libraries(libdl libc)

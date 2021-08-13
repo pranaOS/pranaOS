@@ -7,5 +7,5 @@ set(SOURCES
     Token.cpp
 )
 
-pranaos_lib(LibCpp cpp)
-target_link_libraries(LibCpp LibC LibSyntax)
+pranaos_lib(libcpp cpp)
+target_link_libraries(libcpp libc libyntax)
