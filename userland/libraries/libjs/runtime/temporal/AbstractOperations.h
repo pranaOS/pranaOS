@@ -1,0 +1,81 @@
+/*
+ * Copyright (c) 2021, Krisna Pranav
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+ */
+
+
+#pragma once
+
+// includes
+#include <base/Forward.h>
+#include <base/String.h>
+#include <libjs/Forward.h>
+#include <libjs/Runtime/GlobalObject.h>
+
+namespace JS::Temporal {
+
+enum class OptionType {
+    Boolean,
+    String,
+    Number
+};
+
+struct ISODateTime {
+    i32 year;
+    u8 month;
+    u8 day;
+    u8 hour;
+    u8 minute;
+    u8 second;
+    u16 millisecond;
+    u16 microsecond;
+    u16 nanosecond;
+    Optional<String> calendar = {};
+};
+
+struct TemporalInstant {
+    i32 year;
+    u8 month;
+    u8 day;
+    u8 hour;
+    u8 minute;
+    u8 second;
+    u16 millisecond;
+    u16 microsecond;
+    u16 nanosecond;
+    Optional<String> time_zone_offset;
+};
+
+struct TemporalDate {
+    i32 year;
+    u8 month;
+    u8 day;
+    Optional<String> calendar;
+};
+
+struct TemporalTimeZone {
+    bool z;
+    Optional<String> offset;
+    Optional<String> name;
+};
+
+MarkedValueList iterable_to_list_of_type(GlobalObject&, Value items, Vector<OptionType> const& element_types);
+Object* get_options_object(GlobalObject&, Value options);
+Value get_option(GlobalObject&, Object& options, String const& property, Vector<OptionType> const& types, Vector<StringView> const& values, Value fallback);
+Optional<String> to_temporal_overflow(GlobalObject&, Object& normalized_options);
+Optional<String> to_temporal_rounding_mode(GlobalObject&, Object& normalized_options, String const& fallback);
+u64 to_temporal_rounding_increment(GlobalObject&, Object& normalized_options, Optional<double> dividend, bool inclusive);
+Optional<String> to_smallest_temporal_unit(GlobalObject&, Object& normalized_options, Vector<StringView> const& disallowed_units, Optional<String> fallback);
+double constrain_to_range(double x, double minimum, double maximum);
+BigInt* round_number_to_increment(GlobalObject&, BigInt const&, u64 increment, String const& rounding_mode);
+Optional<ISODateTime> parse_iso_date_time(GlobalObject&, String const& iso_string);
+Optional<TemporalInstant> parse_temporal_instant_string(GlobalObject&, String const& iso_string);
+Optional<String> parse_temporal_calendar_string(GlobalObject&, String const& iso_string);
+Optional<TemporalDate> parse_temporal_date_string(GlobalObject&, String const& iso_string);
+Optional<TemporalDuration> parse_temporal_duration_string(GlobalObject&, String const& iso_string);
+Optional<TemporalTimeZone> parse_temporal_time_zone_string(GlobalObject&, String const& iso_string);
+double to_positive_integer_or_infinity(GlobalObject&, Value argument);
+Object* prepare_temporal_fields(GlobalObject&, Object& fields, Vector<String> const& field_names, Vector<StringView> const& required_fields);
+
+}
