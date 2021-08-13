@@ -412,6 +412,7 @@
 		9FEE274826C637EA00F4083D /* crti.s in Sources */ = {isa = PBXBuildFile; fileRef = 9FEE26E726C637EA00F4083D /* crti.s */; };
 		9FEE274926C637EA00F4083D /* crtn.s in Sources */ = {isa = PBXBuildFile; fileRef = 9FEE26E826C637EA00F4083D /* crtn.s */; };
 		9FEE274A26C637EA00F4083D /* crt0.s in Sources */ = {isa = PBXBuildFile; fileRef = 9FEE26E926C637EA00F4083D /* crt0.s */; };
+		9FEE275226C63A3700F4083D /* dlfcn.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9FEE275126C63A3700F4083D /* dlfcn.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -1414,6 +1415,10 @@
 		9FEE26E726C637EA00F4083D /* crti.s */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; path = crti.s; sourceTree = "<group>"; };
 		9FEE26E826C637EA00F4083D /* crtn.s */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; path = crtn.s; sourceTree = "<group>"; };
 		9FEE26E926C637EA00F4083D /* crt0.s */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; path = crt0.s; sourceTree = "<group>"; };
+		9FEE274E26C63A3600F4083D /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
+		9FEE274F26C63A3600F4083D /* dlfcn_integration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dlfcn_integration.h; sourceTree = "<group>"; };
+		9FEE275026C63A3600F4083D /* dlfcn.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dlfcn.h; sourceTree = "<group>"; };
+		9FEE275126C63A3700F4083D /* dlfcn.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = dlfcn.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -2656,6 +2661,7 @@
 		9FEE25FC26C637EA00F4083D /* libraries */ = {
 			isa = PBXGroup;
 			children = (
+				9FEE274D26C639BF00F4083D /* libdl */,
 				9FEE25FD26C637EA00F4083D /* libc */,
 				9FEE26AF26C637EA00F4083D /* libvt */,
 				9FEE26BF26C637EA00F4083D /* libcpp */,
@@ -3028,6 +3034,17 @@
 			path = x86_64;
 			sourceTree = "<group>";
 		};
+		9FEE274D26C639BF00F4083D /* libdl */ = {
+			isa = PBXGroup;
+			children = (
+				9FEE274E26C63A3600F4083D /* CMakeLists.txt */,
+				9FEE274F26C63A3600F4083D /* dlfcn_integration.h */,
+				9FEE275126C63A3700F4083D /* dlfcn.cpp */,
+				9FEE275026C63A3600F4083D /* dlfcn.h */,
+			);
+			path = libdl;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -3253,6 +3270,7 @@
 				9FEE270526C637EA00F4083D /* inet.cpp in Sources */,
 				9FEE26FF26C637EA00F4083D /* times.cpp in Sources */,
 				9FEE259E26C6379100F4083D /* access.cpp in Sources */,
+				9FEE275226C63A3700F4083D /* dlfcn.cpp in Sources */,
 				9FEE24F726C6379000F4083D /* USBDevice.cpp in Sources */,
 				9FEE272026C637EA00F4083D /* crti.S in Sources */,
 				9FEE270126C637EA00F4083D /* assert.cpp in Sources */,
