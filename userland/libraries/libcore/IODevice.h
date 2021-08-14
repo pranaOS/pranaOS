@@ -50,7 +50,7 @@ enum class SeekMode {
     FromEndPosition,
 };
 
-AK_ENUM_BITWISE_OPERATORS(OpenMode)
+BASE_ENUM_BITWISE_OPERATORS(OpenMode)
 
 class IODevice : public Object {
     C_OBJECT_ABSTRACT(IODevice)

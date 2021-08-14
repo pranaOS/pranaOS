@@ -33,7 +33,7 @@ struct FileWatcherEvent {
     String event_path;
 };
 
-AK_ENUM_BITWISE_OPERATORS(FileWatcherEvent::Type);
+BASE_ENUM_BITWISE_OPERATORS(FileWatcherEvent::Type);
 
 class FileWatcherBase {
 public:

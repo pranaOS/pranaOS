@@ -1377,7 +1377,7 @@ public:
     using ListInProcess = IntrusiveList<Thread, RawPtr<Thread>, &Thread::m_process_thread_list_node>;
 };
 
-AK_ENUM_BITWISE_OPERATORS(Thread::FileBlocker::BlockFlags);
+BASE_ENUM_BITWISE_OPERATORS(Thread::FileBlocker::BlockFlags);
 
 template<IteratorFunction<Thread&> Callback>
 inline IterationDecision Thread::for_each(Callback callback)
