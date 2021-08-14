@@ -27,7 +27,7 @@ while (( "$#" >= 3 )); do
         printf '    .size %s, 4\n' "${SECTION_NAME}_start"
         printf '%s:\n' "${SECTION_NAME}_start"
         printf '    .incbin "%s"\n' "${INPUT_FILE}"
-        printf '    .section serenity_embedded_resource_info, "a", @progbits\n'
+        printf '    .section pranaos_embedded_resource_info, "a", @progbits\n'
         printf '    .align 4\n'
         printf '    .globl %s\n' "${SECTION_NAME}_size"
         printf '    .type %s, @object\n' "${SECTION_NAME}_size"

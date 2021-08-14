@@ -6,7 +6,7 @@ index 900b4e2..c916e84 100644
      let additionalBuiltins: [String: Type]
  }
  
-+let serenityProfile = Profile(
++let pranaosProfile = Profile(
 +    processArguments: [""],
 +
 +    processEnv: ["UBSAN_OPTIONS":"handle_segv=0 handle_abrt=0"],

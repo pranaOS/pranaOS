@@ -3,22 +3,14 @@
 script_path=$(cd -P -- "$(dirname -- "$0")" && pwd -P)
 cd "$script_path/.." || exit 1
 
-# Ensure copyright headers match this format and are followed by a blank line:
-# /*
-#  * Copyright (c) YYYY(-YYYY), Whatever
-#  * ... more of these ...
-#  *
-#  * SPDX-License-Identifier: BSD-2-Clause
-#  */
 GOOD_LICENSE_HEADER_PATTERN=$'^/\*\n( \* Copyright \(c\) [0-9]{4}(-[0-9]{4})?, .*\n)+ \*\n \* SPDX-License-Identifier: BSD-2-Clause\n \*/\n\n'
 BAD_LICENSE_HEADER_ERRORS=()
-LICENSE_HEADER_CHECK_EXCLUDES=(AK/Checked.h AK/Function.h Userland/Libraries/LibC/elf.h Userland/DevTools/HackStudio/LanguageServers/Cpp/Tests/* Userland/Libraries/LibCpp/Tests/*)
+LICENSE_HEADER_CHECK_EXCLUDES=(base/Checked.h base/Function.h Userland/Libraries/LibC/elf.h Userland/DevTools/HackStudio/LanguageServers/Cpp/Tests/* Userland/Libraries/LibCpp/Tests/*)
 
 # We check that "#pragma once" is present
 PRAGMA_ONCE_PATTERN='#pragma once'
 MISSING_PRAGMA_ONCE_ERRORS=()
 
-# We make sure that there's a blank line before and after pragma once
 GOOD_PRAGMA_ONCE_PATTERN=$'(^|\\S\n\n)#pragma once(\n\n\\S.|$)'
 BAD_PRAGMA_ONCE_ERRORS=()
 
