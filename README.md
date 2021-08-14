@@ -13,6 +13,11 @@ A unix operating system written from scratch in C++ / C
 - want to contribute to pranaOS??
 - [check out the contributing guide](https://github.com/pranaOS/pranaOS/blob/master/docs/contributing.md)
 
+
+# Tell Your Feedback:
+- tell your feed back in discord under #reviews channel 
+- or tweet your feedback through [twitter](https://twitter.com/search?q=%23pranaOS)
+
 ## Contributors
 
 <a href="https://github.com/pranaOS/pranaOS/graphs/contributors">
