@@ -401,7 +401,7 @@ struct ValueTraits : public Traits<Value> {
 
 }
 
-namespace AK {
+namespace Base {
 
 template<>
 struct Formatter<JS::Value> : Formatter<StringView> {

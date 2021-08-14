@@ -192,10 +192,10 @@ private:
 }
 
 template<>
-struct AK::Formatter<Core::Object> : AK::Formatter<FormatString> {
+struct Base::Formatter<Core::Object> : Base::Formatter<FormatString> {
     void format(FormatBuilder& builder, const Core::Object& value)
     {
-        return AK::Formatter<FormatString>::format(builder, "{}({})", value.class_name(), &value);
+        return Base::Formatter<FormatString>::format(builder, "{}({})", value.class_name(), &value);
     }
 };
 

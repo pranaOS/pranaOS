@@ -298,7 +298,7 @@ Optional<DateTime> DateTime::parse(const String& format, const String& string)
         case 'a': {
             auto wday = 0;
             for (auto name : wday_short_names) {
-                if (string.substring_view(string_pos).starts_with(name, AK::CaseSensitivity::CaseInsensitive)) {
+                if (string.substring_view(string_pos).starts_with(name, Base::CaseSensitivity::CaseInsensitive)) {
                     string_pos += name.length();
                     tm.tm_wday = wday;
                     break;
@@ -312,7 +312,7 @@ Optional<DateTime> DateTime::parse(const String& format, const String& string)
         case 'A': {
             auto wday = 0;
             for (auto name : wday_long_names) {
-                if (string.substring_view(string_pos).starts_with(name, AK::CaseSensitivity::CaseInsensitive)) {
+                if (string.substring_view(string_pos).starts_with(name, Base::CaseSensitivity::CaseInsensitive)) {
                     string_pos += name.length();
                     tm.tm_wday = wday;
                     break;
@@ -327,7 +327,7 @@ Optional<DateTime> DateTime::parse(const String& format, const String& string)
         case 'b': {
             auto mon = 0;
             for (auto name : mon_short_names) {
-                if (string.substring_view(string_pos).starts_with(name, AK::CaseSensitivity::CaseInsensitive)) {
+                if (string.substring_view(string_pos).starts_with(name, Base::CaseSensitivity::CaseInsensitive)) {
                     string_pos += name.length();
                     tm.tm_mon = mon;
                     break;
@@ -341,7 +341,7 @@ Optional<DateTime> DateTime::parse(const String& format, const String& string)
         case 'B': {
             auto mon = 0;
             for (auto name : mon_long_names) {
-                if (string.substring_view(string_pos).starts_with(name, AK::CaseSensitivity::CaseInsensitive)) {
+                if (string.substring_view(string_pos).starts_with(name, Base::CaseSensitivity::CaseInsensitive)) {
                     string_pos += name.length();
                     tm.tm_mon = mon;
                     break;

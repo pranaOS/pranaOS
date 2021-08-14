@@ -55,7 +55,7 @@ JS_DEFINE_NATIVE_FUNCTION(WeakSetPrototype::add)
         vm.throw_exception<TypeError>(global_object, ErrorType::NotAnObject, value.to_string_without_side_effects());
         return {};
     }
-    weak_set->values().set(&value.as_object(), AK::HashSetExistingEntryBehavior::Keep);
+    weak_set->values().set(&value.as_object(), Base::HashSetExistingEntryBehavior::Keep);
     return weak_set;
 }
 

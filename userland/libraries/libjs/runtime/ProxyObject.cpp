@@ -617,7 +617,7 @@ MarkedValueList ProxyObject::internal_own_property_keys() const
         }
         auto property_key = value.to_property_key(global_object);
         VERIFY(!vm.exception());
-        unique_keys.set(property_key, AK::HashSetExistingEntryBehavior::Keep);
+        unique_keys.set(property_key, Base::HashSetExistingEntryBehavior::Keep);
     });
 
     if (unique_keys.size() != trap_result.size()) {

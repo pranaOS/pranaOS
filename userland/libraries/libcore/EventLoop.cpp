@@ -440,7 +440,7 @@ void SignalHandlers::dispatch()
         for (auto& handler : m_handlers_pending) {
             if (handler.value) {
                 auto result = m_handlers.set(handler.key, move(handler.value));
-                VERIFY(result == AK::HashSetResult::InsertedNewEntry);
+                VERIFY(result == Base::HashSetResult::InsertedNewEntry);
             } else {
                 m_handlers.remove(handler.key);
             }

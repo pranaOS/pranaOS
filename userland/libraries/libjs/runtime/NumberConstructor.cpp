@@ -13,9 +13,9 @@
 #include <libjs/runtime/NumberObject.h>
 
 #ifdef __clang__
-#    define EPSILON_VALUE AK::exp2(-52.)
-#    define MAX_SAFE_INTEGER_VALUE AK::exp2(53.) - 1
-#    define MIN_SAFE_INTEGER_VALUE -(AK::exp2(53.) - 1)
+#    define EPSILON_VALUE Base::exp2(-52.)
+#    define MAX_SAFE_INTEGER_VALUE Base::exp2(53.) - 1
+#    define MIN_SAFE_INTEGER_VALUE -(Base::exp2(53.) - 1)
 #else
 constexpr const double EPSILON_VALUE { __builtin_exp2(-52) };
 constexpr const double MAX_SAFE_INTEGER_VALUE { __builtin_exp2(53) - 1 };

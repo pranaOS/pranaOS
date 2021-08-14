@@ -41,7 +41,7 @@ public:
 
 }
 
-namespace AK {
+namespace Base {
 
 template<>
 struct Formatter<JS::PropertyDescriptor> : Formatter<StringView> {

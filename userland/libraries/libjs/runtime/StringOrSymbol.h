@@ -155,7 +155,7 @@ private:
 }
 
 template<>
-struct AK::Traits<JS::StringOrSymbol> : public GenericTraits<JS::StringOrSymbol> {
+struct Base::Traits<JS::StringOrSymbol> : public GenericTraits<JS::StringOrSymbol> {
     static unsigned hash(JS::StringOrSymbol const& key)
     {
         return key.hash();

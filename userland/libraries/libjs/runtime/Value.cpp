@@ -167,7 +167,7 @@ static String double_to_string(double d)
         else
             builder.append('-');
 
-        builder.append(String::number(AK::abs(exponent - 1)));
+        builder.append(String::number(Base::abs(exponent - 1)));
         return builder.to_string();
     }
 
@@ -181,7 +181,7 @@ static String double_to_string(double d)
     else
         builder.append('-');
 
-    builder.append(String::number(AK::abs(exponent - 1)));
+    builder.append(String::number(Base::abs(exponent - 1)));
     return builder.to_string();
 }
 

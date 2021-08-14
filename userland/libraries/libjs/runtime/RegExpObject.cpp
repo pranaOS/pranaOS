@@ -76,7 +76,7 @@ Result<regex::RegexOptions<ECMAScriptFlags>, String> regex_flags_from_string(Str
 
 String parse_regex_pattern(StringView pattern, bool unicode)
 {
-    auto utf16_pattern = AK::utf8_to_utf16(pattern);
+    auto utf16_pattern = Base::utf8_to_utf16(pattern);
     Utf16View utf16_pattern_view { utf16_pattern };
     StringBuilder builder;
 

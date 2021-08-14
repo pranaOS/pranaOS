@@ -35,7 +35,7 @@ NonnullRefPtr<Utf16StringImpl> Utf16StringImpl::create(Vector<u16> string)
 
 NonnullRefPtr<Utf16StringImpl> Utf16StringImpl::create(StringView const& string)
 {
-    return create(AK::utf8_to_utf16(string));
+    return create(Base::utf8_to_utf16(string));
 }
 
 NonnullRefPtr<Utf16StringImpl> Utf16StringImpl::create(Utf16View const& view)

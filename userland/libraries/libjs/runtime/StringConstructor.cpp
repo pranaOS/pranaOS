@@ -155,7 +155,7 @@ JS_DEFINE_NATIVE_FUNCTION(StringConstructor::from_code_point)
             return {};
         }
 
-        AK::code_point_to_utf16(string, static_cast<u32>(code_point));
+        Base::code_point_to_utf16(string, static_cast<u32>(code_point));
     }
 
     return js_string(vm, Utf16String(move(string)));

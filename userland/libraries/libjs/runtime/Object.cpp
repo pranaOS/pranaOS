@@ -920,7 +920,7 @@ Value Object::ordinary_to_primitive(Value::PreferredType preferred_type) const
 
     auto& vm = this->vm();
 
-    AK::Array<PropertyName, 2> method_names;
+    Base::Array<PropertyName, 2> method_names;
     if (preferred_type == Value::PreferredType::String)
         method_names = { vm.names.toString, vm.names.valueOf };
     else

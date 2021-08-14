@@ -82,7 +82,7 @@ private:
 
 }
 
-namespace AK {
+namespace Base {
 
 template<>
 struct Formatter<Core::FileWatcherEvent> : Formatter<FormatString> {

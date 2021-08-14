@@ -221,7 +221,7 @@ struct PropertyNameTraits : public Traits<PropertyName> {
 
 }
 
-namespace AK {
+namespace Base {
 
 template<>
 struct Formatter<JS::PropertyName> : Formatter<StringView> {

@@ -25,7 +25,7 @@ private:
     size_t m_size;
 };
 
-namespace AK {
+namespace Base {
 
 template<>
 inline void swap(const SizedObject& a, const SizedObject& b)

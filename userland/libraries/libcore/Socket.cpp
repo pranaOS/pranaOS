@@ -57,7 +57,7 @@ bool Socket::connect(const String& hostname, int port)
         return false;
     }
 
-    auto* host_addr = AK::ByteReader::load_pointer<u8 const>(reinterpret_cast<u8 const*>(&hostent->h_addr_list[0]));
+    auto* host_addr = Base::ByteReader::load_pointer<u8 const>(reinterpret_cast<u8 const*>(&hostent->h_addr_list[0]));
     IPv4Address host_address(host_addr);
     dbgln_if(CSOCKET_DEBUG, "Socket::connect: Resolved '{}' to {}", hostname, host_address);
     return connect(host_address, port);
