@@ -1,0 +1,132 @@
+/*
+ * Copyright (c) 2021, Krisna Pranav
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+ */
+
+// includes
+#include <base/Function.h>
+#include <libjs/runtime/AbstractOperations.h>
+#include <libjs/runtime/ArrayBuffer.h>
+#include <libjs/runtime/ArrayBufferConstructor.h>
+#include <libjs/runtime/ArrayBufferPrototype.h>
+#include <libjs/runtime/GlobalObject.h>
+
+namespace JS {
+
+ArrayBufferPrototype::ArrayBufferPrototype(GlobalObject& global_object)
+    : Object(*global_object.object_prototype())
+{
+}
+
+void ArrayBufferPrototype::initialize(GlobalObject& global_object)
+{
+    auto& vm = this->vm();
+    Object::initialize(global_object);
+    u8 attr = Attribute::Writable | Attribute::Configurable;
+    define_native_function(vm.names.slice, slice, 2, attr);
+    define_native_accessor(vm.names.byteLength, byte_length_getter, {}, Attribute::Configurable);
+
+    define_direct_property(*vm.well_known_symbol_to_string_tag(), js_string(vm, vm.names.ArrayBuffer.as_string()), Attribute::Configurable);
+}
+
+ArrayBufferPrototype::~ArrayBufferPrototype()
+{
+}
+
+static ArrayBuffer* array_buffer_object_from(VM& vm, GlobalObject& global_object)
+{
+    auto this_value = vm.this_value(global_object);
+    if (!this_value.is_object() || !is<ArrayBuffer>(this_value.as_object())) {
+        vm.throw_exception<TypeError>(global_object, ErrorType::NotAn, "ArrayBuffer");
+        return nullptr;
+    }
+    return static_cast<ArrayBuffer*>(&this_value.as_object());
+}
+
+JS_DEFINE_NATIVE_FUNCTION(ArrayBufferPrototype::slice)
+{
+    auto array_buffer_object = array_buffer_object_from(vm, global_object);
+    if (!array_buffer_object)
+        return {};
+
+    if (array_buffer_object->is_detached()) {
+        vm.throw_exception<TypeError>(global_object, ErrorType::DetachedArrayBuffer);
+        return {};
+    }
+
+    auto length = array_buffer_object->byte_length();
+
+    auto relative_start = vm.argument(0).to_integer_or_infinity(global_object);
+    if (vm.exception())
+        return {};
+
+    double first;
+    if (relative_start < 0)
+        first = max(length + relative_start, 0.0);
+    else
+        first = min(relative_start, (double)length);
+
+    auto relative_end = vm.argument(1).is_undefined() ? length : vm.argument(1).to_integer_or_infinity(global_object);
+    if (vm.exception())
+        return {};
+
+    double final;
+    if (relative_end < 0)
+        final = max(length + relative_end, 0.0);
+    else
+        final = min(relative_end, (double)length);
+
+    auto new_length = max(final - first, 0.0);
+
+    auto constructor = species_constructor(global_object, *array_buffer_object, *global_object.array_buffer_constructor());
+    if (vm.exception())
+        return {};
+
+    MarkedValueList arguments(vm.heap());
+    arguments.append(Value(new_length));
+    auto new_array_buffer = vm.construct(*constructor, *constructor, move(arguments));
+    if (vm.exception())
+        return {};
+
+    if (!new_array_buffer.is_object() || !is<ArrayBuffer>(new_array_buffer.as_object())) {
+        vm.throw_exception<TypeError>(global_object, ErrorType::SpeciesConstructorDidNotCreate, "an ArrayBuffer");
+        return {};
+    }
+    auto* new_array_buffer_object = static_cast<ArrayBuffer*>(&new_array_buffer.as_object());
+
+    if (new_array_buffer_object->is_detached()) {
+        vm.throw_exception<TypeError>(global_object, ErrorType::SpeciesConstructorReturned, "a detached ArrayBuffer");
+        return {};
+    }
+    if (same_value(new_array_buffer_object, array_buffer_object)) {
+        vm.throw_exception<TypeError>(global_object, ErrorType::SpeciesConstructorReturned, "same ArrayBuffer instance");
+        return {};
+    }
+    if (new_array_buffer_object->byte_length() < new_length) {
+        vm.throw_exception<TypeError>(global_object, ErrorType::SpeciesConstructorReturned, "an ArrayBuffer smaller than requested");
+        return {};
+    }
+
+    if (array_buffer_object->is_detached()) {
+        vm.throw_exception<TypeError>(global_object, ErrorType::DetachedArrayBuffer);
+        return {};
+    }
+
+    array_buffer_object->buffer().span().slice(first, new_length).copy_to(new_array_buffer_object->buffer().span());
+    return new_array_buffer_object;
+}
+
+JS_DEFINE_NATIVE_GETTER(ArrayBufferPrototype::byte_length_getter)
+{
+    auto array_buffer_object = array_buffer_object_from(vm, global_object);
+    if (!array_buffer_object)
+        return {};
+
+    if (array_buffer_object->is_detached())
+        return Value(0);
+
+    return Value(array_buffer_object->byte_length());
+}
+
+}
