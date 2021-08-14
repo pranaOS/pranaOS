@@ -854,6 +854,7 @@
 		9FCA00FE26C7C30E00EC5182 /* crtn.s */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; path = crtn.s; sourceTree = "<group>"; };
 		9FCA00FF26C7C30E00EC5182 /* crt0.s */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; path = crt0.s; sourceTree = "<group>"; };
 		9FCA021426C7C32900EC5182 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		9FCA021626C7C48F00EC5182 /* ide.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = ide.md; sourceTree = "<group>"; };
 		9FCAFE7C26C7C30D00EC5182 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		9FCAFE7F26C7C30D00EC5182 /* NumberFormat.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NumberFormat.cpp; sourceTree = "<group>"; };
 		9FCAFE8026C7C30D00EC5182 /* BitReaderTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BitReaderTest.cpp; sourceTree = "<group>"; };
@@ -3120,6 +3121,7 @@
 				9FEE224E26C6377A00F4083D /* codingstyle.md */,
 				9FEE224F26C6377A00F4083D /* contributing.md */,
 				9FEE225026C6377A00F4083D /* build.md */,
+				9FCA021626C7C48F00EC5182 /* ide.md */,
 			);
 			path = docs;
 			sourceTree = "<group>";
