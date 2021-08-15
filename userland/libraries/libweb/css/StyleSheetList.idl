@@ -1,0 +1,5 @@
+interface StyleSheetList {
+    
+    CSSStyleSheet? item(unsigned long index);
+    readonly attribute unsigned long length;
+};
