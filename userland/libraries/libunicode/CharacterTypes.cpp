@@ -92,7 +92,7 @@ u32 to_unicode_lowercase(u32 code_point)
         return unicode_data->simple_lowercase_mapping;
     return code_point;
 #else
-    return AK::to_ascii_lowercase(code_point);
+    return Base::to_ascii_lowercase(code_point);
 #endif
 }
 
@@ -104,7 +104,7 @@ u32 to_unicode_uppercase(u32 code_point)
         return unicode_data->simple_uppercase_mapping;
     return code_point;
 #else
-    return AK::to_ascii_uppercase(code_point);
+    return Base::to_ascii_uppercase(code_point);
 #endif
 }
 
