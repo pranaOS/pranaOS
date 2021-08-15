@@ -24,7 +24,7 @@ struct FontSelector {
     }
 };
 
-namespace AK {
+namespace Base {
 template<>
 struct Traits<FontSelector> : public GenericTraits<FontSelector> {
     static unsigned hash(const FontSelector& key) { return pair_int_hash(pair_int_hash(key.family.hash(), key.weight), key.size); }

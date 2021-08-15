@@ -76,12 +76,12 @@ bool is_pseudo_property(PropertyID);
 
 } // namespace Web::CSS
 
-namespace AK {
+namespace Base {
 template<>
 struct Traits<Web::CSS::PropertyID> : public GenericTraits<Web::CSS::PropertyID> {
     static unsigned hash(Web::CSS::PropertyID property_id) { return int_hash((unsigned)property_id); }
 };
-} // namespace AK
+}
 )~~~");
 
     outln("{}", generator.as_string_view());
