@@ -17,31 +17,31 @@ def handler_class_for_type(type, re=re.compile('^([^<]+)(<.*>)?$')):
 
     klass = match.group(1)
 
-    if klass == 'AK::Atomic':
+    if klass == 'Base::Atomic':
         return AKAtomic
-    elif klass == 'AK::DistinctNumeric':
+    elif klass == 'Base::DistinctNumeric':
         return AKDistinctNumeric
-    elif klass == 'AK::HashMap':
+    elif klass == 'Base::HashMap':
         return AKHashMapPrettyPrinter
-    elif klass == 'AK::RefCounted':
+    elif klass == 'Base::RefCounted':
         return AKRefCounted
-    elif klass == 'AK::RefPtr':
+    elif klass == 'Base::RefPtr':
         return AKRefPtr
-    elif klass == 'AK::OwnPtr':
+    elif klass == 'Base::OwnPtr':
         return AKOwnPtr
-    elif klass == 'AK::NonnullRefPtr':
+    elif klass == 'Base::NonnullRefPtr':
         return AKRefPtr
-    elif klass == 'AK::SinglyLinkedList':
+    elif klass == 'Base::SinglyLinkedList':
         return AKSinglyLinkedList
-    elif klass == 'AK::String':
+    elif klass == 'Base::String':
         return AKString
-    elif klass == 'AK::StringView':
+    elif klass == 'Base::StringView':
         return AKStringView
-    elif klass == 'AK::StringImpl':
+    elif klass == 'Base::StringImpl':
         return AKStringImpl
-    elif klass == 'AK::Variant':
+    elif klass == 'Base::Variant':
         return AKVariant
-    elif klass == 'AK::Vector':
+    elif klass == 'Base::Vector':
         return AKVector
     elif klass == 'VirtualAddress':
         return VirtualAddress
@@ -65,7 +65,7 @@ class AKAtomic:
     @classmethod
     def prettyprint_type(cls, type):
         contained_type = type.template_argument(0)
-        return f'AK::Atomic<{handler_class_for_type(contained_type).prettyprint_type(contained_type)}>'
+        return f'Base::Atomic<{handler_class_for_type(contained_type).prettyprint_type(contained_type)}>'
 
 
 class AKDistinctNumeric:
@@ -85,7 +85,7 @@ class AKDistinctNumeric:
             return qualified_name
         
         contained_type = type.template_argument(0)
-        return f'AK::DistinctNumeric<{handler_class_for_type(contained_type).prettyprint_type(contained_type)}>'
+        return f'Base::DistinctNumeric<{handler_class_for_type(contained_type).prettyprint_type(contained_type)}>'
 
 
 class AKRefCounted:
@@ -98,7 +98,7 @@ class AKRefCounted:
     @classmethod
     def prettyprint_type(cls, type):
         contained_type = type.template_argument(0)
-        return f'AK::RefCounted<{handler_class_for_type(contained_type).prettyprint_type(contained_type)}>'
+        return f'Base::RefCounted<{handler_class_for_type(contained_type).prettyprint_type(contained_type)}>'
 
 
 class AKString:
@@ -114,7 +114,7 @@ class AKString:
 
     @classmethod
     def prettyprint_type(cls, type):
-        return 'AK::String'
+        return 'Base::String'
 
 
 class AKStringView:
@@ -131,7 +131,7 @@ class AKStringView:
 
     @classmethod
     def prettyprint_type(cls, type):
-        return 'AK::StringView'
+        return 'Base::StringView'
 
 
 def get_field_unalloced(val, member, type):
@@ -152,7 +152,7 @@ class AKStringImpl:
 
     @classmethod
     def prettyprint_type(cls, type):
-        return 'AK::StringImpl'
+        return 'Base::StringImpl'
 
 
 class AKOwnPtr:
@@ -168,7 +168,7 @@ class AKOwnPtr:
     @classmethod
     def prettyprint_type(cls, type):
         contained_type = type.template_argument(0)
-        return f'AK::OwnPtr<{handler_class_for_type(contained_type).prettyprint_type(contained_type)}>'
+        return f'Base::OwnPtr<{handler_class_for_type(contained_type).prettyprint_type(contained_type)}>'
 
 
 class AKRefPtr:
@@ -189,7 +189,7 @@ class AKRefPtr:
     @classmethod
     def prettyprint_type(cls, type):
         contained_type = type.template_argument(0)
-        return f'AK::RefPtr<{handler_class_for_type(contained_type).prettyprint_type(contained_type)}>'
+        return f'Base::RefPtr<{handler_class_for_type(contained_type).prettyprint_type(contained_type)}>'
 
 
 class AKVariant:
@@ -223,7 +223,7 @@ class AKVariant:
     @classmethod
     def prettyprint_type(cls, ty):
         names = ", ".join(handler_class_for_type(t).prettyprint_type(t) for t in AKVariant.resolve_types(ty))
-        return f'AK::Variant<{names}>'
+        return f'Base::Variant<{names}>'
 
 
 class AKVector:
@@ -253,7 +253,7 @@ class AKVector:
     @classmethod
     def prettyprint_type(cls, type):
         template_type = type.template_argument(0)
-        return f'AK::Vector<{handler_class_for_type(template_type).prettyprint_type(template_type)}>'
+        return f'Base::Vector<{handler_class_for_type(template_type).prettyprint_type(template_type)}>'
 
 
 class AKHashMapPrettyPrinter:
@@ -291,7 +291,7 @@ class AKHashMapPrettyPrinter:
     def prettyprint_type(cls, type):
         template_types = list(type.template_argument(i) for i in (0, 1))
         key, value = list(handler_class_for_type(t).prettyprint_type(t) for t in template_types)
-        return f'AK::HashMap<{key}, {value}>'
+        return f'Base::HashMap<{key}, {value}>'
 
 
 class AKSinglyLinkedList:
@@ -314,7 +314,7 @@ class AKSinglyLinkedList:
     @classmethod
     def prettyprint_type(cls, type):
         template_type = type.template_argument(0)
-        return f'AK::SinglyLinkedList<{handler_class_for_type(template_type).prettyprint_type(template_type)}>'
+        return f'Base::SinglyLinkedList<{handler_class_for_type(template_type).prettyprint_type(template_type)}>'
 
 
 class VirtualAddress:
