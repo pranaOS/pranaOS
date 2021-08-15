@@ -267,10 +267,10 @@ int main(int argc, char** argv)
         }
     }
 
-    generator.append(R"~~~(#include <AK/MemoryStream.h>
-#include <AK/OwnPtr.h>
-#include <AK/Result.h>
-#include <AK/Utf8View.h>
+    generator.append(R"~~~(#include <base/MemoryStream.h>
+#include <base/OwnPtr.h>
+#include <base/Result.h>
+#include <base/Utf8View.h>
 #include <LibIPC/Connection.h>
 #include <LibIPC/Decoder.h>
 #include <LibIPC/Dictionary.h>

@@ -303,9 +303,9 @@ void output_header(const StateMachine& machine, SourceGenerator& generator)
     generator.append(R"~~~(
 #pragma once
 
-#include <AK/Function.h>
-#include <AK/Platform.h>
-#include <AK/Types.h>
+#include <base/Function.h>
+#include <base/Platform.h>
+#include <base/Types.h>
                      )~~~");
     if (machine.namespaces.has_value()) {
         generator.set("namespace", machine.namespaces.value());
