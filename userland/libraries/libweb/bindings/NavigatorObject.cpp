@@ -1,0 +1,51 @@
+/*
+ * Copyright (c) 2021, Krisna Pranav
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+ */
+
+// includes
+#include <libjs/runtime/Array.h>
+#include <libjs/runtime/GlobalObject.h>
+#include <libweb/bindings/NavigatorObject.h>
+#include <libweb/loader/ResourceLoader.h>
+
+namespace Web {
+namespace Bindings {
+
+NavigatorObject::NavigatorObject(JS::GlobalObject& global_object)
+    : Object(*global_object.object_prototype())
+{
+}
+
+void NavigatorObject::initialize(JS::GlobalObject& global_object)
+{
+    auto& heap = this->heap();
+    auto* languages = JS::Array::create(global_object, 0);
+    languages->indexed_properties().append(js_string(heap, "en-US"));
+
+    // FIXME: All of these should be in Navigator's prototype and be native accessors
+    u8 attr = JS::Attribute::Configurable | JS::Attribute::Writable | JS::Attribute::Enumerable;
+    define_direct_property("appCodeName", js_string(heap, "Mozilla"), attr);
+    define_direct_property("appName", js_string(heap, "Netscape"), attr);
+    define_direct_property("appVersion", js_string(heap, "4.0"), attr);
+    define_direct_property("language", languages->get(0), attr);
+    define_direct_property("languages", languages, attr);
+    define_direct_property("platform", js_string(heap, "pranaOS"), attr);
+    define_direct_property("product", js_string(heap, "Gecko"), attr);
+
+    define_native_accessor("userAgent", user_agent_getter, {}, JS::Attribute::Configurable | JS::Attribute::Enumerable);
+}
+
+NavigatorObject::~NavigatorObject()
+{
+}
+
+JS_DEFINE_NATIVE_FUNCTION(NavigatorObject::user_agent_getter)
+{
+    return JS::js_string(vm, ResourceLoader::the().user_agent());
+}
+
+}
+
+}
