@@ -139,8 +139,8 @@ if (ENABLE_ALL_THE_DEBUG_MACROS)
     include(${CMAKE_SOURCE_DIR}/meta/CMake/all_the_debug_macros.cmake)
 endif(ENABLE_ALL_THE_DEBUG_MACROS)
 
-configure_file(AK/Debug.h.in AK/Debug.h @ONLY)
-configure_file(Kernel/Debug.h.in Kernel/Debug.h @ONLY)
+configure_file(base/Debug.h.in base/Debug.h @ONLY)
+configure_file(kernel/Debug.h.in kernel/Debug.h @ONLY)
 
 include_directories(userland/Libraries)
 include_directories(.)
