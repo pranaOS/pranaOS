@@ -50,7 +50,7 @@ private:
 
 }
 
-namespace AK {
+namespace Base {
 template<>
 struct Formatter<Web::DOM::Position> : Formatter<StringView> {
     void format(FormatBuilder& builder, const Web::DOM::Position& value)
