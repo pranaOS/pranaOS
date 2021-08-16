@@ -120,7 +120,7 @@ int main(int argc, char** argv)
     test_glob = String::formatted("*{}*", test_glob);
 
     if (getenv("DISABLE_DBG_OUTPUT")) {
-        AK::set_debug_enabled(false);
+        Base::set_debug_enabled(false);
     }
 
     if (g_dump_bytecode && !g_run_bytecode) {

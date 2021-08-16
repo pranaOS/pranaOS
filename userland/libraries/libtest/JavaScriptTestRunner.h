@@ -100,7 +100,7 @@ template<typename... Args>
 static consteval size_t __testjs_count(Args...) { return sizeof...(Args); }
 
 template<auto... Values>
-static consteval size_t __testjs_last() { return (AK::Detail::IntegralConstant<size_t, Values> {}, ...).value; }
+static consteval size_t __testjs_last() { return (Base::Detail::IntegralConstant<size_t, Values> {}, ...).value; }
 
 static constexpr auto TOP_LEVEL_TEST_NAME = "__$$TOP_LEVEL$$__";
 extern RefPtr<JS::VM> g_vm;
@@ -140,7 +140,7 @@ enum class RunFileHookResult {
     SkipFile,
 };
 
-using IntermediateRunFileResult = AK::Result<JSFileResult, RunFileHookResult>;
+using IntermediateRunFileResult = Base::Result<JSFileResult, RunFileHookResult>;
 extern IntermediateRunFileResult (*g_run_file)(const String&, JS::Interpreter&);
 
 class TestRunner : public ::Test::TestRunner {
@@ -187,7 +187,7 @@ inline void TestRunnerGlobalObject::initialize_global_object()
     }
 }
 
-inline AK::Result<NonnullRefPtr<JS::Program>, ParserError> parse_file(const String& file_path)
+inline Base::Result<NonnullRefPtr<JS::Program>, ParserError> parse_file(const String& file_path)
 {
     auto file = Core::File::construct(file_path);
     auto result = file->open(Core::OpenMode::ReadOnly);
@@ -205,10 +205,10 @@ inline AK::Result<NonnullRefPtr<JS::Program>, ParserError> parse_file(const Stri
 
     if (parser.has_errors()) {
         auto error = parser.errors()[0];
-        return AK::Result<NonnullRefPtr<JS::Program>, ParserError>(ParserError { error, error.source_location_hint(test_file_string) });
+        return Base::Result<NonnullRefPtr<JS::Program>, ParserError>(ParserError { error, error.source_location_hint(test_file_string) });
     }
 
-    return AK::Result<NonnullRefPtr<JS::Program>, ParserError>(program);
+    return Base::Result<NonnullRefPtr<JS::Program>, ParserError>(program);
 }
 
 inline Optional<JsonValue> get_test_results(JS::Interpreter& interpreter)
