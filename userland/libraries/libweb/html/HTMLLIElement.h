@@ -1,12 +1,13 @@
 /*
- * Copyright (c) 2020, the SerenityOS developers.
+ * Copyright (c) 2021, Krisna Pranav
  *
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
 #pragma once
 
-#include <LibWeb/HTML/HTMLElement.h>
+// includes
+#include <libweb/html/HTMLElement.h>
 
 namespace Web::HTML {
 
