@@ -6,10 +6,10 @@
 
 #pragma once
 
-#include <AK/Assertions.h>
-#include <AK/CheckedFormatString.h>
-#include <AK/Math.h>
-#include <LibTest/CrashTest.h>
+#include <base/Assertions.h>
+#include <base/CheckedFormatString.h>
+#include <base/Math.h>
+#include <libtest/CrashTest.h>
 
 namespace AK {
 template<typename... Parameters>

@@ -17,7 +17,7 @@ else
     expect(source).toEval();
 });
 
-test("break/continue, variable declaration, do-while, and return asi", () => {
+test("brebase/continue, variable declaration, do-while, and return asi", () => {
     const source = `function foo() {
     label:
     for (var i = 0; i < 4; i++) {
