@@ -177,7 +177,7 @@ public:
             return *this;
 
 #ifdef __SSE__
-        using AK::SIMD::i32x4;
+        using Base::SIMD::i32x4;
 
         const i32x4 color = {
             red(),
@@ -269,8 +269,8 @@ public:
         double r = static_cast<double>(red()) / 255.0;
         double g = static_cast<double>(green()) / 255.0;
         double b = static_cast<double>(blue()) / 255.0;
-        double max = AK::max(AK::max(r, g), b);
-        double min = AK::min(AK::min(r, g), b);
+        double max = Base::max(Base::max(r, g), b);
+        double min = Base::min(Base::min(r, g), b);
         double chroma = max - min;
 
         if (!chroma)

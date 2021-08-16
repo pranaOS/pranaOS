@@ -70,7 +70,7 @@ private:
 }
 
 template<>
-struct AK::Formatter<Gfx::AffineTransform> : Formatter<FormatString> {
+struct Base::Formatter<Gfx::AffineTransform> : Formatter<FormatString> {
     void format(FormatBuilder& builder, Gfx::AffineTransform value)
     {
         return Formatter<FormatString>::format(builder, "[{} {} {} {} {} {}]", value.a(), value.b(), value.c(), value.d(), value.e(), value.f());

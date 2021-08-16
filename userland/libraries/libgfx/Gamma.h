@@ -32,7 +32,7 @@
 
 namespace Gfx {
 
-using AK::SIMD::f32x4;
+using Base::SIMD::f32x4;
 
 #ifndef NO_FPU
 
@@ -58,7 +58,7 @@ inline f32x4 linear_to_gamma4(f32x4 x)
     // Source for approximation: https://mimosa-pudica.net/fast-gamma/
     constexpr float a = 0.00279491f;
     constexpr float b = 1.15907984f;
-    float c = (b / AK::sqrt(1.0f + a)) - 1;
+    float c = (b / Base::sqrt(1.0f + a)) - 1;
     return ((b * __builtin_ia32_rsqrtps(x + a)) - c) * x;
 }
 
@@ -85,8 +85,8 @@ inline float linear_to_gamma(float x)
     // Source for approximation: https://mimosa-pudica.net/fast-gamma/
     constexpr float a = 0.00279491;
     constexpr float b = 1.15907984;
-    float c = (b / AK::sqrt(1 + a)) - 1;
-    return ((b / AK::sqrt(x + a)) - c) * x;
+    float c = (b / Base::sqrt(1 + a)) - 1;
+    return ((b / Base::sqrt(x + a)) - c) * x;
 }
 
 // Linearize v1 and v2, lerp them by mix factor, then convert back.

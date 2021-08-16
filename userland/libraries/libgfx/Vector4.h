@@ -122,7 +122,7 @@ public:
 
     constexpr T length() const
     {
-        return AK::sqrt(m_x * m_x + m_y * m_y + m_z * m_z + m_w * m_w);
+        return Base::sqrt(m_x * m_x + m_y * m_y + m_z * m_z + m_w * m_w);
     }
 
     String to_string() const

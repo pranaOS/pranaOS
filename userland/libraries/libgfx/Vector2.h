@@ -105,7 +105,7 @@ public:
 
     constexpr T length() const
     {
-        return AK::hypot(m_x, m_y);
+        return Base::hypot(m_x, m_y);
     }
 
     String to_string() const

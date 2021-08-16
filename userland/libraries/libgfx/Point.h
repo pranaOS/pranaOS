@@ -216,19 +216,19 @@ public:
     // Returns pixels moved from other in either direction
     [[nodiscard]] T pixels_moved(Point<T> const& other) const
     {
-        return max(AK::abs(dx_relative_to(other)), AK::abs(dy_relative_to(other)));
+        return max(Base::abs(dx_relative_to(other)), Base::abs(dy_relative_to(other)));
     }
 
     [[nodiscard]] float distance_from(Point<T> const& other) const
     {
         if (*this == other)
             return 0;
-        return AK::hypot<float>(m_x - other.m_x, m_y - other.m_y);
+        return Base::hypot<float>(m_x - other.m_x, m_y - other.m_y);
     }
 
     [[nodiscard]] Point absolute_relative_distance_to(Point const& other) const
     {
-        return { AK::abs(dx_relative_to(other)), AK::abs(dy_relative_to(other)) };
+        return { Base::abs(dx_relative_to(other)), Base::abs(dy_relative_to(other)) };
     }
 
     template<typename U>

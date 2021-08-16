@@ -492,11 +492,11 @@ void Painter::draw_ellipse_intersecting(const IntRect& rect, Color color, int th
     double increment = M_PI / number_samples;
 
     auto ellipse_x = [&](double theta) -> int {
-        return (AK::cos(theta) * rect.width() / AK::sqrt(2.)) + rect.center().x();
+        return (Base::cos(theta) * rect.width() / Base::sqrt(2.)) + rect.center().x();
     };
 
     auto ellipse_y = [&](double theta) -> int {
-        return (AK::sin(theta) * rect.height() / AK::sqrt(2.)) + rect.center().y();
+        return (Base::sin(theta) * rect.height() / Base::sqrt(2.)) + rect.center().y();
     };
 
     for (auto theta = 0.0; theta < 2 * M_PI; theta += increment) {
@@ -1855,8 +1855,8 @@ void Painter::for_each_line_segment_on_elliptical_arc(const FloatPoint& p1, cons
     FloatPoint current_point = relative_start;
     FloatPoint next_point = { 0, 0 };
 
-    auto sin_x_axis = AK::sin(x_axis_rotation);
-    auto cos_x_axis = AK::cos(x_axis_rotation);
+    auto sin_x_axis = Base::sin(x_axis_rotation);
+    auto cos_x_axis = Base::cos(x_axis_rotation);
     auto rotate_point = [sin_x_axis, cos_x_axis](FloatPoint& p) {
         auto original_x = p.x();
         auto original_y = p.y();
@@ -1866,8 +1866,8 @@ void Painter::for_each_line_segment_on_elliptical_arc(const FloatPoint& p1, cons
     };
 
     for (double theta = theta_1; theta <= ((double)theta_1 + (double)theta_delta); theta += theta_step) {
-        next_point.set_x(a * AK::cos<float>(theta));
-        next_point.set_y(b * AK::sin<float>(theta));
+        next_point.set_x(a * Base::cos<float>(theta));
+        next_point.set_y(b * Base::sin<float>(theta));
         rotate_point(next_point);
 
         callback(current_point + center, next_point + center);

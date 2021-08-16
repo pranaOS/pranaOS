@@ -21,7 +21,7 @@ inline void SHA1::transform(const u8* data)
 {
     u32 blocks[80];
     for (size_t i = 0; i < 16; ++i)
-        blocks[i] = AK::convert_between_host_and_network_endian(((const u32*)data)[i]);
+        blocks[i] = Base::convert_between_host_and_network_endian(((const u32*)data)[i]);
 
     for (size_t i = 16; i < Rounds; ++i)
         blocks[i] = ROTATE_LEFT(blocks[i - 3] ^ blocks[i - 8] ^ blocks[i - 14] ^ blocks[i - 16], 1);

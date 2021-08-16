@@ -864,20 +864,20 @@ static void dequantize(JPGLoadingContext& context, Vector<Macroblock>& macrobloc
 
 static void inverse_dct(const JPGLoadingContext& context, Vector<Macroblock>& macroblocks)
 {
-    static const float m0 = 2.0 * AK::cos(1.0 / 16.0 * 2.0 * AK::Pi<double>);
-    static const float m1 = 2.0 * AK::cos(2.0 / 16.0 * 2.0 * AK::Pi<double>);
-    static const float m3 = 2.0 * AK::cos(2.0 / 16.0 * 2.0 * AK::Pi<double>);
-    static const float m5 = 2.0 * AK::cos(3.0 / 16.0 * 2.0 * AK::Pi<double>);
+    static const float m0 = 2.0 * Base::cos(1.0 / 16.0 * 2.0 * Base::Pi<double>);
+    static const float m1 = 2.0 * Base::cos(2.0 / 16.0 * 2.0 * Base::Pi<double>);
+    static const float m3 = 2.0 * Base::cos(2.0 / 16.0 * 2.0 * Base::Pi<double>);
+    static const float m5 = 2.0 * Base::cos(3.0 / 16.0 * 2.0 * Base::Pi<double>);
     static const float m2 = m0 - m5;
     static const float m4 = m0 + m5;
-    static const float s0 = AK::cos(0.0 / 16.0 * AK::Pi<double>) / sqrt(8);
-    static const float s1 = AK::cos(1.0 / 16.0 * AK::Pi<double>) / 2.0;
-    static const float s2 = AK::cos(2.0 / 16.0 * AK::Pi<double>) / 2.0;
-    static const float s3 = AK::cos(3.0 / 16.0 * AK::Pi<double>) / 2.0;
-    static const float s4 = AK::cos(4.0 / 16.0 * AK::Pi<double>) / 2.0;
-    static const float s5 = AK::cos(5.0 / 16.0 * AK::Pi<double>) / 2.0;
-    static const float s6 = AK::cos(6.0 / 16.0 * AK::Pi<double>) / 2.0;
-    static const float s7 = AK::cos(7.0 / 16.0 * AK::Pi<double>) / 2.0;
+    static const float s0 = Base::cos(0.0 / 16.0 * Base::Pi<double>) / sqrt(8);
+    static const float s1 = Base::cos(1.0 / 16.0 * Base::Pi<double>) / 2.0;
+    static const float s2 = Base::cos(2.0 / 16.0 * Base::Pi<double>) / 2.0;
+    static const float s3 = Base::cos(3.0 / 16.0 * Base::Pi<double>) / 2.0;
+    static const float s4 = Base::cos(4.0 / 16.0 * Base::Pi<double>) / 2.0;
+    static const float s5 = Base::cos(5.0 / 16.0 * Base::Pi<double>) / 2.0;
+    static const float s6 = Base::cos(6.0 / 16.0 * Base::Pi<double>) / 2.0;
+    static const float s7 = Base::cos(7.0 / 16.0 * Base::Pi<double>) / 2.0;
 
     for (u32 vcursor = 0; vcursor < context.mblock_meta.vcount; vcursor += context.vsample_factor) {
         for (u32 hcursor = 0; hcursor < context.mblock_meta.hcount; hcursor += context.hsample_factor) {

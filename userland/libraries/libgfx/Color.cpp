@@ -325,7 +325,7 @@ bool IPC::decode(IPC::Decoder& decoder, Color& color)
     return true;
 }
 
-void AK::Formatter<Gfx::Color>::format(FormatBuilder& builder, const Gfx::Color& value)
+void Base::Formatter<Gfx::Color>::format(FormatBuilder& builder, const Gfx::Color& value)
 {
     Formatter<StringView>::format(builder, value.to_string());
 }

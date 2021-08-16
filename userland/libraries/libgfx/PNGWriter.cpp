@@ -102,14 +102,14 @@ void PNGChunk::add(T* data, size_t size)
 template<typename T>
 void PNGChunk::add_as_little_endian(T data)
 {
-    auto data_out = AK::convert_between_host_and_little_endian(data);
+    auto data_out = Base::convert_between_host_and_little_endian(data);
     add(data_out);
 }
 
 template<typename T>
 void PNGChunk::add_as_big_endian(T data)
 {
-    auto data_out = AK::convert_between_host_and_big_endian(data);
+    auto data_out = Base::convert_between_host_and_big_endian(data);
     add(data_out);
 }
 
