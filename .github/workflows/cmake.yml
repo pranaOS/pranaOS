@@ -23,7 +23,7 @@ jobs:
 
     - name: Configure CMake
       run: |
-        mkdir -p Build
+        
         cmake -B ${{github.workspace}}/Build -G Ninja
 
     # - name: Build
