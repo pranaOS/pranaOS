@@ -1,0 +1,8 @@
+interface EventTarget {
+
+    undefined addEventListener(DOMString type, EventListener? callback);
+    undefined removeEventListener(DOMString type, EventListener? callback);
+
+    [ImplementedAs=dispatch_event_binding] boolean dispatchEvent(Event event);
+
+};

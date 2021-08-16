@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2021, Andreas Kling <awesomekling@gmail.com>
- * Copyright (c) 2021, Fei Wu <f.eiwu@yahoo.com>
+ * Copyright (c) 2021, Krisna Pranav
  *
  * SPDX-License-Identifier: BSD-2-Clause
  */

@@ -1,8 +1,8 @@
 /*
- * Copyright (c) 2021, Krisna Pranav
+ * Copyright (c) 2021, pranaOS-Team
  *
  * SPDX-License-Identifier: BSD-2-Clause
-*/
+ */
 
 // includes
 #include <base/Format.h>

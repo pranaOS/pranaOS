@@ -1,0 +1,6 @@
+interface StyleSheet {
+
+    readonly attribute Element? ownerNode;
+    readonly attribute CSSOMString type;
+
+};

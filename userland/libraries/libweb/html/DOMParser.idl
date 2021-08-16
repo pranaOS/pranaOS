@@ -1,0 +1,5 @@
+interface DOMParser {
+    constructor();
+
+    Document parseFromString(DOMString string, DOMString type);
+};

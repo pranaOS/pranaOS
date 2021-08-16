@@ -62,7 +62,7 @@ private:
     Bitmap m_cow_map;
 
     class SharedCommittedCowPages : public RefCounted<SharedCommittedCowPages> {
-        AK_MAKE_NONCOPYABLE(SharedCommittedCowPages);
+        BASE_MAKE_NONCOPYABLE(SharedCommittedCowPages);
 
     public:
         SharedCommittedCowPages() = delete;

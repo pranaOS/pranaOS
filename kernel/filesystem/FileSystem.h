@@ -90,7 +90,7 @@ inline const FileSystem* InodeIdentifier::fs() const
 
 }
 
-namespace AK {
+namespace Base {
 
 template<>
 struct Traits<Kernel::InodeIdentifier> : public GenericTraits<Kernel::InodeIdentifier> {
