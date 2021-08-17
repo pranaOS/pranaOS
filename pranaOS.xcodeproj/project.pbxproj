@@ -112,6 +112,25 @@
 		9F9FF1C426CB802200664E47 /* kmalloc.c in Sources */ = {isa = PBXBuildFile; fileRef = 9F9FF15A26CB802200664E47 /* kmalloc.c */; };
 		9F9FF1C526CB802200664E47 /* vmm.c in Sources */ = {isa = PBXBuildFile; fileRef = 9F9FF15C26CB802200664E47 /* vmm.c */; };
 		9F9FF1C626CB802200664E47 /* zoner.c in Sources */ = {isa = PBXBuildFile; fileRef = 9F9FF15D26CB802200664E47 /* zoner.c */; };
+		9F9FF1FA26CB83C700664E47 /* _start.s in Sources */ = {isa = PBXBuildFile; fileRef = 9F9FF1D326CB83C700664E47 /* _start.s */; };
+		9F9FF1FB26CB83C700664E47 /* vm_init.c in Sources */ = {isa = PBXBuildFile; fileRef = 9F9FF1D426CB83C700664E47 /* vm_init.c */; };
+		9F9FF1FC26CB83C700664E47 /* _loader.s in Sources */ = {isa = PBXBuildFile; fileRef = 9F9FF1D526CB83C700664E47 /* _loader.s */; };
+		9F9FF1FD26CB83C700664E47 /* stage3_entry.s in Sources */ = {isa = PBXBuildFile; fileRef = 9F9FF1D726CB83C700664E47 /* stage3_entry.s */; };
+		9F9FF1FE26CB83C700664E47 /* print.s in Sources */ = {isa = PBXBuildFile; fileRef = 9F9FF1DA26CB83C700664E47 /* print.s */; };
+		9F9FF1FF26CB83C700664E47 /* gdt.s in Sources */ = {isa = PBXBuildFile; fileRef = 9F9FF1DB26CB83C700664E47 /* gdt.s */; };
+		9F9FF20026CB83C700664E47 /* switch_to_pm.s in Sources */ = {isa = PBXBuildFile; fileRef = 9F9FF1DD26CB83C700664E47 /* switch_to_pm.s */; };
+		9F9FF20126CB83C700664E47 /* disk_load.s in Sources */ = {isa = PBXBuildFile; fileRef = 9F9FF1DE26CB83C700664E47 /* disk_load.s */; };
+		9F9FF20226CB83C700664E47 /* smm.s in Sources */ = {isa = PBXBuildFile; fileRef = 9F9FF1DF26CB83C700664E47 /* smm.s */; };
+		9F9FF20326CB83C700664E47 /* print.s in Sources */ = {isa = PBXBuildFile; fileRef = 9F9FF1E026CB83C700664E47 /* print.s */; };
+		9F9FF20426CB83C700664E47 /* boot.s in Sources */ = {isa = PBXBuildFile; fileRef = 9F9FF1E126CB83C700664E47 /* boot.s */; };
+		9F9FF20526CB83C700664E47 /* stage2_entry.s in Sources */ = {isa = PBXBuildFile; fileRef = 9F9FF1E226CB83C700664E47 /* stage2_entry.s */; };
+		9F9FF20626CB83C700664E47 /* display.c in Sources */ = {isa = PBXBuildFile; fileRef = 9F9FF1E526CB83C700664E47 /* display.c */; };
+		9F9FF20726CB83C700664E47 /* elf_lite.c in Sources */ = {isa = PBXBuildFile; fileRef = 9F9FF1E826CB83C700664E47 /* elf_lite.c */; };
+		9F9FF20826CB83C700664E47 /* ext2_lite.c in Sources */ = {isa = PBXBuildFile; fileRef = 9F9FF1EB26CB83C700664E47 /* ext2_lite.c */; };
+		9F9FF20926CB83C700664E47 /* ata.c in Sources */ = {isa = PBXBuildFile; fileRef = 9F9FF1EC26CB83C700664E47 /* ata.c */; };
+		9F9FF20A26CB83C700664E47 /* port.c in Sources */ = {isa = PBXBuildFile; fileRef = 9F9FF1EE26CB83C700664E47 /* port.c */; };
+		9F9FF20B26CB83C700664E47 /* stage2.c in Sources */ = {isa = PBXBuildFile; fileRef = 9F9FF1F326CB83C700664E47 /* stage2.c */; };
+		9F9FF20C26CB83C700664E47 /* vm.c in Sources */ = {isa = PBXBuildFile; fileRef = 9F9FF1F626CB83C700664E47 /* vm.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -378,6 +397,38 @@
 		9F9FF1CD26CB815F00664E47 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		9F9FF1CF26CB81D300664E47 /* contributing.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = contributing.md; sourceTree = "<group>"; };
 		9F9FF1D026CB82D900664E47 /* build.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = build.md; sourceTree = "<group>"; };
+		9F9FF1D326CB83C700664E47 /* _start.s */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; path = _start.s; sourceTree = "<group>"; };
+		9F9FF1D426CB83C700664E47 /* vm_init.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = vm_init.c; sourceTree = "<group>"; };
+		9F9FF1D526CB83C700664E47 /* _loader.s */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; path = _loader.s; sourceTree = "<group>"; };
+		9F9FF1D726CB83C700664E47 /* stage3_entry.s */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; path = stage3_entry.s; sourceTree = "<group>"; };
+		9F9FF1DA26CB83C700664E47 /* print.s */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; path = print.s; sourceTree = "<group>"; };
+		9F9FF1DB26CB83C700664E47 /* gdt.s */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; path = gdt.s; sourceTree = "<group>"; };
+		9F9FF1DD26CB83C700664E47 /* switch_to_pm.s */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; path = switch_to_pm.s; sourceTree = "<group>"; };
+		9F9FF1DE26CB83C700664E47 /* disk_load.s */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; path = disk_load.s; sourceTree = "<group>"; };
+		9F9FF1DF26CB83C700664E47 /* smm.s */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; path = smm.s; sourceTree = "<group>"; };
+		9F9FF1E026CB83C700664E47 /* print.s */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; path = print.s; sourceTree = "<group>"; };
+		9F9FF1E126CB83C700664E47 /* boot.s */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; path = boot.s; sourceTree = "<group>"; };
+		9F9FF1E226CB83C700664E47 /* stage2_entry.s */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; path = stage2_entry.s; sourceTree = "<group>"; };
+		9F9FF1E526CB83C700664E47 /* display.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = display.c; sourceTree = "<group>"; };
+		9F9FF1E626CB83C700664E47 /* ata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ata.h; sourceTree = "<group>"; };
+		9F9FF1E726CB83C700664E47 /* port.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = port.h; sourceTree = "<group>"; };
+		9F9FF1E826CB83C700664E47 /* elf_lite.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = elf_lite.c; sourceTree = "<group>"; };
+		9F9FF1E926CB83C700664E47 /* fs_desc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fs_desc.h; sourceTree = "<group>"; };
+		9F9FF1EA26CB83C700664E47 /* drive_desc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = drive_desc.h; sourceTree = "<group>"; };
+		9F9FF1EB26CB83C700664E47 /* ext2_lite.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ext2_lite.c; sourceTree = "<group>"; };
+		9F9FF1EC26CB83C700664E47 /* ata.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ata.c; sourceTree = "<group>"; };
+		9F9FF1ED26CB83C700664E47 /* display.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = display.h; sourceTree = "<group>"; };
+		9F9FF1EE26CB83C700664E47 /* port.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = port.c; sourceTree = "<group>"; };
+		9F9FF1EF26CB83C700664E47 /* elf_lite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = elf_lite.h; sourceTree = "<group>"; };
+		9F9FF1F026CB83C700664E47 /* ext2_lite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ext2_lite.h; sourceTree = "<group>"; };
+		9F9FF1F126CB83C700664E47 /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = config.h; sourceTree = "<group>"; };
+		9F9FF1F226CB83C700664E47 /* types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = types.h; sourceTree = "<group>"; };
+		9F9FF1F326CB83C700664E47 /* stage2.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = stage2.c; sourceTree = "<group>"; };
+		9F9FF1F526CB83C700664E47 /* pte.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pte.h; sourceTree = "<group>"; };
+		9F9FF1F626CB83C700664E47 /* vm.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = vm.c; sourceTree = "<group>"; };
+		9F9FF1F726CB83C700664E47 /* pde.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pde.h; sourceTree = "<group>"; };
+		9F9FF1F826CB83C700664E47 /* mem_map.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mem_map.h; sourceTree = "<group>"; };
+		9F9FF1F926CB83C700664E47 /* vm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vm.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -394,6 +445,7 @@
 		9F9FEE6026CB7AD800664E47 = {
 			isa = PBXGroup;
 			children = (
+				9F9FF1D126CB83C700664E47 /* boot */,
 				9F9FF1CE26CB81B900664E47 /* docs */,
 				9F9FF1CD26CB815F00664E47 /* README.md */,
 				9F9FF1CA26CB808D00664E47 /* .clang-format */,
@@ -1280,6 +1332,109 @@
 			path = docs;
 			sourceTree = "<group>";
 		};
+		9F9FF1D126CB83C700664E47 /* boot */ = {
+			isa = PBXGroup;
+			children = (
+				9F9FF1D226CB83C700664E47 /* aarch32 */,
+				9F9FF1D626CB83C700664E47 /* x86 */,
+			);
+			path = boot;
+			sourceTree = "<group>";
+		};
+		9F9FF1D226CB83C700664E47 /* aarch32 */ = {
+			isa = PBXGroup;
+			children = (
+				9F9FF1D326CB83C700664E47 /* _start.s */,
+				9F9FF1D426CB83C700664E47 /* vm_init.c */,
+				9F9FF1D526CB83C700664E47 /* _loader.s */,
+			);
+			path = aarch32;
+			sourceTree = "<group>";
+		};
+		9F9FF1D626CB83C700664E47 /* x86 */ = {
+			isa = PBXGroup;
+			children = (
+				9F9FF1D726CB83C700664E47 /* stage3_entry.s */,
+				9F9FF1D826CB83C700664E47 /* stage1 */,
+				9F9FF1E226CB83C700664E47 /* stage2_entry.s */,
+				9F9FF1E326CB83C700664E47 /* stage2 */,
+			);
+			path = x86;
+			sourceTree = "<group>";
+		};
+		9F9FF1D826CB83C700664E47 /* stage1 */ = {
+			isa = PBXGroup;
+			children = (
+				9F9FF1D926CB83C700664E47 /* utils32 */,
+				9F9FF1DC26CB83C700664E47 /* utils16 */,
+				9F9FF1E126CB83C700664E47 /* boot.s */,
+			);
+			path = stage1;
+			sourceTree = "<group>";
+		};
+		9F9FF1D926CB83C700664E47 /* utils32 */ = {
+			isa = PBXGroup;
+			children = (
+				9F9FF1DA26CB83C700664E47 /* print.s */,
+				9F9FF1DB26CB83C700664E47 /* gdt.s */,
+			);
+			path = utils32;
+			sourceTree = "<group>";
+		};
+		9F9FF1DC26CB83C700664E47 /* utils16 */ = {
+			isa = PBXGroup;
+			children = (
+				9F9FF1DD26CB83C700664E47 /* switch_to_pm.s */,
+				9F9FF1DE26CB83C700664E47 /* disk_load.s */,
+				9F9FF1DF26CB83C700664E47 /* smm.s */,
+				9F9FF1E026CB83C700664E47 /* print.s */,
+			);
+			path = utils16;
+			sourceTree = "<group>";
+		};
+		9F9FF1E326CB83C700664E47 /* stage2 */ = {
+			isa = PBXGroup;
+			children = (
+				9F9FF1E426CB83C700664E47 /* drivers */,
+				9F9FF1F126CB83C700664E47 /* config.h */,
+				9F9FF1F226CB83C700664E47 /* types.h */,
+				9F9FF1F326CB83C700664E47 /* stage2.c */,
+				9F9FF1F426CB83C700664E47 /* mem */,
+			);
+			path = stage2;
+			sourceTree = "<group>";
+		};
+		9F9FF1E426CB83C700664E47 /* drivers */ = {
+			isa = PBXGroup;
+			children = (
+				9F9FF1E526CB83C700664E47 /* display.c */,
+				9F9FF1E626CB83C700664E47 /* ata.h */,
+				9F9FF1E726CB83C700664E47 /* port.h */,
+				9F9FF1E826CB83C700664E47 /* elf_lite.c */,
+				9F9FF1E926CB83C700664E47 /* fs_desc.h */,
+				9F9FF1EA26CB83C700664E47 /* drive_desc.h */,
+				9F9FF1EB26CB83C700664E47 /* ext2_lite.c */,
+				9F9FF1EC26CB83C700664E47 /* ata.c */,
+				9F9FF1ED26CB83C700664E47 /* display.h */,
+				9F9FF1EE26CB83C700664E47 /* port.c */,
+				9F9FF1EF26CB83C700664E47 /* elf_lite.h */,
+				9F9FF1F026CB83C700664E47 /* ext2_lite.h */,
+			);
+			path = drivers;
+			sourceTree = "<group>";
+		};
+		9F9FF1F426CB83C700664E47 /* mem */ = {
+			isa = PBXGroup;
+			children = (
+				9F9FF1F526CB83C700664E47 /* pte.h */,
+				9F9FF1F626CB83C700664E47 /* vm.c */,
+				9F9FF1F726CB83C700664E47 /* pde.h */,
+				9F9FF1F826CB83C700664E47 /* mem_map.h */,
+				9F9FF1F926CB83C700664E47 /* vm.h */,
+			);
+			path = mem;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -1339,17 +1494,23 @@
 				9F9FF1AB26CB802200664E47 /* ext2.c in Sources */,
 				9F9FF1A626CB802200664E47 /* kernel_self_test.c in Sources */,
 				9F9FF1B726CB802200664E47 /* blocker.c in Sources */,
+				9F9FF20426CB83C700664E47 /* boot.s in Sources */,
+				9F9FF1FE26CB83C700664E47 /* print.s in Sources */,
 				9F9FF1A526CB802200664E47 /* log.c in Sources */,
 				9F9FF1AC26CB802200664E47 /* helper.c in Sources */,
 				9F9FF1B026CB802200664E47 /* procfs.c in Sources */,
 				9F9FF19926CB802200664E47 /* switchvm.c in Sources */,
 				9F9FF1B426CB802200664E47 /* sched.c in Sources */,
+				9F9FF20626CB83C700664E47 /* display.c in Sources */,
+				9F9FF20926CB83C700664E47 /* ata.c in Sources */,
+				9F9FF20226CB83C700664E47 /* smm.s in Sources */,
 				9F9FF19126CB802200664E47 /* port.c in Sources */,
 				9F9FF18E26CB802200664E47 /* irq_handler.c in Sources */,
 				9F9FF1C126CB802200664E47 /* time.c in Sources */,
 				9F9FF19426CB802200664E47 /* switch_contexts.s in Sources */,
 				9F9FF1B326CB802200664E47 /* thread.c in Sources */,
 				9F9FF18C26CB802200664E47 /* registers_helper.s in Sources */,
+				9F9FF1FF26CB83C700664E47 /* gdt.s in Sources */,
 				9F9FF1AA26CB802200664E47 /* kassert.c in Sources */,
 				9F9FF17626CB802200664E47 /* init.c in Sources */,
 				9F9FF1B526CB802200664E47 /* proc_zoner.c in Sources */,
@@ -1358,6 +1519,7 @@
 				9F9FF19C26CB802200664E47 /* pty_slave.c in Sources */,
 				9F9FF19A26CB802200664E47 /* ptmx.c in Sources */,
 				9F9FF18526CB802200664E47 /* pic.c in Sources */,
+				9F9FF1FB26CB83C700664E47 /* vm_init.c in Sources */,
 				9F9FF1A126CB802200664E47 /* bitmap.c in Sources */,
 				9F9FF18026CB802200664E47 /* switch_contexts.s in Sources */,
 				9F9FF1BC26CB802200664E47 /* elf.c in Sources */,
@@ -1376,9 +1538,12 @@
 				9F9FF19F26CB802200664E47 /* local_socket.c in Sources */,
 				9F9FF18626CB802200664E47 /* gdt.c in Sources */,
 				9F9FF18826CB802200664E47 /* system.c in Sources */,
+				9F9FF20726CB83C700664E47 /* elf_lite.c in Sources */,
 				9F9FF1C026CB802200664E47 /* fs.c in Sources */,
 				9F9FF16626CB802200664E47 /* gicv2.c in Sources */,
+				9F9FF1FA26CB83C700664E47 /* _start.s in Sources */,
 				9F9FF19D26CB802200664E47 /* tty.c in Sources */,
+				9F9FF20A26CB83C700664E47 /* port.c in Sources */,
 				9F9FF16E26CB802200664E47 /* pci.c in Sources */,
 				9F9FF15F26CB802200664E47 /* fpuv4.c in Sources */,
 				9F9FF1C626CB802200664E47 /* zoner.c in Sources */,
@@ -1396,6 +1561,7 @@
 				9F9FF17126CB802200664E47 /* bga.c in Sources */,
 				9F9FF17026CB802200664E47 /* ide.c in Sources */,
 				9F9FF17526CB802200664E47 /* kernel.c in Sources */,
+				9F9FF20826CB83C700664E47 /* ext2_lite.c in Sources */,
 				9F9FF17B26CB802200664E47 /* pte.c in Sources */,
 				9F9FF16726CB802200664E47 /* fpuv4_helper.s in Sources */,
 				9F9FF1AD26CB802200664E47 /* devfs.c in Sources */,
@@ -1404,6 +1570,8 @@
 				9F9FF17426CB802200664E47 /* keyboard.c in Sources */,
 				9F9FF1BD26CB802200664E47 /* io.c in Sources */,
 				9F9FF17226CB802200664E47 /* pit.c in Sources */,
+				9F9FF20526CB83C700664E47 /* stage2_entry.s in Sources */,
+				9F9FF20B26CB83C700664E47 /* stage2.c in Sources */,
 				9F9FF1A926CB802200664E47 /* utils.c in Sources */,
 				9F9FF1B126CB802200664E47 /* dentry.c in Sources */,
 				9F9FF19B26CB802200664E47 /* pty_master.c in Sources */,
@@ -1430,17 +1598,23 @@
 				9F9FF16C26CB802200664E47 /* rtc.c in Sources */,
 				9F9FF1C226CB802200664E47 /* tasking.c in Sources */,
 				9F9FF17726CB802200664E47 /* memmap.c in Sources */,
+				9F9FF1FC26CB83C700664E47 /* _loader.s in Sources */,
+				9F9FF20C26CB83C700664E47 /* vm.c in Sources */,
 				9F9FF16426CB802200664E47 /* sp804.c in Sources */,
 				9F9FF1AF26CB802200664E47 /* root.c in Sources */,
 				9F9FF18F26CB802200664E47 /* isr_handler.c in Sources */,
+				9F9FF20326CB83C700664E47 /* print.s in Sources */,
 				9F9FF16826CB802200664E47 /* uart.c in Sources */,
+				9F9FF1FD26CB83C700664E47 /* stage3_entry.s in Sources */,
 				9F9FF1A326CB802200664E47 /* dynamic_array.c in Sources */,
 				9F9FF1B826CB802200664E47 /* kthread.c in Sources */,
 				9F9FF18D26CB802200664E47 /* interrupts.s in Sources */,
 				9F9FF17326CB802200664E47 /* uart.c in Sources */,
 				9F9FF1AE26CB802200664E47 /* pid.c in Sources */,
 				9F9FF17E26CB802200664E47 /* registers.c in Sources */,
+				9F9FF20126CB83C700664E47 /* disk_load.s in Sources */,
 				9F9FF19E26CB802200664E47 /* shared_buffer.c in Sources */,
+				9F9FF20026CB83C700664E47 /* switch_to_pm.s in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
