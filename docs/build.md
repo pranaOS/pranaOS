@@ -15,6 +15,16 @@ brew install --cask osxfuse
 brew install coreutils qemu e2fsprogs nasm m4 autoconf libtool automake bash gcc@10 ninja
 ```
 
+# gn:
+- you need to download gn 
+- what is gn?:
+```
+it is a compiler built by google
+```
+- get it from [here](https://github.com/pranaOS/pranaOS/blob/master/gn/gn?raw=true)
+- it is very important for this project
+
+
 # Building:
 ```
 git clone https://github.com/pranaOS/pranaOS
