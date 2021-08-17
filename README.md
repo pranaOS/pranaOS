@@ -4,7 +4,7 @@ A unix operating system written from scratch in c++
 
 # Build Instructions:
 - want to use pranaOS
-- [check out the build instructions]()
+- [check out the build instructions](https://github.com/pranaOS/pranaOS/blob/master/docs/build.md)
 
 
 # Contribution:
