@@ -375,6 +375,8 @@
 		9F9FF1CA26CB808D00664E47 /* .clang-format */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ".clang-format"; sourceTree = "<group>"; };
 		9F9FF1CB26CB808D00664E47 /* BUILD.gn */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = BUILD.gn; sourceTree = "<group>"; };
 		9F9FF1CC26CB808D00664E47 /* build.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = build.sh; sourceTree = "<group>"; };
+		9F9FF1CD26CB815F00664E47 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		9F9FF1CF26CB81D300664E47 /* contributing.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = contributing.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -391,6 +393,8 @@
 		9F9FEE6026CB7AD800664E47 = {
 			isa = PBXGroup;
 			children = (
+				9F9FF1CE26CB81B900664E47 /* docs */,
+				9F9FF1CD26CB815F00664E47 /* README.md */,
 				9F9FF1CA26CB808D00664E47 /* .clang-format */,
 				9F9FF1C826CB808D00664E47 /* .clang-tidy */,
 				9F9FF1C926CB808D00664E47 /* .gn */,
@@ -1264,6 +1268,14 @@
 				9F9FF15D26CB802200664E47 /* zoner.c */,
 			);
 			path = vmm;
+			sourceTree = "<group>";
+		};
+		9F9FF1CE26CB81B900664E47 /* docs */ = {
+			isa = PBXGroup;
+			children = (
+				9F9FF1CF26CB81D300664E47 /* contributing.md */,
+			);
+			path = docs;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
