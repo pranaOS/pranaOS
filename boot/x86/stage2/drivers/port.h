@@ -15,4 +15,4 @@ unsigned int port_32bit_in(unsigned short port);
 void port_32bit_out(unsigned short port, unsigned int data);
 void io_wait();
 
-#endif // _BOOT_X86_STAGE2_DRIVERS_PORT_H
+#endif

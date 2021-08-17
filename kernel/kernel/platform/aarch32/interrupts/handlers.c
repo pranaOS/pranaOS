@@ -103,7 +103,7 @@ void undefined_handler(trapframe_t* tf)
     THIS_CPU->fpu_for_pid = RUNNING_THREAD->tid;
     system_enable_interrupts_only_counter();
     return;
-#endif // FPU_ENABLED
+#endif
 
 undefined_h:
     if (THIS_CPU->current_state == CPU_IN_USERLAND && RUNNING_THREAD) {

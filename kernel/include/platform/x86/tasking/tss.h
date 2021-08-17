@@ -59,4 +59,4 @@ extern tss_t tss;
 
 void ltr(uint16_t seg);
 
-#endif //_KERNEL_PLATFORM_X86_TASKING_TSS_H
+#endif

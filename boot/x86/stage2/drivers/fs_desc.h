@@ -5,4 +5,4 @@ typedef struct {
     void* read;
 } fs_desc_t;
 
-#endif // STAGE2_FS_DESC
+#endif

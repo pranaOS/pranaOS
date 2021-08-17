@@ -92,7 +92,7 @@ static void _init_cpu(cpu_t* cpu)
 #ifdef FPU_ENABLED
     cpu->fpu_for_thread = NULL;
     cpu->fpu_for_pid = 0;
-#endif // FPU_ENABLED
+#endif
     _create_idle_thread(cpu);
 }
 

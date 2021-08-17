@@ -65,4 +65,4 @@ uint32_t page_desc_get_frame(page_desc_t pte);
 uint32_t page_desc_get_settings(page_desc_t pte);
 uint32_t page_desc_get_settings_ignore_cow(page_desc_t pte);
 
-#endif //_KERNEL_PLATFORM_AARCH32_VMM_PTE_H
+#endif

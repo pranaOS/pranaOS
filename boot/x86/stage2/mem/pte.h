@@ -22,4 +22,4 @@ enum PAGE_DESC_PAGE_FLAGS {
     PAGE_DESC_FRAME = 12
 };
 
-#endif //_BOOT_X86_STAGE2_MEM_PTE_H
+#endif

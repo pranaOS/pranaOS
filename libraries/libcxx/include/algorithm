@@ -1,0 +1,45 @@
+#pragma GCC system_header
+
+#ifndef _LIBCXX_ALGORITHM
+#define _LIBCXX_ALGORITHM
+
+#include <__config>
+#include <__undef_macros>
+
+_LIBCXX_BEGIN_NAMESPACE_STD
+
+template <typename T>
+static inline constexpr T min(const T& a, const T& b)
+{
+    return a < b ? a : b;
+}
+
+template <typename T>
+static inline constexpr T max(const T& a, const T& b)
+{
+    return a < b ? b : a;
+}
+
+template <class Iter, class T>
+static constexpr Iter find(Iter first, Iter last, const T& value)
+{
+    for (; first != last; ++first) {
+        if (*first == value) {
+            return first;
+        }
+    }
+    return last;
+}
+
+template <class InputIter, class OutputIter>
+static constexpr OutputIter copy(InputIter first, InputIter last, OutputIter dist)
+{
+    for (; first != last; ++first) {
+        *dist++ = *first;
+    }
+    return dist;
+}
+
+_LIBCXX_END_NAMESPACE_STD
+
+#endif 

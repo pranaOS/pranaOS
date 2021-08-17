@@ -18,7 +18,7 @@ struct lock {
     int status;
 #ifdef DEBUG_LOCK
 
-#endif // DEBUG_LOCK
+#endif
 };
 typedef struct lock lock_t;
 

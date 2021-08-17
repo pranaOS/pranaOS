@@ -18,4 +18,4 @@ void uart_setup();
 int uart_write(int port, uint8_t data);
 int uart_read(int port, uint8_t* data);
 
-#endif //_KERNEL_DRIVERS_X86_UART_H
+#endif

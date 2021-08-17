@@ -1,0 +1,48 @@
+#pragma GCC system_header
+
+#ifndef _LIBCXX_NEW
+#define _LIBCXX_NEW
+
+#include <cstdlib>
+
+inline void* operator new(size_t size)
+{
+    return std::malloc(size);
+}
+
+inline void operator delete(void* ptr)
+{
+    return std::free(ptr);
+}
+
+inline void operator delete(void* ptr, size_t)
+{
+    return std::free(ptr);
+}
+
+inline void* operator new[](size_t size)
+{
+    return std::malloc(size);
+}
+
+inline void operator delete[](void* ptr)
+{
+    return std::free(ptr);
+}
+
+inline void operator delete[](void* ptr, size_t)
+{
+    return std::free(ptr);
+}
+
+inline void* operator new(size_t, void* ptr)
+{
+    return ptr;
+}
+
+inline void* operator new[](size_t, void* ptr)
+{
+    return ptr;
+}
+
+#endif

@@ -1,0 +1,14 @@
+#pragma GCC system_header
+
+#ifndef _LIBCXX___CONFIG
+#define _LIBCXX___CONFIG
+
+#define _LIBCXX_BEGIN_NAMESPACE_STD namespace std {
+#define _LIBCXX_END_NAMESPACE_STD }
+
+#define _LIBCXX_BEGIN_PRANAOS_EXTENSION inline namespace pranaos {
+#define _LIBCXX_END_PRANAOS_EXTENSION }
+
+#define _ALIGNAS_TYPE(x) __attribute__((__aligned__(alignof(x))))
+
+#endif

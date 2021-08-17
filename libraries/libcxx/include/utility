@@ -1,0 +1,119 @@
+#pragma GCC system_header
+
+#ifndef _LIBCXX_UTILITY
+#define _LIBCXX_UTILITY
+
+#include <__config>
+#include <type_traits>
+
+_LIBCXX_BEGIN_NAMESPACE_STD
+
+template <typename T>
+inline T&& move(T& arg)
+{
+    return static_cast<T&&>(arg);
+}
+
+template <typename T, typename U>
+inline void swap(T& a, U& b)
+{
+    U tmp = move((U&)a);
+    a = (T &&) move(b);
+    b = move(tmp);
+}
+
+template <class T>
+static constexpr T&& forward(std::remove_reference_t<T>& t) { return static_cast<T&&>(t); }
+
+template <class T>
+static constexpr T&& forward(std::remove_reference_t<T>&& t) { return static_cast<T&&>(t); }
+
+struct in_place_t {
+    explicit in_place_t() = default;
+};
+inline constexpr in_place_t in_place {};
+
+template <class T1, class T2>
+struct pair {
+    using first_type = T1;
+    using second_type = T2;
+
+    constexpr pair() = default;
+    constexpr ~pair() = default;
+
+    constexpr pair(const T1& x, const T2& y)
+        : first(x)
+        , second(y)
+    {
+    }
+
+    template <class U1 = T1, class U2 = T2>
+    constexpr pair(U1&& x, U2&& y)
+        : first(std::forward<U1>(x))
+        , second(std::forward<U2>(y))
+    {
+    }
+
+    constexpr pair(const pair<T1, T2>& p)
+        : first(p.first)
+        , second(p.second)
+    {
+    }
+
+    template <class U1 = T1, class U2 = T2>
+    constexpr pair(pair<U1, U2>&& p)
+        : first(std::move(p.first))
+        , second(std::move(p.second))
+    {
+    }
+
+    T1 first {};
+    T2 second {};
+};
+
+template <class T1, class T2>
+constexpr bool operator==(const std::pair<T1, T2>& lhs, const std::pair<T1, T2>& rhs)
+{
+    return lhs.first == rhs.first && lhs.second == rhs.second;
+}
+
+template <class T1, class T2>
+constexpr bool operator!=(const std::pair<T1, T2>& lhs, const std::pair<T1, T2>& rhs)
+{
+    return !(lhs == rhs);
+}
+
+template <class T1, class T2>
+constexpr bool operator<(const std::pair<T1, T2>& lhs, const std::pair<T1, T2>& rhs)
+{
+    return (lhs.first < rhs.first) || (lhs.first == rhs.first && lhs.second < rhs.second);
+}
+
+template <class T1, class T2>
+constexpr bool operator<=(const std::pair<T1, T2>& lhs, const std::pair<T1, T2>& rhs)
+{
+    return (lhs < rhs) || (lhs == rhs);
+}
+
+template <class T1, class T2>
+constexpr bool operator>(const std::pair<T1, T2>& lhs, const std::pair<T1, T2>& rhs)
+{
+    return (lhs.first > rhs.first) || (lhs.first == rhs.first && lhs.second > rhs.second);
+}
+
+template <class T1, class T2>
+constexpr bool operator>=(const std::pair<T1, T2>& lhs, const std::pair<T1, T2>& rhs)
+{
+    return (lhs > rhs) || (lhs == rhs);
+}
+
+// TODO: Use decay for return types
+template <class T1, class T2>
+std::pair<T1, T2> make_pair(T1&& l, T2&& r)
+{
+    return std::pair<T1, T2>(std::forward<T1>(l), std::forward<T2>(r));
+}
+
+_LIBCXX_END_NAMESPACE_STD
+
+#endif

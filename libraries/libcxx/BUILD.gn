@@ -1,0 +1,56 @@
+import("//build/libs/TEMPLATE.gni")
+
+pranaOS_static_library("libcxx") {
+  sources = [
+
+    "../libc/ctype/ctype.c",
+    "../libc/dirent/dirent.c",
+    "../libc/init/_lib.c",
+    "../libc/malloc/malloc.c",
+    "../libc/posix/fs.c",
+    "../libc/posix/sched.c",
+    "../libc/posix/signal.c",
+    "../libc/posix/system.c",
+    "../libc/posix/tasking.c",
+    "../libc/posix/time.c",
+    "../libc/pthread/pthread.c",
+    "../libc/setjmp/$target_cpu/setjmp.s",
+    "../libc/socket/socket.c",
+    "../libc/stdio/printf.c",
+    "../libc/stdio/scanf.c",
+    "../libc/stdio/stdio.c",
+    "../libc/stdlib/exit.c",
+    "../libc/stdlib/pts.c",
+    "../libc/stdlib/tools.c",
+    "../libc/string/string.c",
+    "../libc/sysdeps/pranaos/generic/shared_buffer.c",
+    "../libc/sysdeps/unix/$target_cpu/crt0.s",
+    "../libc/sysdeps/unix/generic/ioctl.c",
+    "../libc/termios/termios.c",
+    "../libc/time/strftime.c",
+    "../libc/time/time.c",
+
+    "init/_init.cpp",
+    "init/_lib.cpp",
+    "src/iostream.cpp",
+  ]
+
+  if (target_cpu == "aarch32") {
+    sources += [ "../libc/string/routines/aarch32/memset.S" ]
+  }
+
+  include_dirs = [
+    "include/",
+    "//libs/libc/include/",
+    "//libs/libcxxabi/include/",
+    "//libs/",
+  ]
+
+  deplibs = [ "libcxxabi" ]
+
+  configs = [ "//build/libs:libcxx_flags" ]
+
+  if (host == "llvm") {
+    cflags = [ "-flto" ]
+  }
+}
