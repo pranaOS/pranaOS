@@ -1,0 +1,3 @@
+group("servers") {
+  deps = [ "//servers/window_server:window_server" ]
+}

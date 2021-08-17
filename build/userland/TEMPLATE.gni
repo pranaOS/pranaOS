@@ -1,0 +1,69 @@
+# Copyright 2021 Nikita Melekhin. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/userland/EXEC_TEMPLATE.gni")
+
+template("pranaOS_executable") {
+  app_name = target_name
+  pranaOS_executable_template(app_name) {
+    forward_variables_from(invoker,
+                           [
+                             "install_path",
+                             "sources",
+                             "configs",
+                             "deplibs",
+                             "cflags",
+                             "cflags_c",
+                             "cflags_cc",
+                             "asmflags",
+                             "ldflags",
+                             "public_deps",
+                           ])
+  }
+
+  group(app_name) {
+    deps = [ ":$app_name" + "_build" ]
+  }
+}
+
+template("pranaOS_application") {
+  app_name = target_name
+  root = "Applications/$app_name.app"
+  exec_file = "$root/Content/"
+
+  action("prepare_$app_name") {
+    script = "//build/userland/prepare_app.py"
+    outputs = [ "$root_out_dir/base/Applications/$app_name.app/Content" ]
+    args = [
+      app_name,
+      rebase_path("$root_out_dir/base/Applications/$app_name.app/Content",
+                  root_build_dir),
+      rebase_path("//userland/applications/$app_name",
+                  root_build_dir),
+    ]
+  }
+
+  pranaOS_executable_template(app_name) {
+    install_path = "$exec_file"
+    forward_variables_from(invoker,
+                           [
+                             "sources",
+                             "configs",
+                             "deplibs",
+                             "cflags",
+                             "cflags_c",
+                             "cflags_cc",
+                             "asmflags",
+                             "ldflags",
+                             "public_deps",
+                           ])
+  }
+
+  group(app_name) {
+    deps = [
+      ":$app_name" + "_build",
+      ":prepare_$app_name",
+    ]
+  }
+}

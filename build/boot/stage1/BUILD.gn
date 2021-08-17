@@ -1,0 +1,21 @@
+action("stage1") {
+  script = "compile_stage1.py"
+  sources = [ "//boot/x86/stage1/boot.s" ]
+  outputs = [ "$root_build_dir/stage1.bin" ]
+
+  inputs = [
+    "//boot/x86/stage1/boot.s",
+    "//boot/x86/stage1/utils16/disk_load.s",
+    "//boot/x86/stage1/utils16/print.s",
+    "//boot/x86/stage1/utils16/smm.s",
+    "//boot/x86/stage1/utils16/switch_to_pm.s",
+    "//boot/x86/stage1/utils32/gdt.s",
+    "//boot/x86/stage1/utils32/print.s",
+  ]
+
+  args = [
+    rebase_path("//boot/x86/stage1/boot.s", root_build_dir),
+    rebase_path(root_build_dir, root_build_dir),
+    rebase_path("//", root_build_dir),
+  ]
+}

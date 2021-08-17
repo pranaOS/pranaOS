@@ -1,0 +1,110 @@
+uland_c_flags = [
+  "-Werror",
+  "-Wno-address-of-packed-member",
+]
+
+if (userland_symbols) {
+  uland_c_flags += [ "-ggdb" ]
+}
+
+if (optimize) {
+  uland_c_flags += [ "-Os" ]
+}
+
+uland_cc_flags = [
+  "-std=c++2a",
+  "-fno-sized-deallocation",
+  "-fno-rtti",
+  "-fno-exceptions",
+  "-D_LIBCXX_BUILD_PRANAOS_EXTENSIONS",
+]
+
+uland_asm_flags = []
+uland_ld_flags = []
+
+if (device_type == "desktop") {
+  uland_c_flags += [ "-DTARGET_DESKTOP" ]
+}
+if (device_type == "mobile") {
+  uland_c_flags += [ "-DTARGET_MOBILE" ]
+}
+
+if (bench_method == "external_script") {
+  uland_c_flags += [ "-DBENCHMARK" ]
+}
+
+if (target_cpu == "x86") {
+  uland_asm_flags += [
+    "-f",
+    "elf",
+  ]
+}
+
+if (target_cpu == "aarch32") {
+  uland_c_flags += [
+    "-fno-builtin",
+    "-march=armv7-a",
+    "-mfpu=neon-vfpv4",
+    "-mfloat-abi=softfp",
+    "-fno-pie",
+  ]
+  uland_asm_flags += [
+    "-march=armv7-a",
+    "-mfpu=neon-vfpv4",
+    "-mfloat-abi=softfp",
+    "-mcpu=cortex-a15",
+  ]
+  uland_ld_flags += [ "-nostdlib" ]
+
+  if (host == "gnu") {
+    uland_ld_flags += [
+      "-nostdinc",
+      "-nodefaultlibs",
+      "-nostartfiles",
+      "-lgcc",
+    ]
+  }
+
+  if (host == "llvm") {
+    uland_ld_flags += [
+      "--oformat",
+      "elf32-littlearm",
+      rebase_path("//toolchains/llvm_runtime/11.1.0/libclang_rt.builtins-arm.a",
+                  root_build_dir),
+    ]
+  }
+}
+
+config("userland_flags") {
+  cflags = uland_c_flags
+  cflags_cc = uland_cc_flags
+  asmflags = uland_asm_flags
+  ldflags = uland_ld_flags
+  defines = [ "pranaOS" ]
+}
+
+# will be added soon!!!
+group("userland") {
+  deps = [
+    "//userland/applications/about:about",
+    "//userland/applications/activity_monitor:activity_monitor",
+    "//userland/applications/calculator:calculator",
+    "//userland/applications/terminal:terminal",
+    "//userland/shell/onesh:onesh",
+    "//userland/system/dock:dock",
+    "//userland/system/homescreen:homescreen",
+    "//userland/system/init:init",
+    "//userland/system/initgui:initgui",
+    "//userland/tests/bench:bench",
+    "//userland/tests/testlibcxx:testlibcxx",
+    "//userland/tests/utester:utester",
+    "//userland/utilities/cat:cat",
+    "//userland/utilities/kill:kill",
+    "//userland/utilities/ls:ls",
+    "//userland/utilities/mkdir:mkdir",
+    "//userland/utilities/rm:rm",
+    "//userland/utilities/rmdir:rmdir",
+    "//userland/utilities/touch:touch",
+    "//userland/utilities/uname:uname",
+  ]
+}
