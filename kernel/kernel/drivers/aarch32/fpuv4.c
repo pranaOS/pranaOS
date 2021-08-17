@@ -5,7 +5,7 @@
  */
 
 #include <drivers/aarch32/fpuv4.h>
-#include <libkernel/libkern.h>
+#include <libkern/libkern.h>
 #include <platform/aarch32/registers.h>
 
 void fpuv4_install()

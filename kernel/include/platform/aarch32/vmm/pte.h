@@ -7,8 +7,8 @@
 #ifndef _KERNEL_PLATFORM_AARCH32_VMM_PTE_H
 #define _KERNEL_PLATFORM_AARCH32_VMM_PTE_H
 
-#include <libkernel/c_attrs.h>
-#include <libkernel/types.h>
+#include <libkern/c_attrs.h>
+#include <libkern/types.h>
 
 struct PACKED page_desc {
     union {
@@ -65,4 +65,4 @@ uint32_t page_desc_get_frame(page_desc_t pte);
 uint32_t page_desc_get_settings(page_desc_t pte);
 uint32_t page_desc_get_settings_ignore_cow(page_desc_t pte);
 
-#endif
+#endif //_KERNEL_PLATFORM_AARCH32_VMM_PTE_H

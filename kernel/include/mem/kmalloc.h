@@ -7,7 +7,7 @@
 #ifndef _KERNEL_MEM_KMALLOC_H
 #define _KERNEL_MEM_KMALLOC_H
 
-#include <libkernel/types.h>
+#include <libkern/types.h>
 #include <mem/vmm/vmm.h>
 
 #define KMALLOC_SPACE_SIZE (4 * MB)
@@ -21,4 +21,4 @@ void kfree(void* ptr);
 void kfree_aligned(void* ptr);
 void* krealloc(void* ptr, uint32_t size);
 
-#endif
+#endif // _KERNEL_MEM_KMALLOC_H

@@ -7,8 +7,8 @@
 #ifndef _KERNEL_PLATFORM_X86_TASKING_TSS_H
 #define _KERNEL_PLATFORM_X86_TASKING_TSS_H
 
-#include <libkernel/c_attrs.h>
-#include <libkernel/types.h>
+#include <libkern/c_attrs.h>
+#include <libkern/types.h>
 
 #define SEGTSS_TYPE 0x9 // defined in the Intel's manual 3a
 
@@ -59,4 +59,4 @@ extern tss_t tss;
 
 void ltr(uint16_t seg);
 
-#endif
+#endif //_KERNEL_PLATFORM_X86_TASKING_TSS_H

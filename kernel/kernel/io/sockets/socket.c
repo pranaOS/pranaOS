@@ -6,7 +6,7 @@
 
 #include <algo/sync_ringbuffer.h>
 #include <io/sockets/socket.h>
-#include <libkernel/kassert.h>
+#include <libkern/kassert.h>
 
 socket_t socket_list[MAX_SOCKET_COUNT];
 static int next_socket = 0;

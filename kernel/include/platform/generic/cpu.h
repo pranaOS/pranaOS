@@ -8,7 +8,7 @@
 #define _KERNEL_TASKING_BITS_CPU_H
 
 #include <drivers/generic/fpu.h>
-#include <libkernel/types.h>
+#include <libkern/types.h>
 #include <mem/vmm/vmm.h>
 #include <platform/generic/tasking/context.h>
 #include <tasking/bits/sched.h>
@@ -43,12 +43,12 @@ typedef struct {
     time_t stat_user_ticks;
 
 #ifdef FPU_ENABLED
-
+    // Information about current state of fpu.
     struct thread* fpu_for_thread;
     pid_t fpu_for_pid;
-#endif 
+#endif // FPU_ENABLED
 } cpu_t;
 
 extern cpu_t cpus[CPU_CNT];
 
-#endif 
+#endif // _KERNEL_TASKING_BITS_CPU_H

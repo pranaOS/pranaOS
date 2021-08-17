@@ -7,8 +7,8 @@
 #ifndef _KERNEL_PLATFORM_AARCH32_VMM_PDE_H
 #define _KERNEL_PLATFORM_AARCH32_VMM_PDE_H
 
-#include <libkernel/c_attrs.h>
-#include <libkernel/types.h>
+#include <libkern/c_attrs.h>
+#include <libkern/types.h>
 
 struct PACKED table_desc {
     union {
@@ -62,4 +62,4 @@ bool table_desc_is_4mb(table_desc_t pde);
 bool table_desc_is_copy_on_write(table_desc_t pde);
 uint32_t table_desc_get_frame(table_desc_t pde);
 
-#endif
+#endif //_KERNEL_PLATFORM_AARCH32_VMM_PDE_H

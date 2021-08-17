@@ -9,9 +9,9 @@
 #include <drivers/x86/display.h>
 #include <drivers/x86/mouse.h>
 #include <fs/devfs/devfs.h>
-#include <libkernel/kassert.h>
-#include <libkernel/log.h>
-#include <libkernel/types.h>
+#include <libkern/kassert.h>
+#include <libkern/log.h>
+#include <libkern/types.h>
 #include <platform/x86/idt.h>
 #include <platform/x86/port.h>
 

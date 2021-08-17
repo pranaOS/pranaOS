@@ -6,11 +6,11 @@
 
 #include <algo/dynamic_array.h>
 #include <fs/vfs.h>
-#include <libkernel/atomic.h>
-#include <libkernel/kassert.h>
-#include <libkernel/lock.h>
-#include <libkernel/log.h>
-#include <libkernel/mem.h>
+#include <libkern/atomic.h>
+#include <libkern/kassert.h>
+#include <libkern/lock.h>
+#include <libkern/log.h>
+#include <libkern/mem.h>
 #include <mem/kmalloc.h>
 #include <platform/generic/system.h>
 #include <syscalls/handlers.h>

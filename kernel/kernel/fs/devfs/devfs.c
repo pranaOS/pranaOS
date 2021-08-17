@@ -8,10 +8,10 @@
 #include <drivers/driver_manager.h>
 #include <fs/devfs/devfs.h>
 #include <fs/vfs.h>
-#include <libkernel/bits/errno.h>
-#include <libkernel/libkern.h>
-#include <libkernel/lock.h>
-#include <libkernel/log.h>
+#include <libkern/bits/errno.h>
+#include <libkern/libkern.h>
+#include <libkern/lock.h>
+#include <libkern/log.h>
 #include <mem/kmalloc.h>
 #include <tasking/proc.h>
 

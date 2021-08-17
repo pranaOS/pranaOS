@@ -5,9 +5,9 @@
  */
 
 #include <algo/dynamic_array.h>
-#include <libkernel/atomic.h>
-#include <libkernel/libkern.h>
-#include <libkernel/log.h>
+#include <libkern/atomic.h>
+#include <libkern/libkern.h>
+#include <libkern/log.h>
 #include <mem/kmalloc.h>
 #include <platform/generic/registers.h>
 #include <platform/generic/system.h>
@@ -92,7 +92,7 @@ static void _init_cpu(cpu_t* cpu)
 #ifdef FPU_ENABLED
     cpu->fpu_for_thread = NULL;
     cpu->fpu_for_pid = 0;
-#endif
+#endif // FPU_ENABLED
     _create_idle_thread(cpu);
 }
 

@@ -7,8 +7,8 @@
 #ifndef _KERNEL_PLATFORM_AARCH32_INTERRUPTS_H
 #define _KERNEL_PLATFORM_AARCH32_INTERRUPTS_H
 
-#include <libkernel/mask.h>
-#include <libkernel/types.h>
+#include <libkern/mask.h>
+#include <libkern/types.h>
 
 #define IRQ_HANDLERS_MAX 256
 #define ALL_CPU_MASK 0xff

@@ -7,8 +7,8 @@
 #include <fs/devfs/devfs.h>
 #include <io/tty/ptmx.h>
 #include <io/tty/pty_master.h>
-#include <libkernel/libkern.h>
-#include <libkernel/log.h>
+#include <libkern/libkern.h>
+#include <libkern/log.h>
 
 #define PTY_DEBUG
 

@@ -7,7 +7,7 @@
 #ifndef _KERNEL_PLATFORM_X86_INIT_H
 #define _KERNEL_PLATFORM_X86_INIT_H
 
-#include <libkernel/types.h>
+#include <libkern/types.h>
 
 void platform_init_boot_cpu();
 void platform_setup_boot_cpu();

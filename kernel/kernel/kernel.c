@@ -8,7 +8,7 @@
 #include <platform/generic/registers.h>
 #include <platform/generic/system.h>
 
-#include <libkernel/types.h>
+#include <libkern/types.h>
 
 #include <drivers/driver_manager.h>
 
@@ -28,7 +28,7 @@
 
 #include <tasking/sched.h>
 
-#include <libkernel/log.h>
+#include <libkern/log.h>
 
 #include <syscalls/handlers.h>
 

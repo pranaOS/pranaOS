@@ -7,7 +7,7 @@
 #include <algo/ringbuffer.h>
 #include <drivers/x86/keyboard.h>
 #include <io/tty/tty.h>
-#include <libkernel/libkern.h>
+#include <libkern/libkern.h>
 #include <platform/x86/idt.h>
 
 static driver_desc_t _keyboard_driver_info();

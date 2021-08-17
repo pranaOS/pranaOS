@@ -10,9 +10,9 @@
 #include <algo/dynamic_array.h>
 #include <fs/vfs.h>
 #include <io/tty/tty.h>
-#include <libkernel/atomic.h>
-#include <libkernel/lock.h>
-#include <libkernel/types.h>
+#include <libkern/atomic.h>
+#include <libkern/lock.h>
+#include <libkern/types.h>
 #include <mem/vmm/vmm.h>
 #include <mem/vmm/zoner.h>
 
@@ -146,4 +146,4 @@ proc_zone_t* proc_find_zone_no_proc(dynamic_array_t* zones, uint32_t addr);
 int proc_delete_zone_no_proc(dynamic_array_t*, proc_zone_t*);
 int proc_delete_zone(proc_t*, proc_zone_t*);
 
-#endif 
+#endif // _KERNEL_TASKING_PROC_H

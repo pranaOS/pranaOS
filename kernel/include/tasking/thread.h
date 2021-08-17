@@ -9,8 +9,8 @@
 
 #include <drivers/generic/fpu.h>
 #include <fs/vfs.h>
-#include <libkernel/lock.h>
-#include <libkernel/types.h>
+#include <libkern/lock.h>
+#include <libkern/types.h>
 #include <platform/generic/tasking/context.h>
 #include <platform/generic/tasking/trapframe.h>
 #include <tasking/signal.h>

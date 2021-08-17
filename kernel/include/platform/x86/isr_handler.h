@@ -8,7 +8,7 @@
 #define _KERNEL_PLATFORM_X86_ISR_HANDLER_H
 
 #include <drivers/x86/display.h>
-#include <libkernel/types.h>
+#include <libkern/types.h>
 #include <platform/x86/idt.h>
 
 void isr_handler(trapframe_t *tf);

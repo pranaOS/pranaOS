@@ -7,8 +7,8 @@
 #ifndef _KERNEL_SYSCALLS_HANDLERS_H
 #define _KERNEL_SYSCALLS_HANDLERS_H
 
-#include <libkernel/syscall_structs.h>
-#include <libkernel/types.h>
+#include <libkern/syscall_structs.h>
+#include <libkern/types.h>
 #include <platform/generic/tasking/trapframe.h>
 
 #define ksys0(sysid) ksyscall_impl(sysid, 0, 0, 0, 0);
@@ -66,4 +66,4 @@ void sys_shbuf_free(trapframe_t* tf);
 
 void sys_none(trapframe_t* tf);
 
-#endif 
+#endif // _KERNEL_SYSCALLS_HANDLERS_H

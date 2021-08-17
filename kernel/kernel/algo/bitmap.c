@@ -5,7 +5,7 @@
  */
 
 #include <algo/bitmap.h>
-#include <libkernel/bits/errno.h>
+#include <libkern/bits/errno.h>
 #include <mem/kmalloc.h>
 
 #define BITMAP_BLOCKS_PER_BYTE (8)

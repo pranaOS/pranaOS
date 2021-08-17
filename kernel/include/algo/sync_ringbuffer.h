@@ -7,10 +7,9 @@
 #ifndef _KERNEL_ALGO_SYNC_RINGBUFFER_H
 #define _KERNEL_ALGO_SYNC_RINGBUFFER_H
 
-// includes
 #include <algo/ringbuffer.h>
-#include <libkernel/libkern.h>
-#include <libkernel/lock.h>
+#include <libkern/libkern.h>
+#include <libkern/lock.h>
 #include <mem/vmm/zoner.h>
 
 struct __sync_ringbuffer {
@@ -107,4 +106,4 @@ static ALWAYS_INLINE void sync_ringbuffer_clear(sync_ringbuffer_t* buf)
     lock_release(&buf->lock);
 }
 
-#endif
+#endif //_KERNEL_ALGO_SYNC_RINGBUFFER_H

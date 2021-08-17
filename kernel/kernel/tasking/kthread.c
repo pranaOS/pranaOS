@@ -5,8 +5,8 @@
  */
 
 #include <fs/vfs.h>
-#include <libkernel/bits/errno.h>
-#include <libkernel/libkern.h>
+#include <libkern/bits/errno.h>
+#include <libkern/libkern.h>
 #include <mem/kmalloc.h>
 #include <tasking/proc.h>
 #include <tasking/tasking.h>

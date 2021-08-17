@@ -7,9 +7,9 @@
 #ifndef _KERNEL_PLATFORM_AARCH32_TASKING_TRAPFRAME_H
 #define _KERNEL_PLATFORM_AARCH32_TASKING_TRAPFRAME_H
 
-#include <libkernel/c_attrs.h>
-#include <libkernel/log.h>
-#include <libkernel/types.h>
+#include <libkern/c_attrs.h>
+#include <libkern/log.h>
+#include <libkern/types.h>
 
 #define CPSR_M_USR 0x10U
 #define CPSR_M_FIQ 0x11U
@@ -110,4 +110,4 @@ static void dump_tf(trapframe_t* tf)
     log("fl: %x", tf->user_flags);
 }
 
-#endif 
+#endif // _KERNEL_PLATFORM_AARCH32_TASKING_TRAPFRAME_H

@@ -19,9 +19,9 @@
  */
 
 #include <algo/bitmap.h>
-#include <libkernel/bits/errno.h>
-#include <libkernel/libkern.h>
-#include <libkernel/lock.h>
+#include <libkern/bits/errno.h>
+#include <libkern/libkern.h>
+#include <libkern/lock.h>
 #include <mem/vmm/vmm.h>
 #include <mem/vmm/zoner.h>
 

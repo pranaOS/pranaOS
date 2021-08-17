@@ -7,10 +7,9 @@
 #ifndef _KERNEL_DRIVERS_AARCH32_FPUV4_H
 #define _KERNEL_DRIVERS_AARCH32_FPUV4_H
 
-// includes
 #include <drivers/driver_manager.h>
-#include <libkernel/mask.h>
-#include <libkernel/types.h>
+#include <libkern/mask.h>
+#include <libkern/types.h>
 #include <platform/aarch32/interrupts.h>
 #include <platform/aarch32/registers.h>
 #include <platform/aarch32/target/cortex-a15/device_settings.h>
@@ -48,8 +47,9 @@ static inline void fpu_make_avail()
 
 static inline void fpu_make_unavail()
 {
+    // Simply turn it off to make it unavailble.
     uint32_t val = read_cpacr() & (~((0b1111) << 20));
     write_cpacr(val | ((0b0101) << 20));
 }
 
-#endif 
+#endif //_KERNEL_DRIVERS_AARCH32_FPUV4_H

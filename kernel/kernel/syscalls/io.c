@@ -6,9 +6,9 @@
 
 #include <io/shared_buffer/shared_buffer.h>
 #include <io/sockets/local_socket.h>
-#include <libkernel/bits/errno.h>
-#include <libkernel/libkern.h>
-#include <libkernel/log.h>
+#include <libkern/bits/errno.h>
+#include <libkern/libkern.h>
+#include <libkern/log.h>
 #include <platform/generic/syscalls/params.h>
 #include <syscalls/handlers.h>
 #include <tasking/tasking.h>

@@ -1,7 +1,7 @@
 import os
 import glob
 import sys
-
+# sys.argv[2] Target to generate for
 
 platforms = ['x86', 'aarch32']
 

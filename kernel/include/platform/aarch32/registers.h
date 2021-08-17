@@ -7,7 +7,7 @@
 #ifndef _KERNEL_PLATFORM_AARCH32_REGISTERS_H
 #define _KERNEL_PLATFORM_AARCH32_REGISTERS_H
 
-#include <libkernel/types.h>
+#include <libkern/types.h>
 #include <platform/aarch32/system.h>
 
 static inline uint32_t read_r3()

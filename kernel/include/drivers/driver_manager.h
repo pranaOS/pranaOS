@@ -1,4 +1,3 @@
-
 /*
  * Copyright (c) 2021, Krisna Pranav
  *
@@ -8,7 +7,7 @@
 #ifndef _KERNEL_DRIVERS_DRIVER_MANAGER_H
 #define _KERNEL_DRIVERS_DRIVER_MANAGER_H
 
-#include <libkernel/types.h>
+#include <libkern/types.h>
 
 #define MINORBITS 20
 #define MINORMASK ((1U << MINORBITS) - 1)
@@ -33,6 +32,7 @@ enum DRIVER_MAN_NOTIFICATIONS {
     DM_NOTIFICATION_STOP,
 };
 
+// Supported driver's types
 enum DRIVERS_TYPE {
     DRIVER_STORAGE_DEVICE,
     DRIVER_VIDEO_DEVICE,
@@ -47,6 +47,7 @@ enum DRIVERS_TYPE {
     DRIVER_BAD_SIGN = 0xff
 };
 
+// Supported device's types
 enum DEVICES_TYPE {
     DEVICE_STORAGE,
     DEVICE_VIDEO,
@@ -61,21 +62,24 @@ enum DRIVER_COMMON {
     DRIVER_NOTIFICATION = 0x0,
 };
 
+// Api function of DRIVER_STORAGE type
 enum DRIVER_VIDEO_OPERTAION {
-    DRIVER_VIDEO_INIT = 0x1,
+    DRIVER_VIDEO_INIT = 0x1, // function called when a device is found
     DRIVER_VIDEO_SET_RESOLUTION,
 };
 
+// Api function of DRIVER_STORAGE type
 enum DRIVER_STORAGE_OPERTAION {
-    DRIVER_STORAGE_ADD_DEVICE = 0x1,
+    DRIVER_STORAGE_ADD_DEVICE = 0x1, // function called when a device is found
     DRIVER_STORAGE_READ,
     DRIVER_STORAGE_WRITE,
     DRIVER_STORAGE_FLUSH,
     DRIVER_STORAGE_CAPACITY,
 };
 
+// Api function of DRIVER_INPUT_SYSTEMS type
 enum DRIVER_INPUT_SYSTEMS_OPERTAION {
-    DRIVER_INPUT_SYSTEMS_ADD_DEVICE = 0x1,
+    DRIVER_INPUT_SYSTEMS_ADD_DEVICE = 0x1, // function called when a device is found
     DRIVER_INPUT_SYSTEMS_GET_LAST_KEY,
     DRIVER_INPUT_SYSTEMS_DISCARD_LAST_KEY
 };
@@ -183,4 +187,4 @@ device_t* new_virtual_device(uint8_t type);
 int dm_get_driver_id_by_name();
 void dm_send_notification(uint32_t msg, uint32_t param);
 
-#endif
+#endif // _KERNEL_DRIVERS_DRIVER_MANAGER_H

@@ -4,10 +4,10 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#include <libkernel/bits/errno.h>
-#include <libkernel/libkern.h>
-#include <libkernel/log.h>
-#include <libkernel/version.h>
+#include <libkern/bits/errno.h>
+#include <libkern/libkern.h>
+#include <libkern/log.h>
+#include <libkern/version.h>
 #include <mem/vmm/vmm.h>
 #include <platform/generic/syscalls/params.h>
 #include <syscalls/handlers.h>

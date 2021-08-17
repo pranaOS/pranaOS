@@ -15,4 +15,4 @@ int dump_prepare_kernel_data();
 int dump_kernel(const char* err);
 int dump_kernel_from_tf(const char* err, trapframe_t* tf);
 
-#endif 
+#endif // _KERNEL_TASKING_DUMP_H

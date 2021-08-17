@@ -10,8 +10,8 @@
 #include <algo/sync_ringbuffer.h>
 #include <drivers/driver_manager.h>
 #include <fs/ext2/ext2.h>
-#include <libkernel/lock.h>
-#include <libkernel/syscall_structs.h>
+#include <libkern/lock.h>
+#include <libkern/syscall_structs.h>
 
 #define DENTRY_WAS_IN_CACHE 0
 #define DENTRY_NEWLY_ALLOCATED 1
@@ -229,4 +229,4 @@ struct proc;
 struct proc_zone* vfs_mmap(file_descriptor_t* fd, mmap_params_t* params);
 int vfs_munmap(struct proc* p, struct proc_zone*);
 
-#endif 
+#endif // _KERNEL_FS_VFS_H

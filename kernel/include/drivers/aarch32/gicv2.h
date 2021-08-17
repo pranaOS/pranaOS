@@ -7,10 +7,9 @@
 #ifndef _KERNEL_DRIVERS_AARCH32_GICV2_H
 #define _KERNEL_DRIVERS_AARCH32_GICV2_H
 
-// includes
 #include <drivers/driver_manager.h>
-#include <libkernel/mask.h>
-#include <libkernel/types.h>
+#include <libkern/mask.h>
+#include <libkern/types.h>
 #include <platform/aarch32/interrupts.h>
 #include <platform/aarch32/target/cortex-a15/device_settings.h>
 
@@ -49,6 +48,7 @@ struct gicv2_distributor_registers {
     uint32_t itargetsr[64];
     SKIP(0x8FC + 0x4, 0xC00);
     uint32_t icfgr[16];
+    // TO BE CONTINUED
 };
 typedef struct gicv2_distributor_registers gicv2_distributor_registers_t;
 
@@ -63,6 +63,7 @@ struct gicv2_cpu_interface_registers {
     uint32_t aiar;
     uint32_t aeoir;
     uint32_t ahppir;
+    // TO BE CONTINUED
 };
 typedef struct gicv2_cpu_interface_registers gicv2_cpu_interface_registers_t;
 
@@ -72,4 +73,4 @@ void gicv2_install_secondary_cpu();
 uint32_t gicv2_interrupt_descriptor();
 void gicv2_end(uint32_t int_disc);
 
-#endif 
+#endif //_KERNEL_DRIVERS_AARCH32_GICV2_H

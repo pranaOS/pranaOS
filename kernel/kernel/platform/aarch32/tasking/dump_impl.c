@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#include <libkernel/log.h>
+#include <libkern/log.h>
 #include <mem/vmm/vmm.h>
 #include <platform/generic/system.h>
 #include <platform/x86/tasking/dump_impl.h>

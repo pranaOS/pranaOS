@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# pass --target_cpu aarch32 as arg to build for arm
+
 GREEN='\033[0;32m'
 RED='\033[0;31m'
 NC='\033[0m'
@@ -32,7 +34,7 @@ chmod +x out/dll.sh
 IMAGE_SIZE=32M
 qemu-img create -f raw out/pranaos.img $IMAGE_SIZE
 if [ $? -ne 0 ]; then echo -e "${ERROR} Can't create an out/pranaos.img" && exit 1; fi
-MKFS=""
+MKFS="" # Provide path here
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then
     MKFS=mkfs
 elif [[ "$OSTYPE" == "darwin"* ]]; then

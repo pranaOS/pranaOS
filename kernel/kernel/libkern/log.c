@@ -5,10 +5,10 @@
  */
 
 #include <drivers/generic/uart.h>
-#include <libkernel/libkern.h>
-#include <libkernel/lock.h>
-#include <libkernel/log.h>
-#include <libkernel/stdarg.h>
+#include <libkern/libkern.h>
+#include <libkern/lock.h>
+#include <libkern/log.h>
+#include <libkern/stdarg.h>
 
 // Turn off lock debug output for log.
 #ifdef DEBUG_LOCK

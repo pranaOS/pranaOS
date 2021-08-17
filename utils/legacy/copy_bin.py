@@ -1,6 +1,6 @@
 from config import *
 
-copyTo = 'one.img'
+copyTo = 'pranaos.img'
 copyFrom = 'products/kernel.bin'
 kernelSize = 0
 

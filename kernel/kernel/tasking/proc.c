@@ -6,10 +6,10 @@
 
 #include <fs/vfs.h>
 #include <io/tty/tty.h>
-#include <libkernel/bits/errno.h>
-#include <libkernel/libkern.h>
-#include <libkernel/log.h>
-#include <libkernel/syscall_structs.h>
+#include <libkern/bits/errno.h>
+#include <libkern/libkern.h>
+#include <libkern/log.h>
+#include <libkern/syscall_structs.h>
 #include <mem/kmalloc.h>
 #include <tasking/elf.h>
 #include <tasking/proc.h>

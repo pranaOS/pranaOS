@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#include <libkernel/kassert.h>
+#include <libkern/kassert.h>
 #include <tasking/dump.h>
 
 void kpanic(const char* err_msg)

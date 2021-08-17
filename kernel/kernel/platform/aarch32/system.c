@@ -6,7 +6,7 @@
 
 /* FIXME: Only for one cpu now */
 
-#include <libkernel/libkern.h>
+#include <libkern/libkern.h>
 #include <platform/aarch32/system.h>
 #include <tasking/tasking.h>
 

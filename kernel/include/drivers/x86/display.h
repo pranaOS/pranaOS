@@ -1,8 +1,8 @@
 #ifndef _KERNEL_DRIVERS_X86_DISPLAY_H
 #define _KERNEL_DRIVERS_X86_DISPLAY_H
 
-#include <libkernel/libkern.h>
-#include <libkernel/types.h>
+#include <libkern/libkern.h>
+#include <libkern/types.h>
 #include <platform/x86/memmap.h>
 #include <platform/x86/port.h>
 

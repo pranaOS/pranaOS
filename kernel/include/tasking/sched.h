@@ -7,7 +7,7 @@
 #ifndef _KERNEL_TASKING_SCHED_H
 #define _KERNEL_TASKING_SCHED_H
 
-#include <libkernel/types.h>
+#include <libkern/types.h>
 #include <mem/vmm/vmm.h>
 #include <tasking/bits/sched.h>
 #include <tasking/tasking.h>
@@ -31,4 +31,4 @@ static inline void sched_tick()
     }
 }
 
-#endif 
+#endif // _KERNEL_TASKING_SCHED_H

@@ -24,10 +24,14 @@ template("pranaOS_static_library") {
                        get_label_info(fullname, "name") + ".a" ]
       includes += [ "//libs/" + i + "/include" ]
 
+      # Also adding libc includes.
+      # Note to add libc after libcxx.
       if (i == "libcxx") {
         includes += [ "//libs/libc/include" ]
       }
 
+      # When libcxx is a dependency, we also have to link to libcxxabi.
+      # We add libcxxabi as a dependency.
       if (i == "libcxx") {
         deplib_bulders_list += [ "//libs/libcxxabi:libcxxabi_build" ]
         deplib_list += [ compiled_lib_output_name_base + "libcxxabi.a" ]
@@ -39,6 +43,7 @@ template("pranaOS_static_library") {
   deplib_list += [ compiled_lib_output_name + ".a" ]
   deplib_bulders_list += [ "//libs/" + lib_name + ":" + lib_build_name ]
 
+  # Use a strange __EMPTY_PATH_, empty string can't be passed as an arg.
   path_to_bins = "__EMPTY_PATH_"
   if (host == "llvm") {
     path_to_bins = llvm_bin_path
@@ -59,6 +64,7 @@ template("pranaOS_static_library") {
     include_dirs = includes
   }
 
+  # Create a build rule to compile only a lib with unresolved references from other libs
   static_library(lib_build_name) {
     output_name = "tmp/libs/" + lib_name
     sources = invoker.sources

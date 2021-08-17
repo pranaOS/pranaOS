@@ -1,7 +1,7 @@
 #ifdef __i386__
 
 #include <drivers/x86/display.h>
-#include <libkernel/kernel_self_test.h>
+#include <libkern/kernel_self_test.h>
 #include <mem/kmalloc.h>
 #include <mem/vmm/vmm.h>
 

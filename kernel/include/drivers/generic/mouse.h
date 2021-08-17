@@ -7,6 +7,7 @@
 #ifndef _KERNEL_DRIVERS_GENERIC_MOUSE_H
 #define _KERNEL_DRIVERS_GENERIC_MOUSE_H
 
+/* The mouse packet should be aligned to 4 bytes */
 struct mouse_packet {
     int16_t x_offset;
     int16_t y_offset;
@@ -15,4 +16,4 @@ struct mouse_packet {
 };
 typedef struct mouse_packet mouse_packet_t;
 
-#endif 
+#endif //_KERNEL_DRIVERS_GENERIC_MOUSE_H

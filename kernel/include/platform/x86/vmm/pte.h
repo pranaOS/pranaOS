@@ -7,7 +7,7 @@
 #ifndef _KERNEL_PLATFORM_X86_VMM_PTE_H
 #define _KERNEL_PLATFORM_X86_VMM_PTE_H
 
-#include <libkernel/types.h>
+#include <libkern/types.h>
 
 #define page_desc_t uint32_t
 #define pte_t uint32_t
@@ -47,4 +47,4 @@ uint32_t page_desc_get_frame(page_desc_t pte);
 uint32_t page_desc_get_settings(page_desc_t pte);
 uint32_t page_desc_get_settings_ignore_cow(page_desc_t pte);
 
-#endif
+#endif //_KERNEL_PLATFORM_X86_VMM_PTE_H

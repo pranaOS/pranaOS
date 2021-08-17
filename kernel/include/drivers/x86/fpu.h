@@ -7,7 +7,7 @@
 #ifndef _KERNEL_DRIVERS_X86_FPU_H
 #define _KERNEL_DRIVERS_X86_FPU_H
 
-#include <libkernel/types.h>
+#include <libkern/types.h>
 #include <platform/x86/registers.h>
 
 typedef struct {
@@ -48,4 +48,4 @@ static inline void fpu_make_unavail()
     write_cr0(cr0);
 }
 
-#endif
+#endif //_KERNEL_DRIVERS_X86_FPU_H

@@ -7,7 +7,7 @@
 #ifndef _KERNEL_TASKING_BITS_DUMP_H
 #define _KERNEL_TASKING_BITS_DUMP_H
 
-#include <libkernel/types.h>
+#include <libkern/types.h>
 #include <tasking/proc.h>
 
 typedef int (*dump_saver_t)(const char*);
@@ -24,4 +24,4 @@ struct dump_data {
 };
 typedef struct dump_data dump_data_t;
 
-#endif 
+#endif // _KERNEL_TASKING_BITS_DUMP_H

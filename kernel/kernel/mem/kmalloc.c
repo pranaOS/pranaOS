@@ -5,9 +5,9 @@
  */
 
 #include <algo/bitmap.h>
-#include <libkernel/libkern.h>
-#include <libkernel/lock.h>
-#include <libkernel/log.h>
+#include <libkern/libkern.h>
+#include <libkern/lock.h>
+#include <libkern/log.h>
 #include <mem/kmalloc.h>
 #include <mem/vmm/zoner.h>
 

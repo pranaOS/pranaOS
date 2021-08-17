@@ -5,7 +5,7 @@
  */
 
 #include <drivers/aarch32/gicv2.h>
-#include <libkernel/log.h>
+#include <libkern/log.h>
 #include <mem/vmm/vmm.h>
 #include <mem/vmm/zoner.h>
 #include <platform/aarch32/interrupts.h>

@@ -34,4 +34,4 @@ static inline void cpu_tick()
     }
 }
 
-#endif 
+#endif // _KERNEL_TASKING_CPU_H

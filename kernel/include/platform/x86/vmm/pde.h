@@ -7,7 +7,7 @@
 #ifndef _KERNEL_PLATFORM_X86_VMM_PDE_H
 #define _KERNEL_PLATFORM_X86_VMM_PDE_H
 
-#include <libkernel/types.h>
+#include <libkern/types.h>
 
 #define table_desc_t uint32_t
 #define pde_t uint32_t
@@ -46,4 +46,4 @@ bool table_desc_is_4mb(table_desc_t pde);
 bool table_desc_is_copy_on_write(table_desc_t pde);
 uint32_t table_desc_get_frame(table_desc_t pde);
 
-#endif
+#endif //_KERNEL_PLATFORM_X86_VMM_PDE_H

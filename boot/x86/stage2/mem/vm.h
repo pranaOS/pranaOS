@@ -25,4 +25,4 @@ typedef struct pdirectory {
 
 int vm_setup();
 
-#endif
+#endif // _BOOT_X86_STAGE2_MEM_VM_H

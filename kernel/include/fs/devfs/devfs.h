@@ -8,8 +8,8 @@
 #define _KERNEL_FS_DEVFS_DEVFS_H
 
 #include <fs/vfs.h>
-#include <libkernel/c_attrs.h>
-#include <libkernel/types.h>
+#include <libkern/c_attrs.h>
+#include <libkern/types.h>
 
 #define DEVFS_INODE_LEN (sizeof(struct devfs_inode))
 struct PACKED devfs_inode {

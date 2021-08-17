@@ -9,8 +9,8 @@
 
 #include <drivers/driver_manager.h>
 #include <drivers/x86/display.h>
-#include <libkernel/c_attrs.h>
-#include <libkernel/types.h>
+#include <libkern/c_attrs.h>
+#include <libkern/types.h>
 #include <platform/x86/port.h>
 
 struct PACKED pcidd {

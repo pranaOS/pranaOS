@@ -5,8 +5,8 @@
  */
 
 #include <drivers/x86/pit.h>
-#include <libkernel/kassert.h>
-#include <libkernel/log.h>
+#include <libkern/kassert.h>
+#include <libkern/log.h>
 #include <platform/generic/system.h>
 #include <tasking/cpu.h>
 #include <tasking/sched.h>

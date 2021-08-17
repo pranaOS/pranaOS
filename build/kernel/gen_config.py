@@ -25,7 +25,6 @@ config['time'] = datetime.today().strftime('%Y-%m-%d %H:%M:%S')
 def print_header(config_file):
     config_file.write(
         """
-
 """)
 
 

@@ -1,0 +1,49 @@
+import("//build/userland/TEMPLATE.gni")
+
+pranaOS_executable("window_server") {
+  install_path = "System/"
+  sources = [
+    "src/Components/Base/BaseWindow.cpp",
+    "src/Components/Elements/Button.cpp",
+    "src/Components/MenuBar/MenuBar.cpp",
+    "src/Components/Popup/Popup.cpp",
+    "src/Compositor.cpp",
+    "src/Connection.cpp",
+    "src/CursorManager.cpp",
+    "src/Devices.cpp",
+    "src/ResourceManager.cpp",
+    "src/Screen.cpp",
+    "src/ServerDecoder.cpp",
+    "src/WindowManager.cpp",
+    "src/main.cpp",
+  ]
+
+  if (device_type == "desktop") {
+    cflags = [ "-DTARGET_DESKTOP" ]
+    sources += [
+      "src/Desktop/Window.cpp",
+      "src/Desktop/WindowFrame.cpp",
+    ]
+  }
+  if (device_type == "mobile") {
+    cflags = [ "-DTARGET_MOBILE" ]
+    sources += [
+      "src/Components/ControlBar/ControlBar.cpp",
+      "src/Mobile/Window.cpp",
+    ]
+  }
+
+  configs = [ "//build/userland:userland_flags" ]
+
+  if (host == "llvm") {
+    cflags += [ "-flto" ]
+  }
+
+  deplibs = [
+    "libcxx",
+    "libfoundation",
+    "libipc",
+    "libg",
+    "libui",
+  ]
+}

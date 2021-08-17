@@ -20,4 +20,4 @@
     (return_val = val);      \
     return
 
-#endif 
+#endif // _KERNEL_PLATFORM_AARCH32_SYSCALLS_PARAMS_H

@@ -7,7 +7,7 @@
 #ifndef _KERNEL_TASKING_SIGNAL_H
 #define _KERNEL_TASKING_SIGNAL_H
 
-#include <libkernel/types.h>
+#include <libkern/types.h>
 
 #define SIGNALS_CNT 32
 
@@ -20,4 +20,4 @@ enum SIGNAL_ACTION {
 
 };
 
-#endif 
+#endif // _KERNEL_TASKING_SIGNAL_H

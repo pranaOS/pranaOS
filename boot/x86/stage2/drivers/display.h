@@ -30,4 +30,4 @@ void printf(const char* string);
 void printh(uint32_t hex);
 void printd(uint32_t dec);
 
-#endif
+#endif // _BOOT_X86_STAGE2_DRIVERS_DISPLAY_H

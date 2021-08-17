@@ -13,7 +13,7 @@ typedef char bool;
 #define VMM_PAGE_SIZE (4096)
 
 struct table_desc {
-    unsigned int valid : 1;
+    unsigned int valid : 1; /* Valid mapping */
     unsigned int zero1 : 1;
     unsigned int zero2 : 1;
     unsigned int ns : 1;
@@ -25,10 +25,10 @@ struct table_desc {
 typedef struct table_desc table_desc_t;
 
 struct page_desc {
-    unsigned int xn : 1;
-    unsigned int one : 1;
-    unsigned int b : 1;
-    unsigned int c : 1;
+    unsigned int xn : 1; // Execute never. Stops execution of page.
+    unsigned int one : 1; // Always one for tables
+    unsigned int b : 1; // cacheable
+    unsigned int c : 1; // Cacheable
     unsigned int ap1 : 2;
     unsigned int tex : 3;
     unsigned int ap2 : 1;
@@ -135,16 +135,16 @@ void vm_setup()
         dir->entities[i].valid = 0;
     }
 
-    map_page(0x1c000000, 0x1c000000);
-    map_page(0x3f000000, 0x3f000000);
-    map_page(0x80100000, 0xc0000000);
-    map_page(0x80200000, 0xc0100000);
-    map_page(0x80300000, 0xc0200000);
-    map_page(0x80400000, 0xc0300000);
-    map_page(0x80000000, 0x80000000);
-    map_page(0x80100000, 0x80100000);
-    map_page(0x80200000, 0x80200000);
-    map_page(0x80300000, 0x80300000); 
+    map_page(0x1c000000, 0x1c000000); // mapping uart
+    map_page(0x3f000000, 0x3f000000); // mapping interrupt controller
+    map_page(0x80100000, 0xc0000000); // kernel
+    map_page(0x80200000, 0xc0100000); // kernel
+    map_page(0x80300000, 0xc0200000); // kernel
+    map_page(0x80400000, 0xc0300000); // kernel
+    map_page(0x80000000, 0x80000000); // kernel to self
+    map_page(0x80100000, 0x80100000); // kernel to self
+    map_page(0x80200000, 0x80200000); // kernel to self
+    map_page(0x80300000, 0x80300000); // kernel to self
 
     write_ttbr0((uint32_t)(0x80000000));
     write_dacr(0x55555555);

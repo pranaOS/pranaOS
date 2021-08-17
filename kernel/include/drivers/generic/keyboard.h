@@ -7,10 +7,11 @@
 #ifndef _KERNEL_DRIVERS_GENERIC_KEYBOARD_H
 #define _KERNEL_DRIVERS_GENERIC_KEYBOARD_H
 
-#include <libkernel/types.h>
+#include <libkern/types.h>
 
 enum KEYCODE {
 
+    // Alphanumeric keys ////////////////
     KEY_CTRLC = '\003',
 
     KEY_SPACE = ' ',
@@ -56,12 +57,14 @@ enum KEYCODE {
     KEY_ESCAPE = 0x1001,
     KEY_BACKSPACE = '\b',
 
+    // Arrow keys ////////////////////////
 
     KEY_UP = 0x1100,
     KEY_DOWN = 0x1101,
     KEY_LEFT = 0x1102,
     KEY_RIGHT = 0x1103,
 
+    // Function keys /////////////////////
 
     KEY_F1 = 0x1201,
     KEY_F2 = 0x1202,
@@ -114,6 +117,8 @@ enum KEYCODE {
     KEY_AT = '@',
     KEY_CARRET = '^',
 
+    // Numeric keypad //////////////////////
+
     KEY_KP_0 = '0',
     KEY_KP_1 = '1',
     KEY_KP_2 = '2',
@@ -135,6 +140,8 @@ enum KEYCODE {
     KEY_TAB = 0x4000,
     KEY_CAPSLOCK = 0x4001,
 
+    // Modify keys ////////////////////////////
+
     KEY_LSHIFT = 0x4002,
     KEY_LCTRL = 0x4003,
     KEY_LALT = 0x4004,
@@ -153,6 +160,7 @@ enum KEYCODE {
     KEY_SCROLLLOCK = 0x4010,
     KEY_PAUSE = 0x4011,
 
+    // Multimedia keys ////////////////////////
 
     KEY_PREV_TRACK = 0x5001,
     KEY_NEXT_TRACK = 0x5002,
@@ -171,6 +179,7 @@ enum KEYCODE {
 
 typedef uint32_t key_t;
 
+/* The keyboard packet should be aligned to 4 bytes */
 struct kbd_packet {
     key_t key;
 };
@@ -180,4 +189,4 @@ int generic_keyboard_create_devfs();
 void generic_keyboard_init();
 void generic_emit_key_set1(uint32_t scancode);
 
-#endif 
+#endif //_KERNEL_DRIVERS_GENERIC_KEYBOARD_H

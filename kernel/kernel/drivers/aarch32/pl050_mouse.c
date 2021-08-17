@@ -9,9 +9,9 @@
 #include <drivers/generic/mouse.h>
 #include <fs/devfs/devfs.h>
 #include <fs/vfs.h>
-#include <libkernel/bits/errno.h>
-#include <libkernel/libkern.h>
-#include <libkernel/log.h>
+#include <libkern/bits/errno.h>
+#include <libkern/libkern.h>
+#include <libkern/log.h>
 #include <mem/vmm/vmm.h>
 #include <mem/vmm/zoner.h>
 #include <platform/aarch32/interrupts.h>

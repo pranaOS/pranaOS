@@ -7,7 +7,7 @@
 #ifndef _KERNEL_PLATFORM_GENERIC_VMM_MAPPING_TABLE_H
 #define _KERNEL_PLATFORM_GENERIC_VMM_MAPPING_TABLE_H
 
-#include <libkernel/types.h>
+#include <libkern/types.h>
 
 struct mapping_entry {
     uint32_t paddr;
@@ -21,4 +21,4 @@ typedef struct mapping_entry mapping_entry_t;
 extern mapping_entry_t kernel_mapping_table[]; // Should be in kernelspace
 extern mapping_entry_t extern_mapping_table[]; // Maps after kernel tables are ready, so can be outside kernelspace
 
-#endif 
+#endif // _KERNEL_PLATFORM_GENERIC_VMM_MAPPING_TABLE_H

@@ -32,4 +32,4 @@ struct sched_data {
 };
 typedef struct sched_data sched_data_t;
 
-#endif 
+#endif // _KERNEL_TASKING_BITS_SCHED_H

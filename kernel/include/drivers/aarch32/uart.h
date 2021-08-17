@@ -7,8 +7,7 @@
 #ifndef _KERNEL_DRIVERS_AARCH32_UART_H
 #define _KERNEL_DRIVERS_AARCH32_UART_H
 
-// includes
-#include <libkernel/types.h>
+#include <libkern/types.h>
 
 #define COM1 0x1c090000
 

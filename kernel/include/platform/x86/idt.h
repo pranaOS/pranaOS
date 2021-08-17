@@ -7,8 +7,8 @@
 #ifndef _KERNEL_PLATFORM_X86_IDT_H
 #define _KERNEL_PLATFORM_X86_IDT_H
 
-#include <libkernel/c_attrs.h>
-#include <libkernel/types.h>
+#include <libkern/c_attrs.h>
+#include <libkern/types.h>
 #include <platform/x86/pic.h>
 #include <platform/x86/port.h>
 #include <platform/x86/tasking/trapframe.h>
@@ -109,4 +109,4 @@ extern void syscall();
 #define IRQ14 46
 #define IRQ15 47
 
-#endif 
+#endif // _KERNEL_PLATFORM_X86_IDT_H

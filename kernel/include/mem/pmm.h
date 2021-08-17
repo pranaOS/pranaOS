@@ -1,7 +1,7 @@
 #ifndef _KERNEL_MEM_PMM_H
 #define _KERNEL_MEM_PMM_H
 
-#include <libkernel/types.h>
+#include <libkern/types.h>
 #include <platform/generic/pmm/settings.h>
 
 typedef struct {
@@ -40,4 +40,4 @@ uint32_t pmm_get_used_blocks();
 uint32_t pmm_get_free_blocks();
 uint32_t pmm_get_block_size();
 
-#endif
+#endif // _KERNEL_MEM_PMM_H

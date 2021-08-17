@@ -22,4 +22,4 @@
     (return_val = val);      \
     return
 
-#endif 
+#endif // _KERNEL_PLATFORM_X86_SYSCALLS_PARAMS_H

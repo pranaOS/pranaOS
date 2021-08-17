@@ -7,4 +7,4 @@ typedef struct {
     void* write;
 } drive_desc_t;
 
-#endif
+#endif // STAGE2_DRIVE_DESC

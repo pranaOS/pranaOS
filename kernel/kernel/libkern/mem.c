@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#include <libkernel/libkern.h>
+#include <libkern/libkern.h>
 #include <mem/kmalloc.h>
 
 #ifdef __i386__

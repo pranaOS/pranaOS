@@ -4,12 +4,11 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-// includes
 #include <drivers/generic/keyboard.h>
 
 static key_t _scancode_set1[] = {
-    KEY_UNKNOWN,
-    KEY_ESCAPE, 
+    KEY_UNKNOWN, //0
+    KEY_ESCAPE, //1
     KEY_1, //2
     KEY_2, //3
     KEY_3, //4

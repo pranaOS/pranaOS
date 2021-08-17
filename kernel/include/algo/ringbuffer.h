@@ -7,9 +7,8 @@
 #ifndef _KERNEL_ALGO_RINGBUFFER_H
 #define _KERNEL_ALGO_RINGBUFFER_H
 
-// includes
-#include <libkernel/libkern.h>
-#include <libkernel/lock.h>
+#include <libkern/libkern.h>
+#include <libkern/lock.h>
 #include <mem/vmm/zoner.h>
 
 #define RINGBUFFER_STD_SIZE (16 * KB)
@@ -36,4 +35,4 @@ uint32_t ringbuffer_read_one(ringbuffer_t* buf, uint8_t* data);
 uint32_t ringbuffer_write_one(ringbuffer_t* buf, uint8_t data);
 void ringbuffer_clear(ringbuffer_t* buf);
 
-#endif 
+#endif //_KERNEL_ALGO_RINGBUFFER_H

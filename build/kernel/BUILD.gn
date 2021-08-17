@@ -1,3 +1,4 @@
+
 kernel_out_path = "base/boot"
 
 kernel_c_flags = [

@@ -6,9 +6,9 @@
 
 #include <drivers/aarch32/pl050.h>
 #include <drivers/generic/keyboard.h>
-#include <libkernel/bits/errno.h>
-#include <libkernel/libkern.h>
-#include <libkernel/log.h>
+#include <libkern/bits/errno.h>
+#include <libkern/libkern.h>
+#include <libkern/log.h>
 #include <mem/vmm/vmm.h>
 #include <mem/vmm/zoner.h>
 #include <platform/aarch32/interrupts.h>

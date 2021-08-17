@@ -7,11 +7,10 @@
 #ifndef _KERNEL_DRIVERS_AARCH32_PL111_H
 #define _KERNEL_DRIVERS_AARCH32_PL111_H
 
-// includes
 #include <drivers/driver_manager.h>
 #include <platform/aarch32/target/cortex-a15/device_settings.h>
-#include <libkernel/types.h>
-#include <libkernel/mask.h>
+#include <libkern/types.h>
+#include <libkern/mask.h>
 
 enum PL111RegisterMasks {
     MASKDEFINE(PIXELS_PER_LINE, 2, 6),
@@ -30,8 +29,8 @@ enum PL111RegisterMasks {
 enum PL111Consts {
     NUM_TIMINGS = 4,
     NUM_PALETTE_WORDS = 0x378,
-    LCD_16_BPP = 4, 
-    LCD_24_BPP = 5, 
+    LCD_16_BPP = 4, // Register constant for 16 bits per pixel
+    LCD_24_BPP = 5, // Register constant for 24 bits per pixel
 };
 
 struct pl111_registers {
@@ -47,10 +46,11 @@ struct pl111_registers {
     uint32_t lcd_mis;
     uint32_t lcd_icr;
     uint32_t lcd_upcurr;
-    uint32_t lcd_lpcurr;    
+    uint32_t lcd_lpcurr;
+    // TO BE CONTINUED
 };
 typedef struct pl111_registers pl111_registers_t;
 
 void pl111_install();
 
-#endif 
+#endif //_KERNEL_DRIVERS_AARCH32_PL111_H

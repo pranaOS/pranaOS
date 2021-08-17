@@ -2,3 +2,4 @@
 .vscode/
 .idea/
 cmake-build-debug/
+out/

@@ -5,8 +5,8 @@
  */
 
 #include <drivers/x86/fpu.h>
-#include <libkernel/kassert.h>
-#include <libkernel/log.h>
+#include <libkern/kassert.h>
+#include <libkern/log.h>
 #include <mem/vmm/vmm.h>
 #include <platform/generic/registers.h>
 #include <platform/generic/system.h>

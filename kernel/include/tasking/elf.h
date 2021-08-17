@@ -177,4 +177,4 @@ int elf_load(struct proc* p, struct file_descriptor* fd);
 int elf_find_symtab_unchecked(void* mapped_data, void** symtab, size_t* symtab_entries, char** strtab);
 ssize_t elf_find_function_in_symtab(void* symtab, size_t syms_n, uint32_t ip);
 
-#endif 
+#endif // _KERNEL_TASKING_ELF_H

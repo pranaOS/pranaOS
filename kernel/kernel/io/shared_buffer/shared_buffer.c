@@ -6,10 +6,10 @@
 
 #include <algo/bitmap.h>
 #include <io/shared_buffer/shared_buffer.h>
-#include <libkernel/bits/errno.h>
-#include <libkernel/libkern.h>
-#include <libkernel/lock.h>
-#include <libkernel/log.h>
+#include <libkern/bits/errno.h>
+#include <libkern/libkern.h>
+#include <libkern/lock.h>
+#include <libkern/log.h>
 #include <mem/vmm/vmm.h>
 #include <mem/vmm/zoner.h>
 

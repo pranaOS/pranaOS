@@ -7,8 +7,8 @@
 #ifndef _KERNEL_PLATFORM_X86_GDT_H
 #define _KERNEL_PLATFORM_X86_GDT_H
 
-#include <libkernel/c_attrs.h>
-#include <libkernel/types.h>
+#include <libkern/c_attrs.h>
+#include <libkern/types.h>
 
 #define GDT_MAX_ENTRIES 6
 #define SEG_KCODE 1 // kernel code
@@ -67,4 +67,4 @@ extern struct gdt_entry gdt[GDT_MAX_ENTRIES];
 
 void gdt_setup();
 
-#endif 
+#endif // _KERNEL_PLATFORM_X86_GDT_H

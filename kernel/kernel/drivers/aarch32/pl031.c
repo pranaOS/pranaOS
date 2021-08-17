@@ -5,14 +5,14 @@
  */
 
 #include <drivers/aarch32/pl031.h>
-#include <libkernel/bits/errno.h>
+#include <libkern/bits/errno.h>
 #include <fs/devfs/devfs.h>
 #include <fs/vfs.h>
-#include <libkernel/log.h>
+#include <libkern/log.h>
 #include <mem/vmm/vmm.h>
 #include <mem/vmm/zoner.h>
 #include <tasking/tasking.h>
-#include <libkernel/libkern.h>
+#include <libkern/libkern.h>
 
 // #define DEBUG_PL031
 

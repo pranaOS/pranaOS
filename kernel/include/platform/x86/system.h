@@ -7,8 +7,8 @@
 #ifndef _KERNEL_PLATFORM_X86_SYSTEM_H
 #define _KERNEL_PLATFORM_X86_SYSTEM_H
 
-#include <libkernel/c_attrs.h>
-#include <libkernel/types.h>
+#include <libkern/c_attrs.h>
+#include <libkern/types.h>
 #include <platform/generic/registers.h>
 
 /**

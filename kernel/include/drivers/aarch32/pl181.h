@@ -7,10 +7,9 @@
 #ifndef _KERNEL_DRIVERS_AARCH32_PL181_H
 #define _KERNEL_DRIVERS_AARCH32_PL181_H
 
-// includes
 #include <drivers/driver_manager.h>
-#include <libkernel/mask.h>
-#include <libkernel/types.h>
+#include <libkern/mask.h>
+#include <libkern/types.h>
 #include <platform/aarch32/target/cortex-a15/device_settings.h>
 
 #define PL181_SECTOR_SIZE 512
@@ -66,6 +65,7 @@ struct pl181_registers {
     uint32_t fifo_count;
     char res[0x34];
     uint32_t fifo_data[16];
+    // TO BE CONTINUED
 };
 typedef struct pl181_registers pl181_registers_t;
 
@@ -78,4 +78,4 @@ typedef struct sd_card sd_card_t;
 
 void pl181_install();
 
-#endif 
+#endif //_KERNEL_DRIVERS_AARCH32_PL181_H

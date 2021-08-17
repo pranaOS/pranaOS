@@ -7,7 +7,7 @@
 #ifndef _KERNEL_PLATFORM_X86_REGISTERS_H
 #define _KERNEL_PLATFORM_X86_REGISTERS_H
 
-#include <libkernel/types.h>
+#include <libkern/types.h>
 
 uint32_t read_cr2();
 uint32_t read_cr3();

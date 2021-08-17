@@ -8,9 +8,9 @@
 #define _KERNEL_TIME_TIME_MANAGER_H
 
 #include <drivers/generic/timer.h>
-#include <libkernel/atomic.h>
-#include <libkernel/bits/time.h>
-#include <libkernel/types.h>
+#include <libkern/atomic.h>
+#include <libkern/bits/time.h>
+#include <libkern/types.h>
 #include <platform/generic/cpu.h>
 
 extern time_t ticks_since_boot;

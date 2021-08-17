@@ -9,7 +9,7 @@
 
 #include <drivers/driver_manager.h>
 #include <drivers/x86/display.h>
-#include <libkernel/types.h>
+#include <libkern/types.h>
 #include <mem/kmalloc.h>
 #include <platform/x86/port.h>
 
@@ -33,7 +33,7 @@ typedef struct {
     uint16_t sectors;
     bool dma;
     bool lba;
-    uint32_t capacity; 
+    uint32_t capacity; // in sectors
 } ata_t;
 
 extern ata_t _ata_drives[MAX_DEVICES_COUNT];
@@ -44,4 +44,4 @@ void ata_install();
 void ata_init(ata_t* ata, uint32_t port, bool is_master);
 bool ata_indentify(ata_t* ata);
 
-#endif
+#endif //_KERNEL_DRIVERS_X86_ATA_H

@@ -7,8 +7,8 @@
 #ifndef _KERNEL_PLATFORM_X86_TASKING_CONTEXT_H
 #define _KERNEL_PLATFORM_X86_TASKING_CONTEXT_H
 
-#include <libkernel/c_attrs.h>
-#include <libkernel/types.h>
+#include <libkern/c_attrs.h>
+#include <libkern/types.h>
 
 struct PACKED context {
     uint32_t edi;
@@ -29,4 +29,4 @@ static inline void context_set_instruction_pointer(context_t* ctx, uint32_t ip)
     ctx->eip = ip;
 }
 
-#endif 
+#endif // _KERNEL_PLATFORM_X86_TASKING_CONTEXT_H

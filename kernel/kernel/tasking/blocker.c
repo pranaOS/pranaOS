@@ -4,9 +4,9 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#include <libkernel/libkern.h>
-#include <libkernel/log.h>
-#include <libkernel/syscall_structs.h>
+#include <libkern/libkern.h>
+#include <libkern/log.h>
+#include <libkern/syscall_structs.h>
 #include <tasking/sched.h>
 #include <tasking/thread.h>
 #include <time/time_manager.h>

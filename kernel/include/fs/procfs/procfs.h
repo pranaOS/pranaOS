@@ -8,8 +8,8 @@
 #define _KERNEL_FS_PROCFS_PROCFS_H
 
 #include <fs/vfs.h>
-#include <libkernel/c_attrs.h>
-#include <libkernel/types.h>
+#include <libkern/c_attrs.h>
+#include <libkern/types.h>
 
 struct procfs_files {
     char* name;
@@ -57,4 +57,4 @@ static inline uint32_t procfs_get_inode_index(const uint32_t level, uint32_t mai
     return (level << 28) | (main & 0x0fffffff);
 }
 
-#endif
+#endif // _KERNEL_FS_PROCFS_PROCFS_H
