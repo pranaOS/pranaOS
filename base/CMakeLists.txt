@@ -1,2 +1,0 @@
-pranaos_install_headers(base)
-pranaos_install_sources(base)

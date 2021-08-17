@@ -1,8 +1,0 @@
-[CustomGet]
-interface HTMLCollection {
-
-    readonly attribute unsigned long length;
-    Element? item(unsigned long index);
-    Element? namedItem(DOMString name);
-
-};
