@@ -7,4 +7,4 @@ A unix operating system written from scratch in c++
 
 # Contributing Docs:
 - want to contribute to pranaOS
-- contributing [docs]()
+- contributing [docs](https://github.com/pranaOS/pranaOS/blob/master/docs/contributing.md)
