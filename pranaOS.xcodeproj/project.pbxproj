@@ -377,6 +377,7 @@
 		9F9FF1CC26CB808D00664E47 /* build.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = build.sh; sourceTree = "<group>"; };
 		9F9FF1CD26CB815F00664E47 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		9F9FF1CF26CB81D300664E47 /* contributing.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = contributing.md; sourceTree = "<group>"; };
+		9F9FF1D026CB82D900664E47 /* build.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = build.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1274,6 +1275,7 @@
 			isa = PBXGroup;
 			children = (
 				9F9FF1CF26CB81D300664E47 /* contributing.md */,
+				9F9FF1D026CB82D900664E47 /* build.md */,
 			);
 			path = docs;
 			sourceTree = "<group>";
