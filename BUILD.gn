@@ -1,0 +1,19 @@
+# /*
+#  * Copyright (c) 2021, Krisna Pranav
+#  *
+#  * SPDX-License-Identifier: BSD-2-Clause
+# */
+
+group("build") {
+  deps = [
+    ":scripts",
+    "//build/kernel:kernel",
+    "//build/libs:libs",
+    "//build/servers:servers",
+    "//build/userland:userland",
+  ]
+}
+
+group("scripts") {
+  deps = [ "//build/tools:build_scripts" ]
+}

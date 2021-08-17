@@ -370,6 +370,11 @@
 		9F9FF15A26CB802200664E47 /* kmalloc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = kmalloc.c; sourceTree = "<group>"; };
 		9F9FF15C26CB802200664E47 /* vmm.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = vmm.c; sourceTree = "<group>"; };
 		9F9FF15D26CB802200664E47 /* zoner.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = zoner.c; sourceTree = "<group>"; };
+		9F9FF1C826CB808D00664E47 /* .clang-tidy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ".clang-tidy"; sourceTree = "<group>"; };
+		9F9FF1C926CB808D00664E47 /* .gn */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .gn; sourceTree = "<group>"; };
+		9F9FF1CA26CB808D00664E47 /* .clang-format */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ".clang-format"; sourceTree = "<group>"; };
+		9F9FF1CB26CB808D00664E47 /* BUILD.gn */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = BUILD.gn; sourceTree = "<group>"; };
+		9F9FF1CC26CB808D00664E47 /* build.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = build.sh; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -386,6 +391,11 @@
 		9F9FEE6026CB7AD800664E47 = {
 			isa = PBXGroup;
 			children = (
+				9F9FF1CA26CB808D00664E47 /* .clang-format */,
+				9F9FF1C826CB808D00664E47 /* .clang-tidy */,
+				9F9FF1C926CB808D00664E47 /* .gn */,
+				9F9FF1CB26CB808D00664E47 /* BUILD.gn */,
+				9F9FF1CC26CB808D00664E47 /* build.sh */,
 				9F9FF01F26CB802200664E47 /* kernel */,
 				9F9FEE6A26CB7AD800664E47 /* Products */,
 			);
