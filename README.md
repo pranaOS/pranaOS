@@ -1,5 +1,5 @@
 # pranaOS
-A unix operating system written from scratch in c++
+A unix operating system written from scratch in c / c++
 
 # Build Instructions:
 - want to use pranaOS??
@@ -8,3 +8,7 @@ A unix operating system written from scratch in c++
 # Contributing Docs:
 - want to contribute to pranaOS
 - contributing [docs](https://github.com/pranaOS/pranaOS/blob/master/docs/contributing.md)
+
+
+- view the future plans of [pranaos](https://github.com/pranaOS/pranaOS/blob/master/plans/plans.pdf)
+

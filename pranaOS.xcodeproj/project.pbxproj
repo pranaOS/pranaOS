@@ -978,6 +978,12 @@
 		9F492B2826CCD73C003BD834 /* systembold.font */ = {isa = PBXFileReference; lastKnownFileType = file; path = systembold.font; sourceTree = "<group>"; };
 		9F492B2926CCD73C003BD834 /* LizaBold8x10.font */ = {isa = PBXFileReference; lastKnownFileType = file; path = LizaBold8x10.font; sourceTree = "<group>"; };
 		9F492B2B26CCD73C003BD834 /* plans.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = plans.pdf; sourceTree = "<group>"; };
+		9F492C2126CCD794003BD834 /* .gitignore */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
+		9F492C2226CCD794003BD834 /* .clang-format */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ".clang-format"; sourceTree = "<group>"; };
+		9F492C2326CCD794003BD834 /* .clang-tidy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ".clang-tidy"; sourceTree = "<group>"; };
+		9F492C2426CCD794003BD834 /* build.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = build.sh; sourceTree = "<group>"; };
+		9F492C2526CCD794003BD834 /* BUILD.gn */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = BUILD.gn; sourceTree = "<group>"; };
+		9F492C2626CCD794003BD834 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -997,6 +1003,12 @@
 		9F49274E26CCD6EF003BD834 = {
 			isa = PBXGroup;
 			children = (
+				9F492C2226CCD794003BD834 /* .clang-format */,
+				9F492C2326CCD794003BD834 /* .clang-tidy */,
+				9F492C2126CCD794003BD834 /* .gitignore */,
+				9F492C2526CCD794003BD834 /* BUILD.gn */,
+				9F492C2426CCD794003BD834 /* build.sh */,
+				9F492C2626CCD794003BD834 /* README.md */,
 				9F492AFF26CCD73C003BD834 /* base */,
 				9F49287E26CCD73B003BD834 /* boot */,
 				9F49297A26CCD73B003BD834 /* build */,
