@@ -8,26 +8,7 @@ static int shell_pid = 0;
 int setup_shell()
 {
     int ptmx = posix_openpt(O_RDONLY);
-    if (ptmx < 0) {
-        std::abort();
-    }
-
-    int f = fork();
-    if (f == 0) {
-        char* pname = ptsname(ptmx);
-        if (!pname) {
-            return -1;
-        }
-        close(0);
-        close(1);
-        close(2);
-        open(pname, O_RDONLY);
-        open(pname, O_WRONLY);
-        open(pname, O_WRONLY);
-        execve("/bin/pranash", 0, 0);
-    }
-
-    shell_pid = f;
+    printf("hello");
     return ptmx;
 }
 
@@ -49,11 +30,6 @@ public:
         window.set_title("TextEditor");
         return true;
     }
-
-    // void application_will_terminate() override
-    // {
-    //     std::kill(shell_pid, 9);
-    // }
 
 private:
 };
