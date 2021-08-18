@@ -12,3 +12,6 @@ A unix operating system written from scratch in c / c++
 
 - view the future plans of [pranaos](https://github.com/pranaOS/pranaOS/blob/master/plans/plans.pdf)
 
+# Social Media:
+- [discord](https://discord.gg/XmpBTmy9Bz)
+- [twitter](https://twitter.com/os_prana)
