@@ -23,12 +23,9 @@ DockView::DockView(UI::View* superview, UI::Window* window, const LG::Rect& fram
 
 void DockView::display(const LG::Rect& rect)
 {
-    // FIXME: Rendering is a bit studip now, will rewrite it
-    //        completely when stackview is available.
     LG::Context ctx = UI::graphics_current_context();
     ctx.add_clip(rect);
 
-    // Drawing fast-launch icons
     auto fast_access_dock = LG::Rect(padding(), 0, padding() + 40 * m_fast_launch_entites.size(), dock_view_height());
     auto opened_apps_dock = LG::Rect(fast_access_dock.width() + 2 * padding(), 0, bounds().width() - fast_access_dock.width() - 3 * padding(), dock_view_height());
 
@@ -38,7 +35,6 @@ void DockView::display(const LG::Rect& rect)
     ctx.set_fill_color(LG::Color(255, 255, 255, 135));
     ctx.fill_rounded(fast_access_dock, LG::CornerMask(8));
 
-    // Drawing launched icons
     int offsetx = fast_access_dock.min_x() + padding();
     for (auto& entity : m_fast_launch_entites) {
         ctx.draw({ offsetx, 2 }, entity.icon());
@@ -74,7 +70,6 @@ DockEntity* DockView::find_entity(int window_id)
 
 void DockView::new_entity(int window_id)
 {
-    // Don't add an icon of dock (self).
     if (window()->id() != window_id) {
         m_dock_entites.push_back(DockEntity(window_id));
     }
@@ -105,9 +100,8 @@ void DockView::launch(const FastLaunchEntity& ent)
     }
 }
 
-void DockView::click_began(const LG::Point<int>& location)
+void DockView::mouse_down(const LG::Point<int>& location)
 {
-    // Check if it is a tap on fast-launch icons
     int offsetx = 8;
     for (auto& entity : m_fast_launch_entites) {
         auto it = LG::Rect(offsetx, 2, 32, 32);

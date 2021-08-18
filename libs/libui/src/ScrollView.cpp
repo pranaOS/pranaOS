@@ -21,13 +21,6 @@ ScrollView::ScrollView(View* superview, Window* window, const LG::Rect& frame)
 {
 }
 
-// void ScrollView::display(const LG::Rect& rect)
-// {
-//     Context ctx(*this);
-//     ctx.add_clip(rect);
-
-// }
-
 void ScrollView::mouse_wheel_event(int wheel_data)
 {
     m_content_offset.offset_by(0, wheel_data * 10);
@@ -57,7 +50,7 @@ void ScrollView::receive_mouse_move_event(MouseEvent& event)
 {
     auto location = LG::Point<int>(event.x(), event.y());
     if (!is_hovered()) {
-        hover_begin(location);
+        mouse_entered(location);
     }
 
     foreach_subview([&](View& subview) -> bool {
