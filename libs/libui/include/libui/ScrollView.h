@@ -5,8 +5,6 @@
  */
 
 #pragma once
-
-// includes
 #include <libg/Size.h>
 #include <libui/Constants/Layout.h>
 #include <libui/EdgeInsets.h>
@@ -40,6 +38,9 @@ protected:
 
     void display_scroll_indicators(LG::Context&);
 
+    // The location of a subview relativly to its superview could
+    // differ from it's frame() (e.g when scrolling), to determine
+    // the right location we ask the superview to return it.
     virtual std::optional<LG::Point<int>> subview_location(const View& subview) const override;
 
 private:
@@ -50,4 +51,4 @@ private:
     LG::Point<int> m_content_offset {};
 };
 
-} 
+} // namespace UI

@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-// includes
 #include <libg/Color.h>
 #include <libui/Context.h>
 #include <libui/ScrollView.h>
@@ -115,7 +114,7 @@ void ScrollView::receive_display_event(DisplayEvent& event)
     did_display(event.bounds());
 
     if (!has_superview()) {
-
+        // Only superview sends invalidate_message to server.
         bool success = send_invalidate_message_to_server(event.bounds());
     }
 
@@ -146,4 +145,4 @@ void ScrollView::display_scroll_indicators(LG::Context& ctx)
     ctx.fill(LG::Rect(start_x, start_y, 4, line_height));
 }
 
-} 
+} // namespace UI

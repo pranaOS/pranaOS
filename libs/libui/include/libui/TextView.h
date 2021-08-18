@@ -5,8 +5,6 @@
  */
 
 #pragma once
-
-// includes
 #include <libg/Size.h>
 #include <libui/Constants/Layout.h>
 #include <libui/EdgeInsets.h>
@@ -48,4 +46,4 @@ private:
     LG::Font m_font { LG::Font::system_font() };
 };
 
-} 
+} // namespace UI

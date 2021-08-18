@@ -5,7 +5,6 @@
  */
 
 #pragma once
-
 #include <libg/Font.h>
 #include <libui/Constants/Text.h>
 #include <libui/Control.h>
