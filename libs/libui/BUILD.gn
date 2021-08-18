@@ -13,6 +13,7 @@ pranaOS_static_library("libui") {
     "src/ScrollView.cpp",
     "src/StackView.cpp",
     "src/View.cpp",
+    "src/TextView.cpp",
     "src/ViewController.cpp",
     "src/Window.cpp",
     "src/main.cpp",
