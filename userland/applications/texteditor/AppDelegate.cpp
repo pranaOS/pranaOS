@@ -1,15 +1,23 @@
+// includes
 #include "TextEditorView.h"
 #include "TextEditorViewController.h"
 #include <csignal>
 #include <libui/AppDelegate.h>
+#include "TextEditorView.h"
+#include <pthread.h>
+#include <signal.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/ioctl.h>
+#include <unistd.h>
 
 static int shell_pid = 0;
 
-int setup_shell()
+int setup_texteditor()
 {
-    int ptmx = posix_openpt(O_RDONLY);
+    int setup = posix_openpt(O_RDONLY);
     printf("hello");
-    return ptmx;
+    return setup;
 }
 
 class AppDelegate : public UI::AppDelegate {
@@ -22,13 +30,14 @@ public:
 
     bool application() override
     {
-        int ptmx = setup_shell();
+        int setup = setup_texteditor();
         auto& window = std::pranaos::construct<UI::Window>(window_size(), icon_path());
-        auto& superview = window.create_superview<TextEditorView, TextEditorViewController>(ptmx);
+        auto& superview = window.create_superview<TextEditorView, TextEditorViewController>(setup);
         window.set_focused_view(superview);
         window.set_frame_style(LG::Color(0x181818));
         window.set_title("TextEditor");
         return true;
+
     }
 
 private:

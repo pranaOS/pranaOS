@@ -26,6 +26,8 @@ public:
     inline LG::Point<int> pos_on_screen() const { return { (int)m_col * glyph_width() + padding(), (int)m_row * glyph_height() + padding() }; }
     inline int pos_in_data() const { return m_max_cols * m_row + m_col; }
 
+
+//    void _texteditor_loop_start();
     void put_char(char c);
     void put_text(const std::string& data);
 
