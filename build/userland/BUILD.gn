@@ -99,13 +99,14 @@ group("userland") {
     "//userland/tests/testlibcxx:testlibcxx",
     "//userland/tests/utester:utester",
     "//userland/utilities/cat:cat",
+    "//userland/utilities/clear:clear",
     "//userland/utilities/kill:kill",
     "//userland/utilities/ls:ls",
     "//userland/utilities/mkdir:mkdir",
+    "//userland/utilities/pyramids:pyramids",
     "//userland/utilities/rm:rm",
     "//userland/utilities/rmdir:rmdir",
     "//userland/utilities/touch:touch",
     "//userland/utilities/uname:uname",
-    "//userland/utilities/pyramids:pyramids",
   ]
 }
