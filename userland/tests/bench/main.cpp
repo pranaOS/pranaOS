@@ -36,11 +36,12 @@ void loop_function()
         bench_pngloader();
         printf("[BENCH END TEST]\n\n");
         fflush(stdout);
-        return 0;
     }
 }
 
 int main(int argc, char** argv)
 {
     loop_function();
+
+    return 0;
 }
