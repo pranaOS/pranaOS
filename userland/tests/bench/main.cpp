@@ -28,11 +28,19 @@ void bench_kernel()
     }
 }
 
+
+void loop_function()
+{
+    for (;;) {
+        bench_kernel();
+        bench_pngloader();
+        printf("[BENCH END TEST]\n\n");
+        fflush(stdout);
+        return 0;
+    }
+}
+
 int main(int argc, char** argv)
 {
-    bench_kernel();
-    bench_pngloader();
-    printf("[BENCH END]\n\n");
-    fflush(stdout);
-    return 0;
+    loop_function();
 }
