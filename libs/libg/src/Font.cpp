@@ -15,7 +15,6 @@
 
 namespace LG {
 
-/* SerenityOS font header */
 struct [[gnu::packed]] FontFileHeader {
     char magic[4];
     uint8_t glyph_width;

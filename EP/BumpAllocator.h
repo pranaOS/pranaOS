@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, Ali Mohammad Pur <mpfard@PRANAOS.org>
+ * Copyright (c) 2021, Krisna Pranav
  *
  * SPDX-License-Identifier: BSD-2-Clause
  */
