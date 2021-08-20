@@ -28,6 +28,7 @@ public:
         view().set_background_color(LG::Color(255, 255, 255, 135));
         view().new_fast_launch_entity("/res/icons/apps/about.icon", "/Applications/about.app/Content/about"); // FIXME: Parse some init file
         view().new_fast_launch_entity("/res/icons/apps/terminal.icon", "/Applications/terminal.app/Content/terminal");
+        view().new_fast_launch_entity("/res/icons/apps/terminal.icon", "/Applications/texteditor.app/Content/texteditor");
         view().new_fast_launch_entity("/res/icons/apps/activity_monitor.icon", "/Applications/activity_monitor.app/Content/activity_monitor");
         view().new_fast_launch_entity("/res/icons/apps/calculator.icon", "/Applications/calculator.app/Content/calculator");
         view().set_needs_display();

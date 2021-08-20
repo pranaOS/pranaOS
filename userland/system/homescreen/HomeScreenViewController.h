@@ -33,6 +33,7 @@ public:
         view().new_grid_entity("Terminal", "/res/icons/apps/terminal.icon", "/Applications/terminal.app/Content/terminal");
         view().new_grid_entity("Monitor", "/res/icons/apps/activity_monitor.icon", "/Applications/activity_monitor.app/Content/activity_monitor");
         view().new_grid_entity("Calculator", "/res/icons/apps/calculator.icon", "/Applications/calculator.app/Content/calculator");
+        view().new_grid_entity("TextEditor", "/res/icons/apps/terminal.icon", "/Applications/texteditor.app/Content/texteditor");
     }
 
     virtual void view_did_load() override

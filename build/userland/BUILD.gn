@@ -93,6 +93,7 @@ group("userland") {
     "//userland/applications/activity_monitor:activity_monitor",
     "//userland/applications/calculator:calculator",
     "//userland/applications/terminal:terminal",
+    "//userland/applications/texteditor:texteditor",
     "//userland/shell/onesh:onesh",
     "//userland/system/dock:dock",
     "//userland/system/homescreen:homescreen",
