@@ -1,5 +1,4 @@
 #pragma once
-
 #include "FastLaunchEntity.h"
 #include "HomeScreenEntity.h"
 #include <libg/Font.h>

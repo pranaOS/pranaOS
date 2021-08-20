@@ -23,4 +23,4 @@ public:
     virtual void popup_rect(LG::Rect& r) { }
 };
 
-} 
+} // namespace WinServer

@@ -1,0 +1,5 @@
+APPS += ONESH
+
+ONESH_NAME = onesh
+ONESH_LIBS = c
+ONESH_INSTALL_PATH = bin/

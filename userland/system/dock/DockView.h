@@ -1,5 +1,4 @@
 #pragma once
-
 #include "DockEntity.h"
 #include "FastLaunchEntity.h"
 #include <libg/Font.h>

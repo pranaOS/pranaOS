@@ -1,3 +1,7 @@
+# Copyright 2021 Nikita Melekhin. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
 import os
 import glob
 import sys
@@ -24,7 +28,11 @@ config['time'] = datetime.today().strftime('%Y-%m-%d %H:%M:%S')
 # Printing to the file
 def print_header(config_file):
     config_file.write(
-        """
+        """#
+# Automatically generated file; DO NOT EDIT.
+# pranaOS Kernel Configuration
+#
+
 """)
 
 

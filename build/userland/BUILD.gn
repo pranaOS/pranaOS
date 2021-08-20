@@ -1,3 +1,7 @@
+# Copyright 2021 Nikita Melekhin. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
 uland_c_flags = [
   "-Werror",
   "-Wno-address-of-packed-member",
@@ -88,9 +92,8 @@ group("userland") {
     "//userland/applications/about:about",
     "//userland/applications/activity_monitor:activity_monitor",
     "//userland/applications/calculator:calculator",
-    "//userland/applications/texteditor:texteditor",
     "//userland/applications/terminal:terminal",
-    "//userland/shell/pranash:pranash",
+    "//userland/shell/onesh:onesh",
     "//userland/system/dock:dock",
     "//userland/system/homescreen:homescreen",
     "//userland/system/init:init",
@@ -99,11 +102,9 @@ group("userland") {
     "//userland/tests/testlibcxx:testlibcxx",
     "//userland/tests/utester:utester",
     "//userland/utilities/cat:cat",
-    "//userland/utilities/clear:clear",
     "//userland/utilities/kill:kill",
     "//userland/utilities/ls:ls",
     "//userland/utilities/mkdir:mkdir",
-    "//userland/utilities/pyramids:pyramids",
     "//userland/utilities/rm:rm",
     "//userland/utilities/rmdir:rmdir",
     "//userland/utilities/touch:touch",
