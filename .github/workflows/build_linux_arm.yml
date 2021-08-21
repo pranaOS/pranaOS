@@ -29,10 +29,6 @@ jobs:
           unzip latest
           sudo mv gn /usr/local/bin
 
-      - name: Mobile
-        run: |
-          ./build.sh --target_cpu aarch32
-
       - name: Building
         run: |
           cd out
