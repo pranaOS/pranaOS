@@ -30,6 +30,5 @@ jobs:
           sudo mv gn /usr/local/bin
 
       - name: Building
-        run: |
-          cd out
-          ./build.sh
+        shell: bash
+        run: ninja
