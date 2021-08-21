@@ -103,7 +103,7 @@ group("userland") {
     "//userland/tests/testlibcxx:testlibcxx",
     "//userland/tests/utester:utester",
     "//userland/utilities/cat:cat",
-    "//userland/utilities/clear:clear",
+    "//userland/utilities/echo:echo",
     "//userland/utilities/kill:kill",
     "//userland/utilities/ls:ls",
     "//userland/utilities/mkdir:mkdir",
