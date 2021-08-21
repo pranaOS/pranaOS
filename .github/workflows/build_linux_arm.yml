@@ -31,5 +31,4 @@ jobs:
 
       - name: Building
         run: |
-          cd out
           ./build.sh
