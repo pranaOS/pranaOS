@@ -31,7 +31,7 @@ public:
         int rc = uname(&uts);
 
         auto& label = view().add_subview<UI::Label>(LG::Rect(0, 0, 16, 16));
-        label.set_text_color(LG::Color::LightSystemText);
+        label.set_text_color(LG::Color::LightSystemBlue);
         label.set_text("pranaOS");
         label.set_font(LG::Font::system_bold_font());
         label.set_width(label.preferred_width());
