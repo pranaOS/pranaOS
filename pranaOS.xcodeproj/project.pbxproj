@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		9F34E9BA26D3B96900551767 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F34E9B926D3B96900551767 /* main.cpp */; };
+		9F34E9C026D3BE5500551767 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 9F34E9BE26D3BE5500551767 /* main.c */; };
 		9F77B04B26CF8D6600C106D2 /* Screen.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F77AA3F26CF8D6200C106D2 /* Screen.cpp */; };
 		9F77B04C26CF8D6600C106D2 /* Window.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F77AA4126CF8D6200C106D2 /* Window.cpp */; };
 		9F77B04D26CF8D6600C106D2 /* WindowFrame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F77AA4226CF8D6200C106D2 /* WindowFrame.cpp */; };
@@ -495,6 +496,9 @@
 		9F34E9B326D3B8DF00551767 /* BUILD.gn */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = BUILD.gn; sourceTree = "<group>"; };
 		9F34E9B726D3B8EA00551767 /* .info.mk */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .info.mk; sourceTree = "<group>"; };
 		9F34E9B926D3B96900551767 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		9F34E9BD26D3BE5500551767 /* .info.mk */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .info.mk; sourceTree = "<group>"; };
+		9F34E9BE26D3BE5500551767 /* main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
+		9F34E9BF26D3BE5500551767 /* BUILD.gn */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = BUILD.gn; sourceTree = "<group>"; };
 		9F56DF9F26CFD58D007E7135 /* FUNDING.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = FUNDING.yml; sourceTree = "<group>"; };
 		9F56DFA026CFD58D007E7135 /* pr.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = pr.yml; sourceTree = "<group>"; };
 		9F56DFA226CFD58D007E7135 /* buildcmake.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = buildcmake.yml; sourceTree = "<group>"; };
@@ -1889,6 +1893,16 @@
 				9F34E9B926D3B96900551767 /* main.cpp */,
 			);
 			path = cmdcal;
+			sourceTree = "<group>";
+		};
+		9F34E9BC26D3BE1100551767 /* texteditor */ = {
+			isa = PBXGroup;
+			children = (
+				9F34E9BD26D3BE5500551767 /* .info.mk */,
+				9F34E9BF26D3BE5500551767 /* BUILD.gn */,
+				9F34E9BE26D3BE5500551767 /* main.c */,
+			);
+			path = texteditor;
 			sourceTree = "<group>";
 		};
 		9F56DF9E26CFD58D007E7135 /* .github */ = {
@@ -3912,6 +3926,7 @@
 		9F77ACFB26CF8D6400C106D2 /* utilities */ = {
 			isa = PBXGroup;
 			children = (
+				9F34E9BC26D3BE1100551767 /* texteditor */,
 				9F34E9B226D3B8B600551767 /* cmdcal */,
 				9F77ACFC26CF8D6400C106D2 /* cat */,
 				9F77AD0026CF8D6400C106D2 /* touch */,
@@ -7362,6 +7377,7 @@
 				9F77B20B26CF8D8700C106D2 /* stage3_entry.s in Sources */,
 				9F77B08226CF8D6600C106D2 /* PNGLoader.cpp in Sources */,
 				9F77B08A26CF8D6600C106D2 /* MenuBar.cpp in Sources */,
+				9F34E9C026D3BE5500551767 /* main.c in Sources */,
 				9F77B0ED26CF8D6700C106D2 /* dentry.c in Sources */,
 				9F77B06426CF8D6600C106D2 /* system.c in Sources */,
 				9F77B0A826CF8D6600C106D2 /* rtc.c in Sources */,
