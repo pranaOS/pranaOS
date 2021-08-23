@@ -7,12 +7,12 @@
 #ifndef _KERNEL_ALGO_BITMAP_H
 #define _KERNEL_ALGO_BITMAP_H
 
+// includes
 #include <libkern/types.h>
 
-struct bitmap
-{
-  uint8_t* data;
-  uint32_t len;
+struct bitmap {
+    uint8_t* data;
+    uint32_t len;
 };
 typedef struct bitmap bitmap_t;
 
@@ -24,4 +24,5 @@ int bitmap_set(bitmap_t bitmap, int where);
 int bitmap_unset(bitmap_t bitmap, int where);
 int bitmap_set_range(bitmap_t bitmap, int start, int len);
 int bitmap_unset_range(bitmap_t bitmap, int start, int len);
-#endif //_KERNEL_ALGO_BITMAP_H
+
+#endif 
