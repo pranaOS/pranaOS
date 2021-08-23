@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9F34E9BA26D3B96900551767 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F34E9B926D3B96900551767 /* main.cpp */; };
 		9F77B04B26CF8D6600C106D2 /* Screen.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F77AA3F26CF8D6200C106D2 /* Screen.cpp */; };
 		9F77B04C26CF8D6600C106D2 /* Window.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F77AA4126CF8D6200C106D2 /* Window.cpp */; };
 		9F77B04D26CF8D6600C106D2 /* WindowFrame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F77AA4226CF8D6200C106D2 /* WindowFrame.cpp */; };
@@ -471,7 +472,6 @@
 		9F77B21826CF8D8700C106D2 /* port.c in Sources */ = {isa = PBXBuildFile; fileRef = 9F77B03F26CF8D6600C106D2 /* port.c */; };
 		9F77B21926CF8D8700C106D2 /* stage2.c in Sources */ = {isa = PBXBuildFile; fileRef = 9F77B04426CF8D6600C106D2 /* stage2.c */; };
 		9F77B21A26CF8D8700C106D2 /* vm.c in Sources */ = {isa = PBXBuildFile; fileRef = 9F77B04726CF8D6600C106D2 /* vm.c */; };
-		9F77B22126CF910D00C106D2 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F77B22026CF910D00C106D2 /* main.cpp */; };
 		9F9A6FDD26CFF18900B53657 /* Directory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F9A6FC326CFF18900B53657 /* Directory.cpp */; };
 		9F9A6FDE26CFF18900B53657 /* File.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F9A6FC926CFF18900B53657 /* File.cpp */; };
 		9F9A6FDF26CFF18900B53657 /* Streams.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F9A6FD126CFF18900B53657 /* Streams.cpp */; };
@@ -491,6 +491,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		9F34E9B126D3B87300551767 /* BUILD.gn */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = BUILD.gn; sourceTree = "<group>"; };
+		9F34E9B326D3B8DF00551767 /* BUILD.gn */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = BUILD.gn; sourceTree = "<group>"; };
+		9F34E9B726D3B8EA00551767 /* .info.mk */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .info.mk; sourceTree = "<group>"; };
+		9F34E9B926D3B96900551767 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		9F56DF9F26CFD58D007E7135 /* FUNDING.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = FUNDING.yml; sourceTree = "<group>"; };
 		9F56DFA026CFD58D007E7135 /* pr.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = pr.yml; sourceTree = "<group>"; };
 		9F56DFA226CFD58D007E7135 /* buildcmake.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = buildcmake.yml; sourceTree = "<group>"; };
@@ -542,7 +546,6 @@
 		9F77AA6926CF8D6200C106D2 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		9F77AA6A26CF8D6200C106D2 /* Compositor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Compositor.cpp; sourceTree = "<group>"; };
 		9F77AA6B26CF8D6200C106D2 /* ResourceManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ResourceManager.h; sourceTree = "<group>"; };
-		9F77AA6C26CF8D6200C106D2 /* BUILD.gn */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = BUILD.gn; sourceTree = "<group>"; };
 		9F77AA6D26CF8D6200C106D2 /* build.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = build.sh; sourceTree = "<group>"; };
 		9F77AA7126CF8D6200C106D2 /* _lib.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = _lib.cpp; sourceTree = "<group>"; };
 		9F77AA7226CF8D6200C106D2 /* _init.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = _init.cpp; sourceTree = "<group>"; };
@@ -1555,9 +1558,6 @@
 		9F77B04826CF8D6600C106D2 /* pde.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pde.h; sourceTree = "<group>"; };
 		9F77B04926CF8D6600C106D2 /* mem_map.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mem_map.h; sourceTree = "<group>"; };
 		9F77B04A26CF8D6600C106D2 /* vm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vm.h; sourceTree = "<group>"; };
-		9F77B21E26CF910D00C106D2 /* BUILD.gn */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = BUILD.gn; sourceTree = "<group>"; };
-		9F77B21F26CF910D00C106D2 /* .info.mk */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .info.mk; sourceTree = "<group>"; };
-		9F77B22026CF910D00C106D2 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		9F9A6FB626CFF18900B53657 /* Connection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Connection.h; sourceTree = "<group>"; };
 		9F9A6FB726CFF18900B53657 /* Repeat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Repeat.h; sourceTree = "<group>"; };
 		9F9A6FB826CFF18900B53657 /* Seek.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Seek.h; sourceTree = "<group>"; };
@@ -1881,6 +1881,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		9F34E9B226D3B8B600551767 /* cmdcal */ = {
+			isa = PBXGroup;
+			children = (
+				9F34E9B326D3B8DF00551767 /* BUILD.gn */,
+				9F34E9B726D3B8EA00551767 /* .info.mk */,
+				9F34E9B926D3B96900551767 /* main.cpp */,
+			);
+			path = cmdcal;
+			sourceTree = "<group>";
+		};
 		9F56DF9E26CFD58D007E7135 /* .github */ = {
 			isa = PBXGroup;
 			children = (
@@ -1912,11 +1922,11 @@
 		9F77AA0626CF8CB200C106D2 = {
 			isa = PBXGroup;
 			children = (
+				9F34E9B126D3B87300551767 /* BUILD.gn */,
 				9F56DF9E26CFD58D007E7135 /* .github */,
 				9F77AD6726CF8D6400C106D2 /* base */,
 				9F77B02226CF8D6600C106D2 /* boot */,
 				9F77AFFB26CF8D6600C106D2 /* build */,
-				9F77AA6C26CF8D6200C106D2 /* BUILD.gn */,
 				9F77AA6D26CF8D6200C106D2 /* build.sh */,
 				9F77AB7726CF8D6300C106D2 /* docs */,
 				9F77AB7C26CF8D6300C106D2 /* kernel */,
@@ -3902,7 +3912,7 @@
 		9F77ACFB26CF8D6400C106D2 /* utilities */ = {
 			isa = PBXGroup;
 			children = (
-				9F77B21D26CF910D00C106D2 /* clear */,
+				9F34E9B226D3B8B600551767 /* cmdcal */,
 				9F77ACFC26CF8D6400C106D2 /* cat */,
 				9F77AD0026CF8D6400C106D2 /* touch */,
 				9F77AD0426CF8D6400C106D2 /* uname */,
@@ -7026,16 +7036,6 @@
 			path = mem;
 			sourceTree = "<group>";
 		};
-		9F77B21D26CF910D00C106D2 /* clear */ = {
-			isa = PBXGroup;
-			children = (
-				9F77B21E26CF910D00C106D2 /* BUILD.gn */,
-				9F77B21F26CF910D00C106D2 /* .info.mk */,
-				9F77B22026CF910D00C106D2 /* main.cpp */,
-			);
-			path = clear;
-			sourceTree = "<group>";
-		};
 		9F9A6FB526CFF18900B53657 /* libio */ = {
 			isa = PBXGroup;
 			children = (
@@ -7210,7 +7210,6 @@
 				9F77B0F426CF8D6700C106D2 /* kthread.c in Sources */,
 				9F77B0A126CF8D6600C106D2 /* pl181.c in Sources */,
 				9F77B04B26CF8D6600C106D2 /* Screen.cpp in Sources */,
-				9F77B22126CF910D00C106D2 /* main.cpp in Sources */,
 				9F77B0E826CF8D6700C106D2 /* helper.c in Sources */,
 				9F77B0E326CF8D6700C106D2 /* mem.c in Sources */,
 				9F77B0F226CF8D6700C106D2 /* dump.c in Sources */,
@@ -7221,6 +7220,7 @@
 				9F77B11726CF8D6700C106D2 /* main.c in Sources */,
 				9F77B21426CF8D8700C106D2 /* display.c in Sources */,
 				9F77B10126CF8D6700C106D2 /* vmm.c in Sources */,
+				9F34E9BA26D3B96900551767 /* main.cpp in Sources */,
 				9F77B0CC26CF8D6700C106D2 /* idt.c in Sources */,
 				9F77B05426CF8D6600C106D2 /* Window.cpp in Sources */,
 				9F77B20E26CF8D8700C106D2 /* switch_to_pm.s in Sources */,
