@@ -1,0 +1,5 @@
+APPS += BASH
+
+BASH_NAME = bash
+BASH_LIBS = c
+BASH_INSTALL_PATH = bin/

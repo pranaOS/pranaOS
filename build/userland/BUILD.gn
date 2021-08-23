@@ -94,7 +94,7 @@ group("userland") {
     "//userland/applications/calculator:calculator",
     "//userland/applications/terminal:terminal",
     "//userland/applications/texteditor:texteditor",
-    "//userland/shell/onesh:onesh",
+    "//userland/shell/bash:bash",
     "//userland/system/dock:dock",
     "//userland/system/homescreen:homescreen",
     "//userland/system/init:init",
