@@ -31,6 +31,7 @@ public:
         view().new_fast_launch_entity("/res/icons/apps/terminal.icon", "/Applications/texteditor.app/Content/texteditor");
         view().new_fast_launch_entity("/res/icons/apps/activity_monitor.icon", "/Applications/activity_monitor.app/Content/activity_monitor");
         view().new_fast_launch_entity("/res/icons/apps/calculator.icon", "/Applications/calculator.app/Content/calculator");
+        view().new_fast_launch_entity("/res/icons/apps/calculator.icon", "/Applications/filemanager.app/Content/filemanager");
         view().set_needs_display();
     }
 
