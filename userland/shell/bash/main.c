@@ -119,7 +119,7 @@ void _cmd_processor()
 
 void _cmd_loop_start()
 {
-    write(1, "$ ", 10);
+    write(1, "$ ", 2);
 }
 
 void _cmd_loop_end()
@@ -149,5 +149,9 @@ int main()
     _cmd_parsed_buffer = malloc(256 * sizeof(char*));
     memcpy(_cmd_app, "/bin/", 5);
     _cmd_loop();
+    // while (1) {
+    //     _cmd_buffer_position = read(0, _cmd_buffer, 256);
+    //     _cmd_buffer[_cmd_buffer_position] = '\0';
+    // }
     return 0;
 }
