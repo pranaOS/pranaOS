@@ -110,7 +110,6 @@ group("userland") {
     "//userland/utilities/kill:kill",
     "//userland/utilities/ls:ls",
     "//userland/utilities/mkdir:mkdir",
-    "//userland/utilities/reboot:reboot",
     "//userland/utilities/rm:rm",
     "//userland/utilities/rmdir:rmdir",
     "//userland/utilities/touch:touch",
