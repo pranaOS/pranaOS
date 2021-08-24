@@ -105,6 +105,7 @@ group("userland") {
     "//userland/tests/utester:utester",
     "//userland/utilities/cat:cat",
     "//userland/utilities/cmdcal:cmdcal",
+    "//userland/utilities/clear:clear",
     "//userland/utilities/echo:echo",
     "//userland/utilities/kill:kill",
     "//userland/utilities/ls:ls",
