@@ -70,6 +70,7 @@ group("libs") {
     "//libs/libcxxabi:libcxxabi",
     "//libs/libfoundation:libfoundation",
     "//libs/libg:libg",
+    "//libs/libnet:libnet",
     "//libs/libui:libui",
   ]
 }
