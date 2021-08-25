@@ -9,4 +9,13 @@
 #define __END_DECLS
 #endif
 
-#endif // _LIBC_SYS_CDEFS_H
+#ifndef __use_instead
+#ifdef __clang__
+#define __use_instead(F) __attribute__((diagnose_if(1, "use " F " instead", \
+    "warning")))
+#elif defined(__GNUC__)
+#define __use_instead(F) __attribute__((warning("use " F " instead")))
+#endif
+#endif
+
+#endif 
