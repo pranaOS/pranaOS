@@ -1,5 +1,0 @@
-APPS += CLEAR
-
-CLEAR_NAME = clear
-CLEAR_LIBS = c
-CLEAR_INSTALL_PATH = bin/
