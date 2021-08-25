@@ -1,4 +1,4 @@
-# Copyright 2021 Krisna Pranav All rights reserved.
+# Copyright 2021 Krisna Pranav. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -30,7 +30,7 @@ def print_header(config_file):
     config_file.write(
         """#
 # Automatically generated file; DO NOT EDIT.
-# pranaOS Kernel Configuration
+# pranaOs kernel config
 #
 
 """)

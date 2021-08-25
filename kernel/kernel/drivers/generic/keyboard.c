@@ -3,8 +3,6 @@
  *
  * SPDX-License-Identifier: BSD-2-Clause
  */
-
-// includes
 #include <drivers/generic/keyboard.h>
 #include <drivers/generic/keyboard_mappings/scancode_set1.h>
 #include <fs/devfs/devfs.h>
@@ -21,6 +19,7 @@ static uint32_t _gkeyboard_last_scancode = KEY_UNKNOWN;
 
 static key_t _generic_keyboard_apply_modifiers(key_t key);
 
+/* Simple struct to store the alternative key when a modifier key is presed. */
 struct alternative_key {
     key_t old;
     key_t new;
@@ -79,6 +78,7 @@ void generic_emit_key_set1(uint32_t scancode)
     key_t key;
     kbd_packet_t packet;
 
+    /* Add modifiers */
     if (scancode & 0x80) {
         scancode -= 0x80;
         key = generic_keyboard_get_keycode_set1(scancode);
@@ -127,6 +127,8 @@ void generic_emit_key_set1(uint32_t scancode)
         default:
             key = _generic_keyboard_apply_modifiers(key);
             packet.key = key;
+            /* FIXME: ifdef here to support console mode */
+            /* tty_eat_key(key); */
         }
     }
 

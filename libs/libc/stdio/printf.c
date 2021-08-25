@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021, Krisna Pranav
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+ */
 #include "_internal.h"
 #include <errno.h>
 #include <stdarg.h>
@@ -313,7 +318,7 @@ static int putch_callback_stream(char c, char* buf_base, size_t* written, void* 
     if (!stream) {
         return -1;
     }
-    return putc(c, stream);
+    return fputc(c, stream);
 }
 
 static int vfprintf(FILE* stream, const char* format, va_list arg)

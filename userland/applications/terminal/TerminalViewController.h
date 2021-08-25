@@ -1,8 +1,7 @@
 /*
- * Copyright (C) 2020-2021 Nikita Melekhin. All rights reserved.
+ * Copyright (c) 2021, Krisna Pranav
  *
- * Use of this source code is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ * SPDX-License-Identifier: BSD-2-Clause
  */
 
 #pragma once

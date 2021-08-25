@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021, Krisna Pranav
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+ */
 #include <string.h>
 
 #ifdef __i386__
@@ -8,7 +13,7 @@ void* memset(void* dest, int fill, size_t nbytes)
 
     return dest;
 }
-#endif 
+#endif //__i386__
 
 void* memmove(void* dest, const void* src, size_t nbytes)
 {
@@ -23,6 +28,16 @@ void* memmove(void* dest, const void* src, size_t nbytes)
     return dest;
 }
 
+/* This optimized version of memcpy uses 32 bit chunks to copy over data on
+   the 32 bit architecture this library is built for. If this function gets
+   used on a 64 bit arch, be sure to use 8 byte chunks so each chunk fits
+   in a single register. The important part is this should be compiled with
+   atleast -O1 or -Os, because -O0 just makes this function too big for what
+   it does.
+
+   GCC does a better job at optimizing this if the pointers are restricted,
+   making the copying part have less instructions. Clang on the other hand
+   does not really change anything if the pointers are restricted or not. */
 void* memcpy(void* __restrict dest, const void* __restrict src, size_t nbytes)
 {
     size_t chunks, rest, i;
@@ -38,6 +53,8 @@ void* memcpy(void* __restrict dest, const void* __restrict src, size_t nbytes)
 
 skip_chunks:
 
+    /* Multiplying chunks by 4 will give us the offset of the 'rest' bytes,
+       which were not copied over along with the 4 byte chunks. */
     chunks <<= 2;
 
     for (i = 0; i < rest; i++)
@@ -65,6 +82,7 @@ int memcmp(const void* src1, const void* src2, size_t nbytes)
         first = (uint8_t*)src1 + i;
         second = (uint8_t*)src2 + i;
 
+        /* Return the difference if the byte does not match. */
         if (*first != *second)
             return *first - *second;
     }
@@ -97,6 +115,7 @@ char* strncpy(char* dest, const char* src, size_t nbytes)
     for (i = 0; i < nbytes && src[i] != 0; i++)
         dest[i] = src[i];
 
+    /* Fill the rest with null bytes */
     for (; i < nbytes; i++)
         dest[i] = 0;
 

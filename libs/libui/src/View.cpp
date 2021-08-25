@@ -129,7 +129,6 @@ void View::mouse_up()
 
 void View::mouse_wheel_event(int wheel_data)
 {
-    Logger::debug << "HT" << std::endl;
 }
 
 void View::receive_mouse_move_event(MouseEvent& event)

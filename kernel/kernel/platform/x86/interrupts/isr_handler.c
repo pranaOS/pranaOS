@@ -71,7 +71,7 @@ void isr_handler(trapframe_t* frame)
     }
 
     switch (frame->int_no) {
-
+    /* Division by 0 or kernel trap (if no process). */
     case 0:
         if (proc) {
             log_warn("Crash: division by zero in T%d\n", RUNNING_THREAD->tid);
@@ -85,6 +85,8 @@ void isr_handler(trapframe_t* frame)
         }
         break;
 
+    /* Debug, non-maskable interrupt, breakpoint, detected overflow,
+           out of bounds. */
     case 1:
     case 2:
     case 3:
@@ -95,6 +97,7 @@ void isr_handler(trapframe_t* frame)
         system_stop();
         break;
 
+    /* Invalid opcode or kernel trap (if no process). */
     case 6:
         if (proc) {
             log_warn("Crash: invalid opcode in %d tid\n", RUNNING_THREAD->tid);
@@ -107,10 +110,12 @@ void isr_handler(trapframe_t* frame)
         }
         break;
 
+    /* No coprocessor */
     case 7:
         fpu_handler();
         break;
 
+    /* Double fault and other. */
     case 8:
     case 9:
     case 10:
@@ -149,6 +154,8 @@ void isr_handler(trapframe_t* frame)
         system_stop();
     }
 
+    /* When we are leaving the interrupt handler, we want to jump back into
+       user space and enable the x86 PIC again */
     cpu_leave_kernel_space();
     system_enable_interrupts_only_counter();
 }

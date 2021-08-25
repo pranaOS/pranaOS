@@ -10,7 +10,7 @@
 #include <drivers/x86/display.h>
 #include <platform/x86/idt.h>
 
-void irq_handler(trapframe_t *tf);
+void irq_handler(trapframe_t* tf);
 void irq_empty_handler();
 
 #endif

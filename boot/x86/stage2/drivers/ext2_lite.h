@@ -1,7 +1,6 @@
 #ifndef STAGE2_EXT2_LITE
 #define STAGE2_EXT2_LITE
 
-// includes
 #include "../types.h"
 #include "drive_desc.h"
 #include "fs_desc.h"
@@ -49,6 +48,7 @@ typedef struct {
     uint8_t prealloc_blocks;
     uint8_t prealloc_dir_blocks;
 
+    // current jurnalling is unsupported
     uint8_t unused[1024 - 206];
 } superblock_t;
 
@@ -114,11 +114,11 @@ typedef struct {
     uint16_t rec_len;
     uint8_t name_len;
     uint8_t file_type;
-    char* name; 
+    char* name; // may be a problematic for 64bit versions
 } dir_entry_t;
 
 int ext2_lite_init(drive_desc_t* drive_desc, fs_desc_t* fs_desc);
 int ext2_lite_get_inode(drive_desc_t* drive_desc, char* path, inode_t* file_inode);
 int ext2_lite_read(drive_desc_t* drive_desc, char* path, uint8_t* buf, uint32_t from, uint32_t len);
 
-#endif 
+#endif // STAGE2_EXT2_LITE

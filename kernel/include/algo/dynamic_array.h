@@ -4,17 +4,24 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
+/**
+ * !!! ALERT !!!
+ *  
+ * After each push, your result pointers, you have got from get() could be broken!
+ * For now, it's better to avoid using of dynamic array!
+ * Need to be fixed.
+ */
+
 #ifndef _KERNEL_ALGO_DYNAMIC_ARRAY_H
 #define _KERNEL_ALGO_DYNAMIC_ARRAY_H
 
-// includes
 #include <libkern/types.h>
 
 struct dynamic_array {
     void* data;
-    uint32_t capacity; 
-    uint32_t size; 
-    uint32_t element_size;
+    uint32_t capacity; /* current allocated memory */
+    uint32_t size; /* number of elements in vector */
+    uint32_t element_size; /* size of elements in bytes */
 };
 typedef struct dynamic_array dynamic_array_t;
 
@@ -27,4 +34,4 @@ int dynamic_array_push(dynamic_array_t* v, void* element);
 int dynamic_array_pop(dynamic_array_t* v);
 int dynamic_array_clear(dynamic_array_t* v);
 
-#endif 
+#endif // _KERNEL_ALGO_DYNAMIC_ARRAY_H

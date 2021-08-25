@@ -1,4 +1,4 @@
-# Copyright 2021 Krisna Pranav All rights reserved.
+# Copyright 2021 Krisna Pranav. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -20,7 +20,7 @@ uland_cc_flags = [
   "-fno-sized-deallocation",
   "-fno-rtti",
   "-fno-exceptions",
-  "-D_LIBCXX_BUILD_PRANAOS_EXTENSIONS",
+  "-D_LIBCXX_BUILD_ONEOS_EXTENSIONS",
 ]
 
 uland_asm_flags = []
@@ -92,9 +92,7 @@ group("userland") {
     "//userland/applications/about:about",
     "//userland/applications/activity_monitor:activity_monitor",
     "//userland/applications/calculator:calculator",
-    "//userland/applications/filemanager:filemanager",
     "//userland/applications/terminal:terminal",
-    "//userland/applications/texteditor:texteditor",
     "//userland/shell/bash:bash",
     "//userland/system/dock:dock",
     "//userland/system/homescreen:homescreen",
@@ -104,9 +102,6 @@ group("userland") {
     "//userland/tests/testlibcxx:testlibcxx",
     "//userland/tests/utester:utester",
     "//userland/utilities/cat:cat",
-    "//userland/utilities/cmdcal:cmdcal",
-    "//userland/utilities/clear:clear",
-    "//userland/utilities/echo:echo",
     "//userland/utilities/kill:kill",
     "//userland/utilities/ls:ls",
     "//userland/utilities/mkdir:mkdir",

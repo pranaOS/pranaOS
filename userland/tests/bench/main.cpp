@@ -30,10 +30,6 @@ void bench_kernel()
 
 int main(int argc, char** argv)
 {
-    // for (;;) {
-    //     bench_kernel();
-    //     printf("THIS IS A TEST!");
-    // }
     bench_kernel();
     bench_pngloader();
     printf("[BENCH END]\n\n");
