@@ -101,6 +101,7 @@ group("userland") {
     "//userland/tests/bench:bench",
     "//userland/tests/testlibcxx:testlibcxx",
     "//userland/tests/utester:utester",
+    "//userland/tests/fontcompiler:fontcompiler",
     "//userland/utilities/cat:cat",
     "//userland/utilities/kill:kill",
     "//userland/utilities/ls:ls",
