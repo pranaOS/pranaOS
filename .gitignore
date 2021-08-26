@@ -2,4 +2,5 @@
 .vscode/
 .idea/
 cmake-build-debug/
+mountpoint/
 out/
