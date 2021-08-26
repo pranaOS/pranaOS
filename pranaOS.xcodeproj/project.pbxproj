@@ -472,6 +472,7 @@
 		9FEEEEEE26D777090097BD77 /* port.c in Sources */ = {isa = PBXBuildFile; fileRef = 9FEEECEF26D777080097BD77 /* port.c */; };
 		9FEEEEEF26D777090097BD77 /* stage2.c in Sources */ = {isa = PBXBuildFile; fileRef = 9FEEECF426D777080097BD77 /* stage2.c */; };
 		9FEEEEF026D777090097BD77 /* vm.c in Sources */ = {isa = PBXBuildFile; fileRef = 9FEEECF726D777080097BD77 /* vm.c */; };
+		9FEEEEF326D77A170097BD77 /* slab.c in Sources */ = {isa = PBXBuildFile; fileRef = 9FEEEEF226D77A170097BD77 /* slab.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -1561,6 +1562,7 @@
 		9FEEED1D26D777080097BD77 /* connection.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = connection.py; sourceTree = "<group>"; };
 		9FEEED1E26D777080097BD77 /* connc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = connc; sourceTree = "<group>"; };
 		9FEEED1F26D777080097BD77 /* __main__.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = __main__.py; sourceTree = "<group>"; };
+		9FEEEEF226D77A170097BD77 /* slab.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = slab.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -6380,6 +6382,7 @@
 			children = (
 				9FEEEC4926D777070097BD77 /* malloc.h */,
 				9FEEEC4A26D777070097BD77 /* malloc.c */,
+				9FEEEEF226D77A170097BD77 /* slab.c */,
 			);
 			path = malloc;
 			sourceTree = "<group>";
@@ -7233,6 +7236,7 @@
 				9FEEED7426D777080097BD77 /* shared_buffer.c in Sources */,
 				9FEEED5B26D777080097BD77 /* pic.c in Sources */,
 				9FEEEEB126D777090097BD77 /* pthread.c in Sources */,
+				9FEEEEF326D77A170097BD77 /* slab.c in Sources */,
 				9FEEED3626D777080097BD77 /* pl050_keyboard.c in Sources */,
 				9FEEED4C26D777080097BD77 /* init.c in Sources */,
 				9FEEED3526D777080097BD77 /* fpuv4.c in Sources */,
