@@ -1,5 +1,9 @@
-#ifndef _LIBC_STDINT_H
-#define _LIBC_STDINT_H
+//#ifndef _LIBC_STDINT_H
+//#define _LIBC_STDINT_H
+
+#ifndef _LIBC_STDBOOL_H
+#define _LIBC_STDBOOL_H
+
 
 #include <sys/cdefs.h>
 
@@ -14,4 +18,4 @@ __BEGIN_DECLS
 
 __END_DECLS
 
-#endif //_LIBC_STDINT_H
+#endif 
