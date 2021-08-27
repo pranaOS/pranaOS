@@ -74,7 +74,6 @@ group("libs") {
     "//libs/libcxxabi:libcxxabi",
     "//libs/libfoundation:libfoundation",
     "//libs/libg:libg",
-    "//libs/libmath:libmath",
     "//libs/libui:libui",
   ]
 }

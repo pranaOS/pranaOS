@@ -1,8 +1,0 @@
-import("//build/libs/TEMPLATE.gni")
-
-pranaOS_static_library("libmath") {
-  sources = [
-      "Anchor.h",
-  ]
-  configs = [ "//build/libs:libcxx_flags" ]
-}
