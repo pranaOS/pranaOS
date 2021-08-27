@@ -20,6 +20,7 @@ Window::Window(int connection_id, int id, const CreateWindowMessage& msg)
 
     // Creating standard menubar directory entry.
     m_menubar_content.push_back(MenuDir("App", 0));
+    m_menubar_content[0].add_item(PopupItem { PopupItem::InternalId, "About", [this](int) { WindowManager::the().minimize_window(*this); } });
     m_menubar_content[0].add_item(PopupItem { PopupItem::InternalId, "Minimize others", [this](int) { WindowManager::the().minimize_windows([this](Window* win) { return win != this; }); } });
     m_menubar_content[0].add_item(PopupItem { PopupItem::InternalId, "Minimize", [this](int) { WindowManager::the().minimize_window(*this); } });
     m_menubar_content[0].add_item(PopupItem { PopupItem::InternalId, "Close", [this](int) { WindowManager::the().close_window(*this); } });
