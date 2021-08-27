@@ -103,6 +103,7 @@ group("userland") {
     "//userland/tests/utester:utester",
     "//userland/tests/fontcompiler:fontcompiler",
     "//userland/utilities/cat:cat",
+    "//userland/utilities/echo:echo",
     "//userland/utilities/kill:kill",
     "//userland/utilities/ls:ls",
     "//userland/utilities/mkdir:mkdir",
