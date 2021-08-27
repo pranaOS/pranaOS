@@ -102,7 +102,7 @@ int vsscanf(const char* buf, const char* fmt, va_list arg);
 int sscanf(const char* buf, const char* fmt, ...);
 int scanf(const char* fmt, ...);
 
-int __stream_info(FILE *stream);
+int __stream_info(FILE* stream);
 
 __END_DECLS
 
