@@ -84,10 +84,10 @@ int strcmp(const char* a, const char* b)
         b++;
     }
 
-    if (a < b) {
+    if (*a < *b) {
         return -1;
     }
-    if (a > b) {
+    if (*a > *b) {
         return 1;
     }
     return 0;
@@ -105,10 +105,10 @@ int strncmp(const char* a, const char* b, uint32_t num)
         return 0;
     }
 
-    if (a < b) {
+    if (*a < *b) {
         return -1;
     }
-    if (a > b) {
+    if (*a > *b) {
         return 1;
     }
     return 0;
