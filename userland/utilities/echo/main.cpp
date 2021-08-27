@@ -1,7 +1,17 @@
 #include <stdio.h>
 
-int main()
+int main(int argc, char** argv)
 {
-    printf("hello world");
+    int c;
+    
+    for(int i = 1; i < argc; i++){
+        printf("%s", argv[i]);
+        c = getchar();
+
+        if(i < argc - 1){ 
+            putchar(c);    
+        }
+    }
+
     return 0;
 }
