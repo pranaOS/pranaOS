@@ -8,7 +8,7 @@ public:
     virtual ~AppDelegate() = default;
 
     LG::Size preferred_desktop_window_size() const override { return LG::Size(200, 140); }
-    const char* icon_path() const override { return "/res/icons/apps/about.icon"; }
+    const char* icon_path() const override { return "/res/icons/apps/logo.icon"; }
 
     virtual bool application() override
     {
