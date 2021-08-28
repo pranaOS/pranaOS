@@ -1,7 +1,24 @@
 #include <stdio.h>
+#include <unistd.h>
+
+void setup(void)
+{
+}
+
+void teardown(void)
+{
+}
+
+void test_function(void)
+{
+    for (;;) {
+        char *envvale = "name";
+    }
+}
 
 int main()
 {
-    printf("Hello world");
+    test_function();
+
     return 0;
 }
