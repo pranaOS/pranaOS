@@ -2,6 +2,8 @@ import("//build/libs/TEMPLATE.gni")
 
 pranaOS_static_library("libc") {
   sources = [
+    "arpa/inet.c",
+    "arpa/inet.h",
     "ctype/ctype.c",
     "dirent/dirent.c",
     "init/_lib.c",
