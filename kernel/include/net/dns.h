@@ -1,7 +1,6 @@
 #ifndef NET_DNS_H
 #define NET_DNS_H
 
-// includes
 #include <stdint.h>
 
 #define DNS_FLAG_QUERY 0
@@ -25,8 +24,30 @@ struct dns_packet
 	uint16_t an_count;
 	uint16_t ns_count;
 	uint16_t ar_count;
-
 	uint8_t payload[];
 };
 
-#endif 
+struct dns_name
+{
+	uint8_t len;
+	char name[];
+};
+
+struct dns_question_spec
+{
+	uint16_t qtype;
+	uint16_t qclass;
+};
+
+struct dns_answer_spec
+{
+	uint16_t atype;
+	uint16_t aclass;
+	uint32_t ttl;
+	uint16_t rd_length;
+	uint8_t rdata[];
+};
+
+void getaddrinfo(const char *domain, uint32_t *ip);
+
+#endif
