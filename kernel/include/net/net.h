@@ -1,6 +1,10 @@
-#ifndef NET_H
-#define NET_H
+#ifndef NET_ALPHA_H
+#define NET_ALPHA_H
 
-#include <fs/vfs.h>
+namespace network {
 
-#endif 
+void alpha();
+
+} 
+
+#endif
