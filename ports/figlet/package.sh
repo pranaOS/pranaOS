@@ -15,7 +15,7 @@ cd figlet-2.2.5
 patch -p1 < ../figlet-2.2.5.patch
 
 make clean
-make CC=i686-pc-pranaos-gcc LD=i686-pc-pranaos-gcc
+make CC=i686-elf-g++ LD=i686-elf-g++
 
 sudo mkdir "/mnt/${DISK_NAME}"
 sudo mount -o loop ../../../hdd.img "/mnt/${DISK_NAME}"

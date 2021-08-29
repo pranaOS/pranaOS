@@ -1,0 +1,5 @@
+APPS += HOST
+
+HOST_NAME = host
+HOST_LIBS = c
+HOST_INSTALL_PATH = bin/
