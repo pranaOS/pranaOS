@@ -28,9 +28,12 @@ pranaOS_static_library("libc") {
     "sysdeps/pranaos/generic/shared_buffer.c",
     "sysdeps/unix/$target_cpu/crt0.s",
     "sysdeps/unix/generic/ioctl.c",
+    "ether/if_ether.h",
     "termios/termios.c",
     "time/strftime.c",
     "time/time.c",
+    "include/sys/sockios.h",
+    "sockios/sockios.h",
 
     # private
     "init/_init.c",
