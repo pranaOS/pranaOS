@@ -1,16 +1,8 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
-// #include <arpa/inet.h>
-#include <libc/arpa/inet.h>
-// #include <math.h>
-// #include <sockios.h>
-#include <libc/ether/if_ether.h>
-#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/ioctl.h>
-#include <sys/socket.h>
 #include <unistd.h>
 #include <unistd.h>
 
