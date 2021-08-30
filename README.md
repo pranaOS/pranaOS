@@ -23,3 +23,8 @@ A unix operating system written from scratch in c / c++
 <a href="https://github.com/pranaOS/pranaOS/graphs/contributors">
   <img src="https://contributors-img.web.app/image?repo=pranaOS/pranaOS" />
 </a>
+
+## Projects:
+- [linux](https://github.com/torvalds/linux.git) 
+- [opuntiaOS](https://github.com/opuntiaOS-Project/opuntiaOS) BSD 2-Clause
+- [serenityOS](https://github.com/serenity/SerenityOS) BSD 2-Clause
