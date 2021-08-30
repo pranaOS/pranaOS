@@ -8,7 +8,7 @@ public:
     virtual ~AppDelegate() = default;
 
     LG::Size preferred_desktop_window_size() const override { return LG::Size(200, 140); }
-    const char* icon_path() const override { return "/res/icons/apps/logo.icon"; }
+    const char* icon_path() const override { return "/res/icons/apps/about.icon"; }
 
     virtual bool application() override
     {
@@ -17,7 +17,7 @@ public:
 
         window.set_title("About");
 
-        window.menubar().add_menu("Demo").add_item(UI::MenuItem("Hello", [] { Logger::debug << "Hello!" << std::endl; }));
+        window.menubar().add_menu("Demo").add_item(UI::MenuItem("Say Hello World", [] { Logger::debug << "Hello world in console!" << std::endl; }));
 
         return true;
     }
