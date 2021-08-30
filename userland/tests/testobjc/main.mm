@@ -9,17 +9,34 @@
 #include <libobjc/helpers.h>
 #include <stdio.h>
 
-
 @interface SampleClass : NSObject {
 @public
     int last_val;
 }
-
 + (void)sampleMethod;
-- (void)sampleMethod: int(val);
+- (void)sampleMethod:(int)val;
 - (int)get_last;
 @end
 
+@implementation SampleClass
+
++ (void)sampleMethod
+{
+    printf("Calling Static Method: Hello, from Obj-C!");
+}
+
+- (void)sampleMethod:(int)val
+{
+    last_val = val;
+    printf("Calling Method: Hello, Obj-C! %d", val);
+}
+
+- (int)get_last
+{
+    return last_val;
+}
+
+@end
 
 int main()
 {
