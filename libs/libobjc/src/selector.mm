@@ -55,3 +55,47 @@ static SEL selector_table_add(const char* name, const char* types, bool const_da
 
     return sel;
 }
+
+bool selector_is_valid(SEL sel)
+{
+    return (uintptr_t)selector_pool_start < (uintptr_t)sel && (uintptr_t)sel < (uintptr_t)selector_pool_next;
+}
+
+void selector_table_init()
+{
+    selector_pool_start = selector_pool_start = (struct objc_selector*)malloc(1024);
+}
+
+void selector_add_from_module(struct objc_selector* selectors)
+{
+    for (int i = 0; selectors[i].id; i++) {
+        char* name = (char*)selectors[i].id;
+        const char* types = selectors[i].types;
+        SEL sel = selector_table_add(name, types, CONST_DATA);
+    }
+}
+
+void selector_add_from_class(Class cls)
+{
+    for (struct objc_method_list* ml = cls->methods; ml; ml = ml->method_next) {
+        selector_add_from_method_list(ml);
+    }
+}
+
+SEL sel_registerName(const char* name)
+{
+    if (!name) {
+        return (SEL)NULL;
+    }
+    
+    return selector_table_add(name, 0, VOLATILE_DATA);
+}
+
+
+SEL sel_registerTypedName(const char* name, const char* type)
+{
+    if (!name) {
+        return (SEL)NULL;
+    }
+    return selector_table_add(name, type, VOLATILE_DATA);
+}
