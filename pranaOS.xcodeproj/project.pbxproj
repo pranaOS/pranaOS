@@ -255,6 +255,13 @@
 		9FA7918226DC925300A91F54 /* AppDelegate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9FA7908726DC925200A91F54 /* AppDelegate.cpp */; };
 		9FA7918326DC925300A91F54 /* TerminalView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9FA7908826DC925200A91F54 /* TerminalView.cpp */; };
 		9FA7918426DC925300A91F54 /* AppDelegate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9FA7908C26DC925200A91F54 /* AppDelegate.cpp */; };
+		9FAC5E7B26DCAACB00164859 /* msgsend_x86.S in Sources */ = {isa = PBXBuildFile; fileRef = 9FAC5E7426DCAACB00164859 /* msgsend_x86.S */; };
+		9FAC5E7C26DCAACB00164859 /* msgsend_arch32.S in Sources */ = {isa = PBXBuildFile; fileRef = 9FAC5E7526DCAACB00164859 /* msgsend_arch32.S */; };
+		9FAC5E7D26DCAACB00164859 /* NSObject.mm in Sources */ = {isa = PBXBuildFile; fileRef = 9FAC5E7626DCAACB00164859 /* NSObject.mm */; };
+		9FAC5E7E26DCAACB00164859 /* class.mm in Sources */ = {isa = PBXBuildFile; fileRef = 9FAC5E7726DCAACB00164859 /* class.mm */; };
+		9FAC5E7F26DCAACB00164859 /* memory.mm in Sources */ = {isa = PBXBuildFile; fileRef = 9FAC5E7826DCAACB00164859 /* memory.mm */; };
+		9FAC5E8026DCAACB00164859 /* init.mm in Sources */ = {isa = PBXBuildFile; fileRef = 9FAC5E7926DCAACB00164859 /* init.mm */; };
+		9FAC5E8126DCAACB00164859 /* selector.mm in Sources */ = {isa = PBXBuildFile; fileRef = 9FAC5E7A26DCAACB00164859 /* selector.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -1026,6 +1033,13 @@
 		9FAC5E7026DCA76D00164859 /* selector.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = selector.h; sourceTree = "<group>"; };
 		9FAC5E7126DCA8B900164859 /* objc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = objc.h; sourceTree = "<group>"; };
 		9FAC5E7226DCA97100164859 /* runtime.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = runtime.h; sourceTree = "<group>"; };
+		9FAC5E7426DCAACB00164859 /* msgsend_x86.S */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; path = msgsend_x86.S; sourceTree = "<group>"; };
+		9FAC5E7526DCAACB00164859 /* msgsend_arch32.S */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; path = msgsend_arch32.S; sourceTree = "<group>"; };
+		9FAC5E7626DCAACB00164859 /* NSObject.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NSObject.mm; sourceTree = "<group>"; };
+		9FAC5E7726DCAACB00164859 /* class.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = class.mm; sourceTree = "<group>"; };
+		9FAC5E7826DCAACB00164859 /* memory.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = memory.mm; sourceTree = "<group>"; };
+		9FAC5E7926DCAACB00164859 /* init.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = init.mm; sourceTree = "<group>"; };
+		9FAC5E7A26DCAACB00164859 /* selector.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = selector.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1700,6 +1714,7 @@
 		9FA78D8626DC925000A91F54 /* libobjc */ = {
 			isa = PBXGroup;
 			children = (
+				9FAC5E7326DCAA8100164859 /* src */,
 				9FA78D8726DC925000A91F54 /* BUILD.gn */,
 				9FAC5E6526DC9E3800164859 /* include */,
 			);
@@ -3844,6 +3859,20 @@
 			path = v1;
 			sourceTree = "<group>";
 		};
+		9FAC5E7326DCAA8100164859 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				9FAC5E7726DCAACB00164859 /* class.mm */,
+				9FAC5E7926DCAACB00164859 /* init.mm */,
+				9FAC5E7826DCAACB00164859 /* memory.mm */,
+				9FAC5E7526DCAACB00164859 /* msgsend_arch32.S */,
+				9FAC5E7426DCAACB00164859 /* msgsend_x86.S */,
+				9FAC5E7626DCAACB00164859 /* NSObject.mm */,
+				9FAC5E7A26DCAACB00164859 /* selector.mm */,
+			);
+			path = src;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -3915,6 +3944,7 @@
 				9FA790CD26DC925200A91F54 /* puff.c in Sources */,
 				9FA790CA26DC925200A91F54 /* Responder.cpp in Sources */,
 				9FA7909126DC925200A91F54 /* _lib.cpp in Sources */,
+				9FAC5E7C26DCAACB00164859 /* msgsend_arch32.S in Sources */,
 				9FA7916E26DC925200A91F54 /* makefile in Sources */,
 				9FA7912E26DC925200A91F54 /* signal.c in Sources */,
 				9FA7910F26DC925200A91F54 /* pty_slave.c in Sources */,
@@ -4002,6 +4032,8 @@
 				9FA790D026DC925200A91F54 /* EventLoop.cpp in Sources */,
 				9FA7914926DC925200A91F54 /* main.cpp in Sources */,
 				9FA790A026DC925200A91F54 /* inet.c in Sources */,
+				9FAC5E7E26DCAACB00164859 /* class.mm in Sources */,
+				9FAC5E8126DCAACB00164859 /* selector.mm in Sources */,
 				9FA7914026DC925200A91F54 /* ControlBar.cpp in Sources */,
 				9FA790FD26DC925200A91F54 /* pde.c in Sources */,
 				9FA7910B26DC925200A91F54 /* signal_caller.s in Sources */,
@@ -4062,6 +4094,7 @@
 				9FA7916B26DC925200A91F54 /* main.c in Sources */,
 				9FA7909B26DC925200A91F54 /* time.c in Sources */,
 				9FA7913926DC925200A91F54 /* zoner.c in Sources */,
+				9FAC5E7D26DCAACB00164859 /* NSObject.mm in Sources */,
 				9FA7917326DC925200A91F54 /* main.c in Sources */,
 				9FA7916C26DC925200A91F54 /* lifetime.c in Sources */,
 				9F61FBC226DC9CB000A39113 /* main.mm in Sources */,
@@ -4071,8 +4104,10 @@
 				9FA7910026DC925200A91F54 /* interrupts.s in Sources */,
 				9FA790E926DC925200A91F54 /* init.c in Sources */,
 				9FA7915326DC925200A91F54 /* smm.s in Sources */,
+				9FAC5E8026DCAACB00164859 /* init.mm in Sources */,
 				9FA7910E26DC925200A91F54 /* pty_master.c in Sources */,
 				9FA7911D26DC925200A91F54 /* kassert.c in Sources */,
+				9FAC5E7F26DCAACB00164859 /* memory.mm in Sources */,
 				9FA790A426DC925200A91F54 /* printf.c in Sources */,
 				9FA7916D26DC925200A91F54 /* menu.c in Sources */,
 				9FA7910926DC925200A91F54 /* signal_impl.c in Sources */,
@@ -4096,6 +4131,7 @@
 				9FA790B626DC925200A91F54 /* PixelBitmap.cpp in Sources */,
 				9FA790D126DC925200A91F54 /* driver_manager.c in Sources */,
 				9FA7915B26DC925200A91F54 /* port.c in Sources */,
+				9FAC5E7B26DCAACB00164859 /* msgsend_x86.S in Sources */,
 				9FA790C826DC925200A91F54 /* ViewController.cpp in Sources */,
 				9FA7911426DC925200A91F54 /* bitmap.c in Sources */,
 				9FA790EE26DC925200A91F54 /* pte.c in Sources */,
