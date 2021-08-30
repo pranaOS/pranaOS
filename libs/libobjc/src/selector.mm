@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
+// includes
 #include <libobjc/memory.h>
 #include <libobjc/objc.h>
 #include <libobjc/runtime.h>
@@ -61,9 +62,10 @@ bool selector_is_valid(SEL sel)
     return (uintptr_t)selector_pool_start < (uintptr_t)sel && (uintptr_t)sel < (uintptr_t)selector_pool_next;
 }
 
+
 void selector_table_init()
 {
-    selector_pool_start = selector_pool_start = (struct objc_selector*)malloc(1024);
+    selector_pool_start = selector_pool_next = (struct objc_selector*)malloc(1024);
 }
 
 void selector_add_from_module(struct objc_selector* selectors)
@@ -72,6 +74,18 @@ void selector_add_from_module(struct objc_selector* selectors)
         char* name = (char*)selectors[i].id;
         const char* types = selectors[i].types;
         SEL sel = selector_table_add(name, types, CONST_DATA);
+    }
+}
+
+void selector_add_from_method_list(struct objc_method_list* method_list)
+{
+    for (int i = 0; i < method_list->method_count; i++) {
+        Method method = &method_list->method_list[i];
+        if (method->method_name) {
+            char* name = (char*)method->method_name;
+            const char* types = method->method_types;
+            method->method_name = selector_table_add(name, types, CONST_DATA);
+        }
     }
 }
 
@@ -87,15 +101,15 @@ SEL sel_registerName(const char* name)
     if (!name) {
         return (SEL)NULL;
     }
-    
+
     return selector_table_add(name, 0, VOLATILE_DATA);
 }
 
-
-SEL sel_registerTypedName(const char* name, const char* type)
+SEL sel_registerTypedName(const char* name, const char* types)
 {
-    if (!name) {
+    if (!name || !types) {
         return (SEL)NULL;
     }
-    return selector_table_add(name, type, VOLATILE_DATA);
+
+    return selector_table_add(name, types, VOLATILE_DATA);
 }
