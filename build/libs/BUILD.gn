@@ -92,6 +92,7 @@ group("libs") {
     "//libs/libcxx:libcxx",
     "//libs/libcxxabi:libcxxabi",
     "//libs/libfoundation:libfoundation",
+    # "//libs/libobjc:libobjc",
     "//libs/libg:libg",
     "//libs/libui:libui",
   ]
