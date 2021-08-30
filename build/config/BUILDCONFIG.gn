@@ -1,14 +1,22 @@
-# Copyright 2021 Krisna Pranav. All rights reserved.
-# Use of this source code is governed by a BSD-style license that can be
-# found in the LICENSE file.
+# /*
+#  * Copyright (c) 2021, Krisna Pranav
+#  *
+#  * SPDX-License-Identifier: BSD-2-Clause
+# */
 
 declare_args() {
   is_debug = true
-  optimize = true
+  compile_tests = true
   kernel_symbols = true
   userland_symbols = true
   static_analyze = false
+
+  optimize = true
+
+  objc_support = false
+
   bench_method = "none"
+
   host = "gnu"
   llvm_bin_path = getenv("LLVM_BIN_PATH")
   device_type = "desktop"
@@ -32,5 +40,6 @@ if (host == "gnu") {
 }
 
 if (host == "llvm") {
+  objc_support = true
   set_default_toolchain("//toolchains:llvm-cross-compiler")
 }

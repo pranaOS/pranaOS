@@ -1,6 +1,8 @@
-# Copyright 2021 Krisna Pranav. All rights reserved.
-# Use of this source code is governed by a BSD-style license that can be
-# found in the LICENSE file.
+# /*
+#  * Copyright (c) 2021, Krisna Pranav
+#  *
+#  * SPDX-License-Identifier: BSD-2-Clause
+# */
 
 uland_c_flags = [
   "-Werror",
@@ -20,8 +22,13 @@ uland_cc_flags = [
   "-fno-sized-deallocation",
   "-fno-rtti",
   "-fno-exceptions",
-  "-D_LIBCXX_BUILD_ONEOS_EXTENSIONS",
+  "-D_LIBCXX_BUILD_PRANAOS_EXTENSIONS",
 ]
+
+uland_objcc_flags = uland_cc_flags + [
+                      "-fno-objc-exceptions",
+                      "-fno-objc-arc",
+                    ]
 
 uland_asm_flags = []
 uland_ld_flags = []
@@ -82,6 +89,7 @@ if (target_cpu == "aarch32") {
 config("userland_flags") {
   cflags = uland_c_flags
   cflags_cc = uland_cc_flags
+  cflags_objcc = uland_objcc_flags
   asmflags = uland_asm_flags
   ldflags = uland_ld_flags
   defines = [ "pranaOS" ]
@@ -98,15 +106,8 @@ group("userland") {
     "//userland/system/homescreen:homescreen",
     "//userland/system/init:init",
     "//userland/system/initgui:initgui",
-    "//userland/tests/bench:bench",
-    "//userland/tests/testlibcxx:testlibcxx",
-    "//userland/tests/utester:utester",
-    "//userland/tests/fontcompiler:fontcompiler",
-    "//userland/tests/getenv:getenv",
     "//userland/utilities/cat:cat",
-    "//userland/utilities/echo:echo",
     "//userland/utilities/kill:kill",
-    "//userland/utilities/host:host",
     "//userland/utilities/ls:ls",
     "//userland/utilities/mkdir:mkdir",
     "//userland/utilities/rm:rm",
@@ -114,4 +115,16 @@ group("userland") {
     "//userland/utilities/touch:touch",
     "//userland/utilities/uname:uname",
   ]
+
+  if (compile_tests) {
+    deps += [
+      "//userland/tests/bench:bench",
+      "//userland/tests/testlibcxx:testlibcxx",
+      "//userland/tests/utester:utester",
+    ]
+
+    if (objc_support) {
+      deps += [ "//userland/tests/testobjc:testobjc" ]
+    }
+  }
 }

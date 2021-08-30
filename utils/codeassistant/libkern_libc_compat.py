@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 #
-# Copyright 2021 Krisna Pranav. All rights reserved.
-# Use of this source code is governed by a BSD-style license that can be
-# found in the LICENSE file.
+# /*
+#  * Copyright (c) 2021, Krisna Pranav
+#  *
+#  * SPDX-License-Identifier: BSD-2-Clause
+# */
 
 # The tool checks the compatability of linkern and libc bits/ structs
 

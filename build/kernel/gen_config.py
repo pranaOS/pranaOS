@@ -1,6 +1,8 @@
-# Copyright 2021 Krisna Pranav. All rights reserved.
-# Use of this source code is governed by a BSD-style license that can be
-# found in the LICENSE file.
+# /*
+#  * Copyright (c) 2021, Krisna Pranav
+#  *
+#  * SPDX-License-Identifier: BSD-2-Clause
+# */
 
 import os
 import glob
@@ -30,7 +32,7 @@ def print_header(config_file):
     config_file.write(
         """#
 # Automatically generated file; DO NOT EDIT.
-# pranaOs kernel config
+# pranaOS Kernel Configuration
 #
 
 """)

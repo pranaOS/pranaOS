@@ -1,6 +1,8 @@
-# Copyright 2021 Krisna Pranav. All rights reserved.
-# Use of this source code is governed by a BSD-style license that can be
-# found in the LICENSE file.
+# /*
+#  * Copyright (c) 2021, Krisna Pranav
+#  *
+#  * SPDX-License-Identifier: BSD-2-Clause
+# */
 
 lib_c_flags = [
   "-ffreestanding",
@@ -21,8 +23,18 @@ lib_cc_flags = [
   "-fno-sized-deallocation",
   "-fno-rtti",
   "-fno-exceptions",
-  "-D_LIBCXX_BUILD_ONEOS_EXTENSIONS",
+  "-D_LIBCXX_BUILD_PRANAOS_EXTENSIONS",
 ]
+
+lib_objcc_flags = lib_cc_flags + [
+                    "-Wno-nullability-completeness",
+                    "-Wno-deprecated-objc-isa-usage",
+                    "-Wno-objc-root-class",
+                    "-Wno-cast-of-sel-type",
+                    "-fno-objc-exceptions",
+                    "-fno-objc-arc",
+                    "-fno-unwind-tables"
+                  ]
 
 lib_asm_flags = []
 
@@ -61,6 +73,13 @@ config("lib_flags") {
   asmflags = lib_asm_flags
 }
 
+config("libobjcc_flags") {
+  cflags = lib_c_flags
+  cflags_objcc = lib_objcc_flags
+  cflags_cc = lib_cc_flags
+  asmflags = lib_asm_flags
+}
+
 config("libcxx_flags") {
   cflags = lib_c_flags
   asmflags = lib_asm_flags
@@ -76,4 +95,8 @@ group("libs") {
     "//libs/libg:libg",
     "//libs/libui:libui",
   ]
+
+  if (objc_support) {
+    deps += [ "//libs/libobjc:libobjc" ]
+  }
 }

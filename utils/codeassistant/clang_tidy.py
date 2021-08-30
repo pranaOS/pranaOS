@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 #
-# Copyright 2021 Krisna Pranav. All rights reserved.
-# Use of this source code is governed by a BSD-style license that can be
-# found in the LICENSE file.
+# /*
+#  * Copyright (c) 2021, Krisna Pranav
+#  *
+#  * SPDX-License-Identifier: BSD-2-Clause
+# */
 
 import subprocess
 import os
@@ -15,7 +17,7 @@ class ClassTidyLauncher():
         self.include = includes
         self.front_flags = ["--use-color", "--fix"]
         self.back_flags = ["-c", "-m32",
-                           "-D_LIBCXX_BUILD_ONEOS_EXTENSIONS"]  # 32bit flag
+                           "-D_LIBCXX_BUILD_PRANAOS_EXTENSIONS"]  # 32bit flag
 
     def run_clang_tidy(self, ff, files, bf):
         cmd = ["clang-tidy"]
