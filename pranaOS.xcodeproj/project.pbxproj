@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9F61FBC226DC9CB000A39113 /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = 9F61FBC126DC9CB000A39113 /* main.mm */; };
 		9FA7908E26DC925200A91F54 /* libclang_rt.builtins-i386.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FA78CB526DC925000A91F54 /* libclang_rt.builtins-i386.a */; };
 		9FA7908F26DC925200A91F54 /* libclang_rt.builtins-arm.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FA78CB626DC925000A91F54 /* libclang_rt.builtins-arm.a */; };
 		9FA7909026DC925200A91F54 /* arm-none-eabi-libgcc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FA78CBC26DC925000A91F54 /* arm-none-eabi-libgcc.a */; };
@@ -269,7 +270,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		9FA78CAA26DC920100A91F54 /* pranaOS */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; name = pranaOS; path = /Users/elango/os/pranaOS/build/Debug/pranaOS; sourceTree = "<absolute>"; };
+		9F61FBBA26DC9BEC00A39113 /* pranaOS */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = pranaOS; sourceTree = BUILT_PRODUCTS_DIR; };
+		9F61FBBC26DC9C6C00A39113 /* BUILD.gn */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = BUILD.gn; sourceTree = "<group>"; };
+		9F61FBC126DC9CB000A39113 /* main.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = main.mm; sourceTree = "<group>"; };
 		9FA78CAF26DC925000A91F54 /* figlet-2.2.5.patch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "figlet-2.2.5.patch"; sourceTree = "<group>"; };
 		9FA78CB026DC925000A91F54 /* package.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = package.sh; sourceTree = "<group>"; };
 		9FA78CB226DC925000A91F54 /* BUILD.gn */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = BUILD.gn; sourceTree = "<group>"; };
@@ -1029,6 +1032,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		9F61FBBB26DC9C5000A39113 /* testobjc */ = {
+			isa = PBXGroup;
+			children = (
+				9F61FBC126DC9CB000A39113 /* main.mm */,
+				9F61FBBC26DC9C6C00A39113 /* BUILD.gn */,
+			);
+			path = testobjc;
+			sourceTree = "<group>";
+		};
 		9F77AA0626CF8CB200C106D2 = {
 			isa = PBXGroup;
 			children = (
@@ -1052,6 +1064,7 @@
 				9FA78CB126DC925000A91F54 /* toolchains */,
 				9FA7900026DC925200A91F54 /* userland */,
 				9FA78CBF26DC925000A91F54 /* utils */,
+				9F61FBBA26DC9BEC00A39113 /* pranaOS */,
 			);
 			sourceTree = "<group>";
 		};
@@ -3446,6 +3459,7 @@
 		9FA7900626DC925200A91F54 /* tests */ = {
 			isa = PBXGroup;
 			children = (
+				9F61FBBB26DC9C5000A39113 /* testobjc */,
 				9FA7900726DC925200A91F54 /* getenv */,
 				9FA7900B26DC925200A91F54 /* bench */,
 				9FA7901026DC925200A91F54 /* testlibcxx */,
@@ -3795,7 +3809,7 @@
 			);
 			name = pranaOS;
 			productName = pranaOS;
-			productReference = 9FA78CAA26DC920100A91F54 /* pranaOS */;
+			productReference = 9F61FBBA26DC9BEC00A39113 /* pranaOS */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
@@ -3998,6 +4012,7 @@
 				9FA7913926DC925200A91F54 /* zoner.c in Sources */,
 				9FA7917326DC925200A91F54 /* main.c in Sources */,
 				9FA7916C26DC925200A91F54 /* lifetime.c in Sources */,
+				9F61FBC226DC9CB000A39113 /* main.mm in Sources */,
 				9FA7915D26DC925200A91F54 /* vm.c in Sources */,
 				9FA790D726DC925200A91F54 /* sp804.c in Sources */,
 				9FA790E126DC925200A91F54 /* pci.c in Sources */,
