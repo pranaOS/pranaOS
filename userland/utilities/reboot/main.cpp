@@ -1,8 +1,10 @@
 #include <stdio.h>
 #include <signal.h>
 
-int main()
+int main(int argc, char **argv)
 {
-    printf("hello world");
+    printf("rebooting")
+    // return kill(1, SIGTERM);
+
     return 0;
 }
