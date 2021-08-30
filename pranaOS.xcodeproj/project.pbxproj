@@ -1016,6 +1016,8 @@
 		9FA7908B26DC925200A91F54 /* .info.mk */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .info.mk; sourceTree = "<group>"; };
 		9FA7908C26DC925200A91F54 /* AppDelegate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AppDelegate.cpp; sourceTree = "<group>"; };
 		9FA7908D26DC925200A91F54 /* ViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		9FAC5E6726DC9E3800164859 /* NSObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSObject.h; sourceTree = "<group>"; };
+		9FAC5E6A26DC9EF900164859 /* decls.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = decls.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1691,6 +1693,7 @@
 			isa = PBXGroup;
 			children = (
 				9FA78D8726DC925000A91F54 /* BUILD.gn */,
+				9FAC5E6526DC9E3800164859 /* include */,
 			);
 			path = libobjc;
 			sourceTree = "<group>";
@@ -3790,6 +3793,39 @@
 				9FA7908D26DC925200A91F54 /* ViewController.h */,
 			);
 			path = about;
+			sourceTree = "<group>";
+		};
+		9FAC5E6526DC9E3800164859 /* include */ = {
+			isa = PBXGroup;
+			children = (
+				9FAC5E6826DC9ED900164859 /* libobjc */,
+				9FAC5E6626DC9E3800164859 /* libfoundation */,
+			);
+			path = include;
+			sourceTree = "<group>";
+		};
+		9FAC5E6626DC9E3800164859 /* libfoundation */ = {
+			isa = PBXGroup;
+			children = (
+				9FAC5E6726DC9E3800164859 /* NSObject.h */,
+			);
+			path = libfoundation;
+			sourceTree = "<group>";
+		};
+		9FAC5E6826DC9ED900164859 /* libobjc */ = {
+			isa = PBXGroup;
+			children = (
+				9FAC5E6926DC9EE500164859 /* v1 */,
+			);
+			path = libobjc;
+			sourceTree = "<group>";
+		};
+		9FAC5E6926DC9EE500164859 /* v1 */ = {
+			isa = PBXGroup;
+			children = (
+				9FAC5E6A26DC9EF900164859 /* decls.h */,
+			);
+			path = v1;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
