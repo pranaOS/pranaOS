@@ -1018,6 +1018,7 @@
 		9FA7908D26DC925200A91F54 /* ViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
 		9FAC5E6726DC9E3800164859 /* NSObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSObject.h; sourceTree = "<group>"; };
 		9FAC5E6A26DC9EF900164859 /* decls.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = decls.h; sourceTree = "<group>"; };
+		9FAC5E6B26DCA25B00164859 /* module.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = module.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -3816,6 +3817,7 @@
 			isa = PBXGroup;
 			children = (
 				9FAC5E6926DC9EE500164859 /* v1 */,
+				9FAC5E6B26DCA25B00164859 /* module.h */,
 			);
 			path = libobjc;
 			sourceTree = "<group>";
