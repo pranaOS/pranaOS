@@ -111,6 +111,7 @@ group("userland") {
     "//userland/utilities/source:source",
     "//userland/utilities/ls:ls",
     "//userland/utilities/mkdir:mkdir",
+    "//userland/utilities/reboot:reboot",
     "//userland/utilities/rm:rm",
     "//userland/utilities/rmdir:rmdir",
     "//userland/utilities/touch:touch",
