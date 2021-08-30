@@ -1025,6 +1025,7 @@
 		9FAC5E6F26DCA6CA00164859 /* memory.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = memory.h; sourceTree = "<group>"; };
 		9FAC5E7026DCA76D00164859 /* selector.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = selector.h; sourceTree = "<group>"; };
 		9FAC5E7126DCA8B900164859 /* objc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = objc.h; sourceTree = "<group>"; };
+		9FAC5E7226DCA97100164859 /* runtime.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = runtime.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -3830,6 +3831,7 @@
 				9FAC5E6F26DCA6CA00164859 /* memory.h */,
 				9FAC5E7026DCA76D00164859 /* selector.h */,
 				9FAC5E7126DCA8B900164859 /* objc.h */,
+				9FAC5E7226DCA97100164859 /* runtime.h */,
 			);
 			path = libobjc;
 			sourceTree = "<group>";
