@@ -4,7 +4,6 @@
 int main(int argc, char **argv)
 {
     printf("rebooting");
-    // return kill(1, SIGTERM);
 
-    return 0;
+    return kill(1, SIGHUP);
 }
