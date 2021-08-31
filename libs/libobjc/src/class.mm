@@ -288,7 +288,7 @@ IMP class_get_implementation(Class cls, SEL sel)
     return method->method_imp;
 }
 
-@implementation Object
+@implementation ObjectClass 
 
 - (Class) class
 {
