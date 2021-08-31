@@ -24,8 +24,6 @@ jobs:
         unzip latest
         mv gn /usr/local/bin
         
-    - name: Create GNU Build Environment
-      run: ./build.sh
-
-    - name: Cleaning GNU Build Environment
-      run: rm -rf out
+    - name: Building
+      run: |
+        ./build.sh
