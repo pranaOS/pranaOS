@@ -287,3 +287,17 @@ IMP class_get_implementation(Class cls, SEL sel)
 
     return method->method_imp;
 }
+
+@implementation Object
+
+- (Class) class
+{
+    return object_class(self);
+}
+
+- (BOOL) isEqual: (id)anObject
+{
+    return self == anObject;
+}
+
+@end 
