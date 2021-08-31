@@ -22,9 +22,5 @@ jobs:
         mv gn /usr/local/bin
         
     - name: Create Build Environment
-      run: ./all.sh
-        
-    - name: Build GNU
-      working-directory: ${{github.workspace}}/out
-      shell: bash
-      run: ./all.sh
+      run: ./build.sh
+      

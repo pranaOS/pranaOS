@@ -27,10 +27,5 @@ jobs:
     - name: Create GNU Build Environment
       run: ./build.sh
 
-    - name: Build GNU
-      working-directory: ${{github.workspace}}/out
-      shell: bash
-      run: ./all.sh
-
     - name: Cleaning GNU Build Environment
       run: rm -rf out
