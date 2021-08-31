@@ -25,6 +25,7 @@ A unix operating system written from scratch in c / c++
 </a>
 
 ## Projects:
-- [linux](https://github.com/torvalds/linux.git) 
+- [macOS](https://github.com/apple/darwin-xnu) APPLE PUBLIC SOURCE LICENSE
+- [linux](https://github.com/torvalds/linux.git) GPL-2.0i 
 - [opuntiaOS](https://github.com/opuntiaOS-Project/opuntiaOS) BSD 2-Clause
 - [serenityOS](https://github.com/serenity/SerenityOS) BSD 2-Clause
