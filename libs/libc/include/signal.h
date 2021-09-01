@@ -53,18 +53,6 @@ int raise(int sig);
 #define SIGUSR1 30      
 #define SIGUSR2 31      
 
-#define SIG_DFL         (void (*)(int))0
-#define SIG_IGN         (void (*)(int))1
-#define SIG_HOLD        (void (*)(int))5
-#define SIG_ERR         ((void (*)(int))-1)
-#else
-
-/* DO NOT REMOVE THE COMMENTED OUT int: fixincludes needs to see them */
-#define SIG_DFL         (void (*)( /*int*/ ))0
-#define SIG_IGN         (void (*)( /*int*/ ))1
-#define SIG_HOLD        (void (*)( /*int*/ ))5
-#define SIG_ERR         ((void (*)( /*int*/ ))-1)
-
 __END_DECLS
 
 #endif 
