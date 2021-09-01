@@ -461,7 +461,7 @@
 		9FE77F0D26DF606C00724B75 /* BUILD.gn */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = BUILD.gn; sourceTree = "<group>"; };
 		9FE77F0E26DF606C00724B75 /* .info.mk */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .info.mk; sourceTree = "<group>"; };
 		9FE77F0F26DF606C00724B75 /* AppDelegate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AppDelegate.cpp; sourceTree = "<group>"; };
-		9FE77F1026DF606C00724B75 /* ViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		9FE77F1026DF606C00724B75 /* ViewController.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; path = ViewController.h; sourceTree = "<group>"; };
 		9FE77F1326DF606C00724B75 /* figlet-2.2.5.patch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "figlet-2.2.5.patch"; sourceTree = "<group>"; };
 		9FE77F1426DF606C00724B75 /* package.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = package.sh; sourceTree = "<group>"; };
 		9FE77F1726DF606C00724B75 /* _start.s */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; path = _start.s; sourceTree = "<group>"; };
