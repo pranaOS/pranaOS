@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
+// includes
 #include <algo/dynamic_array.h>
 #include <libkern/atomic.h>
 #include <libkern/libkern.h>
@@ -18,9 +19,6 @@
 #include <tasking/tasking.h>
 #include <time/time_manager.h>
 
-// #define SCHED_DEBUG
-// #define SCHED_SHOW_STAT
-
 static time_t _sched_timeslices[];
 static int _enqueued_tasks;
 static uint32_t _active_cpus;
@@ -28,14 +26,13 @@ static uint32_t _active_cpus;
 extern void switch_contexts(context_t** old, context_t* new);
 extern void switch_to_context(context_t* new);
 
-/* INIT */
 static void _init_cpu(cpu_t* cpu);
-/* BUFFERS */
+
 static inline void _sched_swap_buffers();
 static inline thread_t* _master_buf_back();
 static inline void _sched_save_running_proc();
 static inline void _sched_enqueue_impl(sched_data_t* sched, thread_t* thread);
-/* DEBUG */
+
 static void _debug_print_runqueue(runqueue_t* it);
 
 static void _idle_thread()
@@ -55,7 +52,6 @@ static void _create_idle_thread(cpu_t* cpu)
     proc_t* idle_proc = tasking_create_kernel_thread(_idle_thread, NULL);
     cpu->idle_thread = idle_proc->main_thread;
 
-    // Changing prio.
     sched_dequeue(idle_proc->main_thread);
     idle_proc->prio = IDLE_PRIO;
 
@@ -94,6 +90,7 @@ static void _init_cpu(cpu_t* cpu)
     cpu->fpu_for_pid = 0;
 #endif // FPU_ENABLED
     _create_idle_thread(cpu);
+    _add_cpu_count();
 }
 
 static inline void _sched_swap_buffers(sched_data_t* sched)
@@ -177,16 +174,14 @@ int _sched_find_cpu_with_less_load()
 
 void scheduler_init()
 {
-    for (int i = 0; i < CPU_CNT; i++) {
-        _init_cpu(&cpus[i]);
-    }
 }
 
 void schedule_activate_cpu()
 {
     int id = system_cpu_id();
+    ASSERT(id < CPU_CNT);
+    _init_cpu(&cpus[id]);
     cpus[id].id = id;
-    _add_cpu_count();
 }
 
 extern thread_list_t thread_list;
