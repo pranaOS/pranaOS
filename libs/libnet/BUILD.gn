@@ -2,6 +2,8 @@ import("//build/libs/TEMPLATE.gni")
 
 pranaOS_static_library("libnet") {
   sources = [
+    "ip.h",
+    "in.h",
   ]
 
   if (target_cpu == "aarch32") {
