@@ -111,7 +111,6 @@ static Method class_lookup_method_in_hierarchy(Class cls, SEL sel)
     return (Method)NULL;
 }
 
-// Add instance methods only to root class.
 static void class_root_add_instance_methods(Class cls)
 {
     int max_methods_allocated = 8;
@@ -124,7 +123,7 @@ static void class_root_add_instance_methods(Class cls)
         for (int i = 0; i < objc_method_list->method_count; i++) {
             SEL method_name = objc_method_list->method_list[i].method_name;
             if (method_name) {
-                // The instance method isn't a class method yet, so add it.
+
                 if (!class_lookup_method_in_list(cls->get_isa()->methods, method_name)) {
                     new_list->method_list[new_list->method_count++] = objc_method_list->method_list[i];
                     if (new_list->method_count == max_methods_allocated) {
@@ -144,7 +143,6 @@ static void class_root_add_instance_methods(Class cls)
         objc_free(new_list);
     }
 
-    // TODO: Update dispatch table.
 }
 
 static void class_send_initialize(Class cls)
@@ -208,7 +206,7 @@ bool class_resolve_links(Class cls)
 
     Class supcls = objc_getClass((char*)cls->superclass);
     if (supcls) {
-        // TODO: Fill subclass list
+
         cls->superclass = supcls;
         cls->get_isa()->superclass = supcls->get_isa();
         cls->set_info(CLS_RESOLVED);
@@ -235,7 +233,6 @@ bool class_init(Class cls)
         class_disp_table_preinit(cls);
         class_disp_table_preinit(cls->get_isa());
 
-        // TODO: Init methods and dispatch tables.
         if (cls->is_root()) {
             class_root_add_instance_methods(cls);
         }
@@ -259,7 +256,6 @@ void class_add_from_module(struct objc_symtab* symtab)
     for (int i = 0; i < symtab->cls_def_cnt; i++) {
         Class cls = (Class)symtab->defs[i];
 
-        // Fix clang flags
         if (cls->is_class()) {
             cls->set_info(CLS_CLASS);
         } else {
@@ -283,10 +279,6 @@ OBJC_EXPORT Class objc_lookup_class(const char* name)
 
 IMP class_get_implementation(Class cls, SEL sel)
 {
-    // TODO: Can't init it here, since meta classes are passed here.
-    // if (!cls->is_initialized()) {
-    //     class_send_initialize(cls);
-    // }
 
     sel = sel_registerTypedName((char*)sel->id, sel->types);
     Method method = class_lookup_method_in_hierarchy(cls, sel);
@@ -294,8 +286,6 @@ IMP class_get_implementation(Class cls, SEL sel)
     if (!method) {
         return nil_method;
     }
-
-    // TODO: Message forwarding
 
     return method->method_imp;
 }
