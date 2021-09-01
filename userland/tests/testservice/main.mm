@@ -20,3 +20,14 @@ int start_platform_service(int state);
 }
 
 @end
+
+@implementation ServiceTest
+
+static BOOL start_platform_service_mock_get_called = NO;
+
+int start_platform_service(int state) {
+    start_platform_service_mock_get_called = YES;
+    return 0;
+}
+
+@end
