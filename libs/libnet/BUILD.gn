@@ -2,17 +2,17 @@ import("//build/libs/TEMPLATE.gni")
 
 pranaOS_static_library("libnet") {
   sources = [
-    "ip.h",
-    "in.h",
+    "include/ip.h",
+    "include/in.h",
   ]
 
   if (target_cpu == "aarch32") {
     sources += [ "string/routines/aarch32/memset.S" ]
   }
 
-  include_dirs = [
-    "include/",
-  ]
+  # include_dirs = [
+  #   "include/",
+  # ]
 
   configs = [ "//build/libs:lib_flags" ]
 
