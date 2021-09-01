@@ -258,6 +258,7 @@
 		9FE782F626DF606E00724B75 /* ProcessInfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9FE781AD26DF606D00724B75 /* ProcessInfo.cpp */; };
 		9FE782F726DF606E00724B75 /* Logger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9FE781AE26DF606D00724B75 /* Logger.cpp */; };
 		9FE782F826DF606E00724B75 /* EventLoop.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9FE781AF26DF606D00724B75 /* EventLoop.cpp */; };
+		9FE782FE26DF60D100724B75 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9FE782FC26DF60D100724B75 /* main.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -1023,6 +1024,9 @@
 		9FE781F926DF606E00724B75 /* gen_config.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = gen_config.py; sourceTree = "<group>"; };
 		9FE781FB26DF606E00724B75 /* kernel_link.ld */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = kernel_link.ld; sourceTree = "<group>"; };
 		9FE781FD26DF606E00724B75 /* kernel_link.ld */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = kernel_link.ld; sourceTree = "<group>"; };
+		9FE782FB26DF60D100724B75 /* .info.mk */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .info.mk; sourceTree = "<group>"; };
+		9FE782FC26DF60D100724B75 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		9FE782FD26DF60D100724B75 /* BUILD.gn */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = BUILD.gn; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1548,6 +1552,7 @@
 		9FE77EAC26DF606C00724B75 /* utilities */ = {
 			isa = PBXGroup;
 			children = (
+				9FE782FA26DF60B000724B75 /* reboot */,
 				9FE77EAD26DF606C00724B75 /* cat */,
 				9FE77EB126DF606C00724B75 /* touch */,
 				9FE77EB526DF606C00724B75 /* uname */,
@@ -3826,6 +3831,16 @@
 			path = x86;
 			sourceTree = "<group>";
 		};
+		9FE782FA26DF60B000724B75 /* reboot */ = {
+			isa = PBXGroup;
+			children = (
+				9FE782FB26DF60D100724B75 /* .info.mk */,
+				9FE782FD26DF60D100724B75 /* BUILD.gn */,
+				9FE782FC26DF60D100724B75 /* main.cpp */,
+			);
+			path = reboot;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -3887,6 +3902,7 @@
 				9FE7825726DF606E00724B75 /* pci.c in Sources */,
 				9FE782BE26DF606E00724B75 /* tasking.c in Sources */,
 				9FE782F226DF606E00724B75 /* Responder.cpp in Sources */,
+				9FE782FE26DF60D100724B75 /* main.cpp in Sources */,
 				9FE782B626DF606E00724B75 /* ctype.c in Sources */,
 				9FE782C226DF606E00724B75 /* strftime.c in Sources */,
 				9FE782F726DF606E00724B75 /* Logger.cpp in Sources */,
