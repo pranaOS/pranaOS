@@ -3,8 +3,6 @@
  *
  * SPDX-License-Identifier: BSD-2-Clause
  */
-
-// includes
 #include <bits/errno.h>
 #include <bits/fcntl.h>
 #include <errno.h>

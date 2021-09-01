@@ -7,7 +7,6 @@
 #ifndef _LIBOBJC_SELECTOR_H
 #define _LIBOBJC_SELECTOR_H
 
-// includes
 #include <libobjc/v1/decls.h>
 #include <stddef.h>
 
@@ -27,4 +26,4 @@ bool selector_is_valid(SEL sel);
 SEL sel_registerName(const char* name);
 SEL sel_registerTypedName(const char* name, const char* types);
 
-#endif 
+#endif // _LIBOBJC_SELECTOR_H

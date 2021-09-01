@@ -37,7 +37,8 @@ extern FILE* stderr;
    if anything goes wrong. */
 FILE* fopen(const char* filename, const char* mode);
 
-/* Deallocate the file and close it. */
+/* Deallocate the file and close it. Any remaining data is flushed. Returns 0
+   on success, or EOF on failure. */
 int fclose(FILE* stream);
 
 /* Read up to 'count' objects, each of 'size' size into 'buf' from 'stream' */
@@ -102,6 +103,7 @@ int vsscanf(const char* buf, const char* fmt, va_list arg);
 int sscanf(const char* buf, const char* fmt, ...);
 int scanf(const char* fmt, ...);
 
+/* Dump information about the stream to stdout. */
 int __stream_info(FILE* stream);
 
 __END_DECLS

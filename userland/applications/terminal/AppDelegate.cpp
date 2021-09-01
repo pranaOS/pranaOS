@@ -24,7 +24,7 @@ int setup_shell()
         open(pname, O_RDONLY);
         open(pname, O_WRONLY);
         open(pname, O_WRONLY);
-        execve("/bin/bash", 0, 0);
+        execve("/bin/onesh", 0, 0);
     }
 
     shell_pid = f;

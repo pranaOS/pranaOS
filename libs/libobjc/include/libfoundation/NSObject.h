@@ -22,4 +22,4 @@
 
 @end
 
-#endif 
+#endif // _LIBOBJC_NSOBJECT_H

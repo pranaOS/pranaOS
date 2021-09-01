@@ -17,7 +17,7 @@ public:
 
         window.set_title("About");
 
-        window.menubar().add_menu("Demo").add_item(UI::MenuItem("Say Hello World", [] { Logger::debug << "Hello world in console!" << std::endl; }));
+        window.menubar().add_menu("Demo").add_item(UI::MenuItem("Say hello", [] { Logger::debug << "Hello!" << std::endl; }));
 
         return true;
     }

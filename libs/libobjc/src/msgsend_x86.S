@@ -1,12 +1,12 @@
-;*
+; /*
 ; * Copyright (c) 2021, Krisna Pranav
 ; *
-;* SPDX-License-Identifier: BSD-2-Clause
-; *
+; * SPDX-License-Identifier: BSD-2-Clause
+; */
 
 extern objc_msg_lookup
 global objc_msgSend
 
 objc_msgSend:
-   call objc_msg_lookup
-   jmp [eax]
+    call objc_msg_lookup
+    jmp [eax]

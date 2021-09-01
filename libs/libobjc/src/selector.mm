@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-// includes
 #include <libobjc/memory.h>
 #include <libobjc/objc.h>
 #include <libobjc/runtime.h>
@@ -19,6 +18,7 @@ static struct objc_selector* selector_pool_next;
 
 static SEL selector_table_add(const char* name, const char* types, bool const_data)
 {
+    // Checking if we have this selector
     for (struct objc_selector* cur_sel = selector_pool_start; cur_sel != selector_pool_next; cur_sel++) {
         if (strcmp(name, (char*)cur_sel->id) == 0) {
             if (cur_sel->types == 0 || types == 0) {
@@ -62,7 +62,7 @@ bool selector_is_valid(SEL sel)
     return (uintptr_t)selector_pool_start < (uintptr_t)sel && (uintptr_t)sel < (uintptr_t)selector_pool_next;
 }
 
-
+// TODO: We currently do it really stupid
 void selector_table_init()
 {
     selector_pool_start = selector_pool_next = (struct objc_selector*)malloc(1024);

@@ -3,6 +3,8 @@
 #include <string.h>
 #include <sys/mman.h>
 
+// Fast allocator for sizes 16, 32, 48, 64 bytes
+
 malloc_header_t* free_blocks[5];
 
 void prepare_free_blocks(size_t size)

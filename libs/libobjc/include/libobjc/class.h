@@ -7,7 +7,6 @@
 #ifndef _LIBOBJC_CLASS_H
 #define _LIBOBJC_CLASS_H
 
-// includes
 #include <libobjc/module.h>
 
 #define DISPATCH_TABLE_NOT_INITIALIZED (void*)0x0
@@ -21,4 +20,4 @@ IMP class_get_implementation(Class cls, SEL sel);
 
 Class objc_getClass(const char* name);
 
-#endif 
+#endif // _LIBOBJC_CLASS_H

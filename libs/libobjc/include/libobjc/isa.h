@@ -9,4 +9,4 @@
 
 #define ISA_MASK 0xfffffffc
 
-#endif 
+#endif // _LIBOBJC_ISA_H

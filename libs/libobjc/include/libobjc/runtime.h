@@ -7,7 +7,6 @@
 #ifndef _LIBOBJC_RUNTIME_H
 #define _LIBOBJC_RUNTIME_H
 
-// includes
 #include <libobjc/helpers.h>
 #include <libobjc/isa.h>
 #include <libobjc/selector.h>
@@ -25,4 +24,4 @@ static inline Class object_getClass(id object)
     return object->get_isa();
 }
 
-#endif
+#endif // _LIBOBJC_RUNTIME_H

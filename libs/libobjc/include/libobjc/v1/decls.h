@@ -7,7 +7,6 @@
 #ifndef _LIBOBJC_V1_DECLS_H
 #define _LIBOBJC_V1_DECLS_H
 
-// includes
 #include <stdint.h>
 
 struct objc_class;
@@ -30,7 +29,7 @@ struct objc_symtab {
     struct objc_selector* refs;
     unsigned short cls_def_cnt;
     unsigned short cat_def_cnt;
-    void* defs[1];
+    void* defs[1]; // Variable len
 };
 
 struct objc_module {
@@ -55,7 +54,7 @@ struct objc_ivar {
 
 struct objc_ivar_list {
     int ivar_count;
-    struct objc_ivar ivar_list[1];
+    struct objc_ivar ivar_list[1]; // Variable len
 };
 
 struct objc_method {
@@ -72,12 +71,12 @@ struct objc_method_description {
 struct objc_method_list {
     struct objc_method_list* method_next;
     int method_count;
-    struct objc_method method_list[1];
+    struct objc_method method_list[1]; // Variable len
 };
 
 struct objc_method_description_list {
     int count;
-    struct objc_method_description list[1];
+    struct objc_method_description list[1]; // Variable len
 };
 
 struct objc_protocol {
@@ -91,15 +90,15 @@ struct objc_protocol {
 struct objc_protocol_list {
     struct objc_protocol_list* next;
     uint32_t count;
-    struct objc_protocol* list[1];
+    struct objc_protocol* list[1]; // Variable len
 };
 
 #define CLS_CLASS 0x1
 #define CLS_META 0x2
 #define CLS_INITIALIZED 0x4
-#define CLS_RESOLVED 0x8
+#define CLS_RESOLVED 0x8 // This means that it has had correct super and sublinks assigned
 #define CLS_INCONSTRUCTION 0x10
-#define CLS_NUMBER_OFFSET 16
+#define CLS_NUMBER_OFFSET 16 // Long is 32bit long on our target, we use 16bit for number
 
 struct objc_class final {
     Class isa;
@@ -111,8 +110,8 @@ struct objc_class final {
     struct objc_ivar_list* ivars;
     struct objc_method_list* methods;
     void* disp_table;
-    struct objc_class* subclass_list;
-    struct objc_class* sibling_class;
+    struct objc_class* subclass_list; // TODO: Currently unresolved
+    struct objc_class* sibling_class; // TODO: Currently unresolved
     struct objc_protocol_list* protocols;
     void* gc_object_type;
 
@@ -135,7 +134,7 @@ struct objc_class final {
     inline int number() { return get_info() >> CLS_NUMBER_OFFSET; }
 
     inline long size() { return instance_size; }
-    inline long aligned_size() { return instance_size; }
+    inline long aligned_size() { return instance_size; } // FIXME
 };
 
 struct objc_selector {
@@ -143,4 +142,4 @@ struct objc_selector {
     const char* types;
 };
 
-#endif
+#endif // _LIBOBJC_V1_DECLS_H

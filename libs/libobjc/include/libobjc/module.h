@@ -9,4 +9,4 @@
 
 #include <libobjc/v1/decls.h>
 
-#endif 
+#endif // _LIBOBJC_MODULE_H

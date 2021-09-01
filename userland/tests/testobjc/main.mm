@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021, Krisna Pranav
- *
- * SPDX-License-Identifier: BSD-2-Clause
- */
-
-// includes
 #include <libfoundation/NSObject.h>
 #include <libobjc/helpers.h>
 #include <stdio.h>
@@ -22,13 +15,13 @@
 
 + (void)sampleMethod
 {
-    printf("Calling Static Method: Hello, from Obj-C!");
+    printf("Calling static: Hello, from Obj-C!");
 }
 
 - (void)sampleMethod:(int)val
 {
     last_val = val;
-    printf("Calling Method: Hello, Obj-C! %d", val);
+    printf("Calling method: Hello, Obj-C! %d", val);
 }
 
 - (int)get_last

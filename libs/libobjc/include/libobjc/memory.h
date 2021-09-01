@@ -7,7 +7,6 @@
 #ifndef _LIBOBJC_MEMORY_H
 #define _LIBOBJC_MEMORY_H
 
-// includes
 #include <libobjc/runtime.h>
 #include <stdlib.h>
 
@@ -18,4 +17,4 @@
 
 id alloc_instance(Class cls);
 
-#endif 
+#endif // _LIBOBJC_MEMORY_H

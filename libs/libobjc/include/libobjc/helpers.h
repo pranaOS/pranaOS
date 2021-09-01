@@ -21,4 +21,4 @@
 #define OBJC_DEBUGPRINT(...) (sizeof(int))
 #endif
 
-#endif 
+#endif // _LIBOBJC_HELPERS_H
