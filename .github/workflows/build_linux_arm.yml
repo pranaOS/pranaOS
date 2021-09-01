@@ -1,4 +1,4 @@
-name: Building For Linux ARM
+name: Building ARM
 
 on: [push, pull_request]
 
@@ -6,29 +6,54 @@ env:
   BUILD_TYPE: Release
 
 jobs:
-  bench:
-    runs-on: ubuntu-latest
+  build:
+    runs-on: macos-latest
 
     steps:
-      - uses: actions/checkout@v2
-      - name: Set up Python 3.8
-        uses: actions/setup-python@v2
-        with:
-          python-version: "3.8"
-          architecture: "x64"
+    - uses: actions/checkout@v2
 
-      - name: Deps Installing
-        run: |
-          sudo apt-get update  
-          sudo apt install -y llvm e2fsprogs qemu-system-arm qemu-utils fuseext2 ninja-build nasm
-          pip3 install tabulate termcolor
+    - name: Deps Installing
+      run: |
+        brew install llvm ninja nasm
+        brew tap pranaOS/homebrew-formulae-arm-gcc
+        brew install pranaOS/homebrew-formulae-arm-gcc/arm-none-eabi-gcc
+    
+    - name: GN Installing
+      run: |
+        wget https://chrome-infra-packages.appspot.com/dl/gn/gn/mac-amd64/+/latest
+        unzip latest
+        mv gn /usr/local/bin
+        
+    - name: Create GNU Build Environment
+      run: gn gen out --args='target_cpu="aarch32" host="gnu"'
 
-      - name: GN Installing
-        run: |
-          wget https://chrome-infra-packages.appspot.com/dl/gn/gn/linux-amd64/+/latest
-          unzip latest
-          sudo mv gn /usr/local/bin
+    - name: Build GNU
+      working-directory: ${{github.workspace}}/out
+      shell: bash
+      run: ninja
 
-      - name: Building
-        run: |
-          ./build.sh
+    - name: Cleaning GNU Build Environment
+      run: rm -rf out
+
+    - name: Create LLVM Build Environment
+      run: |
+        export LLVM_BIN_PATH="/usr/local/Cellar/llvm/12.0.1/bin"
+        gn gen out --args='target_cpu="aarch32" host="llvm"'
+
+    - name: Build LLVM
+      working-directory: ${{github.workspace}}/out
+      shell: bash
+      run: ninja
+
+    - name: Cleaning Desktop LLVM Build Environment
+      run: rm -rf out
+
+    - name: Create Mobile LLVM Build Environment
+      run: |
+        export LLVM_BIN_PATH="/usr/local/Cellar/llvm/12.0.1/bin"
+        gn gen out --args='target_cpu="aarch32" host="llvm" device_type="m"'
+
+    - name: Build Mobile with LLVM
+      working-directory: ${{github.workspace}}/out
+      shell: bash
+      run: ninja
