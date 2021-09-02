@@ -30,7 +30,6 @@ pranaOS_static_library("libc") {
     "termios/termios.c",
     "time/strftime.c",
     "time/time.c",
-    "wchar/wchar.c",
 
     # private
     "init/_init.c",
