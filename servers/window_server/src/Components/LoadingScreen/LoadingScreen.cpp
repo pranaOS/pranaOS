@@ -19,7 +19,7 @@ LoadingScreen::LoadingScreen()
     s_WinServer_LoadingScreen_the = this;
 
     LG::PNG::PNGLoader loader;
-    m_logo = loader.load_from_file("/res/system/logo_dark_128.png");
+    m_logo = loader.load_from_file("/res/system/pranaOS.png");
 
     int content_min_x = m_screen.bounds().mid_x() - (m_logo.bounds().width() / 2);
     int content_min_y = m_screen.bounds().mid_y() - ((m_logo.bounds().height() + progress_line_height()) / 2);
