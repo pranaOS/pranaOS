@@ -2,6 +2,6 @@
 
 int main()
 {
-    printf("Hello world");
+    printf("pranaOS");
     return 0;
 }
