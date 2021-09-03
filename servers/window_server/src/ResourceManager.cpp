@@ -15,7 +15,7 @@ ResourceManager::ResourceManager()
 {
     s_WinServer_ResourceManager_the = this;
     LG::PNG::PNGLoader loader;
-    m_background = loader.load_from_file("/res/wallpapers/pink_sand.png");
+    m_background = loader.load_from_file("/res/wallpapers/wallpaper.png");
 }
 
 } // namespace WinServer
