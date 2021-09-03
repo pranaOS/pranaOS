@@ -24,11 +24,13 @@ static inline id call_alloc(Class cls, bool checkNil, bool allocWithZone = false
     return ((id(*)(id, SEL))objc_msgSend)(cls, @selector(alloc));
 }
 
+// Called with [Class alloc]
 OBJC_EXPORT id objc_alloc(Class cls)
 {
     return call_alloc(cls, true, false);
 }
 
+// Called with [[Class alloc] init]
 OBJC_EXPORT id objc_alloc_init(Class cls)
 {
     return [call_alloc(cls, true, false) init];
@@ -43,6 +45,7 @@ OBJC_EXPORT id objc_alloc_init(Class cls)
 
 - (id)init
 {
+    // Init root classes
     return (id)self;
 }
 

@@ -4,5 +4,6 @@
 int main()
 {
     printf("rebooting...");
-    return kill(1, SIGHUP);
+    // return kill(1, SIGHUP);
+    return 0;
 }

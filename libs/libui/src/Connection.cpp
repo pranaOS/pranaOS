@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-// includes
 #include <libfoundation/Logger.h>
 #include <libipc/ClientConnection.h>
 #include <libui/Connection.h>
@@ -14,12 +13,15 @@
 #include <sched.h>
 #include <sys/socket.h>
 
+// #define DEBUG_CONNECTION
+
 namespace UI {
 
 static Connection* s_the = nullptr;
 
 Connection& Connection::the()
 {
+    // FIXME: Thread-safe method to be applied
     if (!s_the) {
         new Connection(socket(PF_LOCAL, 0, 0));
     }
@@ -35,9 +37,9 @@ Connection::Connection(int connection_fd)
     s_the = this;
     if (m_connection_fd > 0) {
         bool connected = false;
-
-        for (int i = 0; i < 100; i++) {
-            if (connect(m_connection_fd, "/tmp/win.sock", 13) == 0) {
+        // Trying to connect for 5 times. If unsuccesfull, it crashes.
+        for (int i = 0; i < 5; i++) {
+            if (connect(m_connection_fd, "/tmp/win.sock", 9) == 0) {
                 connected = true;
                 break;
             }
@@ -83,4 +85,4 @@ int Connection::new_window(const Window& window)
 #endif
     return resp_message->window_id();
 }
-}
+} // namespace UI

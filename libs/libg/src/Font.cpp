@@ -1,9 +1,5 @@
 /*
  * Copyright (c) 2021, Krisna Pranav
-
- * SERENITY OS LICENSE
- * Copyright (c) 2018-2020, Andreas Kling <kling@serenityos.org>
- * 
  *
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -19,6 +15,7 @@
 
 namespace LG {
 
+/* SerenityOS font header */
 struct [[gnu::packed]] FontFileHeader {
     char magic[4];
     uint8_t glyph_width;
@@ -26,19 +23,14 @@ struct [[gnu::packed]] FontFileHeader {
     uint8_t type;
     uint8_t is_variable_width;
     uint8_t glyph_spacing;
-    uint8_t baseline;
-    uint8_t mean_line;
-    uint8_t presentation_size;
-    uint16_t weight;
-    char name[32];
-    char family[32];
-    uint16_t unused;
+    uint8_t unused[5];
+    char name[64];
 };
 
 Font& Font::system_font()
 {
     static Font* s_system_font_ptr;
-    const static char* s_system_font_path = "/res/fonts/system.font/10/regular.font";
+    const static char* s_system_font_path = "/res/fonts/system.font";
     if (!s_system_font_ptr) {
         s_system_font_ptr = Font::load_from_file(s_system_font_path);
     }
@@ -48,7 +40,7 @@ Font& Font::system_font()
 Font& Font::system_bold_font()
 {
     static Font* s_system_bold_font_ptr;
-    const static char* s_system_bold_font_path = "/res/fonts/system.font/10/bold.font";
+    const static char* s_system_bold_font_path = "/res/fonts/systembold.font";
     if (!s_system_bold_font_ptr) {
         s_system_bold_font_ptr = Font::load_from_file(s_system_bold_font_path);
     }
@@ -101,12 +93,8 @@ Font* Font::load_from_mem(uint8_t* font_data)
         count = 256;
     } else if (header.type == 1) {
         count = 384;
-    } else if (header.type == 2) {
-        count = 1280;
-    } else if (header.type == 3) {
-        count = 1536;
     } else {
-        Logger::debug << "Type unsupported " << header.type << std::endl;
+        Logger::debug << "Type unsupported" << std::endl;
         return nullptr;
     }
 
@@ -126,4 +114,4 @@ GlyphBitmap Font::glyph_bitmap(size_t ch) const
     return GlyphBitmap(&m_raw_data[ch * m_height], glyph_width(ch), m_height);
 }
 
-} 
+} // namespace LG
