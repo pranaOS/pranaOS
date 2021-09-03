@@ -1,4 +1,12 @@
+/*
+ * Copyright (c) 2021, Krisna Pranav
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+ */
+
 #pragma once
+
+// includes
 #include <libg/Font.h>
 #include <libui/View.h>
 #include <string>
@@ -70,7 +78,7 @@ private:
 
     LG::Color m_background_color { 0xE9E9EA };
     LG::Color m_font_color { LG::Color::LightSystemText };
-    LG::Font* m_font_ptr { LG::Font::load_from_file("/res/fonts/LizaRegular8x10.font") };
+    LG::Font* m_font_ptr { LG::Font::load_from_file("/res/fonts/Liza.font/10/regular.font") };
 
     constexpr int padding() const { return 2; }
     constexpr int spacing() const { return 2; }
