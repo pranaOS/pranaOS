@@ -1,7 +1,6 @@
 import("//build/userland/TEMPLATE.gni")
 
-pranaOS_executable("activitymonitor") {
-  install_path = "bin/"
+pranaOS_application("activity_monitor") {
   sources = [
     "AppDelegate.cpp",
     "GraphView.cpp",

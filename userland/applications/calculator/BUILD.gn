@@ -1,7 +1,6 @@
 import("//build/userland/TEMPLATE.gni")
 
-pranaOS_executable("calculator") {
-  install_path = "bin/"
+pranaOS_application("calculator") {
   sources = [
     "AppDelegate.cpp",
   ]
