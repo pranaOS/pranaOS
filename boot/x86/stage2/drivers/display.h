@@ -1,5 +1,7 @@
-#ifndef _BOOT_X86_STAGE2_DRIVERS_DISPLAY_H
-#define _BOOT_X86_STAGE2_DRIVERS_DISPLAY_H
+// #ifndef _BOOT_X86_STAGE2_DRIVERS_DISPLAY_H
+// #define _BOOT_X86_STAGE2_DRIVERS_DISPLAY_H
+
+#pragma once
 
 #include "../types.h"
 #include "port.h"
@@ -30,4 +32,4 @@ void printf(const char* string);
 void printh(uint32_t hex);
 void printd(uint32_t dec);
 
-#endif // _BOOT_X86_STAGE2_DRIVERS_DISPLAY_H
+// #endif // _BOOT_X86_STAGE2_DRIVERS_DISPLAY_H
