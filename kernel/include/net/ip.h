@@ -4,8 +4,10 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#ifndef NET_IP_H
-#define NET_IP_H
+// #ifndef NET_IP_H
+// #define NET_IP_H
+
+#pragma once
 
 // includes
 #include <stdint.h>
@@ -48,4 +50,4 @@ void ip4_sendmsg(struct socket *sock, struct sk_buff *skb);
 int ip4_rcv(struct sk_buff *skb);
 int ip4_validate_header(struct ip4_packet *ip, uint8_t protocal);
 
-#endif
+// #endif
