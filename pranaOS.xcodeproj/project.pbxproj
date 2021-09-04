@@ -261,6 +261,7 @@
 		9F75F39C26E38D610058770D /* libclang_rt.builtins-i386.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F75F27026E38D600058770D /* libclang_rt.builtins-i386.a */; };
 		9F75F39D26E38D610058770D /* libclang_rt.builtins-arm.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F75F27126E38D600058770D /* libclang_rt.builtins-arm.a */; };
 		9F75F39E26E38D610058770D /* arm-none-eabi-libgcc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F75F27726E38D600058770D /* arm-none-eabi-libgcc.a */; };
+		9F75F3A326E3904D0058770D /* getopt.c in Sources */ = {isa = PBXBuildFile; fileRef = 9F75F3A226E3904D0058770D /* getopt.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -1051,6 +1052,7 @@
 		9F75F29D26E38D610058770D /* BUILD.gn */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = BUILD.gn; sourceTree = "<group>"; };
 		9F75F2A026E38D610058770D /* gen.pl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.perl; path = gen.pl; sourceTree = "<group>"; };
 		9F75F3A026E38F2A0058770D /* getopt.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = getopt.h; sourceTree = "<group>"; };
+		9F75F3A226E3904D0058770D /* getopt.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = getopt.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1513,6 +1515,7 @@
 		9F75EF4826E38D5F0058770D /* libc */ = {
 			isa = PBXGroup;
 			children = (
+				9F75F3A126E390340058770D /* unistd */,
 				9F75EF4926E38D5F0058770D /* ctype */,
 				9F75EF4B26E38D5F0058770D /* init */,
 				9F75EF4E26E38D5F0058770D /* posix */,
@@ -3924,6 +3927,14 @@
 			path = scripts;
 			sourceTree = "<group>";
 		};
+		9F75F3A126E390340058770D /* unistd */ = {
+			isa = PBXGroup;
+			children = (
+				9F75F3A226E3904D0058770D /* getopt.c */,
+			);
+			path = unistd;
+			sourceTree = "<group>";
+		};
 		9F77AA0626CF8CB200C106D2 = {
 			isa = PBXGroup;
 			children = (
@@ -4179,6 +4190,7 @@
 				9F75F33F26E38D610058770D /* isr_handler.c in Sources */,
 				9F75F32226E38D610058770D /* pit.c in Sources */,
 				9F75F2B426E38D610058770D /* file.c in Sources */,
+				9F75F3A326E3904D0058770D /* getopt.c in Sources */,
 				9F75F30426E38D610058770D /* Connection.cpp in Sources */,
 				9F75F2B926E38D610058770D /* init_aarch32.s in Sources */,
 				9F75F31726E38D610058770D /* fpuv4_helper.s in Sources */,

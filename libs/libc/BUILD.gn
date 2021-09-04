@@ -29,6 +29,7 @@ pranaOS_static_library("libc") {
     "termios/termios.c",
     "time/strftime.c",
     "time/time.c",
+    "unistd/getopt.c",
 
     # private
     "init/_init.c",
