@@ -98,7 +98,7 @@ config("userland_flags") {
 group("userland") {
   deps = [
     "//userland/applications/about:about",
-    "//userland/applications/activity_monitor:activity_monitor",
+    "//userland/applications/activitymonitor:activitymonitor",
     "//userland/applications/calculator:calculator",
     "//userland/applications/terminal:terminal",
     "//userland/shell/bash:bash",
