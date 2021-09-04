@@ -1,5 +1,7 @@
-#ifndef _LIBC_FCNTL_H
-#define _LIBC_FCNTL_H
+// #ifndef _LIBC_FCNTL_H
+// #define _LIBC_FCNTL_H
+
+#pragma once
 
 #include <bits/fcntl.h>
 #include <sys/cdefs.h>
@@ -12,4 +14,4 @@ int creat(const char* path, mode_t mode);
 
 __END_DECLS
 
-#endif // _LIBC_FCNTL_H
+// #endif // _LIBC_FCNTL_H
