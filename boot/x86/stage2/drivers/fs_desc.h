@@ -1,8 +1,10 @@
-#ifndef STAGE2_FS_DESC
-#define STAGE2_FS_DESC
+// #ifndef STAGE2_FS_DESC
+// #define STAGE2_FS_DESC
+
+#pragma once
 
 typedef struct {
     void* read;
 } fs_desc_t;
 
-#endif // STAGE2_FS_DESC
+// #endif // STAGE2_FS_DESC
