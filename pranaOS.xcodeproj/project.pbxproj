@@ -1515,6 +1515,7 @@
 		9F75EF4826E38D5F0058770D /* libc */ = {
 			isa = PBXGroup;
 			children = (
+				9F75F3A626E392180058770D /* net */,
 				9F75F3A126E390340058770D /* unistd */,
 				9F75EF4926E38D5F0058770D /* ctype */,
 				9F75EF4B26E38D5F0058770D /* init */,
@@ -3933,6 +3934,13 @@
 				9F75F3A226E3904D0058770D /* getopt.c */,
 			);
 			path = unistd;
+			sourceTree = "<group>";
+		};
+		9F75F3A626E392180058770D /* net */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = net;
 			sourceTree = "<group>";
 		};
 		9F77AA0626CF8CB200C106D2 = {
