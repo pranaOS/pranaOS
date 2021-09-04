@@ -1050,6 +1050,7 @@
 		9F75F29C26E38D610058770D /* package.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = package.sh; sourceTree = "<group>"; };
 		9F75F29D26E38D610058770D /* BUILD.gn */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = BUILD.gn; sourceTree = "<group>"; };
 		9F75F2A026E38D610058770D /* gen.pl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.perl; path = gen.pl; sourceTree = "<group>"; };
+		9F75F3A026E38F2A0058770D /* getopt.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = getopt.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1589,6 +1590,7 @@
 				9F75EF8726E38D5F0058770D /* assert.h */,
 				9F75EF8826E38D5F0058770D /* stdint.h */,
 				9F75EF8926E38D5F0058770D /* string.h */,
+				9F75F3A026E38F2A0058770D /* getopt.h */,
 			);
 			path = include;
 			sourceTree = "<group>";
