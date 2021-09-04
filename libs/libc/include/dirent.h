@@ -1,5 +1,7 @@
-#ifndef _LIBC_DIRENT_H
-#define _LIBC_DIRENT_H
+// #ifndef _LIBC_DIRENT_H
+// #define _LIBC_DIRENT_H
+
+#pragma once 
 
 #include <stddef.h>
 #include <sys/_structs.h>
@@ -28,4 +30,4 @@ ssize_t getdents(int fd, char* buf, size_t len);
 
 __END_DECLS
 
-#endif /* _LIBC_DIRENT_H */
+// #endif /* _LIBC_DIRENT_H */
