@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#ifndef _KERNEL_DRIVERS_AARCH32_PL050_H
-#define _KERNEL_DRIVERS_AARCH32_PL050_H
+#pragma once
 
 #include <drivers/driver_manager.h>
 #include <libkern/mask.h>
@@ -23,5 +22,3 @@ typedef struct pl050_registers pl050_registers_t;
 
 void pl050_keyboard_install();
 void pl050_mouse_install();
-
-#endif //_KERNEL_DRIVERS_AARCH32_PL050_H
