@@ -1,6 +1,6 @@
-#ifndef _LIBC_SYS_SHARED_BUFFER_H
-#define _LIBC_SYS_SHARED_BUFFER_H
+#pragma once
 
+// includes
 #include <bits/sys/select.h>
 #include <bits/time.h>
 #include <stddef.h>
@@ -14,5 +14,3 @@ int shared_buffer_get(int id, uint8_t** buffer);
 int shared_buffer_free(int id);
 
 __END_DECLS
-
-#endif // _LIBC_SYS_SHARED_BUFFER_H
