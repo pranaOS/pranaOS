@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#pragma once 
+#pragma once
 
 #include <fs/vfs.h>
 #include <libkern/syscall_structs.h>
