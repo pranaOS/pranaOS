@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#ifndef _KERNEL_DRIVERS_DRIVER_MANAGER_H
-#define _KERNEL_DRIVERS_DRIVER_MANAGER_H
+#pragma once
 
 #include <libkern/types.h>
 
@@ -186,5 +185,3 @@ void pass_devices_to_master_drivers();
 device_t* new_virtual_device(uint8_t type);
 int dm_get_driver_id_by_name();
 void dm_send_notification(uint32_t msg, uint32_t param);
-
-#endif // _KERNEL_DRIVERS_DRIVER_MANAGER_H
