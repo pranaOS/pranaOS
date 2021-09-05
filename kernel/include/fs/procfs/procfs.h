@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#ifndef _KERNEL_FS_PROCFS_PROCFS_H
-#define _KERNEL_FS_PROCFS_PROCFS_H
+#pragma once
 
 #include <fs/vfs.h>
 #include <libkern/c_attrs.h>
@@ -56,5 +55,3 @@ static inline uint32_t procfs_get_inode_index(const uint32_t level, uint32_t mai
 {
     return (level << 28) | (main & 0x0fffffff);
 }
-
-#endif // _KERNEL_FS_PROCFS_PROCFS_H
