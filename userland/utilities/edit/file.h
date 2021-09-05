@@ -1,5 +1,4 @@
-#ifndef _USERLAND_EDIT_FILE_H
-#define _USERLAND_EDIT_FILE_H
+#pragma once
 
 #ifdef __pranaOS__
 #include <sys/types.h>
@@ -27,5 +26,3 @@ int file_line_len_backwards(int offset);
 int file_paste_char(char c, int offset);
 int file_scroll_up();
 int file_scroll_down();
-
-#endif
