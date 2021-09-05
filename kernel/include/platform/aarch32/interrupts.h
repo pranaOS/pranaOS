@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#ifndef _KERNEL_PLATFORM_AARCH32_INTERRUPTS_H
-#define _KERNEL_PLATFORM_AARCH32_INTERRUPTS_H
+#pragma once 
 
 #include <libkern/mask.h>
 #include <libkern/types.h>
@@ -58,5 +57,3 @@ void irq_set_gic_desc(gic_descritptor_t gic_desc);
 
 void gic_setup();
 void gic_setup_secondary_cpu();
-
-#endif /* _KERNEL_PLATFORM_AARCH32_INTERRUPTS_H */
