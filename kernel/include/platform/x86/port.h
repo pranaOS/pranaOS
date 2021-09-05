@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#ifndef _KERNEL_PLATFORM_X86_PORT_H
-#define _KERNEL_PLATFORM_X86_PORT_H
+#pragma once
 
 #include <libkern/types.h>
 
@@ -22,5 +21,3 @@ void port_16bit_out(uint16_t port, uint16_t data);
 uint32_t port_32bit_in(uint16_t port);
 void port_32bit_out(uint16_t port, uint32_t data);
 void io_wait();
-
-#endif
