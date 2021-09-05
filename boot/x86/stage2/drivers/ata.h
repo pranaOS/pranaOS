@@ -1,6 +1,3 @@
-// #ifndef _BOOT_X86_STAGE2_DRIVERS_ATA_H
-// #define _BOOT_X86_STAGE2_DRIVERS_ATA_H
-
 #pragma once
 
 #include "../types.h"
@@ -24,5 +21,3 @@ void init_ata(uint32_t port, char is_master);
 int indentify_ata_device(drive_desc_t* drive_desc);
 int ata_read(uint32_t sector, uint8_t* read_to);
 // extern uint16_t ata_read_to_ram(ata_t *dev, uint32_t sectorNum, uint32_t toRam, uint8_t offset);
-
-// #endif
