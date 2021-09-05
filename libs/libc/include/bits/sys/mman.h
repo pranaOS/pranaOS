@@ -1,5 +1,4 @@
-#ifndef _LIBC_BITS_SYS_MMAN_H
-#define _LIBC_BITS_SYS_MMAN_H
+#pragma once
 
 #include <stddef.h>
 #include <sys/types.h>
@@ -24,5 +23,3 @@ struct mmap_params {
     off_t offset;
 };
 typedef struct mmap_params mmap_params_t;
-
-#endif // _LIBC_BITS_SYS_MMAN_H
