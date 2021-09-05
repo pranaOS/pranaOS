@@ -1,5 +1,4 @@
-#ifndef _LIBC_UNISTD_H
-#define _LIBC_UNISTD_H
+#pragma once
 
 #include <fcntl.h>
 #include <stddef.h>
@@ -32,5 +31,3 @@ uid_t getuid();
 int nice(int inc);
 
 __END_DECLS
-
-#endif // _LIBC_UNISTD_H
