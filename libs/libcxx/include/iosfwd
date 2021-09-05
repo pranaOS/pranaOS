@@ -1,7 +1,9 @@
 #pragma GCC system_header
 
-#ifndef _LIBCXX_IOSFWD
-#define _LIBCXX_IOSFWD
+// #ifndef _LIBCXX_IOSFWD
+// #define _LIBCXX_IOSFWD
+
+#pragma once
 
 #include <__config>
 #include <string>
@@ -18,4 +20,4 @@ class basic_streambuf;
 
 _LIBCXX_END_NAMESPACE_STD
 
-#endif // _LIBCXX_IOSFWD
+// #endif // _LIBCXX_IOSFWD
