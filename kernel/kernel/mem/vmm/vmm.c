@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
+// includes
 #include <libkern/bits/errno.h>
 #include <libkern/libkern.h>
 #include <libkern/lock.h>
@@ -885,6 +886,7 @@ static int _vmm_load_page_with_perm(uint32_t vaddr)
         /* FIXME: Now we have a standard zone for kernel, but it's better to do the same thing as for user's pages */
 
         //Should keep lockless, since kernel interrupt could happen while setting VMM.
+        // log("Fault for address", vaddr, RUNNING_THREAD->process->pid, zone->flags);
         vmm_load_page_lockless(vaddr, PAGE_READABLE | PAGE_WRITABLE | PAGE_EXECUTABLE);
     }
     return OK;
@@ -1267,6 +1269,11 @@ static ALWAYS_INLINE int vmm_load_page_lockless(uint32_t vaddr, uint32_t setting
 int vmm_load_page(uint32_t vaddr, uint32_t settings)
 {
     lock_acquire(&_vmm_lock);
+    if (_vmm_is_page_present(vaddr)) {
+        lock_release(&_vmm_lock);
+        return -EALREADY;
+    }
+
     uint32_t paddr = _vmm_alloc_page_paddr();
     if (!paddr) {
         /* TODO: Swap pages to make it able to allocate. */
@@ -1348,6 +1355,12 @@ int vmm_page_fault_handler(uint32_t info, uint32_t vaddr)
 {
     lock_acquire(&_vmm_lock);
     if (_vmm_is_table_not_present(info) || _vmm_is_page_not_present(info)) {
+        // Check again with locks, since other cpu could already load this page.
+        if (_vmm_is_page_present(vaddr)) {
+            lock_release(&_vmm_lock);
+            return OK;
+        }
+
         int res = _vmm_load_page_with_perm(vaddr);
         lock_release(&_vmm_lock);
         if (PAGE_CHOOSE_OWNER(vaddr) == PAGE_USER && vmm_get_active_pdir() != vmm_get_kernel_pdir()) {
