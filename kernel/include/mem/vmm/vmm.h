@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#ifndef _KERNEL_MEM_VMM_VMM_H
-#define _KERNEL_MEM_VMM_VMM_H
+#pragma once 
 
 #include <libkern/libkern.h>
 #include <mem/pmm.h>
@@ -90,4 +89,3 @@ void vmm_disable_paging();
 
 int vmm_page_fault_handler(uint32_t info, uint32_t vaddr);
 
-#endif // _KERNEL_MEM_VMM_VMM_H
