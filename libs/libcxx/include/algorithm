@@ -1,9 +1,7 @@
 #pragma GCC system_header
 
-// #ifndef _LIBCXX_ALGORITHM
-// #define _LIBCXX_ALGORITHM
-
-#pragma once
+#ifndef _LIBCXX_ALGORITHM
+#define _LIBCXX_ALGORITHM
 
 #include <__config>
 #include <__undef_macros>
@@ -44,4 +42,4 @@ static constexpr OutputIter copy(InputIter first, InputIter last, OutputIter dis
 
 _LIBCXX_END_NAMESPACE_STD
 
-// #endif // _LIBCXX_ALGORITHM
+#endif // _LIBCXX_ALGORITHM
