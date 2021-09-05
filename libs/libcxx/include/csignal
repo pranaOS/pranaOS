@@ -1,9 +1,7 @@
 #pragma GCC system_header
 
-// #ifndef _LIBCXX_CSIGNAL
-// #define _LIBCXX_CSIGNAL
-
-#pragma once
+#ifndef _LIBCXX_CSIGNAL
+#define _LIBCXX_CSIGNAL
 
 #include <__config>
 #include <signal.h>
@@ -16,4 +14,4 @@ using ::sigaction;
 
 _LIBCXX_END_NAMESPACE_STD
 
-// #endif // _LIBCXX_CSIGNAL
+#endif // _LIBCXX_CSIGNAL
