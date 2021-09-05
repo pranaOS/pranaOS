@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#ifndef _KERNEL_PLATFORM_X86_VMM_PDE_H
-#define _KERNEL_PLATFORM_X86_VMM_PDE_H
+#pragma once
 
 #include <libkern/types.h>
 
@@ -45,5 +44,3 @@ bool table_desc_is_writable(table_desc_t pde);
 bool table_desc_is_4mb(table_desc_t pde);
 bool table_desc_is_copy_on_write(table_desc_t pde);
 uint32_t table_desc_get_frame(table_desc_t pde);
-
-#endif //_KERNEL_PLATFORM_X86_VMM_PDE_H
