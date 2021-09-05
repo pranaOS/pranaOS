@@ -4,9 +4,6 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-// #ifndef NET_IP_H
-// #define NET_IP_H
-
 #pragma once
 
 // includes
