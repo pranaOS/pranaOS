@@ -4,9 +4,6 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#ifndef _LIBOBJC_MODULE_H
-#define _LIBOBJC_MODULE_H
+#pragma once
 
 #include <libobjc/v1/decls.h>
-
-#endif // _LIBOBJC_MODULE_H
