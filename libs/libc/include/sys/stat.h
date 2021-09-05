@@ -1,5 +1,4 @@
-#ifndef _LIBC_SYS_STAT_H
-#define _LIBC_SYS_STAT_H
+#pragma once
 
 #include <bits/sys/stat.h>
 #include <sys/cdefs.h>
@@ -11,5 +10,3 @@ int mkdir(const char* path);
 int fstat(int nfds, fstat_t* stat);
 
 __END_DECLS
-
-#endif
