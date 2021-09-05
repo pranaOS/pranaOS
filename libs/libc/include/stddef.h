@@ -1,5 +1,4 @@
-#ifndef _LIBC_STDDEF_H
-#define _LIBC_STDDEF_H
+#pragma once
 
 #include <sys/cdefs.h>
 #include <sys/types.h>
@@ -25,5 +24,3 @@ typedef int ptrdiff_t;
 #define NULL ((void*)0)
 
 __END_DECLS
-
-#endif // _LIBC_STDDEF_H
