@@ -1,6 +1,3 @@
-// #ifndef _BOOT_X86_STAGE2_MEM_MEM_MAP_H
-// #define _BOOT_X86_STAGE2_MEM_MEM_MAP_H
-
 #pragma once
 
 #include "../types.h"
@@ -18,5 +15,3 @@ typedef struct {
     uint16_t memory_map_size;
     uint16_t kernel_size;
 } mem_desc_t;
-
-// #endif // _BOOT_X86_STAGE2_MEM_MEM_MAP_H
