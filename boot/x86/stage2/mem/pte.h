@@ -1,6 +1,3 @@
-// #ifndef _BOOT_X86_STAGE2_MEM_PTE_H
-// #define _BOOT_X86_STAGE2_MEM_PTE_H
-
 #pragma once
 
 #include "../types.h"
@@ -23,5 +20,3 @@ enum PAGE_DESC_PAGE_FLAGS {
     PAGE_DESC_ZEROING_ON_DEMAND,
     PAGE_DESC_FRAME = 12
 };
-
-// #endif //_BOOT_X86_STAGE2_MEM_PTE_H
