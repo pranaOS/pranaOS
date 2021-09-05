@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#ifndef _LIBOBJC_HELPERS_H
-#define _LIBOBJC_HELPERS_H
+#pragma once
 
 #include <stdio.h>
 
@@ -20,5 +19,3 @@
 #else
 #define OBJC_DEBUGPRINT(...) (sizeof(int))
 #endif
-
-#endif // _LIBOBJC_HELPERS_H
