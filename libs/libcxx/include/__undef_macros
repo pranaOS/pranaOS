@@ -1,7 +1,9 @@
 #pragma GCC system_header
 
-#ifndef _LIBCXX___UNDEF_MACROS
-#define _LIBCXX___UNDEF_MACROS
+// #ifndef _LIBCXX___UNDEF_MACROS
+// #define _LIBCXX___UNDEF_MACROS
+
+#pragma once
 
 #ifdef min
 #undef min
@@ -13,4 +15,4 @@
 
 #define NOMINMAX
 
-#endif // _LIBCXX___UNDEF_MACROS
+// #endif // _LIBCXX___UNDEF_MACROS
