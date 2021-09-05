@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#ifndef _LIBOBJC_V1_DECLS_H
-#define _LIBOBJC_V1_DECLS_H
+#pragma once
 
 #include <stdint.h>
 
@@ -141,5 +140,3 @@ struct objc_selector {
     void* id;
     const char* types;
 };
-
-#endif // _LIBOBJC_V1_DECLS_H
