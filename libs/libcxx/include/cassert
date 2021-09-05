@@ -6,9 +6,11 @@
 
 #pragma GCC system_header
 
-#ifndef _LIBCXX_CASSERT
-#define _LIBCXX_CASSERT
+// #ifndef _LIBCXX_CASSERT
+// #define _LIBCXX_CASSERT
+
+#pragma once
 
 #include <assert.h>
 
-#endif // _LIBCXX_CASSERT
+// #endif // _LIBCXX_CASSERT
