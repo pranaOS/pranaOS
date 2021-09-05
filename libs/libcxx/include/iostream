@@ -1,9 +1,7 @@
 #pragma GCC system_header
 
-// #ifndef _LIBCXX_IOSTREAM
-// #define _LIBCXX_IOSTREAM
-
-#pragma once
+#ifndef _LIBCXX_IOSTREAM
+#define _LIBCXX_IOSTREAM
 
 #include <__config>
 #include <ostream>
@@ -15,5 +13,3 @@ extern ostream cerr;
 // extern ostream clog;
 
 _LIBCXX_END_NAMESPACE_STD
-
-// #endif // _LIBCXX_IOSTREAM
