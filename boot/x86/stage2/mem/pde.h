@@ -1,5 +1,7 @@
-#ifndef _BOOT_X86_STAGE2_MEM_PDE_H
-#define _BOOT_X86_STAGE2_MEM_PDE_H
+// #ifndef _BOOT_X86_STAGE2_MEM_PDE_H
+// #define _BOOT_X86_STAGE2_MEM_PDE_H
+
+#pragma once
 
 #include "../types.h"
 
@@ -22,4 +24,4 @@ enum TABLE_DESC_PAGE_FLAGS {
     TABLE_DESC_FRAME = 12
 };
 
-#endif //_BOOT_X86_STAGE2_MEM_PDE_H
+// #endif //_BOOT_X86_STAGE2_MEM_PDE_H
