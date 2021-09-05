@@ -1,5 +1,4 @@
-#ifndef _LIBC_STDINT_H
-#define _LIBC_STDINT_H
+#pragma once
 
 #include <bits/types.h>
 #include <sys/cdefs.h>
@@ -100,5 +99,3 @@ typedef int64_t intmax_t;
 #endif // __stdintmacroses_defined
 
 __END_DECLS
-
-#endif //_LIBC_STDINT_H
