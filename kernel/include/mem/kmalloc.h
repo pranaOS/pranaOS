@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#ifndef _KERNEL_MEM_KMALLOC_H
-#define _KERNEL_MEM_KMALLOC_H
+#pragma once
 
 #include <libkern/types.h>
 #include <mem/vmm/vmm.h>
@@ -20,5 +19,3 @@ void* kmalloc_page_aligned();
 void kfree(void* ptr);
 void kfree_aligned(void* ptr);
 void* krealloc(void* ptr, uint32_t size);
-
-#endif // _KERNEL_MEM_KMALLOC_H
