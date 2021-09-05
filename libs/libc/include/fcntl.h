@@ -1,6 +1,3 @@
-// #ifndef _LIBC_FCNTL_H
-// #define _LIBC_FCNTL_H
-
 #pragma once
 
 #include <bits/fcntl.h>
@@ -13,5 +10,3 @@ int open(const char* pathname, int flags);
 int creat(const char* path, mode_t mode);
 
 __END_DECLS
-
-// #endif // _LIBC_FCNTL_H

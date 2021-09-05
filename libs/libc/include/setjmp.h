@@ -1,6 +1,3 @@
-// #ifndef _LIBC_SETJMP_H
-// #define _LIBC_SETJMP_H
-
 #pragma once
 
 #include <sys/cdefs.h>
@@ -30,5 +27,3 @@ extern int setjmp(jmp_buf);
 extern void longjmp(jmp_buf, int val);
 
 __END_DECLS
-
-// #endif

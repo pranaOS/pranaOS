@@ -1,6 +1,3 @@
-// #ifndef _LIBC_DIRENT_H
-// #define _LIBC_DIRENT_H
-
 #pragma once 
 
 #include <stddef.h>
@@ -29,5 +26,3 @@ typedef struct __dirent dirent_t;
 ssize_t getdents(int fd, char* buf, size_t len);
 
 __END_DECLS
-
-// #endif /* _LIBC_DIRENT_H */

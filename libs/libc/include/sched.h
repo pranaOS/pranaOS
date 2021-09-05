@@ -1,6 +1,3 @@
-// #ifndef _LIBC_SCHED_H
-// #define _LIBC_SCHED_H
-
 #pragma onec
 
 #include <sys/cdefs.h>
@@ -11,5 +8,3 @@ __BEGIN_DECLS
 void sched_yield();
 
 __END_DECLS
-
-// #endif 
