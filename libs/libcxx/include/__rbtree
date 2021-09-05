@@ -1,9 +1,7 @@
 #pragma GCC system_header
 
-// #ifndef _LIBCXX___RBTREE
-// #define _LIBCXX___RBTREE
-
-#pragma once
+#ifndef _LIBCXX___RBTREE
+#define _LIBCXX___RBTREE
 
 #include <__config>
 #include <functional>
@@ -508,4 +506,4 @@ private:
     node_type m_nil_node;
 };
 
-// #endif // _LIBCXX___RBTREE
+#endif // _LIBCXX___RBTREE
