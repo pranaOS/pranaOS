@@ -1,7 +1,9 @@
 #pragma GCC system_header
 
-#ifndef _LIBCXX_CSTDIO
-#define _LIBCXX_CSTDIO
+// #ifndef _LIBCXX_CSTDIO
+// #define _LIBCXX_CSTDIO
+
+#pragma once
 
 #include <__config>
 #include <stddef.h>
@@ -22,4 +24,4 @@ using ::vsprintf;
 
 _LIBCXX_END_NAMESPACE_STD
 
-#endif // _LIBCXX_CSTDIO
+// #endif // _LIBCXX_CSTDIO
