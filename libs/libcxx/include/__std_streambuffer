@@ -1,9 +1,7 @@
 #pragma GCC system_header
 
-// #ifndef _LIBCXX___STREAMBUFFER
-// #define _LIBCXX___STREAMBUFFER
-
-#pragma once
+#ifndef _LIBCXX___STREAMBUFFER
+#define _LIBCXX___STREAMBUFFER
 
 #include <__config>
 #include <cstdio>
@@ -56,4 +54,4 @@ private:
 
 _LIBCXX_END_NAMESPACE_STD
 
-// #endif // _LIBCXX___STREAMBUFFER
+#endif // _LIBCXX___STREAMBUFFER
