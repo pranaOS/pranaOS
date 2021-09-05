@@ -1,5 +1,4 @@
-#ifndef _KERNEL_LIBKERN_BITS_SYSCALLS_H
-#define _KERNEL_LIBKERN_BITS_SYSCALLS_H
+#pragma once 
 
 enum __sysid {
     SYS_RESTART = 0,
@@ -50,5 +49,3 @@ enum __sysid {
     SYS_SHBUF_FREE,
 };
 typedef enum __sysid sysid_t;
-
-#endif // _KERNEL_LIBKERN_BITS_SYSCALLS_H
