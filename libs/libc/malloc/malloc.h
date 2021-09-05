@@ -1,5 +1,4 @@
-#ifndef _LIBC_MALLOC_MALLOC_H
-#define _LIBC_MALLOC_MALLOC_H
+#pragma once
 
 #include <stdbool.h>
 #include <stddef.h>
@@ -64,5 +63,3 @@ void* slab_alloc(size_t);
 void slab_free(malloc_header_t* mem_header);
 
 __END_DECLS
-
-#endif // _LIBC_MALLOC_MALLOC_H
