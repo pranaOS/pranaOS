@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#ifndef _KERNEL_PLATFORM_X86_GDT_H
-#define _KERNEL_PLATFORM_X86_GDT_H
+#pragma once
 
 #include <libkern/c_attrs.h>
 #include <libkern/types.h>
@@ -66,5 +65,3 @@ extern struct gdt_entry gdt[GDT_MAX_ENTRIES];
     }
 
 void gdt_setup();
-
-#endif // _KERNEL_PLATFORM_X86_GDT_H
