@@ -1,5 +1,4 @@
-#ifndef _LIBC_BITS_FCNTL_H
-#define _LIBC_BITS_FCNTL_H
+#pragma once
 
 #define SEEK_SET 0x1
 #define SEEK_CUR 0x2
@@ -14,5 +13,3 @@
 #define O_TRUNC 0x20
 #define O_APPEND 0x40
 #define O_EXCL 0x80
-
-#endif // _LIBC_BITS_FCNTL_H
