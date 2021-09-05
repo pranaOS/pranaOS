@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#ifndef _KERNEL_TASKING_THREAD_H
-#define _KERNEL_TASKING_THREAD_H
+#pragma once
 
 #include <drivers/generic/fpu.h>
 #include <fs/vfs.h>
@@ -132,5 +131,3 @@ int init_select_blocker(thread_t* thread, int nfds, fd_set_t* readfds, fd_set_t*
 
 int thread_dump_frame(thread_t* thread);
 int thread_print_backtrace();
-
-#endif /* _KERNEL_TASKING_THREAD_H */
