@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#ifndef _KERNEL_FS_EXT2_EXT2_H
-#define _KERNEL_FS_EXT2_EXT2_H
+#pragma once 
 
 #include <libkern/c_attrs.h>
 #include <libkern/types.h>
@@ -128,7 +127,3 @@ struct PACKED dir_entry {
 typedef struct dir_entry dir_entry_t;
 
 void ext2_install();
-
-/* All others apis are avail for VFS throw struct fs_ops_t */
-
-#endif // _KERNEL_FS_EXT2_EXT2_H
