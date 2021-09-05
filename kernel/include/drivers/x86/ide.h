@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#ifndef _KERNEL_DRIVERS_X86_IDE_H
-#define _KERNEL_DRIVERS_X86_IDE_H
+#pragma once
 
 #include <drivers/x86/ata.h>
 #include <libkern/types.h>
@@ -13,5 +12,3 @@
 
 void ide_install();
 void ide_find_devices(device_t* t_device);
-
-#endif // _KERNEL_DRIVERS_X86_IDE_H
