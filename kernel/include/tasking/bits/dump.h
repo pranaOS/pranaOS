@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#ifndef _KERNEL_TASKING_BITS_DUMP_H
-#define _KERNEL_TASKING_BITS_DUMP_H
+#pragma once
 
 #include <libkern/types.h>
 #include <tasking/proc.h>
@@ -23,5 +22,3 @@ struct dump_data {
     sym_resolver_t sym_resolver;
 };
 typedef struct dump_data dump_data_t;
-
-#endif // _KERNEL_TASKING_BITS_DUMP_H
