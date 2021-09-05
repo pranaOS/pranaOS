@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#ifndef _LIBOBJC_MEMORY_H
-#define _LIBOBJC_MEMORY_H
+#pragma once
 
 #include <libobjc/runtime.h>
 #include <stdlib.h>
@@ -16,5 +15,3 @@
 #define objc_free(...) free(__VA_ARGS__)
 
 id alloc_instance(Class cls);
-
-#endif // _LIBOBJC_MEMORY_H
