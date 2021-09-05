@@ -1,5 +1,4 @@
-#ifndef _LIBC_SYS_SOCKET_H
-#define _LIBC_SYS_SOCKET_H
+#pragma once
 
 #include <bits/sys/socket.h>
 #include <stddef.h>
@@ -13,5 +12,3 @@ int bind(int sockfd, const char* name, int len);
 int connect(int sockfd, const char* name, int len);
 
 __END_DECLS
-
-#endif // _LIBC_SYS_SOCKET_H
