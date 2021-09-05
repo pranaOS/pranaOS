@@ -4,9 +4,6 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-// #ifndef _KERNEL_ALGO_RINGBUFFER_H
-// #define _KERNEL_ALGO_RINGBUFFER_H
-
 #pragma once
 
 #include <libkern/libkern.h>
@@ -36,5 +33,3 @@ uint32_t ringbuffer_write_ignore_bounds(ringbuffer_t* buf, const uint8_t* holder
 uint32_t ringbuffer_read_one(ringbuffer_t* buf, uint8_t* data);
 uint32_t ringbuffer_write_one(ringbuffer_t* buf, uint8_t data);
 void ringbuffer_clear(ringbuffer_t* buf);
-
-// #endif //_KERNEL_ALGO_RINGBUFFER_H
