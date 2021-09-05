@@ -1,9 +1,7 @@
 #pragma GCC system_header
 
-// #ifndef _LIBCXX_CSETJMP
-// #define _LIBCXX_CSETJMP
-
-#pragma once
+#ifndef _LIBCXX_CSETJMP
+#define _LIBCXX_CSETJMP
 
 #include <__config>
 #include <setjmp.h>
@@ -15,4 +13,4 @@ using ::longjmp;
 
 _LIBCXX_END_NAMESPACE_STD
 
-// #endif // _LIBCXX_CSETJMP
+#endif // _LIBCXX_CSETJMP
