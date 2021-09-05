@@ -1,6 +1,3 @@
-// #ifndef STAGE2_ELF_LITE
-// #define STAGE2_ELF_LITE
-
 #pragma once
 
 #include "../types.h"
@@ -137,5 +134,3 @@ typedef struct {
 
 int elf_load_header(drive_desc_t* drive_desc, fs_desc_t* fs_desc, char* path);
 int elf_load_kernel(drive_desc_t* drive_desc, fs_desc_t* fs_desc, char* path, uint32_t* kernel_size);
-
-// #endif // STAGE2_ELF_LITE
