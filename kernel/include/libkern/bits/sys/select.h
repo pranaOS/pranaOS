@@ -1,5 +1,4 @@
-#ifndef _KERNEL_LIBKERN_BITS_SYS_SELECT_H
-#define _KERNEL_LIBKERN_BITS_SYS_SELECT_H
+#pragma once 
 
 #include <libkern/types.h>
 
@@ -14,5 +13,3 @@ typedef struct fd_set fd_set_t;
 #define FD_CLR(fd, fd_set_ptr) ((fd_set_ptr)->fds[fd / 8] &= ~(1 << (fd % 8)))
 #define FD_ZERO(fd_set_ptr) (memset((uint8_t*)(fd_set_ptr), 0, sizeof(fd_set_t)))
 #define FD_ISSET(fd, fd_set_ptr) ((fd_set_ptr)->fds[fd / 8] & (1 << (fd % 8)))
-
-#endif // _KERNEL_LIBKERN_BITS_SYS_SELECT_H
