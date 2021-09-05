@@ -1,5 +1,4 @@
-#ifndef _LIBC_BITS_SYSCALLS_H
-#define _LIBC_BITS_SYSCALLS_H
+#pragma once
 
 enum __sysid {
     SYS_RESTART = 0,
@@ -50,5 +49,3 @@ enum __sysid {
     SYS_SHBUF_FREE,
 };
 typedef enum __sysid sysid_t;
-
-#endif // _LIBC_BITS_SYSCALLS_H
