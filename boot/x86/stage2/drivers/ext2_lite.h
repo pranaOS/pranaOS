@@ -1,6 +1,3 @@
-// #ifndef STAGE2_EXT2_LITE
-// #define STAGE2_EXT2_LITE
-
 #pragma once
 
 #include "../types.h"
@@ -122,5 +119,3 @@ typedef struct {
 int ext2_lite_init(drive_desc_t* drive_desc, fs_desc_t* fs_desc);
 int ext2_lite_get_inode(drive_desc_t* drive_desc, char* path, inode_t* file_inode);
 int ext2_lite_read(drive_desc_t* drive_desc, char* path, uint8_t* buf, uint32_t from, uint32_t len);
-
-// #endif // STAGE2_EXT2_LITE
