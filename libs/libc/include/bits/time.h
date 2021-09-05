@@ -1,5 +1,4 @@
-#ifndef _LIBC_BITS_TIME_H
-#define _LIBC_BITS_TIME_H
+#pragma once
 
 #include <sys/cdefs.h>
 #include <sys/types.h>
@@ -52,5 +51,3 @@ typedef enum {
 } clockid_t;
 
 __END_DECLS
-
-#endif // _LIBC_BITS_TIME_H
