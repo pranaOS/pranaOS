@@ -22,7 +22,7 @@ jobs:
         mv gn /usr/local/bin
         
     - name: Create Build Environment
-      run: gn gen out --args='target_cpu="x86" host="gnu"'
+      run: ./build.sh
 
     - name: Build
       working-directory: ${{github.workspace}}/out
