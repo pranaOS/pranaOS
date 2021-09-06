@@ -1065,6 +1065,7 @@
 		9F8EAC7326E5FBA800BE32EE /* .info.mk */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .info.mk; sourceTree = "<group>"; };
 		9F8EAC7426E5FBA800BE32EE /* AppDelegate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AppDelegate.cpp; sourceTree = "<group>"; };
 		9F8EAC7526E5FBA800BE32EE /* ViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		9F8EAD7726E5FC3600BE32EE /* abs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = abs.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1678,6 +1679,7 @@
 				9F8EA91E26E5FBA600BE32EE /* sys */,
 				9F8EA92526E5FBA600BE32EE /* errno.h */,
 				9F8EA92626E5FBA600BE32EE /* syscalls.h */,
+				9F8EAD7726E5FC3600BE32EE /* abs.h */,
 			);
 			path = bits;
 			sourceTree = "<group>";
