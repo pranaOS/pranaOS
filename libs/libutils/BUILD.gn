@@ -4,6 +4,7 @@ pranaOS_static_library("libutils") {
   sources = [
     "Prelude.h",
     "Macros.h",
+    "MinMax.h",
   ]
 
   deplibs = [
