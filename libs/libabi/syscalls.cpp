@@ -4,7 +4,7 @@
 * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#include <libabi/Syscalls.h>
+#include <libabi/syscalls.h>
 
 static int _pid_cache = -1;
 
