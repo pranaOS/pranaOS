@@ -120,4 +120,21 @@ inline int rune_to_utf8(Rune rune, uint8_t *buffer)
     }
 }
 
-// FIXME: run foreach
+template <typename T>
+inline void rune_foreach(const uint8_t *buffer, T callback)
+{
+    Rune rune = 0;
+
+    size_t size = utf8_to_rune(buffer, &rune);
+    buffer += size;
+
+    while (size && rune != 0)
+    {
+        callback(rune);
+
+        size = utf8_to_rune(buffer, &rune);
+        buffer += size;
+    }
+}
+
+} 
