@@ -11,6 +11,7 @@ pranaOS_static_library("libabi") {
     "result.h",
     "rune.h",
     "memory.h",
+    "task.h",
   ]
 
   deplibs = [
