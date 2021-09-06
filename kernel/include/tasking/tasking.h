@@ -6,6 +6,7 @@
 
 #pragma once
 
+// includes
 #include <drivers/generic/fpu.h>
 #include <fs/vfs.h>
 #include <libkern/types.h>
@@ -23,45 +24,24 @@
 #define SIGNALS_CNT 32
 
 extern proc_t proc[MAX_PROCESS_COUNT];
-extern uint32_t nxt_proc;
-extern uint32_t ended_proc;
 
 proc_t* tasking_get_proc(uint32_t pid);
 proc_t* tasking_get_proc_by_pdir(pdirectory_t* pdir);
 
-/**
- * CPU FUNCTIONS
- */
-
 void switchuvm(thread_t* p);
-
-/**
- * TASK LOADING FUNCTIONS
- */
 
 void tasking_start_init_proc();
 proc_t* tasking_create_kernel_thread(void* entry_point, void* data);
-
-/**
- * TASKING RELATED FUNCTIONS
- */
+proc_t* tasking_run_kernel_thread(void* entry_point, void* data);
 
 void tasking_init();
 void tasking_kill_dying();
-
-/**
- * SYSCALL IMPLEMENTATION
- */
 
 void tasking_fork(trapframe_t* tf);
 int tasking_exec(const char* path, const char** argv, const char** env);
 void tasking_exit(int exit_code);
 int tasking_waitpid(int pid);
 int tasking_kill(thread_t* thread, int signo);
-
-/**
- * SIGNALS
- */
 
 void signal_init();
 
