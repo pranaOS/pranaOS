@@ -4,6 +4,7 @@ pranaOS_static_library("libabi") {
   sources = [
     "process.h",
     "filesystem.h",
+    "network.h",
     "time.h",
   ]
 
