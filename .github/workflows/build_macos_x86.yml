@@ -1,4 +1,4 @@
-name: Building For x86 Mac
+name: Building macOS x86
 
 on: [push, pull_request]
 
@@ -22,7 +22,7 @@ jobs:
         mv gn /usr/local/bin
         
     - name: Create Build Environment
-      run: ./build.sh
+      run: gn gen out --args='target_cpu="x86" host="gnu"'
 
     - name: Build
       working-directory: ${{github.workspace}}/out
@@ -36,3 +36,21 @@ jobs:
       run: |
         export LLVM_BIN_PATH="/usr/local/Cellar/llvm/12.0.1/bin"
         gn gen out --args='target_cpu="x86" host="llvm"'
+
+    - name: Build LLVM
+      working-directory: ${{github.workspace}}/out
+      shell: bash
+      run: ninja
+
+    - name: Cleaning Desktop LLVM Build Environment
+      run: rm -rf out
+
+    - name: Create Mobile LLVM Build Environment
+      run: |
+        export LLVM_BIN_PATH="/usr/local/Cellar/llvm/12.0.1/bin"
+        gn gen out --args='target_cpu="x86" host="llvm" device_type="m"'
+
+    - name: Build Mobile with LLVM
+      working-directory: ${{github.workspace}}/out
+      shell: bash
+      run: ninja
