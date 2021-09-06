@@ -3,6 +3,8 @@ import("//build/libs/TEMPLATE.gni")
 pranaOS_static_library("libabi") {
   sources = [
     "Process.h",
+    "filesystem.h",
+    "time.h",
   ]
 
   deplibs = [
