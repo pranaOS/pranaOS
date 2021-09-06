@@ -7,8 +7,8 @@
 #pragma once
 
 // includes
-#include <libabi/filesystem.h>
-#include <libabi/result.h>
+#include <libabi/Filesystem.h>
+#include <libabi/Result.h>
 
 #define POLL_READ (1 << 0)
 #define POLL_WRITE (1 << 1)
@@ -31,6 +31,12 @@ struct HandlePoll
     PollEvent result;
 };
 
-// FIXME: define some handlers
-
 #define HANDLE_INVALID_ID (-1)
+
+#define HANDLE(__subclass) ((Handle *)(__subclass))
+
+#define handle_has_error(__handle) (HANDLE(__handle)->result != SUCCESS)
+
+#define handle_error_string(__handle) result_to_string(HANDLE(__handle)->result)
+
+#define handle_get_error(__handle) (HANDLE(__handle)->result)
