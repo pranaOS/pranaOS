@@ -2,6 +2,7 @@ import("//build/libs/TEMPLATE.gni")
 
 pranaOS_static_library("libabi") {
   sources = [
+    "keyboard.h",
     "iocall.h",
     "process.h",
     "filesystem.h",
