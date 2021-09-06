@@ -1,0 +1,131 @@
+if (target_cpu == "x86") {
+  gnu_ar = "i686-elf-ar"
+  gnu_cc = "i686-elf-gcc"
+  gnu_cxx = "i686-elf-g++"
+  gnu_ld = "i686-elf-ld"
+  gnu_asm = "nasm"
+}
+if (target_cpu == "aarch32") {
+  gnu_ar = "arm-none-eabi-ar"
+  gnu_cc = "arm-none-eabi-gcc"
+  gnu_cxx = "arm-none-eabi-g++"
+  gnu_ld = "arm-none-eabi-gcc"
+  gnu_asm = "arm-none-eabi-as"
+}
+
+toolchain("gnu-cross-compiler") {
+  tool("cc") {
+    depfile = "{{output}}.d"
+    command = "$gnu_cc -MMD -MF $depfile {{defines}} {{include_dirs}} {{cflags}} {{cflags_c}} -c {{source}} -o {{output}}"
+    depsformat = "gcc"
+    description = "CC {{output}}"
+    outputs =
+        [ "{{source_out_dir}}/{{target_output_name}}.{{source_name_part}}.o" ]
+  }
+  tool("cxx") {
+    depfile = "{{output}}.d"
+    command = "$gnu_cxx -MMD -MF $depfile {{defines}} {{include_dirs}} {{cflags}} {{cflags_cc}} -c {{source}} -o {{output}}"
+    depsformat = "gcc"
+    description = "CXX {{output}}"
+    outputs =
+        [ "{{source_out_dir}}/{{target_output_name}}.{{source_name_part}}.o" ]
+  }
+  tool("asm") {
+    depfile = "{{output}}.d"
+    command = "$gnu_asm {{source}} -o {{output}} {{asmflags}}"
+    depsformat = "gcc"
+    description = "ASM {{output}}"
+    outputs =
+        [ "{{source_out_dir}}/{{target_output_name}}.{{source_name_part}}.o" ]
+  }
+  tool("alink") {
+    command = "rm -f {{output}} && $gnu_ar rcs {{output}} {{inputs}}"
+    description = "AR {{output}}"
+    outputs = [ "{{root_out_dir}}/{{target_output_name}}{{output_extension}}" ]
+    default_output_extension = ".a"
+    output_prefix = ""
+  }
+  tool("link") {
+    outputs = [ "{{root_out_dir}}/{{target_output_name}}{{output_extension}}" ]
+    command = "$gnu_ld {{inputs}} -o {{output}} {{ldflags}} {{solibs}} {{libs}}"
+    description = "LINK {{output}}"
+  }
+  tool("stamp") {
+    command = "touch {{output}}"
+    description = "STAMP {{output}}"
+  }
+  tool("copy") {
+    command = "ln -f {{source}} {{output}} 2>/dev/null || (rm -rf {{output}} && cp -af {{source}} {{output}})"
+    description = "COPY {{source}} {{output}}"
+  }
+}
+
+if (target_cpu == "x86") {
+  llvm_ar = "$llvm_bin_path/llvm-ar"
+  llvm_cc = "$llvm_bin_path/clang"
+  llvm_cxx = "$llvm_bin_path/clang++"
+  llvm_ld = "$llvm_bin_path/ld.lld"
+  llvm_asm = "nasm"
+  llvm_target = "i686-pc-none-elf"
+  llvm_ccpp_target_flag = "-target $llvm_target"
+  llvm_asm_target_flag = ""  # No additinal flags are provided for nasm
+}
+if (target_cpu == "aarch32") {
+  llvm_ar = "$llvm_bin_path/llvm-ar"
+  llvm_cc = "$llvm_bin_path/clang"
+  llvm_cxx = "$llvm_bin_path/clang++"
+  llvm_ld = "$llvm_bin_path/ld.lld"
+  llvm_asm = "$llvm_bin_path/clang"
+  llvm_target = "armv7a-pc-none-elf"
+  llvm_ccpp_target_flag = "-target $llvm_target"
+  llvm_asm_target_flag = "-target $llvm_target -c"
+}
+
+toolchain("llvm-cross-compiler") {
+  tool("cc") {
+    depfile = "{{output}}.d"
+    command = "$llvm_cc -MMD -MF $depfile $llvm_ccpp_target_flag {{defines}} {{include_dirs}} {{cflags}} {{cflags_c}} -c {{source}} -o {{output}}"
+    depsformat = "gcc"
+    description = "CC {{output}}"
+    outputs =
+        [ "{{source_out_dir}}/{{target_output_name}}.{{source_name_part}}.o" ]
+  }
+  tool("cxx") {
+    depfile = "{{output}}.d"
+    command = "$llvm_cxx -MMD -MF $depfile $llvm_ccpp_target_flag {{defines}} {{include_dirs}} {{cflags}} {{cflags_cc}} -c {{source}} -o {{output}}"
+    depsformat = "gcc"
+    description = "CXX {{output}}"
+    outputs =
+        [ "{{source_out_dir}}/{{target_output_name}}.{{source_name_part}}.o" ]
+  }
+  tool("asm") {
+    depfile = "{{output}}.d"
+    command =
+        "$llvm_asm $llvm_asm_target_flag {{source}} -o {{output}} {{asmflags}}"
+    depsformat = "gcc"
+    description = "ASM {{output}}"
+    outputs =
+        [ "{{source_out_dir}}/{{target_output_name}}.{{source_name_part}}.o" ]
+  }
+  tool("alink") {
+    command = "rm -f {{output}} && $llvm_ar rcs {{output}} {{inputs}}"
+    description = "AR {{output}}"
+    outputs = [ "{{root_out_dir}}/{{target_output_name}}{{output_extension}}" ]
+    default_output_extension = ".a"
+    output_prefix = ""
+  }
+  tool("link") {
+    outputs = [ "{{root_out_dir}}/{{target_output_name}}{{output_extension}}" ]
+    command =
+        "$llvm_ld {{inputs}} -o {{output}} {{ldflags}} {{solibs}} {{libs}}"
+    description = "LINK {{output}}"
+  }
+  tool("stamp") {
+    command = "touch {{output}}"
+    description = "STAMP {{output}}"
+  }
+  tool("copy") {
+    command = "ln -f {{source}} {{output}} 2>/dev/null || (rm -rf {{output}} && cp -af {{source}} {{output}})"
+    description = "COPY {{source}} {{output}}"
+  }
+}

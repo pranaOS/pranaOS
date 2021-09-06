@@ -1,0 +1,30 @@
+# /*
+#  * Copyright (c) 2021, Krisna Pranav
+#  *
+#  * SPDX-License-Identifier: BSD-2-Clause
+# */
+
+from type_file import Type
+
+reserved_symbols = {
+    '(': Type.Lang.LeftBracket,
+    ')': Type.Lang.RightBracket,
+    ';': Type.Lang.Semi,
+    '.': Type.Lang.Dot,
+    ',': Type.Lang.Comma,
+    ':': Type.Lang.Colon,
+
+    '=>': Type.Reserved.Return,
+
+    '{': Type.Reserved.Begin,
+    '}': Type.Reserved.End,
+}
+
+reserved_words = {
+    'NAME': Type.Reserved.Name,
+    'MAGIC': Type.Reserved.Magic,
+    'KEYPROTECTED': Type.Reserved.KeyProtected,
+}
+
+available_var_types = [Type.Number.Integer,
+                       Type.Number.Real, Type.Number.Boolean]

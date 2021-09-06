@@ -1,27 +1,17 @@
-# contributing to pranaOS:
+# Contibution guide:
 
-- contributing to pranaOS
-- pranaOS is a open source operating system and you can contribute to it
-- before contributing to pranaOS make sure you [forked it](https://github.com/pranaOS/pranaOS/fork)
+- the thing your going to contribute should be usefull
 
-- clone your own fork and the features
+# Pull Request:
 
-# Pull Request Style:
-
-- Heading:
+- pull request header:
 ```
-Where You Added: what feature you added or updated
-Example:
-userland: applications calculator updated
+library or application: what changes you've done
 ```
 
-- Description:
-```bash 
-what you added:
+- pull request:
+```
+what you done:
 what it does:
+author: 
 ```
-
-
-# Coding Style:
-
-- View the coding style [here](https://github.com/pranaOS/pranaOS/blob/master/docs/codingstyle.md)

@@ -1,0 +1,21 @@
+# /*
+#  * Copyright (c) 2021, Krisna Pranav
+#  *
+#  * SPDX-License-Identifier: BSD-2-Clause
+# */
+
+action("build_scripts") {
+  script = "build_scripts.py"
+  outputs = [
+    "$root_build_dir/build.sh",
+    "$root_build_dir/run.sh",
+    "$root_build_dir/sync.sh",
+    "$root_build_dir/all.sh",
+  ]
+
+  args = [
+    target_cpu,
+    rebase_path("//", root_build_dir),
+    rebase_path("$root_build_dir", root_build_dir),
+  ]
+}

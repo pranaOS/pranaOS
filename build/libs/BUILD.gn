@@ -1,0 +1,104 @@
+# /*
+#  * Copyright (c) 2021, Krisna Pranav
+#  *
+#  * SPDX-License-Identifier: BSD-2-Clause
+# */
+
+lib_c_flags = [
+  "-ffreestanding",
+  "-Werror",
+  "-Wno-address-of-packed-member",
+]
+
+if (userland_symbols) {
+  lib_c_flags += [ "-ggdb" ]
+}
+
+if (optimize) {
+  lib_c_flags += [ "-Os" ]
+}
+
+lib_cc_flags = [
+  "-std=c++2a",
+  "-fno-sized-deallocation",
+  "-fno-rtti",
+  "-fno-exceptions",
+  "-D_LIBCXX_BUILD_PRANAOS_EXTENSIONS",
+]
+
+lib_objcc_flags = lib_cc_flags + [
+                    "-Wno-nullability-completeness",
+                    "-Wno-deprecated-objc-isa-usage",
+                    "-Wno-objc-root-class",
+                    "-Wno-cast-of-sel-type",
+                    "-fno-objc-exceptions",
+                    "-fno-objc-arc",
+                    "-fno-unwind-tables"
+                  ]
+
+lib_asm_flags = []
+
+if (device_type == "desktop") {
+  lib_c_flags += [ "-DTARGET_DESKTOP" ]
+}
+if (device_type == "mobile") {
+  lib_c_flags += [ "-DTARGET_MOBILE" ]
+}
+
+if (target_cpu == "x86") {
+  lib_asm_flags += [
+    "-f",
+    "elf",
+  ]
+}
+
+if (target_cpu == "aarch32") {
+  lib_c_flags += [
+    "-fno-builtin",
+    "-march=armv7-a",
+    "-mfpu=neon-vfpv4",
+    "-mfloat-abi=softfp",
+    "-fno-pie",
+  ]
+  lib_asm_flags += [
+    "-march=armv7-a",
+    "-mfpu=neon-vfpv4",
+    "-mfloat-abi=softfp",
+    "-mcpu=cortex-a15",
+  ]
+}
+
+config("lib_flags") {
+  cflags = lib_c_flags
+  asmflags = lib_asm_flags
+}
+
+config("libobjcc_flags") {
+  cflags = lib_c_flags
+  cflags_objcc = lib_objcc_flags
+  cflags_cc = lib_cc_flags
+  asmflags = lib_asm_flags
+}
+
+config("libcxx_flags") {
+  cflags = lib_c_flags
+  asmflags = lib_asm_flags
+  cflags_cc = lib_cc_flags
+}
+
+group("libs") {
+  deps = [
+    "//libs/libabi:libabi",
+    "//libs/libc:libc",
+    "//libs/libcxx:libcxx",
+    "//libs/libcxxabi:libcxxabi",
+    "//libs/libfoundation:libfoundation",
+    "//libs/libg:libg",
+    "//libs/libui:libui",
+    "//libs/libutils:libutils",
+  ]
+
+  if (objc_support) {
+    deps += [ "//libs/libobjc:libobjc" ]
+  }
+}

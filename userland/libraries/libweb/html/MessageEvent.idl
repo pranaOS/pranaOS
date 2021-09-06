@@ -1,7 +1,0 @@
-interface MessageEvent : Event {
-
-    // FIXME: This should be of type "any" instead of "USVString"
-    readonly attribute USVString data;
-    readonly attribute USVString origin;
-
-};
