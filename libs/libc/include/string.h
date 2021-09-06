@@ -6,43 +6,57 @@
 
 #pragma once
 
+// includes
+#include <libc/__libc__.h>
 #include <stddef.h>
-#include <sys/cdefs.h>
-#include <sys/types.h>
+#include <stdint.h>
 
-__BEGIN_DECLS
+__BEGIN_HEADER
 
-/* Set 'nbytes' to 'fill' starting from 'dest'. */
-void* memset(void* dest, int fill, size_t nbytes);
+void *memset(void *dest, int c, size_t n);
+void *memcpy(void *dest, const void *src, size_t n);
+void *memmove(void *dest, const void *src, size_t n);
 
-/* Move 'nbytes' from 'src' to 'dest' */
-void* memmove(void* dest, const void* __restrict src, size_t nbytes);
+void *memchr(const void *src, int c, size_t n);
+void *memrchr(const void *m, int c, size_t n);
+int memcmp(const void *vl, const void *vr, size_t n);
 
-/* Copy 'nbytes' from 'src' to 'dest'. See the comment in the source file
-   about optimization and restricting pointers. */
-void* memcpy(void* __restrict dest, const void* __restrict src, size_t nbytes);
+char *strdup(const char *s);
+char *stpcpy(char *d, const char *s);
+char *strcpy(char *dest, const char *src);
+char *strchrnul(const char *s, int c);
+char *strchr(const char *s, int c);
+char *strrchr(const char *s, int c);
+char *strpbrk(const char *s, const char *b);
+char *strstr(const char *h, const char *n);
 
-/* Copy 'nbytes' from 'src' to 'dest', stopping if the current byte matches
-   'stop'. Note that the stop byte also gets copied over. */
-void* memccpy(void* dest, const void* __restrict src, int stop, size_t nbytes);
+char *strncpy(char *dest, const char *src, size_t n);
 
-/* Compare 'nbytes' from 'src1' and 'src2'. Return 0 if all the bytes match,
-   otherwise return the difference. */
-int memcmp(const void* src1, const void* src2, size_t nbytes);
+int strcmp(const char *l, const char *r);
+int strncmp(const char *s1, const char *s2, size_t n);
+int strcoll(const char *s1, const char *s2);
 
-/* Calculate the string length starting from 'str'. */
-size_t strlen(const char* str);
+size_t strcspn(const char *s, const char *c);
+size_t strspn(const char *s, const char *c);
+size_t strlen(const char *s);
+size_t strnlen(const char *s, size_t maxlen);
 
-/* Copy 'src' into 'dest' until it finds a null byte in the source string.
-   Note that this is dangerous because it writes memory no matter the size
-   the 'dest' buffer is. */
-char* strcpy(char* dest, const char* src);
-int strcmp(const char* a, const char* b);
+int atoi(const char *s);
 
-/* Copy 'src' into 'dest' until it finds a null byte or reaches the 'nbytes'
-   limit provided by the user. This is the recommended way of copying strings,
-   instead of using regular strcpy. Note that this will fill the 'dest' buffer
-   with null bytes if the amount of copied bytes is lower than 'nbytes'. */
-char* strncpy(char* dest, const char* src, size_t nbytes);
+char *strcat(char *dest, const char *src);
+char *strncat(char *dest, const char *src, size_t n);
 
-__END_DECLS
+char *strtok(char *str, const char *delim);
+char *strtok_r(char *str, const char *delim, char **saveptr);
+
+char *strncpy(char *dest, const char *src, size_t n);
+
+char *strerror(int errnum);
+size_t strxfrm(char *dest, const char *src, size_t n);
+
+void strrvs(char *str);
+void strnapd(char *str, char c, size_t n);
+void strapd(char *str, char c);
+size_t strlcpy(char *dst, const char *src, size_t maxlen);
+
+__END_HEADER
