@@ -8,7 +8,6 @@ pranaOS_static_library("libc") {
     "init/_lib.c",
     "malloc/malloc.c",
     "malloc/slab.c",
-    "math/math.h",
     "pranaos/numberformatter.h",
     "posix/fs.c",
     "posix/sched.c",

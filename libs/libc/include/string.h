@@ -6,57 +6,27 @@
 
 #pragma once
 
-// includes
-#include <libc/__libc__.h>
 #include <stddef.h>
-#include <stdint.h>
+#include <sys/cdefs.h>
+#include <sys/types.h>
 
-__BEGIN_HEADER
+__BEGIN_DECLS
 
-void *memset(void *dest, int c, size_t n);
-void *memcpy(void *dest, const void *src, size_t n);
-void *memmove(void *dest, const void *src, size_t n);
+void* memset(void* dest, int fill, size_t nbytes);
 
-void *memchr(const void *src, int c, size_t n);
-void *memrchr(const void *m, int c, size_t n);
-int memcmp(const void *vl, const void *vr, size_t n);
+void* memmove(void* dest, const void* __restrict src, size_t nbytes);
 
-char *strdup(const char *s);
-char *stpcpy(char *d, const char *s);
-char *strcpy(char *dest, const char *src);
-char *strchrnul(const char *s, int c);
-char *strchr(const char *s, int c);
-char *strrchr(const char *s, int c);
-char *strpbrk(const char *s, const char *b);
-char *strstr(const char *h, const char *n);
+void* memcpy(void* __restrict dest, const void* __restrict src, size_t nbytes);
 
-char *strncpy(char *dest, const char *src, size_t n);
+void* memccpy(void* dest, const void* __restrict src, int stop, size_t nbytes);
 
-int strcmp(const char *l, const char *r);
-int strncmp(const char *s1, const char *s2, size_t n);
-int strcoll(const char *s1, const char *s2);
+int memcmp(const void* src1, const void* src2, size_t nbytes);
 
-size_t strcspn(const char *s, const char *c);
-size_t strspn(const char *s, const char *c);
-size_t strlen(const char *s);
-size_t strnlen(const char *s, size_t maxlen);
+size_t strlen(const char* str);
 
-int atoi(const char *s);
+char* strcpy(char* dest, const char* src);
+int strcmp(const char* a, const char* b);
 
-char *strcat(char *dest, const char *src);
-char *strncat(char *dest, const char *src, size_t n);
+char* strncpy(char* dest, const char* src, size_t nbytes);
 
-char *strtok(char *str, const char *delim);
-char *strtok_r(char *str, const char *delim, char **saveptr);
-
-char *strncpy(char *dest, const char *src, size_t n);
-
-char *strerror(int errnum);
-size_t strxfrm(char *dest, const char *src, size_t n);
-
-void strrvs(char *str);
-void strnapd(char *str, char c, size_t n);
-void strapd(char *str, char c);
-size_t strlcpy(char *dst, const char *src, size_t maxlen);
-
-__END_HEADER
+__END_DECLS
