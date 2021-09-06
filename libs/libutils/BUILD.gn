@@ -2,9 +2,9 @@ import("//build/libs/TEMPLATE.gni")
 
 pranaOS_static_library("libutils") {
   sources = [
-    "Prelude.h",
-    "Macros.h",
-    "MinMax.h",
+    "prelude.h",
+    "macros.h",
+    "minmax.h",
   ]
 
   deplibs = [
