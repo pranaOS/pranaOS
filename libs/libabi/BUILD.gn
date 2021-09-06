@@ -8,6 +8,7 @@ pranaOS_static_library("libabi") {
     "network.h",
     "time.h",
     "result.h",
+    "memory.h",
   ]
 
   deplibs = [
