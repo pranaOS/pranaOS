@@ -18,8 +18,6 @@
 #include <platform/generic/vmm/pf_types.h>
 #include <tasking/tasking.h>
 
-// #define VMM_DEBUG
-
 #define pdir_t pdirectory_t
 #define VMM_TOTAL_PAGES_PER_TABLE VMM_PTE_COUNT
 #define VMM_TOTAL_TABLES_PER_DIRECTORY VMM_PDE_COUNT
