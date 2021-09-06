@@ -1,12 +1,13 @@
 version: 2.1
 
 orbs:
+  c: sharptools/c@0.0.1
 
-  welcome: circleci/welcome-orb@0.4.1
 
 workflows:
+    example-workflow:
+      jobs:
+        - c/package:
+            appname: pranaOS 
 
-  welcome:
-  
-    jobs:
-      - welcome/run
+        
