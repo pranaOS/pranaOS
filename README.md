@@ -12,7 +12,7 @@ A unix operating system written from scratch in c / c++
 - contributing [docs](https://github.com/pranaOS/pranaOS/blob/master/docs/contributing.md)
 
 
-- view the future plans of [pranaos](https://github.com/pranaOS/pranaOS/blob/master/plans/plans.pdf)
+- view the future plans of [pranaos](https://github.com/pranaOS/pranaOS/blob/master/plans/pranaOSfutureplans.pdf)
 
 # Social Media:
 - [discord](https://discord.gg/XmpBTmy9Bz)
