@@ -8,11 +8,14 @@ pranaOS_static_library("libabi") {
     "network.h",
     "time.h",
     "result.h",
+    "rune.h",
     "memory.h",
   ]
 
   deplibs = [
     "libcxx",
+    "libfoundation",
+    "libg",
     "libipc",
   ]
   configs = [ "//build/libs:libcxx_flags" ]
