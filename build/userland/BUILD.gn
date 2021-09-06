@@ -107,6 +107,7 @@ group("userland") {
     "//userland/system/init:init",
     "//userland/system/initgui:initgui",
     "//userland/utilities/cat:cat",
+    "//userland/utilities/echo:echo",
     "//userland/utilities/kill:kill",
     "//userland/utilities/ls:ls",
     "//userland/utilities/mkdir:mkdir",
