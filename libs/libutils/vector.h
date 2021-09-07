@@ -209,4 +209,23 @@ public:
     ContiguousIterator<T> end() const { return _storage + _count; }
 };
 
+template <typename T>
+struct IsVector : public FalseType
+{
+};
+
+template <typename T>
+struct IsVector<Vector<T>> : public TrueType
+{
+};
+
+template <typename T>
+struct TrimVector;
+
+template <typename T>
+struct TrimVector<Vector<T>>
+{
+    typedef T type;
+};
+
 }
