@@ -61,6 +61,22 @@ public:
         return *this;
     }
 
+    bool empty() const { return _used == 0; }
+
+    bool full() const { return _used == N; }
+
+    size_t used() const { return _used; }
+
+    void put(T c)
+    {
+        assert(!full());
+
+        _buffer[_head] = c;
+        _head = (_head + 1) % N;
+        _used++;
+    }
+
+
 
 };
 
