@@ -1,5 +1,12 @@
+/*
+* Copyright (c) 2021, Krisna Pranav
+*
+* SPDX-License-Identifier: BSD-2-Clause
+*/
+
 #pragma once
 
+// includes
 #include <assert.h>
 #include <libutils/ownptr.h>
 #include <libutils/std.h>
@@ -17,41 +24,81 @@ struct Func<Out(In...)>
 private:
     struct CallableWrapperBase
     {
-        virtual ~CallableWrapperBase()
-        {
-        }
+        virtual ~CallableWrapperBase() {}
         virtual Out call(In...) const = 0;
     };
 
     template <typename TCallable>
-    struct CallableWrapperBase final : public CallableWrapperBase
+    struct CallableWrapper final : public CallableWrapperBase
     {
         TCallable callable;
 
-        NONCOPYABLE(CallableWrapperBase);
+        NONCOPYABLE(CallableWrapper);
 
-        explicit CallableWrapperBase(TCallable &&callable)
+        explicit CallableWrapper(TCallable &&callable)
             : callable{std::move(callable)}
         {
         }
 
         Out call(In... in) const final override
         {
-            return callable(std::forward)
+            return callable(std::forward<In>(in)...);
         }
     };
 
-public:
+    OwnPtr<CallableWrapperBase> _wrapper;
 
+public:
     Func() = default;
-    Func(nullptr) {}
+    Func(nullptr_t) {}
+
+    template <
+        typename TCallable,
+        typename = typename EnableIf<!(IsPointer<TCallable>::value && IsFunction<typename RemovePointer<TCallable>::Type>::value) && IsRvalueReference<TCallable &&>::value>::Type>
+    Func(TCallable &&callable)
+        : _wrapper{own<CallableWrapper<TCallable>>(std::move(callable))}
+    {
+    }
+
+    template <
+        typename TFunction,
+        typename = typename EnableIf<IsPointer<TFunction>::value && IsFunction<typename RemovePointer<TFunction>::Type>::value>::Type>
+    Func(TFunction function)
+        : _wrapper{own<CallableWrapper<TFunction>>(std::move(function))}
+    {
+    }
+
+    Out operator()(In... in) const
+    {
+        assert(_wrapper);
+        return _wrapper->call(std::forward<In>(in)...);
+    }
+
+    explicit operator bool() const { return _wrapper; }
+
+    template <
+        typename TCallable,
+        typename = typename EnableIf<!(IsPointer<TCallable>::value && IsFunction<typename RemovePointer<TCallable>::Type>::value) && IsRvalueReference<TCallable &&>::value>::Type>
+    Func &operator=(TCallable &&callable)
+    {
+        _wrapper = own<CallableWrapper<TCallable>>(std::move(callable));
+        return *this;
+    }
+
+    template <
+        typename TFunction,
+        typename = typename EnableIf<IsPointer<TFunction>::value && IsFunction<typename RemovePointer<TFunction>::Type>::value>::Type>
+    Func &operator=(TFunction function)
+    {
+        _wrapper = own<CallableWrapper<TFunction>>(std::move(function));
+        return *this;
+    }
 
     Func &operator=(nullptr_t)
     {
         _wrapper = nullptr;
         return *this;
     }
-
 };
 
 }
