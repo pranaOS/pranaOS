@@ -129,6 +129,44 @@ public:
 
         _count = 0;
     }
+
+    T pop_back()
+    {
+        assert(_count > 0);
+
+        T value = std::move(_storage[_count - 1]);
+        remove_index(_count - 1);
+
+        return value;
+    }
+
+    T &peek() const
+    {
+        assert(_count > 0);
+        return _storage[0];
+    }
+
+    T &peek_back() const
+    {
+        assert(_count > 0);
+        return _storage[_count - 1];
+    }
+
+    bool contains(const T &value) const
+    {
+        for (size_t i = 0; i < _count; i++)
+        {
+            if (_storage[i] == value)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    ContiguousIterator<T> begin() const { return _storage; }
+    ContiguousIterator<T> end() const { return _storage + _count; }
 };
 
 }
