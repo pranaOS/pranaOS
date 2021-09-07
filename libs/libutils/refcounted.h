@@ -52,6 +52,15 @@ T *ref_if_not_null(T *ptr)
     return ptr;
 }
 
-// FIXME: not null deref :) needec
+template <typename T>
+T *deref_if_not_null(T *ptr)
+{
+    if (ptr)
+    {
+        ptr->deref();
+    }
+
+    return ptr;
+}
 
 }
