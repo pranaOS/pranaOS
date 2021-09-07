@@ -267,6 +267,7 @@
 		9F4ED74626E782CB00229BBA /* ResourceManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F4ED5FD26E782C900229BBA /* ResourceManager.cpp */; };
 		9F4ED74726E782CB00229BBA /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F4ED5FE26E782C900229BBA /* main.cpp */; };
 		9F4ED74826E782CB00229BBA /* Compositor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F4ED5FF26E782C900229BBA /* Compositor.cpp */; };
+		9F4ED74B26E782EE00229BBA /* consts.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F4ED74A26E782EE00229BBA /* consts.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -1115,6 +1116,7 @@
 		9F4ED64126E782C900229BBA /* regular.font */ = {isa = PBXFileReference; lastKnownFileType = file; path = regular.font; sourceTree = "<group>"; };
 		9F4ED64226E782C900229BBA /* passwd */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = passwd; sourceTree = "<group>"; };
 		9F4ED64426E782C900229BBA /* pranaOSfutureplans.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = pranaOSfutureplans.pdf; sourceTree = "<group>"; };
+		9F4ED74A26E782EE00229BBA /* consts.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = consts.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1513,6 +1515,7 @@
 				9F4ED27126E782C600229BBA /* BUILD.gn */,
 				9F4ED27226E782C600229BBA /* classes.m */,
 				9F4ED27326E782C600229BBA /* forloop.m */,
+				9F4ED74A26E782EE00229BBA /* consts.m */,
 			);
 			path = objc;
 			sourceTree = "<group>";
@@ -4396,6 +4399,7 @@
 				9F4ED72A26E782CA00229BBA /* tasking.c in Sources */,
 				9F4ED6F526E782CA00229BBA /* pic.c in Sources */,
 				9F4ED70626E782CA00229BBA /* signal_impl.c in Sources */,
+				9F4ED74B26E782EE00229BBA /* consts.m in Sources */,
 				9F4ED66A26E782C900229BBA /* viewer.cpp in Sources */,
 				9F4ED67F26E782C900229BBA /* AppDelegate.cpp in Sources */,
 				9F4ED67326E782C900229BBA /* main.cpp in Sources */,
