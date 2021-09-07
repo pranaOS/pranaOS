@@ -14,7 +14,7 @@ A unix operating system written from scratch in c / c++
 
 ### Contributing Docs:
 - want to contribute to pranaOS??
-- before contributing to pranaOS check the [coding style]()
+- before contributing to pranaOS check the [coding style](https://github.com/pranaOS/pranaOS/blob/master/docs/codingstyle.md)
 - contributing [docs](https://github.com/pranaOS/pranaOS/blob/master/docs/contributing.md)
 
 ### Have any issues???:
