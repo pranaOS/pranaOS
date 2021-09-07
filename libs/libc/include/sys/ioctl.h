@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _LIBC_SYS_IOCTL_H
+#define _LIBC_SYS_IOCTL_H
 
 #include <bits/sys/ioctls.h>
 #include <stddef.h>
@@ -10,3 +11,5 @@ __BEGIN_DECLS
 int ioctl(int fd, uint32_t cmd, uint32_t arg);
 
 __END_DECLS
+
+#endif // _LIBC_SYS_IOCTL_H

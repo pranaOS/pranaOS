@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#pragma once
+#ifndef _LIBOBJC_SELECTOR_H
+#define _LIBOBJC_SELECTOR_H
 
 #include <libobjc/v1/decls.h>
 #include <stddef.h>
@@ -24,3 +25,5 @@ void selector_add_from_class(Class);
 bool selector_is_valid(SEL sel);
 SEL sel_registerName(const char* name);
 SEL sel_registerTypedName(const char* name, const char* types);
+
+#endif // _LIBOBJC_SELECTOR_H

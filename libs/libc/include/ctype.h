@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _LIBC_CTYPE_H
+#define _LIBC_CTYPE_H
 
 #include <stddef.h>
 #include <sys/_structs.h>
@@ -45,3 +46,5 @@ int isupper(int);
 #define isupper(c) ((__ctypes[(unsigned char)(c)] & (_U | _L)) == _U)
 
 __END_DECLS
+
+#endif /* _LIBC_CTYPE_H */

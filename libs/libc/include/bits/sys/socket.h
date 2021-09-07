@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _LIBC_BITS_SYS_SOCKET_H
+#define _LIBC_BITS_SYS_SOCKET_H
 
 enum SOCK_DOMAINS {
     PF_LOCAL,
@@ -21,3 +22,5 @@ enum SOCK_TYPES {
     SOCK_RDM,
     SOCK_PACKET,
 };
+
+#endif // _LIBC_BITS_SYS_SOCKET_H

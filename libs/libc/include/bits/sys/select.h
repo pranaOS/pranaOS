@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _LIBC_BITS_SYS_SELECT_H
+#define _LIBC_BITS_SYS_SELECT_H
 
 #include <sys/types.h>
 
@@ -13,3 +14,5 @@ typedef struct fd_set fd_set_t;
 #define FD_CLR(fd, fd_set_ptr) ((fd_set_ptr)->fds[fd / 8] &= ~(1 << (fd % 8)))
 #define FD_ZERO(fd_set_ptr) (memset((uint8_t*)(fd_set_ptr), 0, sizeof(fd_set_t)))
 #define FD_ISSET(fd, fd_set_ptr) ((fd_set_ptr)->fds[fd / 8] & (1 << (fd % 8)))
+
+#endif // _LIBC_BITS_SYS_SELECT_H

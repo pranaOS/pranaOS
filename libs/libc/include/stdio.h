@@ -3,8 +3,8 @@
  *
  * SPDX-License-Identifier: BSD-2-Clause
  */
-
-#pragma once
+#ifndef _LIBC_STDIO_H
+#define _LIBC_STDIO_H
 
 #include <stddef.h>
 #include <sys/cdefs.h>
@@ -107,3 +107,5 @@ int scanf(const char* fmt, ...);
 int __stream_info(FILE* stream);
 
 __END_DECLS
+
+#endif // _LIBC_STDIO_H

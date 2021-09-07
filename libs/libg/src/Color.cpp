@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-// includes
 #include <libg/Color.h>
 
 namespace LG {
@@ -59,4 +58,4 @@ Color::Color(Colors clr)
     m_opacity = rgb_color.o;
 }
 
-} 
+} // namespace LG

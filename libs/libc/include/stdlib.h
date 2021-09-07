@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _LIBC_STDLIB_H
+#define _LIBC_STDLIB_H
 
 #include <stddef.h>
 #include <sys/cdefs.h>
@@ -46,3 +47,5 @@ int ptsname_r(int fd, char* buf, size_t buflen);
 char* ptsname(int fd);
 
 __END_DECLS
+
+#endif // _LIBC_STDLIB_H

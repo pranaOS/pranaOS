@@ -6,12 +6,14 @@
 
 #pragma once
 
-// includes
 #include <cstdint>
 #include <libfoundation/Logger.h>
 
 namespace LG {
 
+// We keep opacity as an opposite to alpha.
+// This is used for capability with BGA driver
+// and probably should be fixed.
 class Color final {
 public:
     enum Colors {
@@ -115,4 +117,4 @@ private:
     uint8_t m_opacity { 0 };
 };
 
-} 
+} // namespace LG
