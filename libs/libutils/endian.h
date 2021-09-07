@@ -1,3 +1,9 @@
+/*
+* Copyright (c) 2021, Krisna Pranav
+*
+* SPDX-License-Identifier: BSD-2-Clause
+*/
+
 #pragma once
 
 #include <libutils/prelude.h>
@@ -56,7 +62,6 @@ public:
     }
 };
 
-
 template <typename TValue>
 struct PACKED LittleEndian
 {
@@ -74,4 +79,24 @@ public:
     }
 };
 
-}
+using be_uint8_t = BigEndian<uint8_t>;
+using be_uint16_t = BigEndian<uint16_t>;
+using be_uint32_t = BigEndian<uint32_t>;
+using be_uint64_t = BigEndian<uint64_t>;
+
+using le_uint8_t = LittleEndian<uint8_t>;
+using le_uint16_t = LittleEndian<uint16_t>;
+using le_uint32_t = LittleEndian<uint32_t>;
+using le_uint64_t = LittleEndian<uint64_t>;
+
+using be_int8_t = BigEndian<int8_t>;
+using be_int16_t = BigEndian<int16_t>;
+using be_int32_t = BigEndian<int32_t>;
+using be_int64_t = BigEndian<int64_t>;
+
+using le_int8_t = LittleEndian<int8_t>;
+using le_int16_t = LittleEndian<int16_t>;
+using le_int32_t = LittleEndian<int32_t>;
+using le_int64_t = LittleEndian<int64_t>;
+
+} 
