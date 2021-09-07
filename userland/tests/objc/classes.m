@@ -5,9 +5,9 @@
 */
 
 
-#include <libfoundation/NSObject.h>
-#include <libobjc/helpers.h>
-#include <stdio.h>
+#import <libfoundation/NSObject.h>
+#import <libobjc/helpers.h>
+#import <stdio.h>
 
 @interface Box:NSObject {
    double length;    
