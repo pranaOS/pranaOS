@@ -1,12 +1,18 @@
+/*
+* Copyright (c) 2021, Krisna Pranav
+*
+* SPDX-License-Identifier: BSD-2-Clause
+*/
+
 #pragma once
 
 // includes
-#include <libutils/prelude.h>
+#include <libutils/Prelude.h>
 
 namespace Utils
 {
 
-using TypeId = uinptr_t;
+using TypeId = uintptr_t;
 
 template <typename T>
 static TypeId GetTypeId()
@@ -15,6 +21,6 @@ static TypeId GetTypeId()
     return (reinterpret_cast<TypeId>(&placeHolder));
 }
 
-constexpr TypeId INVALID_TYPE_ID = 1;
+constexpr TypeId INVALID_TYPE_ID = -1;
 
-}
+} 
