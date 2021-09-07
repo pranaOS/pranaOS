@@ -10,7 +10,7 @@
 #include <string.h>
 #include <libutils/minmax.h>
 #include <libutils/iteration.h>
-#include <libutils/refPtr.h>
+#include <libutils/refptr.h>
 #include <libutils/std.h>
 
 namespace Utils
