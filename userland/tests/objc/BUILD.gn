@@ -1,0 +1,13 @@
+import("//build/userland/TEMPLATE.gni")
+
+pranaOS_executable("objc") {
+  install_path = "bin/"
+  sources = [
+      "classes.mm",
+   ]
+  configs = [ "//build/userland:userland_flags" ]
+  deplibs = [
+    "libobjc",
+    "libcxx",
+  ]
+}
