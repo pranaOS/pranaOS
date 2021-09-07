@@ -102,6 +102,28 @@ public:
         });
     }
 
+    HashMap &operator=(HashMap &&other)
+    {
+        std::swap(_buckets, other._buckets);
+        return *this;
+    }
+
+    TValue &operator[](const TKey &key)
+    {
+        auto h = hash<TKey>(key);
+        auto *i = item_by_key(key, h);
+
+        if (i)
+        {
+            return i->value;
+        }
+        else
+        {
+            auto &b = bucket(h);
+            return b.push_back({h, key, {}}).value;
+        }
+    }
+
 };
 
 }
