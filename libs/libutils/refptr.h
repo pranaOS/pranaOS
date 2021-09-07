@@ -66,6 +66,18 @@ public:
         return *_ptr;
     }
 
+    T &operator*() { return *_ptr; }
+
+    const T &operator*() const { return *_ptr; }
+
+    bool operator==(const RefPtr<T> other) const { return _ptr == other._ptr; }
+
+    bool operator!=(const RefPtr<T> other) const { return _ptr != other._ptr; }
+
+    bool operator==(const T *other) const { return _ptr == other; }
+
+    bool operator!=(const T *other) const { return _ptr != other; }
+
     operator bool() const
     {
         return _ptr != nullptr;
