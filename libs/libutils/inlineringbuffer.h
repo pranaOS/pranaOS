@@ -39,6 +39,29 @@ public:
         other._buffer = nullptr;
     }
 
+        void flush()
+    {
+        _head = 0;
+        _tail = 0;
+        _used = 0;
+    }
+
+    InlineRingBuffer &operator=(const InlineRingBuffer &other)
+    {
+        return *this = InlineRingBuffer(other);
+    }
+
+    InlineRingBuffer &operator=(InlineRingBuffer &&other)
+    {
+        std::swap(_head, other._head);
+        std::swap(_tail, other._tail);
+        std::swap(_used, other._used);
+        std::swap(_buffer, other._buffer);
+
+        return *this;
+    }
+
+
 };
 
 }
