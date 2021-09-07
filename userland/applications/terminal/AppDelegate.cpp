@@ -44,8 +44,8 @@ public:
         int ptmx = setup_shell();
         auto& window = std::pranaos::construct<UI::Window>(window_size(), icon_path());
         auto& superview = window.create_superview<TerminalView, TerminalViewController>(ptmx);
-        window.set_focused_view(superview);
-        window.set_frame_style(LG::Color(0x181818));
+        // window.set_focused_view(superview);
+        // window.set_frame_style(LG::Color(0x181818));
         window.set_title("Terminal");
         return true;
     }
