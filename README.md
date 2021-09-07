@@ -1,7 +1,9 @@
 # pranaOS
 A unix operating system written from scratch in c / c++
 
+[![forthebadge](https://forthebadge.com/images/badges/made-with-c.svg)](https://forthebadge.com)
 [![forthebadge](https://forthebadge.com/images/badges/made-with-c-plus-plus.svg)](https://forthebadge.com)
+
 
 # Build Instructions:
 - want to use pranaOS??
@@ -10,7 +12,6 @@ A unix operating system written from scratch in c / c++
 # Contributing Docs:
 - want to contribute to pranaOS
 - contributing [docs](https://github.com/pranaOS/pranaOS/blob/master/docs/contributing.md)
-
 
 - view the future plans of [pranaos](https://github.com/pranaOS/pranaOS/blob/master/plans/pranaOSfutureplans.pdf)
 
