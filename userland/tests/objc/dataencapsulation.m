@@ -18,9 +18,29 @@
 
 @end
 
+@implementation Adder
+-(id)initWithInitialNumber:(NSInteger)initialNumber {
+   total = initialNumber;
+   return self;
+}
 
-int main()
-{
-    printf("Hello world from Data Encapsulation obj-c tests")
-    return 0;
+- (void)addNumber:(NSInteger)newNumber {
+   total = total + newNumber;
+}
+
+- (NSInteger)getTotal {
+   return total;
+}
+
+@end
+
+int main(int argc, const char * argv[]) {
+   NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
+   Adder *adder = [[Adder alloc]initWithInitialNumber:10];
+   [adder addNumber:5];
+   [adder addNumber:4];
+   
+   printf(@"The total is %ld",[adder getTotal]);
+   [pool drain];
+   return 0;
 }
