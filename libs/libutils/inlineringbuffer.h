@@ -76,6 +76,18 @@ public:
         _used++;
     }
 
+    T get()
+    {
+        assert(!empty());
+
+        T c = _buffer[_tail];
+        _tail = (_tail + 1) % N;
+        _used--;
+
+        return c;
+    }
+
+
 
 
 };
