@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
+// includes
 #include <drivers/aarch32/pl050.h>
 #include <drivers/generic/keyboard.h>
 #include <libkern/bits/errno.h>
@@ -43,7 +44,7 @@ static void _pl050_keyboard_int_handler()
     generic_emit_key_set1(data);
 }
 
-static inline void _keybaord_send_cmd(uint8_t cmd)
+static inline void _keyboard_send_cmd(uint8_t cmd)
 {
     registers->data = cmd;
     while ((registers->stat) & (1 << 5)) { }
@@ -58,9 +59,8 @@ void pl050_keyboard_init(device_t* dev)
 #endif
     registers->cr = 0x4 | 0x10;
 
-    // Turning Scan Code Set 1
-    _keybaord_send_cmd(0xF0);
-    _keybaord_send_cmd(0x01);
+    _keyboard_send_cmd(0xF0);
+    _keyboard_send_cmd(0x01);
 
     irq_register_handler(PL050_KEYBOARD_IRQ_LINE, 0, 0, _pl050_keyboard_int_handler, BOOT_CPU_MASK);
     generic_keyboard_init();
