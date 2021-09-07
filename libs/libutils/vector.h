@@ -130,6 +130,46 @@ public:
         _count = 0;
     }
 
+    T &push_back(T &&value)
+    {
+        return insert(_count, std::move(value));
+    }
+
+    template <typename... Args>
+    T &emplace_back(Args &&...args)
+    {
+        grow();
+
+        new (&_storage[_count - 1]) T(std::forward<Args>(args)...);
+        return _storage[_count - 1];
+    }
+
+    void push_back_many(const Vector<T> &values)
+    {
+        for (size_t i = 0; i < values.count(); i++)
+        {
+            push_back(values[i]);
+        }
+    }
+
+    void push_back_many(const T *data, size_t size)
+    {
+        for (size_t i = 0; i < size; i++)
+        {
+            push_back(data[i]);
+        }
+    }
+
+    T pop()
+    {
+        assert(_count > 0);
+
+        T value = std::move(_storage[0]);
+        remove_index(0);
+
+        return value;
+    }
+
     T pop_back()
     {
         assert(_count > 0);
