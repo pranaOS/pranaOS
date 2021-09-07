@@ -5,10 +5,15 @@ pranaOS_static_library("libutils") {
     "array.h",
     "macros.h",
     "minmax.h",
+    "optional.h",
     "prelude.h",
-    "traits.h",
+    "refcounted.h",
+    "refptr.h",
+    "resultor.h",
+    "ringbuffer.h",
     "std.h",
     "tags.h",
+    "traits.h",
   ]
 
   deplibs = [
