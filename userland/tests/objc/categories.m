@@ -8,5 +8,15 @@
 #import <libobjc/helpers.h>
 #import <stdio.h>
 
-@interface ClassName(CategoryName)
+@interface NSString(MyAdditions)
++(NSString *)getCopyRightString;
 @end
+
+int main(int argc, const char * argv[]) {
+    NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
+    NSString *copyrightString = [NSString getCopyRightString];
+    printf(@"Accessing Category: %@",copyrightString);
+    
+    [pool drain];
+    return 0;
+ }
