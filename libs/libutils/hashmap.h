@@ -36,6 +36,26 @@ private:
     {
         return item_by_key(key, hash<TKey>(key));
     }
-}
+
+        Item *item_by_key(const TKey &key, uint32_t hash)
+    {
+        Item *result = nullptr;
+        auto &b = bucket(hash);
+
+        b.foreach([&](Item &item) {
+            if (item.hash == hash && item.key == key)
+            {
+                result = &item;
+                return Iteration::STOP;
+            }
+            else
+            {
+                return Iteration::CONTINUE;
+            }
+        });
+
+        return result;
+    }
+};
 
 }
