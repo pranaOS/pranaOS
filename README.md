@@ -5,26 +5,31 @@ A unix operating system written from scratch in c / c++
 [![forthebadge](https://forthebadge.com/images/badges/made-with-c-plus-plus.svg)](https://forthebadge.com)
 
 
-# Build Instructions:
+### Build Instructions:
 - want to use pranaOS??
 - view the [build instructions](https://github.com/pranaOS/pranaOS/blob/master/docs/build.md)
 
-# Contributing Docs:
-- want to contribute to pranaOS
-- contributing [docs](https://github.com/pranaOS/pranaOS/blob/master/docs/contributing.md)
-
 - view the future plans of [pranaos](https://github.com/pranaOS/pranaOS/blob/master/plans/pranaOSfutureplans.pdf)
 
-# Social Media:
-- [discord](https://discord.gg/XmpBTmy9Bz)
-- [twitter](https://twitter.com/os_prana)
 
-## Contributors
+### Contributing Docs:
+- want to contribute to pranaOS??
+- contributing [docs](https://github.com/pranaOS/pranaOS/blob/master/docs/contributing.md)
+
+### Have any issues???:
+- open an [issue](https://github.com/pranaOS/pranaOS/issues/new/choose)
+
+### Get In Touch:
+- Join our discord server: [pranaOS discord](https://discord.gg/XmpBTmy9Bz)
+
+
+## Thanks For The Contributors
 
 <a href="https://github.com/pranaOS/pranaOS/graphs/contributors">
   <img src="https://contributors-img.web.app/image?repo=pranaOS/pranaOS" />
 </a>
 
-- Some Sources That I Took From Other Projects:
+- Some Sources Took From Other Projects: [license](https://github.com/pranaOS/pranaOS/blob/master/docs/otherprojectslicense.md)
 
-- [license](https://github.com/pranaOS/pranaOS/blob/master/docs/otherprojectslicense.md)
+### Social Media:
+- [twitter](https://twitter.com/os_prana)
