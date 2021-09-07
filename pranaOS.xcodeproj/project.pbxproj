@@ -268,6 +268,7 @@
 		9F5237AB26E78DC10036AC8D /* AppDelegate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F5236A126E78DC00036AC8D /* AppDelegate.cpp */; };
 		9F5237AC26E78DC10036AC8D /* TerminalView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F5236A226E78DC00036AC8D /* TerminalView.cpp */; };
 		9F5237AD26E78DC10036AC8D /* AppDelegate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F5236A626E78DC00036AC8D /* AppDelegate.cpp */; };
+		9F5237B026E78EB80036AC8D /* categories.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F5237AF26E78EB80036AC8D /* categories.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -1113,6 +1114,7 @@
 		9F5236A626E78DC00036AC8D /* AppDelegate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AppDelegate.cpp; sourceTree = "<group>"; };
 		9F5236A726E78DC00036AC8D /* ViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
 		9F5236A826E78DC00036AC8D /* BUILD.gn */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = BUILD.gn; sourceTree = "<group>"; };
+		9F5237AF26E78EB80036AC8D /* categories.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = categories.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -3808,6 +3810,7 @@
 				9F52363126E78DC00036AC8D /* classes.m */,
 				9F52363226E78DC00036AC8D /* forloop.m */,
 				9F52363326E78DC00036AC8D /* dataencapsulation.m */,
+				9F5237AF26E78EB80036AC8D /* categories.m */,
 			);
 			path = objc;
 			sourceTree = "<group>";
@@ -4212,6 +4215,7 @@
 				9F5236D526E78DC00036AC8D /* Context.cpp in Sources */,
 				9F52373426E78DC10036AC8D /* handlers.c in Sources */,
 				9F52372D26E78DC10036AC8D /* init.c in Sources */,
+				9F5237B026E78EB80036AC8D /* categories.m in Sources */,
 				9F5236CC26E78DC00036AC8D /* socket.c in Sources */,
 				9F52373326E78DC10036AC8D /* interrupts.s in Sources */,
 				9F52375D26E78DC10036AC8D /* kernel_self_test.c in Sources */,
