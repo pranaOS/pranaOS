@@ -23,4 +23,4 @@ static TypeId GetTypeId()
 
 constexpr TypeId INVALID_TYPE_ID = -1;
 
-} 
+}
