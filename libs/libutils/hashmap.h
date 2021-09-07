@@ -16,7 +16,7 @@ template <typename TKey, typename TValue>
 struct HashMap
 {
 private:
-        struct Item
+    struct Item
     {
         uint32_t hash;
         TKey key;
@@ -37,7 +37,7 @@ private:
         return item_by_key(key, hash<TKey>(key));
     }
 
-        Item *item_by_key(const TKey &key, uint32_t hash)
+    Item *item_by_key(const TKey &key, uint32_t hash)
     {
         Item *result = nullptr;
         auto &b = bucket(hash);
@@ -102,6 +102,57 @@ public:
         });
     }
 
+    void remove_value(TValue &value)
+    {
+        _buckets.foreach([&](auto &bucket) {
+            bucket.remove_all_match([&](auto &item) {
+                return item.value == value;
+            });
+
+            return Iteration::CONTINUE;
+        });
+    }
+
+    bool has_key(const TKey &key)
+    {
+        return item_by_key(key) != nullptr;
+    }
+
+    bool has_value(const TValue &value)
+    {
+        bool result = false;
+
+        this->foreach([&](auto &, auto &v) {
+            if (v == value)
+            {
+                result = true;
+                return Iteration::STOP;
+            }
+            else
+            {
+                return Iteration::CONTINUE;
+            }
+        });
+
+        return result;
+    }
+
+    template <typename TCallback>
+    Iteration foreach(TCallback callback) const
+    {
+        return _buckets.foreach([&](auto &bucket) {
+            return bucket.foreach([&](auto &item) {
+                return callback(item.key, item.value);
+            });
+        });
+    }
+
+    HashMap &operator=(const HashMap &other)
+    {
+        _buckets = other._buckets;
+        return *this;
+    }
+
     HashMap &operator=(HashMap &&other)
     {
         std::swap(_buckets, other._buckets);
@@ -123,7 +174,6 @@ public:
             return b.push_back({h, key, {}}).value;
         }
     }
-
 };
 
-}
+} 
