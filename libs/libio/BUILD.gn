@@ -1,0 +1,18 @@
+import("//build/libs/TEMPLATE.gni")
+
+pranaOS_static_library("libio") {
+  sources = [
+  ]
+
+  deplibs = [
+    "libcxx",
+    "libfoundation",
+    "libg",
+    "libipc",
+  ]
+  configs = [ "//build/libs:libcxx_flags" ]
+
+  if (host == "llvm") {
+    cflags = [ "-flto" ]
+  }
+}
