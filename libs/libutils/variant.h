@@ -80,6 +80,42 @@ public:
         return *this;
     }
 
+    template <typename T>
+    bool is()
+    {
+        return (_index == IndexOf<T, Ts...>());
+    }
+
+    template <typename T, typename... Args>
+    void set(Args &&...args)
+    {
+        Operations::destroy(_index, &_storage);
+        new (&_storage) T(std::forward<Args>(args)...);
+        _index = IndexOf<T, Ts...>();
+    }
+
+    template <typename T>
+    T &get()
+    {
+        Assert::equal(_index, IndexOf<T, Ts...>());
+        return *reinterpret_cast<T *>(&_storage);
+    }
+
+    template <typename T, typename Callback>
+    void with(Callback callback)
+    {
+        if (is<T>())
+        {
+            callback(get<T>());
+        }
+    }
+
+    template <typename TVisitor>
+    void visit(TVisitor &&visitor)
+    {
+        Operations::visit(_index, &_storage, visitor);
+    }
+
 };
 
 template <typename... Ts>
