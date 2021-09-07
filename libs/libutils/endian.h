@@ -39,4 +39,21 @@ constexpr TValue swap_big_endian(TValue value)
 #endif
 }
 
+template <typename TValue>
+struct PACKED BigEndian
+{
+private:
+    TValue _value{0};
+
+public:
+    constexpr BigEndian() {}
+
+    constexpr BigEndian(TValue value) : _value(swap_big_endian(value)) {}
+
+    constexpr TValue operator()() const
+    {
+        return swap_big_endian(_value);
+    }
+};
+
 }
