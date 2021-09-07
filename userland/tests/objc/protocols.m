@@ -19,5 +19,8 @@
 
 - (void) printDetails;
 
+@end
 
+@interface SampleClass:NSObject<PrintProtocolDelegate>
+- (void)startAction;
 @end
