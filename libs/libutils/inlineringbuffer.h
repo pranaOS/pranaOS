@@ -1,5 +1,12 @@
+/*
+ * Copyright (c) 2021, Krisna Pranav
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+*/
+
 #pragma once
 
+// includes
 #include <libutils/std.h>
 
 namespace Utils
@@ -8,7 +15,6 @@ namespace Utils
 template <typename T, size_t N>
 struct InlineRingBuffer
 {
-
 private:
     size_t _head = 0;
     size_t _tail = 0;
@@ -39,7 +45,7 @@ public:
         other._buffer = nullptr;
     }
 
-        void flush()
+    void flush()
     {
         _head = 0;
         _tail = 0;
@@ -87,9 +93,38 @@ public:
         return c;
     }
 
+    T peek(size_t peek)
+    {
+        int offset = (_tail + peek) % N;
 
+        return _buffer[offset];
+    }
 
+    size_t read(T *buffer, size_t size)
+    {
+        size_t read = 0;
 
+        while (!empty() && read < size)
+        {
+            buffer[read] = get();
+            read++;
+        }
+
+        return read;
+    }
+
+    size_t write(const T *buffer, size_t size)
+    {
+        size_t written = 0;
+
+        while (!full() && written < size)
+        {
+            put(buffer[written]);
+            written++;
+        }
+
+        return written;
+    }
 };
 
-}
+} 
