@@ -11,20 +11,33 @@
 
 @protocol PrintProtocolDelegate
 - (void)processCompleted;
+
 @end
 
 @interface PrintClass :NSObject {
-    id delegate;
+   id delegate;
 }
 
 - (void) printDetails;
+- (void) setDelegate:(id)newDelegate;
+@end
+
+@implementation PrintClass
+- (void)printDetails {
+   printf(@"Printing Details");
+   [delegate processCompleted];
+}
+
+- (void) setDelegate:(id)newDelegate {
+   delegate = newDelegate;
+}
 
 @end
 
 @interface SampleClass:NSObject<PrintProtocolDelegate>
 - (void)startAction;
-@end
 
+@end
 
 @implementation SampleClass
 - (void)startAction {
@@ -38,3 +51,11 @@
 }
 
 @end
+
+int main(int argc, const char * argv[]) {
+   NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
+   SampleClass *sampleClass = [[SampleClass alloc]init];
+   [sampleClass startAction];
+   [pool drain];
+   return 0;
+}
