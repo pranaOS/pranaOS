@@ -24,3 +24,17 @@
 @interface SampleClass:NSObject<PrintProtocolDelegate>
 - (void)startAction;
 @end
+
+
+@implementation SampleClass
+- (void)startAction {
+   PrintClass *printClass = [[PrintClass alloc]init];
+   [printClass setDelegate:self];
+   [printClass printDetails];
+}
+
+-(void)processCompleted {
+   printf(@"Printing Process Completed");
+}
+
+@end
