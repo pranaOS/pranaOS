@@ -1,5 +1,12 @@
+/*
+* Copyright (c) 2021, Krisna Pranav
+*
+* SPDX-License-Identifier: BSD-2-Clause
+*/
+
 #pragma once
 
+// includes
 #include <libutils/assert.h>
 #include <libutils/std.h>
 #include <libutils/traits.h>
@@ -19,21 +26,85 @@ struct Dispatch<>
     }
 };
 
+template <typename TFirst, typename... TStack>
+struct Dispatch<TFirst, TStack...>
+{
+    static void func(int index, auto storage, auto &visitor)
+    {
+        if (index == 0)
+        {
+            using ConstT = CopyConst<decltype(storage), TFirst>;
+            visitor(*reinterpret_cast<ConstT *>(storage));
+        }
+        else
+        {
+            Dispatch<TStack...>::func(index - 1, storage, visitor);
+        }
+    }
+};
+
+template <typename... Ts>
+static void resolve(int index, auto storage, auto visitor)
+{
+    Dispatch<Ts...>::func(index, storage, visitor);
+}
+
+template <typename... Ts>
+struct VariantOperations
+{
+    inline static void destroy(int index, void *storage)
+    {
+        resolve<Ts...>(index, storage, []<typename T>(T &t) {
+            t.~T();
+        });
+    }
+
+    inline static void move(int index, void *source, void *destination)
+    {
+        resolve<Ts...>(index, source, [&]<typename T>(T &t) {
+            new (destination) T(::std::move(t));
+        });
+    }
+
+    inline static void copy(int index, const void *source, void *destination)
+    {
+        resolve<Ts...>(index, source, [&]<typename T>(const T &t) {
+            new (destination) T(t);
+        });
+    }
+
+
+    template <typename TVisitor>
+    inline static void visit(int index, void *storage, TVisitor &visitor)
+    {
+        resolve<Ts...>(index, storage, visitor);
+    }
+};
+
+template <size_t Len, size_t Align>
+struct AlignedStorage
+{
+    alignas(Align) unsigned char data[Len];
+};
+
 template <typename... Ts>
 struct Variant
 {
-
 private:
     static const size_t data_size = Max<sizeof(Ts)...>::value;
     static const size_t data_align = Max<alignof(Ts)...>::value;
 
+    using Operations = VariantOperations<Ts...>;
+
+    int _index = -1;
+    AlignedStorage<data_size, data_align> _storage;
+
 public:
     Variant()
     {
-        _index = 0
+        _index = 0;
         new (&_storage) typename First<Ts...>::Type();
     }
-
 
     template <typename T>
     requires In<T, Ts...>
@@ -115,7 +186,6 @@ public:
     {
         Operations::visit(_index, &_storage, visitor);
     }
-
 };
 
 template <typename... Ts>
@@ -126,6 +196,5 @@ struct Visitor : Ts...
 
 template <typename... Ts>
 Visitor(Ts...) -> Visitor<Ts...>;
-
 
 }
