@@ -10,6 +10,7 @@ pranaOS_executable("objc") {
       "errorhandle.m",
       "forloop.m",
       "functions.m",
+      "protocols.m",
    ]
   configs = [ "//build/userland:userland_flags" ]
   deplibs = [
