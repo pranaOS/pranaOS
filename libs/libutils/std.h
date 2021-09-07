@@ -6,6 +6,7 @@
 
 #pragma once
 
+// includes
 #include <libutils/traits.h>
 #include <stddef.h>
 
@@ -22,15 +23,31 @@ inline void *operator new[](size_t, void *ptr)
 }
 
 #else
-#   include <new>
+#    include <new>
 #endif
 
 namespace std
 {
 
-// FIXME: add more templates
-
 using nullptr_t = decltype(nullptr);
+
+template <typename T>
+constexpr typename RemoveReference<T>::Type &&move(T &&arg)
+{
+    return static_cast<typename RemoveReference<T>::Type &&>(arg);
+}
+
+template <typename T>
+constexpr T &&forward(typename RemoveReference<T>::Type &param)
+{
+    return static_cast<T &&>(param);
+}
+
+template <typename T>
+constexpr T &&forward(typename RemoveReference<T>::Type &&param)
+{
+    return static_cast<T &&>(param);
+}
 
 template <typename T>
 void swap(T &left, T &right)
@@ -40,23 +57,30 @@ void swap(T &left, T &right)
     right = move(tmp);
 }
 
+template <typename T, typename U = T>
+constexpr T exchange(T &slot, U &&value)
+{
+    T old = move(slot);
+    slot = forward<U>(value);
+    return old;
+}
+
 template <typename T>
-struct initialize_list
+struct initializer_list
 {
 private:
     T *_data;
+    size_t _size;
 
-size_t _size;
-
-constexpr initialize_list(const T *data, size_t size)
-    : _data(data), _size(size)
-{
-}
+    constexpr initializer_list(const T *data, size_t size)
+        : _data(data), _size(size)
+    {
+    }
 
 public:
-    size_t size() const { return _size;}
+    size_t size() const { return _size; }
 
-    constexpr initialize_list()
+    constexpr initializer_list()
         : _data(0), _size(0)
     {
     }
@@ -75,6 +99,5 @@ public:
 
     constexpr const T *end() const { return _data + _size; }
 };
-
 
 }
