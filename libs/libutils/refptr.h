@@ -6,29 +6,53 @@
 
 #pragma once
 
+// includes
 #include <libutils/refcounted.h>
 #include <libutils/std.h>
 #include <libutils/tags.h>
 #include <libutils/traits.h>
 
-
 namespace Utils
 {
 
-template<typename T>
+template <typename T>
 struct RefPtr
 {
 private:
     T *_ptr = nullptr;
 
 public:
-    RefPtr()
+    RefPtr() {}
+
+    RefPtr(nullptr_t) {}
+
+    RefPtr(T &object) : _ptr(&object)
     {
+        ref_if_not_null(_ptr);
     }
 
-    RefPtr(nullptr_t)
+    RefPtr(AdoptTag, T &object) : _ptr(const_cast<T *>(&object)) {}
+
+    RefPtr(const RefPtr &other) : _ptr(other.naked())
     {
+        ref_if_not_null(_ptr);
     }
+
+    RefPtr(AdoptTag, RefPtr &other) : _ptr(other.give_ref()) {}
+
+    RefPtr(RefPtr &&other) : _ptr(other.give_ref()) {}
+
+    template <typename U>
+    RefPtr(const RefPtr<U> &other) : _ptr(static_cast<T *>(other.naked()))
+    {
+        ref_if_not_null(_ptr);
+    }
+
+    template <typename U>
+    RefPtr(AdoptTag, RefPtr<U> &other) : _ptr(static_cast<T *>(other.give_ref())) {}
+
+    template <typename U>
+    RefPtr(RefPtr<U> &&other) : _ptr(static_cast<T *>(other.give_ref())) {}
 
     ~RefPtr()
     {
@@ -44,6 +68,18 @@ public:
         return *this;
     }
 
+    RefPtr &operator=(const RefPtr &other)
+    {
+        if (_ptr != other.naked())
+        {
+            deref_if_not_null(_ptr);
+            _ptr = other.naked();
+            ref_if_not_null(_ptr);
+        }
+
+        return *this;
+    }
+
     RefPtr &operator=(RefPtr &&other)
     {
         if (this != &other)
@@ -55,15 +91,35 @@ public:
         return *this;
     }
 
-    T *operator->() const
+    template <typename U>
+    RefPtr &operator=(RefPtr<U> &other)
     {
-        assert(ptr);
-        return _ptr;
+        if (_ptr != other.naked())
+        {
+            deref_if_not_null(_ptr);
+            _ptr = other.naked();
+            ref_if_not_null(_ptr);
+        }
+
+        return *this;
     }
 
-    T &operator*()
+    template <typename U>
+    RefPtr &operator=(RefPtr<U> &&other)
     {
-        return *_ptr;
+        if (this != static_cast<void *>(&other))
+        {
+            deref_if_not_null(_ptr);
+            _ptr = other.give_ref();
+        }
+
+        return *this;
+    }
+
+    T *operator->() const
+    {
+        assert(_ptr);
+        return _ptr;
     }
 
     T &operator*() { return *_ptr; }
@@ -107,10 +163,14 @@ public:
         return ptr;
     }
 
+    T *naked() const
+    {
+        return _ptr;
+    }
 };
 
 template <typename T>
-struct CallbackRefPtr : public RefPtr<T>
+struct CallableRefPtr : public RefPtr<T>
 {
 public:
     template <typename... TArgs>
@@ -120,10 +180,22 @@ public:
     }
 };
 
-template <typename Type, typename... Args>
-inline CallbackRefPtr<Type> make_callable(Args &&...args)
+template <typename T>
+inline RefPtr<T> adopt(T &object)
 {
-    return CallbackRefPtr<Type>(adopt(*new Type))
+    return RefPtr<T>(ADOPT, object);
+}
+
+template <typename Type, typename... Args>
+inline RefPtr<Type> make(Args &&...args)
+{
+    return RefPtr<Type>(adopt(*new Type(std::forward<Args>(args)...)));
+}
+
+template <typename Type, typename... Args>
+inline CallableRefPtr<Type> make_callable(Args &&...args)
+{
+    return CallableRefPtr<Type>(adopt(*new Type(std::forward<Args>(args)...)));
 }
 
 template <typename T>
