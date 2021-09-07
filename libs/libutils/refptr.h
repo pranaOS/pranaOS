@@ -104,8 +104,22 @@ public:
     template <typename... TArgs>
     auto operator()(TArgs &&...args)
     {
-        return (*this->naked())
+        return (*this->naked())(std::forward<TArgs>(args)...);
     }
+};
+
+template <typename Type, typename... Args>
+inline CallbackRefPtr<Type> make_callable(Args &&...args)
+{
+    return CallbackRefPtr<Type>(adopt(*new Type))
+}
+
+template <typename T>
+struct TrimRefPtr;
+
+template <typename T>
+struct IsRefPtr<RefPtr<T>> : public TrueType
+{
 };
 
 }
