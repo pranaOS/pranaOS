@@ -7,8 +7,8 @@
 #pragma once
 
 // includes
-#include <libabi/Syscalls.h>
-#include <libio/Streams.h>
+#include <libabi/syscalls.h>
+#include <libio/streams.h>
 
 namespace Utils
 {
