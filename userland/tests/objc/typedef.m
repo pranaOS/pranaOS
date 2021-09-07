@@ -8,6 +8,9 @@
 #import <libobjc/helpers.h>
 #import <stdio.h>
 
+#define TRUE 1
+#define FALSE 0
+
 typedef struct Books {
    NSString *operatingsystem;
    NSString *author;
@@ -29,6 +32,9 @@ int main() {
    printf( "Language : %@\n", book.language);
    printf( "Stars : %d\n", book.stars);
    printf( "Forks : %d\n", book.forks);
+
+   printf( @"Value of TRUE : %d\n", TRUE);
+   printf( @"Value of FALSE : %d\n", FALSE);
 
    return 0;
 }
