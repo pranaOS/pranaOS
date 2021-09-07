@@ -72,6 +72,63 @@ public:
         _storage = new_storage;
         _capacity = new_capacity;
     }
+
+    ~Vector()
+    {
+        clear();
+
+        if (_storage)
+            free(_storage);
+    }
+
+    T &operator[](size_t index)
+    {
+        assert(index < _count);
+        return _storage[index];
+    }
+
+    bool operator!=(const Vector &other) const
+    {
+        return !(*this == other);
+    }
+
+    bool operator==(const Vector &other) const
+    {
+        if (this == &other)
+        {
+            return true;
+        }
+
+        if (_count != other._count)
+        {
+            return false;
+        }
+
+        for (size_t i = 0; i < _count; i++)
+        {
+            if (_storage[i] != other._storage[i])
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    void clear()
+    {
+        if (!_storage)
+        {
+            return;
+        }
+
+        for (size_t i = 0; i < _count; i++)
+        {
+            _storage[i].~T();
+        }
+
+        _count = 0;
+    }
 };
 
 }
