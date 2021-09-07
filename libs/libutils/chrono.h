@@ -6,8 +6,9 @@
 
 #pragma once
 
-#include <libabi/syscalls.h>
-#include <libio/streams.h>
+// includes
+#include <libabi/Syscalls.h>
+#include <libio/Streams.h>
 
 namespace Utils
 {
@@ -20,6 +21,21 @@ private:
 
     NONMOVABLE(Chrono);
     NONCOPYABLE(Chrono);
+
+public:
+    Chrono(const char *name)
+    {
+        _name = name;
+        hj_system_tick(&_start);
+    }
+
+    ~Chrono()
+    {
+        Tick end;
+        hj_system_tick(&end);
+
+        IO::logln("Chrono '{}' ended at {}", _name, end - _start);
+    }
 };
 
-}
+} 
