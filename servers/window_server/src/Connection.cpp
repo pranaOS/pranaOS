@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-// includes
 #include "Connection.h"
 #include "Event.h"
 #include <libfoundation/EventLoop.h>
@@ -39,4 +38,4 @@ void Connection::receive_event(std::unique_ptr<LFoundation::Event> event)
     }
 }
 
-} 
+} // namespace WinServer

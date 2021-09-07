@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-// includes
 #include "LoadingScreen.h"
 #include <libg/Context.h>
 #include <libg/ImageLoaders/PNGLoader.h>

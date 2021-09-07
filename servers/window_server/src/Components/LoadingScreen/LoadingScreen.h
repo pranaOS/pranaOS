@@ -61,4 +61,4 @@ private:
     LG::PixelBitmap m_logo;
 };
 
-} 
+} // namespace WinServer

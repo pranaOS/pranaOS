@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-// includes
 #include "Components/ControlBar/ControlBar.h"
 #include "Components/LoadingScreen/LoadingScreen.h"
 #include "Components/MenuBar/MenuBar.h"
@@ -23,14 +22,16 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
+#ifdef TARGET_DESKTOP
+#define LAUNCH_PATH "/System/dock"
+#elif TARGET_MOBILE
+#define LAUNCH_PATH "/System/homescreen"
+#endif
+
 void start_dock()
 {
     if (fork()) {
-#ifdef TARGET_DESKTOP
-        execve("/System/dock", nullptr, nullptr);
-#elif TARGET_MOBILE
-        execve("/System/homescreen", nullptr, nullptr);
-#endif
+        execve(LAUNCH_PATH, nullptr, nullptr);
         std::abort();
     }
 }

@@ -11,6 +11,7 @@
 #include <libfoundation/SharedBuffer.h>
 #include <libg/PixelBitmap.h>
 #include <libg/Rect.h>
+#include <libg/Size.h>
 #include <sys/types.h>
 #include <utility>
 
@@ -28,12 +29,7 @@ public:
     BaseWindow(BaseWindow&& win);
     ~BaseWindow() = default;
 
-    inline void set_buffer(int buffer_id)
-    {
-        if (m_buffer.id() != buffer_id) {
-            m_buffer.open(buffer_id);
-        }
-    }
+    void set_buffer(int buffer_id, LG::Size sz, LG::PixelBitmapFormat fmt);
 
     inline int id() const { return m_id; }
     inline int connection_id() const { return m_connection_id; }
@@ -59,6 +55,14 @@ public:
         DisplayMessage msg(connection_id(), rect);
         Connection::the().send_async_message(msg);
     }
+
+    inline void offset_by(int x_offset, int y_offset)
+    {
+        bounds().offset_by(x_offset, y_offset);
+        content_bounds().offset_by(x_offset, y_offset);
+    }
+
+    virtual void did_size_change(const LG::Size& size) { }
 
 protected:
     int m_id { -1 };

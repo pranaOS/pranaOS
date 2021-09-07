@@ -10,12 +10,9 @@
 #include "Components/MenuBar/MenuBar.h"
 #include "Compositor.h"
 #include "Connection.h"
-#ifdef TARGET_DESKTOP
 #include "Desktop/Window.h"
-#elif TARGET_MOBILE
-#include "Mobile/Window.h"
-#endif
 #include "Event.h"
+#include "Mobile/Window.h"
 #include "Screen.h"
 #include "ServerDecoder.h"
 #include <algorithm>
@@ -46,8 +43,10 @@ public:
     void add_window(Window* window);
     void remove_window(Window* window);
 
-    void close_window(Window& window) { m_event_loop.add(m_connection, new SendEvent(new WindowCloseRequestMessage(window.connection_id(), window.id()))); }
+    void resize_window(Window& window, const LG::Size& size);
+    void close_window(Window& window) { send_event(new WindowCloseRequestMessage(window.connection_id(), window.id())); }
     void minimize_window(Window& window);
+    void maximize_window(Window& window);
 
     template <typename Callback>
     void minimize_windows(Callback callback)
@@ -129,6 +128,8 @@ private:
     inline Window* active_window() { return m_active_window; }
     inline void set_active_window(Window* win) { bring_to_front(*win), m_active_window = win; }
     inline void set_active_window(Window& win) { bring_to_front(win), m_active_window = &win; }
+
+    inline void send_event(Message* msg) { m_event_loop.add(m_connection, new SendEvent(msg)); }
 
     std::list<Window*> m_windows;
 
