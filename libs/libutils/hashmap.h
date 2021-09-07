@@ -56,6 +56,52 @@ private:
 
         return result;
     }
+
+public:
+    size_t count() const
+    {
+        size_t result = 0;
+
+        for (size_t i = 0; i < BUCKET_COUNT; i++)
+        {
+            result += _buckets[i].count();
+        }
+
+        return result;
+    }
+
+    HashMap()
+    {
+        for (size_t i = 0; i < BUCKET_COUNT; i++)
+        {
+            _buckets.push_back({});
+        }
+    }
+
+    HashMap(const HashMap &other)
+        : _buckets(other._buckets)
+    {
+    }
+
+    HashMap(HashMap &&other)
+        : _buckets(std::move(other._buckets))
+    {
+    }
+
+    void clear()
+    {
+        _buckets.clear();
+    }
+
+    void remove_key(TKey &key)
+    {
+        uint32_t h = hash<TKey>(key);
+
+        bucket(h).remove_all_match([&](auto &item) {
+            return item.hash == h && item.key == key;
+        });
+    }
+
 };
 
 }
