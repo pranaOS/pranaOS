@@ -3,7 +3,8 @@ import("//build/userland/TEMPLATE.gni")
 pranaOS_executable("objc") {
   install_path = "bin/"
   sources = [
-      "classes.mm",
+      "classes.m",
+      "forloop.m",
    ]
   configs = [ "//build/userland:userland_flags" ]
   deplibs = [
