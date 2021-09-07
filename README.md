@@ -23,7 +23,6 @@ A unix operating system written from scratch in c / c++
 ### Get In Touch:
 - Join our discord server: [pranaOS discord](https://discord.gg/XmpBTmy9Bz)
 
-
 ## Contributors
 
 <a href="https://github.com/pranaOS/pranaOS/graphs/contributors">
