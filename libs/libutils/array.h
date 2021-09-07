@@ -1,10 +1,14 @@
 /*
- * Copyright (c) 2021, Krisna Pranav
- *
- * SPDX-License-Identifier: BSD-2-Clause
+* Copyright (c) 2021, Krisna Pranav
+*
+* SPDX-License-Identifier: BSD-2-Clause
  */
 
 #pragma once
+
+// includes
+#include <libutils/minmax.h>
+#include <libutils/assert.h>
 
 namespace Utils
 {
@@ -26,17 +30,41 @@ public:
     T &at(size_t index)
     {
         assert(index < N);
-        return index
+        return _storage[index];
     }
 
     const T &at(size_t index) const
     {
         assert(index < N);
-        return index;
+        return _storage[index];
     }
 
     constexpr Array()
     {
+    }
+
+    constexpr Array(std::initializer_list<T> data)
+    {
+        assert(data.size() <= N);
+
+        for (size_t i = 0; i < MIN(N, data.size()); i++)
+        {
+            _storage[i] = *(data.begin() + i);
+        }
+    }
+
+    T &operator[](size_t index)
+    {
+        assert(index < N);
+
+        return _storage[index];
+    }
+
+    const T &operator[](size_t index) const
+    {
+        assert(index < N);
+
+        return _storage[index];
     }
 
     bool operator!=(const Array &other) const
@@ -58,12 +86,24 @@ public:
 
         for (size_t i = 0; i < count(); i++)
         {
-            return false
+            if (_storage[i] != other._storage[i])
+            {
+                return false;
+            }
         }
 
         return true;
     }
 
+    constexpr ContiguousIterator<T> begin() const
+    {
+        return _storage;
+    }
+
+    constexpr ContiguousIterator<T> end() const
+    {
+        return _storage + N;
+    }
 };
 
 } 
