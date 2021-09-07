@@ -118,6 +118,17 @@ template <typename T>
 struct TrimRefPtr;
 
 template <typename T>
+struct TrimRefPtr<RefPtr<T>>
+{
+    typedef T type;
+};
+
+template <typename T>
+struct IsRefPtr : public FalseType
+{
+};
+
+template <typename T>
 struct IsRefPtr<RefPtr<T>> : public TrueType
 {
 };
