@@ -266,6 +266,7 @@
 		9F84A0B226E77E47005112C8 /* ResourceManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F849F7B26E77E46005112C8 /* ResourceManager.cpp */; };
 		9F84A0B326E77E47005112C8 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F849F7C26E77E46005112C8 /* main.cpp */; };
 		9F84A0B426E77E47005112C8 /* Compositor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F849F7D26E77E46005112C8 /* Compositor.cpp */; };
+		9F84A0B726E77F5A005112C8 /* functions.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F84A0B626E77F5A005112C8 /* functions.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -1112,6 +1113,7 @@
 		9F849FAF26E77E46005112C8 /* kernel_link.ld */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = kernel_link.ld; sourceTree = "<group>"; };
 		9F849FB026E77E46005112C8 /* .gitignore */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		9F849FB126E77E46005112C8 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		9F84A0B626E77F5A005112C8 /* functions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = functions.m; sourceTree = "<group>"; };
 		9F8EA84926E5FB5F00BE32EE /* pranaOS */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; name = pranaOS; path = /Users/elango/os/pranaOS/build/Debug/pranaOS; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
@@ -2466,6 +2468,7 @@
 				9F849D5C26E77E44005112C8 /* BUILD.gn */,
 				9F849D5D26E77E44005112C8 /* classes.m */,
 				9F849D5E26E77E44005112C8 /* forloop.m */,
+				9F84A0B626E77F5A005112C8 /* functions.m */,
 			);
 			path = objc;
 			sourceTree = "<group>";
@@ -4290,6 +4293,7 @@
 				9F849FDF26E77E46005112C8 /* Context.cpp in Sources */,
 				9F849FD026E77E46005112C8 /* setjmp.s in Sources */,
 				9F84A08326E77E47005112C8 /* mem.c in Sources */,
+				9F84A0B726E77F5A005112C8 /* functions.m in Sources */,
 				9F849FF226E77E46005112C8 /* Responder.cpp in Sources */,
 				9F84A08526E77E47005112C8 /* utils.c in Sources */,
 				9F84A08B26E77E47005112C8 /* root.c in Sources */,
