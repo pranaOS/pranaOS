@@ -32,4 +32,33 @@ public:
         return reinterpret_cast<char *>(start()) + _size; 
     }
 
+    SliceStorage(size_t size)
+    {
+        _owned = true;
+        _data = malloc(size);
+        _size = size;
+    }
+
+    SliceStorage(AdoptTag, void *data, size_t size)
+    {
+        _data = data;
+        _size = size;
+        _owned = true;
+    }
+
+    SliceStorage(WrapTag, void *data, size_t size)
+    {
+        _data = data;
+        _size = size;
+        _owned = false;
+    }
+
+    SliceStorage(CopyTAg, void *data, size_t size)
+    {
+        data = malloc(size);
+        memcpy(_data, data, size);
+        _size = size;
+        _owned = false;
+    }
+
 }
