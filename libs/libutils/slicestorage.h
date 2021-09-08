@@ -11,7 +11,8 @@
 #include <libutils/storage.h>
 #include <libutils/tags.h>
 
-struct SliceStorage final : public Storage
+struct SliceStorage final :
+    public Storage
 {
 private:
     void *_data = nullptr;
@@ -22,15 +23,9 @@ public:
     using Storage::end;
     using Storage::start;
 
-    void *start() override
-    {
-        return _data;
-    }
+    void *start() override { return _data; }
 
-    void *end() override 
-    { 
-        return reinterpret_cast<char *>(start()) + _size; 
-    }
+    void *end() override { return reinterpret_cast<char *>(start()) + _size; }
 
     SliceStorage(size_t size)
     {
@@ -53,12 +48,26 @@ public:
         _owned = false;
     }
 
-    SliceStorage(CopyTAg, void *data, size_t size)
+    SliceStorage(CopyTag, void *data, size_t size)
     {
-        data = malloc(size);
+        _data = malloc(size);
         memcpy(_data, data, size);
         _size = size;
         _owned = false;
     }
 
-}
+    ~SliceStorage() override
+    {
+        if (!_data)
+        {
+            return;
+        }
+
+        if (_owned)
+        {
+            free(_data);
+        }
+
+        _data = nullptr;
+    }
+};
