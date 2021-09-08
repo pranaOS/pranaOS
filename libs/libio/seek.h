@@ -15,7 +15,18 @@ namespace IO
 enum struct Whence : uint8_t
 {
     START = J_WHENCE_START,
+    CURRENT = J_WHENCE_CURRENT,
     END = J_WHENCE_END,
 }
 
-}
+struct SeekFrom
+{
+    Whence whence;
+    ssize64_t position;
+        
+    static SeekFrom start(ssize64_t position = 0)
+    {
+        return {position};
+    }
+
+};
