@@ -18,5 +18,18 @@ private:
     size_t _size = 0;
     bool _owned = false;
 
+public:
+    using Storage::end;
+    using Storage::start;
+
+    void *start() override
+    {
+        return _data;
+    }
+
+    void *end() override 
+    { 
+        return reinterpret_cast<char *>(start()) + _size; 
+    }
 
 }
