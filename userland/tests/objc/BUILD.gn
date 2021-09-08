@@ -14,6 +14,7 @@ pranaOS_executable("objc") {
     "protocols.m",
     "typedef.m",
     "datastruct.m",
+    "memorymanager.m",
    ]
   configs = [ "//build/userland:userland_flags" ]
   deplibs = [
