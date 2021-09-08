@@ -90,6 +90,28 @@ public:
         _head = node;
     };
 
+    struct Iterator
+    {
+    private:
+        Node *_node;
+
+    public:
+        Iterator operator++()
+        {
+            _node = _node->next;
+            return *this;
+        }
+
+        bool operator!=(const Iterator &other) const
+        {
+            return _node != other._node;
+        }
+
+        const T &operator*() const
+        {
+            return _node->value;
+        }
+    };
 
 };
 
