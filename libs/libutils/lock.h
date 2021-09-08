@@ -12,7 +12,7 @@
 #include <libutils/SourceLocation.h>
 
 #ifdef __KERNEL__
-#include <new>
+#          include <new>
 #endif
 
 namespace Utils
@@ -60,15 +60,9 @@ public:
         return _name;
     }
 
-    SourceLocation acquire_location()
-    {
-        return _last_acquire_location;
-    }
+    SourceLocation acquire_location() { return _last_acquire_location; }
 
-    SourceLocation release_location()
-    {
-        return _last_acquire_location;
-    }
+    SourceLocation release_location() { return _last_release_location; }
 
     constexpr Lock(const char *name) : _name{name}
     {
@@ -77,7 +71,7 @@ public:
     int process_this()
     {
         int pid = 0;
-        J_PROCESS_THIS(&pid);
+        hj_process_this(&pid);
         return pid;
     }
 
@@ -88,11 +82,80 @@ public:
 
     void acquire_for(int holder, SourceLocation location = SourceLocation::current())
     {
-        __sync_synchorize();
+        while (!__sync_bool_compare_and_swap(&_locked, 0, 1))
+        {
+
+#ifdef __KERNEL__
+            asm("pause");
+#endif
+
+            asm("pause");
+        }
+
+        __sync_synchronize();
         _last_acquire_location = location;
         _holder = holder;
     }
 
+    bool try_acquire(SourceLocation location = SourceLocation::current())
+    {
+        return try_acquire_for(process_this(), location);
+    }
+
+    bool try_acquire_for(int holder, SourceLocation location = SourceLocation::current())
+    {
+        if (__sync_bool_compare_and_swap(&_locked, 0, 1))
+        {
+            __sync_synchronize();
+
+            _last_acquire_location = location;
+            _holder = holder;
+
+            return true;
+        }
+        else
+        {
+            __sync_synchronize();
+
+            return false;
+        }
+    }
+
+    void release(SourceLocation location = SourceLocation::current())
+    {
+        release_for(process_this(), location);
+    }
+
+    void release_for(int holder, SourceLocation location = SourceLocation::current())
+    {
+        ensure_acquired_for(holder, location);
+
+        __sync_synchronize();
+
+        __atomic_store_n(&_locked, 0, __ATOMIC_SEQ_CST);
+
+        _last_release_location = location;
+        _holder = NO_HOLDER;
+    }
+
+    void ensure_acquired(SourceLocation location = SourceLocation::current())
+    {
+        ensure_acquired_for(process_this(), location);
+    }
+
+    void ensure_acquired_for(int holder, SourceLocation location = SourceLocation::current())
+    {
+        if (!locked())
+        {
+            ensure_failed("lock-not-held", location);
+            ASSERT_NOT_REACHED();
+        }
+
+        if (holder != this->holder())
+        {
+            ensure_failed("lock-held-by-someone-else", location);
+        }
+    }
 };
 
 struct LockHolder
@@ -112,4 +175,4 @@ public:
     }
 };
 
-}
+} 
