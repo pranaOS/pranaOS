@@ -2,7 +2,7 @@
  * Copyright (c) 2021, Krisna Pranav, OliviaCE
  *
  * SPDX-License-Identifier: BSD-2-Clause
- */
+*/
 
 // https://github.com/pranaOS/pranaOS/commit/69e5e26d4c4039038296b106e4392829d8d934f1
 
