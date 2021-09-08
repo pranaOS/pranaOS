@@ -39,3 +39,11 @@ struct SeekFrom
         return {Whence::END, position};
     }
 };
+
+struct Seek
+{
+    virtual ~Seek() {}
+
+    virtual ResultOr<size_t> seek(SeekFrom from) = 0;
+    virtual ResultOr<size_t> tell() = 0;
+};
