@@ -30,7 +30,8 @@ A unix operating system written from scratch in c / c++
 </a>
 
 
-- Some Sources Took From Other Projects: [license](https://github.com/pranaOS/pranaOS/blob/master/docs/otherprojectslicense.md)
+### Some Sources Took From Other Projects:
+- [license](https://github.com/pranaOS/pranaOS/blob/master/docs/otherprojectslicense.md)
 
 ### Social Media:
 - [twitter](https://twitter.com/os_prana)
