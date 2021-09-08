@@ -56,6 +56,28 @@ public:
         clear();
     }
 
+    List(const List &other)
+    {
+        other.foreach([this](const T &el){
+            push_back(el);
+        });
+    }
+
+    List &operator=(const List &other)
+    {
+        if (this != &other)
+        {
+            clear();
+
+            other.foreach([this](const T &el) {
+                push_back(el);
+            });
+        }
+
+        return *this;
+    }
+
+
     void clear()
     {
         Node *current = _head;
