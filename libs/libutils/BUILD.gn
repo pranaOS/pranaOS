@@ -22,6 +22,8 @@ pranaOS_static_library("libutils") {
     "ringbuffer.h",
     "sourcelocation.h",
     "std.h",
+    "slice.h",
+    "slicestorage.h",
     "storage.h",
     "strings.h",
     "stringstorage.h",
