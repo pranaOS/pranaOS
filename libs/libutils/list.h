@@ -33,6 +33,63 @@ private:
     Node *_head = nullptr;
     Node *_tail = nullptr;
 
+public:
+    bool empty() const
+    {
+        return _count == 0;
+    }
+
+    bool any() const
+    {
+        return _count > 0;
+    }
+
+    size_t count() const
+    {
+        return _count;
+    }
+
+    List() {}
+
+    ~List()
+    {
+        clear();
+    }
+
+    void clear()
+    {
+        Node *current = _head;
+
+        while (current)
+        {
+            Node *next = current->next;
+            delete current;
+            current = next;
+        }
+
+        _count = 0;
+        _head = nullptr;
+        _tail = nullptr;
+    };
+
+    void push(const T& value)
+    {
+        Node *node = new Node{value};
+
+        if (_head == nullptr)
+        {
+            _tail = node;
+        }
+        else
+        {
+            _head->prev = node;
+            node->next = _head;
+        }
+
+        _count++;
+        _head = node;
+    };
+
 
 };
 
