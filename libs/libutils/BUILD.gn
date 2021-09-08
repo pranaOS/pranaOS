@@ -18,6 +18,7 @@ pranaOS_static_library("libutils") {
     "optional.h",
     "ownptr.h",
     "prelude.h",
+    "process.h",
     "refcounted.h",
     "refptr.h",
     "resultor.h",
