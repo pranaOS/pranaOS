@@ -92,8 +92,24 @@ public:
         _last_acquire_location = location;
         _holder = holder;
     }
-    
 
+};
+
+struct LockHolder
+{
+private:
+    Lock &_lock;
+
+public:
+    LockHolder(Lock &lock, SourceLocation location = SourceLocation::current()) : _lock(lock)
+    {
+        _lock.acquire(location);
+    }
+
+    ~LockHolder()
+    {
+        _lock.release();
+    }
 };
 
 }
