@@ -17,3 +17,12 @@
 - (void)print;
 
 @end
+
+@implementation Person
+
+- (void)print {
+    printf("Name: %", personName);
+    printf("Name: %", personName);
+}
+
+@end 
