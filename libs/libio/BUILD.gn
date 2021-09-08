@@ -3,6 +3,7 @@ import("//build/libs/TEMPLATE.gni")
 pranaOS_static_library("libio") {
   sources = [
     "seek.h",
+    "writer.h",
   ]
 
   deplibs = [
