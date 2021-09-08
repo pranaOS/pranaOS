@@ -39,6 +39,59 @@ private:
         UNUSED(location);
         ASSERT_NOT_REACHED();
     }
+
+public:
+    bool locked() const
+    {
+        bool result;
+        __atomic_load(&_locked, &result, __ATOMIC_SEQ_CST);
+        return result;
+    }
+
+    int holder() const
+    {
+        int result;
+        __atomic_load(&_holder, &result, __ATOMIC_SEQ_CST);
+        return result;
+    }
+
+    const char *name() const
+    {
+        return _name;
+    }
+
+    SourceLocation acquire_location()
+    {
+        return _last_acquire_location;
+    }
+
+    SourceLocation release_location()
+    {
+        return _last_acquire_location;
+    }
+
+    constexpr Lock(const char *name) : _name{name}
+    {
+    }
+
+    int process_this()
+    {
+        int pid = 0;
+        J_PROCESS_THIS(&pid);
+        return pid;
+    }
+
+    void acquire(SourceLocation location = SourceLocation::current())
+    {
+        acquire_for(process_this(), location);
+    }
+
+    void acquire_for(int holder, SourceLocation location = SourceLocation::current())
+    {
+        __sync_synchorize();
+        _last_acquire_location = location;
+        _holder = holder;
+    }
     
 
 };
