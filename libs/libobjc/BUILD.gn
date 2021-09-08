@@ -4,7 +4,7 @@ pranaOS_static_library("libobjc") {
   sources = [
     "src/NSObject.mm",
     "src/class.mm",
-    "src/init.mm",
+    "src/init.m",
     "src/memory.mm",
     "src/msgsend_$target_cpu.S",
     "src/selector.mm",
