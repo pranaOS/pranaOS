@@ -6,8 +6,9 @@
 
 #pragma once
 
-#include <libabi/handle.h>
-#include <libutils/resultor.h>
+// includes
+#include <libabi/Handle.h>
+#include <libutils/ResultOr.h>
 
 namespace IO
 {
@@ -46,4 +47,17 @@ struct Seek
 
     virtual ResultOr<size_t> seek(SeekFrom from) = 0;
     virtual ResultOr<size_t> tell() = 0;
+
+    virtual ResultOr<size_t> length()
+    {
+        auto original_position = TRY(seek(SeekFrom::current(0)));
+
+        auto end_position = TRY(seek(SeekFrom::end(0)));
+
+        TRY(seek(SeekFrom::start(original_position)));
+
+        return end_position;
+    }
 };
+
+} 
