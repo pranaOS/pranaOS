@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#pragma once 
+#ifndef _KERNEL_IO_SOCKETS_LOCAL_SOCKET_H
+#define _KERNEL_IO_SOCKETS_LOCAL_SOCKET_H
 
 #include <io/sockets/socket.h>
 
@@ -16,3 +17,5 @@ int local_socket_write(dentry_t* dentry, uint8_t* buf, uint32_t start, uint32_t 
 
 int local_socket_bind(file_descriptor_t* sock, char* name, uint32_t len);
 int local_socket_connect(file_descriptor_t* sock, char* name, uint32_t len);
+
+#endif /* _KERNEL_IO_SOCKETS_LOCAL_SOCKET_H */

@@ -1,4 +1,5 @@
-#pragma once 
+#ifndef _KERNEL_LIBKERN_MEM_H
+#define _KERNEL_LIBKERN_MEM_H
 
 #include <libkern/types.h>
 
@@ -10,3 +11,5 @@ int memcmp(const void* src1, const void* src2, uint32_t nbytes);
 
 char* kmem_bring_to_kernel(const char* data, uint32_t size);
 char** kmem_bring_to_kernel_ptrarr(const char** data, uint32_t size);
+
+#endif // _KERNEL_LIBKERN_MEM_H

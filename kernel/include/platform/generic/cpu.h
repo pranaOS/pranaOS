@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#pragma once
+#ifndef _KERNEL_TASKING_BITS_CPU_H
+#define _KERNEL_TASKING_BITS_CPU_H
 
 #include <drivers/generic/fpu.h>
 #include <libkern/types.h>
@@ -49,3 +50,5 @@ typedef struct {
 } cpu_t;
 
 extern cpu_t cpus[CPU_CNT];
+
+#endif // _KERNEL_TASKING_BITS_CPU_H

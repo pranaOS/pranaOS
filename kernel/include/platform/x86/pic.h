@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#pragma once
+#ifndef _KERNEL_PLATFORM_X86_PIC_H
+#define _KERNEL_PLATFORM_X86_PIC_H
 
 #include <platform/x86/port.h>
 
@@ -15,3 +16,5 @@
 #define ICW4_8086 0x01
 
 void pic_remap(unsigned int offset1, unsigned int offset2);
+
+#endif

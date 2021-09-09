@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#pragma once
+#ifndef _KERNEL_DRIVERS_AARCH32_PL031_H
+#define _KERNEL_DRIVERS_AARCH32_PL031_H
 
 #include <drivers/driver_manager.h>
 #include <libkern/mask.h>
@@ -23,3 +24,5 @@ typedef struct pl031_registers pl031_registers_t;
 
 void pl031_install();
 uint32_t pl031_read_rtc();
+
+#endif // _KERNEL_DRIVERS_AARCH32_PL031_H

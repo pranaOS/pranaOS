@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#pragma once
+#ifndef _KERNEL_ALGO_SYNC_RINGBUFFER_H
+#define _KERNEL_ALGO_SYNC_RINGBUFFER_H
 
 #include <algo/ringbuffer.h>
 #include <libkern/libkern.h>
@@ -104,3 +105,5 @@ static ALWAYS_INLINE void sync_ringbuffer_clear(sync_ringbuffer_t* buf)
     ringbuffer_clear(&buf->ringbuffer);
     lock_release(&buf->lock);
 }
+
+#endif //_KERNEL_ALGO_SYNC_RINGBUFFER_H

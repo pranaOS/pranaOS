@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-// includes
 #include <algo/dynamic_array.h>
 #include <libkern/atomic.h>
 #include <libkern/libkern.h>
@@ -18,6 +17,9 @@
 #include <tasking/sched.h>
 #include <tasking/tasking.h>
 #include <time/time_manager.h>
+
+// #define SCHED_DEBUG
+// #define SCHED_SHOW_STAT
 
 static time_t _sched_timeslices[];
 static int _enqueued_tasks;

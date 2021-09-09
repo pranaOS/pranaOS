@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#pragma once
+#ifndef _KERNEL_TASKING_SCHED_H
+#define _KERNEL_TASKING_SCHED_H
 
 #include <libkern/types.h>
 #include <mem/vmm/vmm.h>
@@ -29,3 +30,5 @@ static inline void sched_tick()
         }
     }
 }
+
+#endif // _KERNEL_TASKING_SCHED_H

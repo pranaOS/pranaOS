@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#pragma once
+#ifndef _KERNEL_PLATFORM_X86_PMM_SETTINGS_H
+#define _KERNEL_PLATFORM_X86_PMM_SETTINGS_H
 
 #include <platform/x86/memmap.h>
 
@@ -12,3 +13,5 @@
 #define PMM_BLOCK_SIZE (4096)
 #define PMM_BLOCK_SIZE_KB (4)
 #define PMM_BLOCKS_PER_BYTE (8)
+
+#endif /* _KERNEL_PLATFORM_X86_PMM_SETTINGS_H */

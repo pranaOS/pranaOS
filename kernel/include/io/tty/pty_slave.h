@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#pragma once 
+#ifndef _KERNEL_IO_TTY_PTY_SLAVE_H
+#define _KERNEL_IO_TTY_PTY_SLAVE_H
 
 #include <algo/sync_ringbuffer.h>
 
@@ -23,3 +24,5 @@ typedef struct pty_slave_entry pty_slave_entry_t;
 extern pty_slave_entry_t pty_slaves[PTYS_COUNT];
 
 int pty_slave_create(int id, struct pty_master_entry* ptm);
+
+#endif

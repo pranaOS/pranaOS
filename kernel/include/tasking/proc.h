@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#pragma once
+#ifndef _KERNEL_TASKING_PROC_H
+#define _KERNEL_TASKING_PROC_H
 
 #include <algo/dynamic_array.h>
 #include <fs/vfs.h>
@@ -144,3 +145,5 @@ proc_zone_t* proc_find_zone(proc_t* p, uint32_t addr);
 proc_zone_t* proc_find_zone_no_proc(dynamic_array_t* zones, uint32_t addr);
 int proc_delete_zone_no_proc(dynamic_array_t*, proc_zone_t*);
 int proc_delete_zone(proc_t*, proc_zone_t*);
+
+#endif // _KERNEL_TASKING_PROC_H

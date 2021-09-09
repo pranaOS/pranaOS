@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#pragma once
+#ifndef _KERNEL_PLATFORM_AARCH32_VMM_CONSTS_H
+#define _KERNEL_PLATFORM_AARCH32_VMM_CONSTS_H
 
 #define VMM_PTE_COUNT (256)
 #define VMM_PDE_COUNT (4096)
@@ -19,3 +20,5 @@
 
 #define VMM_USER_TABLES_START 0
 #define VMM_KERNEL_TABLES_START 3072
+
+#endif //_KERNEL_PLATFORM_AARCH32_VMM_CONSTS_H

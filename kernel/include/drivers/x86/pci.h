@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#pragma once
+#ifndef _KERNEL_DRIVERS_X86_PCI_H
+#define _KERNEL_DRIVERS_X86_PCI_H
 
 #include <drivers/driver_manager.h>
 #include <drivers/x86/display.h>
@@ -48,3 +49,5 @@ char pci_has_device_functions(uint8_t bus, uint8_t device);
 void pci_find_devices();
 device_desc_t pci_get_device_desriptor(uint8_t bus, uint8_t device, uint8_t function);
 uint32_t pci_read_bar(device_t* dev, int bar_id);
+
+#endif /* _KERNEL_DRIVERS_X86_PCI_H */

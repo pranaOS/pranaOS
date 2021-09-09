@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#pragma once 
+#ifndef _KERNEL_FS_DEVFS_DEVFS_H
+#define _KERNEL_FS_DEVFS_DEVFS_H
 
 #include <fs/vfs.h>
 #include <libkern/c_attrs.h>
@@ -51,3 +52,5 @@ int devfs_mount();
 
 devfs_inode_t* devfs_mkdir(dentry_t* dir, const char* name, uint32_t len);
 devfs_inode_t* devfs_register(dentry_t* dir, uint32_t devid, const char* name, uint32_t len, mode_t mode, const file_ops_t* handlers);
+
+#endif /* _KERNEL_FS_DEVFS_DEVFS_H */

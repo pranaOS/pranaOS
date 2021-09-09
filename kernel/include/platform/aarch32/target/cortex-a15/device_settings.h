@@ -4,8 +4,21 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#pragma once 
+#ifndef _KERNEL_PLATFORM_AARCH32_TARGET_CORTEX_A15_DEVICE_SETTINGS_H
+#define _KERNEL_PLATFORM_AARCH32_TARGET_CORTEX_A15_DEVICE_SETTINGS_H
 
+/**
+ * Used devices:
+ *      uart
+ *      gicv2
+ *      sp804
+ *      pl181
+ *      pl111
+ *      pl050
+ *      pl031
+ */
+
+/* Base is read from CBAR */
 #define GICv2_DISTRIBUTOR_OFFSET 0x1000
 #define GICv2_CPU_INTERFACE_OFFSET 0x2000
 
@@ -32,3 +45,5 @@
 
 #define PL050_KEYBOARD_IRQ_LINE (32 + 12)
 #define PL050_MOUSE_IRQ_LINE (32 + 13)
+
+#endif /* _KERNEL_PLATFORM_AARCH32_TARGET_CORTEX_A15_DEVICE_SETTINGS_H */

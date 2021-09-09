@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#pragma once
+#ifndef _KERNEL_DRIVERS_AARCH32_GICV2_H
+#define _KERNEL_DRIVERS_AARCH32_GICV2_H
 
 #include <drivers/driver_manager.h>
 #include <libkern/mask.h>
@@ -71,3 +72,5 @@ void gicv2_install();
 void gicv2_install_secondary_cpu();
 uint32_t gicv2_interrupt_descriptor();
 void gicv2_end(uint32_t int_disc);
+
+#endif //_KERNEL_DRIVERS_AARCH32_GICV2_H

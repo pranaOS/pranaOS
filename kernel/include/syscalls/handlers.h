@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#pragma once
+#ifndef _KERNEL_SYSCALLS_HANDLERS_H
+#define _KERNEL_SYSCALLS_HANDLERS_H
 
 #include <libkern/syscall_structs.h>
 #include <libkern/types.h>
@@ -64,3 +65,5 @@ void sys_shbuf_get(trapframe_t* tf);
 void sys_shbuf_free(trapframe_t* tf);
 
 void sys_none(trapframe_t* tf);
+
+#endif // _KERNEL_SYSCALLS_HANDLERS_H

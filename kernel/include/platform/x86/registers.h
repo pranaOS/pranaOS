@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#pragma once
+#ifndef _KERNEL_PLATFORM_X86_REGISTERS_H
+#define _KERNEL_PLATFORM_X86_REGISTERS_H
 
 #include <libkern/types.h>
 
@@ -35,3 +36,5 @@ static inline void write_cr0(uint32_t val)
                  :
                  : "r"(val));
 }
+
+#endif /* _KERNEL_PLATFORM_X86_REGISTERS_H */

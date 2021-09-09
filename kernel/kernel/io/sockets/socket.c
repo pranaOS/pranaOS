@@ -45,7 +45,6 @@ int socket_put(socket_t* sock)
 {
     lock_acquire(&sock->lock);
     sock->d_count--;
-    // FIXME: crashing while booting
     ASSERT(sock->d_count > 0);
     if (sock->d_count == 0) {
         sync_ringbuffer_free(&sock->buffer);

@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#pragma once 
+#ifndef _KERNEL_LIBKERN_C_ATTRS_H
+#define _KERNEL_LIBKERN_C_ATTRS_H
 
 #ifndef PACKED
 #define PACKED __attribute__((packed))
@@ -17,3 +18,5 @@
 #ifndef NORETURN
 #define NORETURN __attribute__((noreturn))
 #endif // NORETURN
+
+#endif // _KERNEL_LIBKERN_C_ATTRS_H

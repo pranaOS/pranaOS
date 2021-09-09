@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-// includes
 #include <libkern/bits/errno.h>
 #include <libkern/libkern.h>
 #include <libkern/lock.h>
@@ -17,6 +16,8 @@
 #include <platform/generic/vmm/mapping_table.h>
 #include <platform/generic/vmm/pf_types.h>
 #include <tasking/tasking.h>
+
+// #define VMM_DEBUG
 
 #define pdir_t pdirectory_t
 #define VMM_TOTAL_PAGES_PER_TABLE VMM_PTE_COUNT

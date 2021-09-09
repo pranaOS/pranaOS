@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#pragma once
+#ifndef _KERNEL_DRIVERS_AARCH32_PL111_H
+#define _KERNEL_DRIVERS_AARCH32_PL111_H
 
 #include <drivers/driver_manager.h>
 #include <libkern/mask.h>
@@ -51,3 +52,5 @@ struct pl111_registers {
 typedef struct pl111_registers pl111_registers_t;
 
 void pl111_install();
+
+#endif //_KERNEL_DRIVERS_AARCH32_PL111_H

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _KERNEL_DRIVERS_X86_DISPLAY_H
+#define _KERNEL_DRIVERS_X86_DISPLAY_H
 
 #include <libkern/libkern.h>
 #include <libkern/types.h>
@@ -39,3 +40,5 @@ char row_in_field(int row);
 void set_cursor_offset(unsigned short offset);
 int get_cursor_offet();
 int get_offset(int col, int row);
+
+#endif

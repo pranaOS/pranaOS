@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#pragma once
+#ifndef _KERNEL_PLATFORM_X86_SYSCALLS_PARAMS_H
+#define _KERNEL_PLATFORM_X86_SYSCALLS_PARAMS_H
 
 #include <platform/x86/tasking/trapframe.h>
 
@@ -20,3 +21,5 @@
 #define return_with_val(val) \
     (return_val = val);      \
     return
+
+#endif // _KERNEL_PLATFORM_X86_SYSCALLS_PARAMS_H
