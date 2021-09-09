@@ -1,10 +1,6 @@
 #!/usr/bin/env python3
 #
-# /*
-#  * Copyright (c) 2021, Krisna Pranav
-#  *
-#  * SPDX-License-Identifier: BSD-2-Clause
-# */
+
 
 # Launch the script from root of the project to have the correct paths
 

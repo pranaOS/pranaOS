@@ -1,10 +1,6 @@
 #!/usr/bin/env python
 #
-# /*
-#  * Copyright (c) 2021, Krisna Pranav
-#  *
-#  * SPDX-License-Identifier: BSD-2-Clause
-# */
+
 
 import subprocess
 import os

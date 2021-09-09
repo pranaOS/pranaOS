@@ -1,8 +1,4 @@
-# /*
-#  * Copyright (c) 2021, Krisna Pranav
-#  *
-#  * SPDX-License-Identifier: BSD-2-Clause
-# */
+
 
 from token import Token
 from Lexer.reserved_symbols import *

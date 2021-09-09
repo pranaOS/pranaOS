@@ -1,7 +1,3 @@
-# implemented in python to support all platforms
-# pranaOS
-# fat16 in pranaOS
-
 from config import format_settings
 
 filename = format_settings['filename']
