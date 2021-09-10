@@ -33,8 +33,6 @@
 
 int main()
 {
-    printf("value of a is: %d\n", a);
-
     id objectAlloc = [[SampleClass alloc] init];
     [objectAlloc sampleMethod:22];
     [SampleClass sampleMethod];

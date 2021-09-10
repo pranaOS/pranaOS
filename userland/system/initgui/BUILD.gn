@@ -2,7 +2,7 @@ import("//build/userland/TEMPLATE.gni")
 
 pranaOS_executable("initgui") {
   install_path = "System/"
-  sources = [ "main.cpp" ]
+  sources = [ "main.c" ]
   configs = [ "//build/userland:userland_flags" ]
   deplibs = [ "libc" ]
 }
