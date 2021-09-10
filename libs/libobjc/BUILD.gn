@@ -8,7 +8,6 @@ pranaOS_static_library("libobjc") {
     "src/memory.m",
     "src/msgsend_$target_cpu.S",
     "src/selector.m",
-    "src/objcclass.m",
   ]
 
   include_dirs = [

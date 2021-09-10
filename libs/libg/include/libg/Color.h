@@ -27,6 +27,7 @@ public:
         LightSystemButton,
         LightSystemAccentButton,
         LightSystemBlue,
+        DarkSystemText,
         Opaque,
     };
 

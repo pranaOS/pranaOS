@@ -5,6 +5,7 @@
  */
 
 #pragma once
+#include "../../../../servers/window_server/shared/MessageContent/MenuBar.h"
 #include <libg/string.h>
 #include <utility>
 
