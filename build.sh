@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# pass --target_cpu aarch32 as arg to build for arm
+
 GREEN='\033[0;32m'
 RED='\033[0;31m'
 NC='\033[0m'
@@ -38,7 +40,7 @@ if [[ "$OSTYPE" == "linux-gnu"* ]]; then
 elif [[ "$OSTYPE" == "darwin"* ]]; then
     MKFS=/usr/local/opt/e2fsprogs/sbin/mkfs.ext2
 else
-    echo "Please provide path to MKFS in build.sh"
+    echo "Please provide path to MKFS in gn_gen.sh"
 fi
 sudo $MKFS -t ext2 -r 0 -b 1024 out/pranaos.img
 if [ $? -ne 0 ]; then echo -e "${ERROR} Can't create an out/pranaos.img" && exit 1; fi
