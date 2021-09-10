@@ -1,8 +1,4 @@
-# /*
-#  * Copyright (c) 2021, Krisna Pranav
-#  *
-#  * SPDX-License-Identifier: BSD-2-Clause
-# */
+
 
 lib_c_flags = [
   "-ffreestanding",
@@ -88,15 +84,12 @@ config("libcxx_flags") {
 
 group("libs") {
   deps = [
-    "//libs/libabi:libabi",
     "//libs/libc:libc",
     "//libs/libcxx:libcxx",
     "//libs/libcxxabi:libcxxabi",
     "//libs/libfoundation:libfoundation",
     "//libs/libg:libg",
-    "//libs/libio:libio",
     "//libs/libui:libui",
-    "//libs/libutils:libutils",
   ]
 
   if (objc_support) {

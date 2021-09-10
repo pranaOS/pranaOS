@@ -1,8 +1,4 @@
-# /*
-#  * Copyright (c) 2021, Krisna Pranav
-#  *
-#  * SPDX-License-Identifier: BSD-2-Clause
-# */
+
 
 uland_c_flags = [
   "-Werror",
@@ -107,13 +103,10 @@ group("userland") {
     "//userland/system/init:init",
     "//userland/system/initgui:initgui",
     "//userland/utilities/cat:cat",
-    "//userland/utilities/echo:echo",
     "//userland/utilities/kill:kill",
     "//userland/utilities/ls:ls",
     "//userland/utilities/mkdir:mkdir",
     "//userland/utilities/rm:rm",
-    "//userland/utilities/neofetch:neofetch",
-    "//userland/utilities/reboot:reboot",
     "//userland/utilities/rmdir:rmdir",
     "//userland/utilities/touch:touch",
     "//userland/utilities/uname:uname",
@@ -127,10 +120,7 @@ group("userland") {
     ]
 
     if (objc_support) {
-      deps += [ 
-        "//userland/tests/testobjc:testobjc",
-        "//userland/tests/objc:objc",
-      ]
+      deps += [ "//userland/tests/testobjc:testobjc" ]
     }
   }
 }
