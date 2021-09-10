@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _USERLAND_EDIT_VIEWER_H
+#define _USERLAND_EDIT_VIEWER_H
 
 #define STDIN 0
 #define STDOUT 1
@@ -14,3 +15,5 @@ void viewer_cursor_up();
 void viewer_cursor_down();
 void viewer_cursor_next();
 int viewer_get_cursor_offset_in_file();
+
+#endif

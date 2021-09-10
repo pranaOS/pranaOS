@@ -1,4 +1,5 @@
-#pragma once 
+#ifndef _USERLAND_EDIT_LIFETIME_H
+#define _USERLAND_EDIT_LIFETIME_H
 
 #include "viewer.h"
 #include <termios.h>
@@ -9,3 +10,5 @@ void enable_raw_mode();
 void restore_termios();
 void exit_app();
 void crash_app();
+
+#endif
