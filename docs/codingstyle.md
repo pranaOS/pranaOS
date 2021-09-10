@@ -3,9 +3,9 @@
 - coding style:
 
 ### Header:
- - header should be like this
+- header should be like this
 
- - wrong:
+- wrong:
 ```c++
 #ifndef YOUR_HEADER_H
 #define YOUR_HEADER_H
