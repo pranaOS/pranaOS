@@ -39,3 +39,6 @@ A unix operating system written from scratch in c / c++
 
 ### Social Media:
 - [twitter](https://twitter.com/os_prana)
+
+### License:
+- pranaOS is licensed under a 2-clause BSD license.
