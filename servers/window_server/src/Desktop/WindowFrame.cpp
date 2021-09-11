@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
+// includes
 #include "WindowFrame.h"
 #include "../Components/Elements/Button.h"
 #include "../WindowManager.h"
@@ -33,16 +34,16 @@ static const uint32_t s_close_button_glyph_data[10] = {
 };
 
 static const uint32_t s_maximise_button_glyph_data[10] = {
-    0b1111111111,
-    0b1111111111,
-    0b1100000011,
-    0b1100000011,
-    0b1100000011,
-    0b1100000011,
-    0b1100000011,
-    0b1100000011,
-    0b1111111111,
-    0b1111111111
+    0b1111100000,
+    0b1111000000,
+    0b1110000000,
+    0b1100000000,
+    0b1000000000,
+    0b0000000001,
+    0b0000000011,
+    0b0000000111,
+    0b0000001111,
+    0b0000011111
 };
 
 static const uint32_t s_minimise_button_glyph_data[10] = {
@@ -71,6 +72,8 @@ WindowFrame::WindowFrame(Window& window)
     maximize->set_icon(LG::GlyphBitmap(s_maximise_button_glyph_data, 10, 10));
     auto* minimize = new Button();
     minimize->set_icon(LG::GlyphBitmap(s_minimise_button_glyph_data, 10, 10));
+
+    close->set_title_color(LG::Color(196, 128, 128));
 
     m_window_control_buttons.push_back(close);
     m_window_control_buttons.push_back(maximize);
@@ -130,7 +133,6 @@ void WindowFrame::draw(LG::Context& ctx)
     int right_x = x + width - right_border_size();
     int bottom_y = y + height - bottom_border_size();
 
-    // Drawing frame and shadings
     ctx.set_fill_color(color());
     ctx.fill_rounded(LG::Rect(x + left_border_size(), y + std_top_border_frame_size(), width - 2 * left_border_size(), top_border_size() - std_top_border_frame_size()), LG::CornerMask(4, true, false));
     if (active()) {
@@ -140,8 +142,6 @@ void WindowFrame::draw(LG::Context& ctx)
         ctx.draw_box_shading(shading_rect, LG::Shading(LG::Shading::Type::Box, 0, LG::Shading::SystemSpread), LG::CornerMask(LG::CornerMask::SystemRadius));
     }
 
-    // Drawing labels, icons.
-    // Drawing positions are calculated using a start of the frame.
     ctx.set_fill_color(m_text_colors[(int)active()]);
     ctx.draw({ x + spacing(), y + icon_y_offset() }, icon());
 
@@ -178,7 +178,6 @@ void WindowFrame::invalidate(WinServer::Compositor& compositor) const
 
 void WindowFrame::receive_tap_event(const LG::Point<int>& tap)
 {
-    // Calculating buttons' positions
     size_t width = m_window.bounds().width();
     int right_x = width - right_border_size();
     int start_buttons = right_x - spacing() - m_window_control_buttons[0]->bounds().width();
@@ -239,4 +238,4 @@ void WindowFrame::reload_icon()
     m_icon = loader.load_from_file(m_window.icon_path() + "/12x12.png");
 }
 
-} // namespace WinServer
+}
