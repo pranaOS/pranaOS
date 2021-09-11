@@ -154,6 +154,12 @@ void WindowFrame::draw(LG::Context& ctx)
 
     int start_buttons = right_x - spacing() - m_window_control_buttons[0]->bounds().width();
     for (int i = 0; i < m_window_control_buttons.size(); i++) {
+        if (active() && i == 0) {
+            ctx.set_fill_color(m_window_control_buttons[i]->title_color());
+        } else {
+            ctx.set_fill_color(m_text_colors[(int)active()]);
+        }
+
         m_window_control_buttons[i]->display(ctx, { start_buttons, y + button_y_offset() });
         start_buttons += -spacing() - m_window_control_buttons[i]->bounds().width();
     }
@@ -238,4 +244,4 @@ void WindowFrame::reload_icon()
     m_icon = loader.load_from_file(m_window.icon_path() + "/12x12.png");
 }
 
-}
+} 
