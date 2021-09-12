@@ -6,6 +6,7 @@ pranaOS_static_library("libabi") {
       "time.h",
       "filesystem.h",
       "task.h",
+      "network.h",
   ]
 
   deplibs = [
