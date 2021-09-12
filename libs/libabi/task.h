@@ -3,6 +3,13 @@
 #include <libabi/filesystem.h>
 #include <libabi/process.h>
 
+enum TaskState
+{
+#define TASK_STATE_ENUM_ENTRY(__state) TASK_STATE_##__state,
+    TASK_STATE_LIST(TASK_STATE_ENUM_ENTRY)
+        _TASK_STATE_COUNT
+};
+
 #define TASK_NONE (0)
 #define TASK_WAITABLE (1 << 0)
 #define TASK_USER (1 << 1)
