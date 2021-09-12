@@ -4,6 +4,7 @@ pranaOS_static_library("libabi") {
   sources = [
       "process.h",
       "time.h",
+      "filesystem.h",
   ]
 
   deplibs = [
