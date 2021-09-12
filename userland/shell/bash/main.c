@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021, Krisna Pranav
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+*/
+
+// includes
 #include <pthread.h>
 #include <signal.h>
 #include <stdio.h>
@@ -81,7 +88,7 @@ void _cmd_processor()
     for (int i = 0; i < _cmd_buffer_position; i++) {
         if (_cmd_buffer[i] == ' ') {
             if (is_prev_space == false) {
-                /* null terminator when args are sent */
+
                 _cmd_buffer[i] = '\0';
             }
             is_prev_space = true;
@@ -93,11 +100,9 @@ void _cmd_processor()
         }
     }
 
-    /* Remove \n */
     _cmd_buffer[_cmd_buffer_position - 1] = '\0';
     _cmd_parsed_buffer[_cmd_parsed_buffer_position] = 0;
 
-    /* We try to launch an app */
     uint32_t cmd = _is_cmd_internal();
     if (cmd == CMD_NONE) {
         uint32_t namelen = strlen(_cmd_parsed_buffer[0]);
@@ -105,7 +110,6 @@ void _cmd_processor()
 
         int res = fork();
         if (!res) {
-            // We don't pass an app name to args.
             execve(_cmd_app, &_cmd_parsed_buffer[1], 0);
             exit(-1);
         } else {
