@@ -1,0 +1,15 @@
+import("//build/userland/TEMPLATE.gni")
+
+pranaOS_executable("activitymonitor") {
+  sources = [
+    "AppDelegate.cpp",
+    "GraphView.cpp",
+  ]
+  configs = [ "//build/userland:userland_flags" ]
+  deplibs = [
+    "libcxx",
+    "libfoundation",
+    "libg",
+    "libui",
+  ]
+}
