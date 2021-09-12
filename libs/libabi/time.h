@@ -1,9 +1,19 @@
+/*
+ * Copyright (c) 2021, Krisna Pranav
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+*/
+
 #pragma once
 
-
-#include <libutils/prelude.h>,
+// includes
+#include <libutils/Prelude.h>
 
 typedef uint32_t ElapsedTime;
+
+typedef uint32_t TimeStamp;
+
+typedef uint32_t Timeout;
 
 typedef uint32_t Tick;
 
