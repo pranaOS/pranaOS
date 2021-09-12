@@ -104,6 +104,7 @@ group("userland") {
     "//userland/system/initgui:initgui",
     "//userland/utilities/about:about",
     "//userland/utilities/cat:cat",
+    "//userland/utilities/calculator:calculator",
     "//userland/utilities/kill:kill",
     "//userland/utilities/ls:ls",
     "//userland/utilities/mkdir:mkdir",
