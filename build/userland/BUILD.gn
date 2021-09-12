@@ -96,6 +96,7 @@ group("userland") {
     "//userland/applications/about:about",
     "//userland/applications/activity_monitor:activity_monitor",
     "//userland/applications/calculator:calculator",
+    "//userland/applications/settings:settings",
     "//userland/applications/terminal:terminal",
     "//userland/shell/bash:bash",
     "//userland/system/dock:dock",
