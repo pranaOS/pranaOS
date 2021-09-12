@@ -6,6 +6,7 @@
 
 #pragma once
 
+// includes
 #include <stdarg.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -16,12 +17,14 @@
 typedef uint64_t size64_t;
 typedef int64_t ssize64_t;
 
-#ifndef __cplusplus
-#   ifndef NO_PRANAOS_USING_UTILS_NAMESPACE
+#ifdef __cplusplus
+#    ifndef NO_PRANAOS_USING_UTILS_NAMESPACE
 
 namespace Utils
 {
 }
 
-#   endif
+using namespace Utils;
+
+#    endif
 #endif
