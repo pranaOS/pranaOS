@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#ifndef _KERNEL_DRIVERS_DRIVER_MANAGER_H
-#define _KERNEL_DRIVERS_DRIVER_MANAGER_H
+#pragma once
 
 #include <libkern/types.h>
 
@@ -32,7 +31,6 @@ enum DRIVER_MAN_NOTIFICATIONS {
     DM_NOTIFICATION_STOP,
 };
 
-// Supported driver's types
 enum DRIVERS_TYPE {
     DRIVER_STORAGE_DEVICE,
     DRIVER_VIDEO_DEVICE,
@@ -47,7 +45,6 @@ enum DRIVERS_TYPE {
     DRIVER_BAD_SIGN = 0xff
 };
 
-// Supported device's types
 enum DEVICES_TYPE {
     DEVICE_STORAGE,
     DEVICE_VIDEO,
@@ -62,41 +59,35 @@ enum DRIVER_COMMON {
     DRIVER_NOTIFICATION = 0x0,
 };
 
-// Api function of DRIVER_STORAGE type
 enum DRIVER_VIDEO_OPERTAION {
-    DRIVER_VIDEO_INIT = 0x1, // function called when a device is found
+    DRIVER_VIDEO_INIT = 0x1,
     DRIVER_VIDEO_SET_RESOLUTION,
 };
 
-// Api function of DRIVER_STORAGE type
 enum DRIVER_STORAGE_OPERTAION {
-    DRIVER_STORAGE_ADD_DEVICE = 0x1, // function called when a device is found
+    DRIVER_STORAGE_ADD_DEVICE = 0x1,
     DRIVER_STORAGE_READ,
     DRIVER_STORAGE_WRITE,
     DRIVER_STORAGE_FLUSH,
     DRIVER_STORAGE_CAPACITY,
 };
 
-// Api function of DRIVER_INPUT_SYSTEMS type
 enum DRIVER_INPUT_SYSTEMS_OPERTAION {
-    DRIVER_INPUT_SYSTEMS_ADD_DEVICE = 0x1, // function called when a device is found
+    DRIVER_INPUT_SYSTEMS_ADD_DEVICE = 0x1,
     DRIVER_INPUT_SYSTEMS_GET_LAST_KEY,
     DRIVER_INPUT_SYSTEMS_DISCARD_LAST_KEY
 };
 
-// Api function of DRIVER_CONTROLLER type
 enum DRIVER_BUS_CONTROLLER_OPERTAION {
-    DRIVER_BUS_CONTROLLER_FIND_DEVICE = 0x1, // function called when a device is found
+    DRIVER_BUS_CONTROLLER_FIND_DEVICE = 0x1,
 };
 
-// Api function of DRIVER_VIRTUAL_FILE_SYSTEM type
 enum DRIVER_VIRTUAL_FILE_SYSTEM_OPERTAION {
     DRIVER_VIRTUAL_FILE_SYSTEM_ADD_DRIVER = 0x1,
     DRIVER_VIRTUAL_FILE_SYSTEM_ADD_DEVICE,
     DRIVER_VIRTUAL_FILE_SYSTEM_EJECT_DEVICE,
 };
 
-// Api function of DRIVER_FILE_SYSTEM type
 enum DRIVER_FILE_SYSTEM_OPERTAION {
     DRIVER_FILE_SYSTEM_RECOGNIZE = 0x1,
     DRIVER_FILE_SYSTEM_PREPARE_FS,
@@ -128,9 +119,9 @@ enum DRIVER_FILE_SYSTEM_OPERTAION {
 typedef struct {
     uint8_t type;
     bool auto_start;
-    bool is_device_driver; // True if it's a dev driver (like ata driver)
-    bool is_device_needed; // True if need to assign to a device
-    bool is_driver_needed; // True if need to assign to a driver
+    bool is_device_driver;
+    bool is_device_needed;
+    bool is_driver_needed;
     uint8_t type_of_needed_device;
     uint8_t type_of_needed_driver;
     uint8_t pci_serve_class;
@@ -138,14 +129,14 @@ typedef struct {
     uint16_t pci_serve_vendor_id;
     uint16_t pci_serve_device_id;
     void* functions[MAX_DRIVER_FUNCTION_COUNT];
-} driver_desc_t; // driver decriptor
+} driver_desc_t;
 
 typedef struct {
     uint8_t id;
     bool is_active;
     driver_desc_t desc;
     const char* name;
-} driver_t; // driver
+} driver_t;
 
 typedef struct {
     uint8_t bus;
@@ -160,7 +151,7 @@ typedef struct {
     uint32_t interrupt;
     uint32_t port_base;
     uint32_t args[4];
-} device_desc_t; // device desriptor
+} device_desc_t;
 
 typedef struct {
     uint8_t id;
@@ -168,7 +159,7 @@ typedef struct {
     bool is_virtual;
     int16_t driver_id;
     device_desc_t device_desc;
-} device_t; // device
+} device_t;
 
 extern driver_t drivers[MAX_DRIVERS_COUNT];
 extern device_t devices[MAX_DEVICES_COUNT];
@@ -187,4 +178,14 @@ device_t* new_virtual_device(uint8_t type);
 int dm_get_driver_id_by_name();
 void dm_send_notification(uint32_t msg, uint32_t param);
 
-#endif // _KERNEL_DRIVERS_DRIVER_MANAGER_H
+static inline void* dm_driver_function(int driver_id, int function_id)
+{
+    return drivers[driver_id].desc.functions[function_id];
+}
+
+static inline void* dm_function_handler(device_t* dev, int function_id)
+{
+    return dm_driver_function(dev->driver_id, function_id);
+}
+
+//#endif
