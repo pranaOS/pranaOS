@@ -1,6 +1,6 @@
 import("//build/userland/TEMPLATE.gni")
 
-pranaOS_application("settings") {
+pranaOS_executable("settings") {
   sources = [
     "AppDelegate.cpp",
   ]
