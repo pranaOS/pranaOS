@@ -5,15 +5,17 @@ A unix operating system written from scratch in c / c++
 [![forthebadge](https://forthebadge.com/images/badges/made-with-c-plus-plus.svg)](https://forthebadge.com)
 
 
-### Build Instructions:
-- want to use pranaOS??
+## Build Instructions:
+- building pranaOS
 - view the [build instructions](https://github.com/pranaOS/pranaOS/blob/master/docs/build.md)
 
+
+### Future Plans Of pranaOS
 - view the future plans of [pranaos](https://github.com/pranaOS/pranaOS/blob/master/plans/pranaOSfutureplans.pdf)
 
 
-### Contributing Docs:
-- want to contribute to pranaOS??
+## Contributing Docs:
+- pranaOS is an open source project so you can contribute to it instructions for contributing to pranaOS will be find below pr's are always welcome!!!! ;)
 - before contributing to pranaOS check the [coding style](https://github.com/pranaOS/pranaOS/blob/master/docs/codingstyle.md)
 - contributing [docs](https://github.com/pranaOS/pranaOS/blob/master/docs/contributing.md)
 
@@ -23,7 +25,7 @@ A unix operating system written from scratch in c / c++
 ### Get In Touch:
 - Join our discord server: [pranaOS discord](https://discord.gg/XmpBTmy9Bz)
 
-## Contributors
+### Contributors
 
 <a href="https://github.com/pranaOS/pranaOS/graphs/contributors">
   <img src="https://contributors-img.web.app/image?repo=pranaOS/pranaOS" />
