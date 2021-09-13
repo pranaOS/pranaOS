@@ -10,7 +10,7 @@ A unix operating system written from scratch in c / c++
 - view the [build instructions](https://github.com/pranaOS/pranaOS/blob/master/docs/build.md)
 
 
-### Future Plans Of pranaOS
+## Future Plans Of pranaOS
 - view the future plans of [pranaos](https://github.com/pranaOS/pranaOS/blob/master/plans/pranaOSfutureplans.pdf)
 
 
@@ -19,10 +19,10 @@ A unix operating system written from scratch in c / c++
 - before contributing to pranaOS check the [coding style](https://github.com/pranaOS/pranaOS/blob/master/docs/codingstyle.md)
 - contributing [docs](https://github.com/pranaOS/pranaOS/blob/master/docs/contributing.md)
 
-### Have any issues???:
+## Have any issues???:
 - have any doubts or found any bugs create open a [issue](https://github.com/pranaOS/pranaOS/issues/new/choose)
 
-### Get In Touch:
+## Get In Touch:
 - Join our discord server: [pranaOS discord](https://discord.gg/XmpBTmy9Bz)
 
 ### Contributors
@@ -39,8 +39,8 @@ A unix operating system written from scratch in c / c++
 ### Some Sources Took From Other Projects:
 - [license](https://github.com/pranaOS/pranaOS/blob/master/docs/otherprojectslicense.md)
 
-### Social Media:
+## Social Media:
 - [twitter](https://twitter.com/os_prana)
 
-### License:
+## License:
 - pranaOS is licensed under a 2-clause BSD license.
