@@ -8,7 +8,8 @@
 
 enum MouseButtonState
 {
-    MOUSE_BUtTON_RELEASE,
+    MOUSE_BUTTON_RELEASED,
+    MOUSE_BUTTON_PRESSED,
 };
 
 struct MousePacket
