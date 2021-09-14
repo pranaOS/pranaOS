@@ -30,6 +30,11 @@ JResult j_filesystem_link(const char *raw_old_path, size_t old_size, const char 
             (uintptr_t)new_size);
 }
 
+JRESULT j_handle_stat(int handle, JStat *state)
+{
+    return __syscall(J_HANDLE_STAT, (uintptr_t)handle, (uintptr_t)state);
+}
+
 JResult j_handle_connect(int *handle, const char *raw_path, size_t size)
 {
     return __syscall(J_HANDLE_CONNECT, (uintptr_t)handle, (uintptr_t)raw_path, (uintptr_t)size);
