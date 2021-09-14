@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include <libabi/filesystem.h>
-#include <libabi/process.h>
-#include <libabi/task.h>
+#include <libabi/Filesystem.h>
+#include <libabi/Process.h>
+#include <libabi/Task.h>
 
 struct LaunchpadArgument
 {
@@ -21,8 +21,9 @@ struct Launchpad
     TaskFlags flags;
 
     char name[PROCESS_NAME_SIZE];
-    char executable[PROCESS_NAME_SIZE];
+    char executable[PATH_LENGTH];
 
+    LaunchpadArgument argv[PROCESS_ARG_COUNT + 1];
     int argc;
 
     char *env;
