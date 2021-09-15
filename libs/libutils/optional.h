@@ -6,21 +6,24 @@
 
 #pragma once
 
+// includes
 #include <assert.h>
 #include <libutils/std.h>
 #include <libutils/tags.h>
 
-namespace utils
+namespace Utils
 {
 
-
 template <typename T>
-struct Optional 
+struct Optional
 {
 private:
     bool _present = false;
 
-    T _storage;
+    union
+    {
+        T _storage;
+    };
 
 public:
     ALWAYS_INLINE bool present() const
@@ -31,20 +34,30 @@ public:
     ALWAYS_INLINE T &unwrap()
     {
         assert(present());
-        return storage;
+        return _storage;
     }
 
-    ALWAYS_INLINE T unwrap_or(const T &default_value) const
+    ALWAYS_INLINE const T &unwrap() const
+    {
+        assert(present());
+        return _storage;
+    }
+
+    ALWAYS_INLINE T unwrap_or(const T &defaut_value) const
     {
         if (present())
         {
             return unwrap();
-        } else {
-            return default_value;
+        }
+        else
+        {
+            return defaut_value;
         }
     }
 
-    ALWAYS_INLINE explicit Optional() 
+    ALWAYS_INLINE explicit Optional() {}
+
+    ALWAYS_INLINE Optional(NoneTag)
     {
     }
 
@@ -54,10 +67,43 @@ public:
         new (&_storage) T(value);
     }
 
-    ALWAYS_INLINE Optioanl(T &&value)
+    ALWAYS_INLINE Optional(T &&value)
     {
         _present = true;
         new (&_storage) T(std::move(value));
+    }
+
+    ALWAYS_INLINE Optional(const Optional &other)
+    {
+        if (other.present())
+        {
+            _present = true;
+            new (&_storage) T(other.unwrap());
+        }
+    }
+
+    ALWAYS_INLINE Optional(Optional &&other)
+    {
+        if (other.present())
+        {
+            new (&_storage) T(other.unwrap());
+            _present = true;
+        }
+    }
+
+    ALWAYS_INLINE Optional &operator=(const Optional &other)
+    {
+        if (this != &other)
+        {
+            clear();
+            _present = other._present;
+            if (other._present)
+            {
+                new (&_storage) T(other.unwrap());
+            }
+        }
+
+        return *this;
     }
 
     ALWAYS_INLINE Optional &operator=(Optional &&other)
@@ -65,16 +111,14 @@ public:
         if (this != &other)
         {
             clear();
-
             _present = other._present;
-
-            if (other._present) 
+            if (other._present)
             {
                 new (&_storage) T(other.unwrap());
             }
         }
 
-        return this;
+        return *this;
     }
 
     ALWAYS_INLINE bool operator==(const T &other) const
@@ -87,6 +131,11 @@ public:
         return unwrap() == other;
     }
 
+    ALWAYS_INLINE ~Optional()
+    {
+        clear();
+    }
+
     ALWAYS_INLINE void clear()
     {
         if (_present)
@@ -95,6 +144,6 @@ public:
             _present = false;
         }
     }
-}
- 
-}
+};
+
+} 
