@@ -6,30 +6,26 @@
 
 #pragma once
 
+// includes
 #include <string.h>
 #include <libutils/storage.h>
 #include <libutils/tags.h>
 
-struct SliceStorage final : public Storage
+struct SliceStorage final :
+        public Storage
 {
 private:
-    void *data = nullptr;
+    void *_data = nullptr;
+    size_t _size = 0;
     bool _owned = false;
-    size_t size = 0;
 
 public:
     using Storage::end;
     using Storage::start;
 
-    void *start() override
-    {
-        return _data;
-    }
+    void *start() override { return _data; }
 
-    void *end() override
-    {
-        return reinterpret_cast<char *>(start()) + _size;
-    }
+    void *end() override { return reinterpret_cast<char *>(start()) + _size; }
 
     SliceStorage(size_t size)
     {
@@ -43,6 +39,13 @@ public:
         _data = data;
         _size = size;
         _owned = true;
+    }
+
+    SliceStorage(WrapTag, void *data, size_t size)
+    {
+        _data = data;
+        _size = size;
+        _owned = false;
     }
 
     SliceStorage(CopyTag, void *data, size_t size)
