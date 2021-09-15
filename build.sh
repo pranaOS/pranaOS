@@ -31,7 +31,7 @@ chmod +x out/bench.sh
 chmod +x out/debug.sh
 chmod +x out/dll.sh
 
-IMAGE_SIZE=32M
+IMAGE_SIZE=50M
 qemu-img create -f raw out/pranaos.img $IMAGE_SIZE
 if [ $? -ne 0 ]; then echo -e "${ERROR} Can't create an out/pranaos.img" && exit 1; fi
 MKFS="" # Provide path here
