@@ -24,6 +24,46 @@ private:
 
     T *_buffer = nullptr;
 
+public:
+    RingBuffer(size_t size)
+    {
+        _size = size;
+        _buffer = new T[size];
+    }
+
+    ~RingBuffer()
+    {
+        if (_buffer)
+            delete[] _buffer;
+    }
+
+    bool empty() const
+    {
+        return _used == 0;
+    }
+
+    bool full() const
+    {
+        return _used == _size;
+    }
+
+    size_t used() const
+    {
+        return _used;
+    }
+
+    size_t write(const T *buffer, size_t size)
+    {
+        size_t written = 0;
+
+        while (!full() && written < size)
+        {
+            put(buffer[written]);
+            written++;
+        }
+
+        return written;
+    }
 
 };
 
