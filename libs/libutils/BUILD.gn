@@ -4,6 +4,10 @@ pranaOS_static_library("libutils") {
   sources = [
       "macros.h",
       "prelude.h",
+      "refcounted.h",
+      "sourcelocation.h",
+      "tags.h",
+      "traits.h",
   ]
 
   deplibs = [
