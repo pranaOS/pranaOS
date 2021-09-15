@@ -14,6 +14,7 @@ pranaOS_static_library("libutils") {
       "tags.h",
       "traits.h",
       "hash.h",
+      "minmax.h",
   ]
 
   deplibs = [
