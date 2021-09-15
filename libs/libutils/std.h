@@ -1,6 +1,14 @@
+/*
+ * Copyright (c) 2021, Krisna Pranav
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+*/
+
 #pragma once
 
+// includes
 #include <libutils/traits.h>
+#include <stddef.h>
 
 #if __CONFIG_IS_HOSTED__ == 0
 
@@ -15,10 +23,10 @@ inline void *operator new[](size_t, void *ptr)
 }
 
 #else
-#   include <new>
+#    include <new>
 #endif
 
-namespace Std
+namespace std
 {
 
 using nullptr_t = decltype(nullptr);
@@ -29,6 +37,17 @@ constexpr typename RemoveReference<T>::Type &&move(T &&arg)
     return static_cast<typename RemoveReference<T>::Type &&>(arg);
 }
 
+template <typename T>
+constexpr T &&forward(typename RemoveReference<T>::Type &param)
+{
+    return static_cast<T &&>(param);
+}
+
+template <typename T>
+constexpr T &&forward(typename RemoveReference<T>::Type &&param)
+{
+    return static_cast<T &&>(param);
+}
 
 template <typename T>
 void swap(T &left, T &right)
@@ -47,13 +66,14 @@ constexpr T exchange(T &slot, U &&value)
 }
 
 template <typename T>
-struct initialize_list
+struct initializer_list
 {
 private:
     T *_data;
-    size_t size;   
-    
+    size_t _size;
+
     constexpr initializer_list(const T *data, size_t size)
+        : _data(data), _size(size)
     {
     }
 
@@ -62,7 +82,7 @@ public:
 
     constexpr initializer_list()
         : _data(0), _size(0)
-    {        
+    {
     }
 
     const T &operator[](size_t index) const
@@ -75,16 +95,9 @@ public:
         return _data[index];
     }
 
-    constexpr const T *begin() const
-    {
-        return _data;
-    }
+    constexpr const T *begin() const { return _data; }
 
-    constexpr const T *end() const
-    {
-        return _data;
-    }
-
+    constexpr const T *end() const { return _data + _size; }
 };
 
-}
+} 
