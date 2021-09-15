@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <libabitime.h>
+#include <libabi/time.h>
 #include <libutils/prelude.h>
 
 #define SYSTEM_INFO_FIELD_SIZE 65

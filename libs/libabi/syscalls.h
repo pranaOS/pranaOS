@@ -13,7 +13,7 @@
 #include <libabi/Handle.h>
 #include <libabi/IOCall.h>
 #include <libabi/Launchpad.h>
-#include <libabi/System.h>
+#include <libabi/system.h>
 
 #define SYSCALL_LIST(__ENTRY)     \
     __ENTRY(J_PROCESS_THIS)      \
@@ -63,9 +63,9 @@ enum Syscall
     SYSCALL_LIST(SYSCALL_ENUM_ENTRY) __SYSCALL_COUNT
 };
 
-static HjResult __syscall(Syscall syscall, uintptr_t p1, uintptr_t p2, uintptr_t p3, uintptr_t p4, uintptr_t p5)
+static JResult __syscall(Syscall syscall, uintptr_t p1, uintptr_t p2, uintptr_t p3, uintptr_t p4, uintptr_t p5)
 {
-    HjResult __ret = ERR_NOT_IMPLEMENTED;
+    JResult __ret = ERR_NOT_IMPLEMENTED;
 
 #if defined(__x86_64__)
 
@@ -87,27 +87,27 @@ static HjResult __syscall(Syscall syscall, uintptr_t p1, uintptr_t p2, uintptr_t
 
 #ifdef __cplusplus
 
-static inline HjResult __syscall(Syscall syscall, uintptr_t p1, uintptr_t p2, uintptr_t p3, uintptr_t p4)
+static inline JResult __syscall(Syscall syscall, uintptr_t p1, uintptr_t p2, uintptr_t p3, uintptr_t p4)
 {
     return __syscall(syscall, p1, p2, p3, p4, 0);
 }
 
-static inline HjResult __syscall(Syscall syscall, uintptr_t p1, uintptr_t p2, uintptr_t p3)
+static inline JResult __syscall(Syscall syscall, uintptr_t p1, uintptr_t p2, uintptr_t p3)
 {
     return __syscall(syscall, p1, p2, p3, 0, 0);
 }
 
-static inline HjResult __syscall(Syscall syscall, uintptr_t p1, uintptr_t p2)
+static inline JResult __syscall(Syscall syscall, uintptr_t p1, uintptr_t p2)
 {
     return __syscall(syscall, p1, p2, 0, 0, 0);
 }
 
-static inline HjResult __syscall(Syscall syscall, uintptr_t p1)
+static inline JResult __syscall(Syscall syscall, uintptr_t p1)
 {
     return __syscall(syscall, p1, 0, 0, 0, 0);
 }
 
-static inline HjResult __syscall(Syscall syscall)
+static inline JResult __syscall(Syscall syscall)
 {
     return __syscall(syscall, 0, 0, 0, 0, 0);
 }
@@ -116,49 +116,49 @@ static inline HjResult __syscall(Syscall syscall)
 
 __BEGIN_HEADER
 
-HjResult j_process_this(int *pid);
-HjResult j_process_name(char *name, size_t size);
-HjResult j_process_launch(Launchpad *launchpad, int *pid);
-HjResult j_process_clone(int *pid, TaskFlags flags);
-HjResult j_process_exec(Launchpad *launchpad);
-HjResult j_process_exit(int exit_code);
-HjResult j_process_cancel(int pid);
-HjResult j_process_sleep(int time);
-HjResult j_process_wait(int tid, int *user_exit_value);
+JResult j_process_this(int *pid);
+JResult j_process_name(char *name, size_t size);
+JResult j_process_launch(Launchpad *launchpad, int *pid);
+JResult j_process_clone(int *pid, TaskFlags flags);
+JResult j_process_exec(Launchpad *launchpad);
+JResult j_process_exit(int exit_code);
+JResult j_process_cancel(int pid);
+JResult j_process_sleep(int time);
+JResult j_process_wait(int tid, int *user_exit_value);
 
-HjResult j_memory_alloc(size_t size, uintptr_t *out_address);
-HjResult j_memory_map(uintptr_t address, size_t size, int flags);
-HjResult j_memory_free(uintptr_t address);
-HjResult j_memory_include(int handle, uintptr_t *out_address, size_t *out_size);
-HjResult j_memory_get_handle(uintptr_t address, int *out_handle);
+JResult j_memory_alloc(size_t size, uintptr_t *out_address);
+JResult j_memory_map(uintptr_t address, size_t size, int flags);
+JResult j_memory_free(uintptr_t address);
+JResult j_memory_include(int handle, uintptr_t *out_address, size_t *out_size);
+JResult j_memory_get_handle(uintptr_t address, int *out_handle);
 
-HjResult j_filesystem_mkdir(const char *raw_path, size_t size);
-HjResult j_filesystem_mkpipe(const char *raw_path, size_t size);
-HjResult j_filesystem_link(const char *raw_old_path, size_t old_size, const char *raw_new_path, size_t new_size);
-HjResult j_filesystem_unlink(const char *raw_path, size_t size);
-HjResult j_filesystem_rename(const char *raw_old_path, size_t old_size, const char *raw_new_path, size_t new_size);
+JResult j_filesystem_mkdir(const char *raw_path, size_t size);
+JResult j_filesystem_mkpipe(const char *raw_path, size_t size);
+JResult j_filesystem_link(const char *raw_old_path, size_t old_size, const char *raw_new_path, size_t new_size);
+JResult j_filesystem_unlink(const char *raw_path, size_t size);
+JResult j_filesystem_rename(const char *raw_old_path, size_t old_size, const char *raw_new_path, size_t new_size);
 
-HjResult j_system_info(SystemInfo *info);
-HjResult j_system_status(SystemStatus *status);
-HjResult j_system_time(TimeStamp *timestamp);
-HjResult j_system_tick(uint32_t *tick);
-HjResult j_system_reboot();
-HjResult j_system_shutdown();
+JResult j_system_info(SystemInfo *info);
+JResult j_system_status(SystemStatus *status);
+JResult j_system_time(TimeStamp *timestamp);
+JResult j_system_tick(uint32_t *tick);
+JResult j_system_reboot();
+JResult j_system_shutdown();
 
-HjResult j_create_pipe(int *reader_handle, int *writer_handle);
-HjResult j_create_term(int *server_handle, int *client_handle);
+JResult j_create_pipe(int *reader_handle, int *writer_handle);
+JResult j_create_term(int *server_handle, int *client_handle);
 
-HjResult j_handle_open(int *handle, const char *raw_path, size_t size, HjOpenFlag flags);
-HjResult j_handle_close(int handle);
-HjResult j_handle_reopen(int handle, int *reopened);
-HjResult j_handle_copy(int source, int destination);
-HjResult j_handle_poll(HandlePoll *handles, size_t count, Timeout timeout);
-HjResult j_handle_read(int handle, void *buffer, size_t size, size_t *read);
-HjResult j_handle_write(int handle, const void *buffer, size_t size, size_t *written);
-HjResult j_handle_call(int handle, IOCall request, void *args);
-HjResult j_handle_seek(int handle, ssize64_t *offset, HjWhence whence, ssize64_t *result);
-HjResult j_handle_stat(int handle, HjStat *state);
-HjResult j_handle_connect(int *handle, const char *raw_path, size_t size);
-HjResult j_handle_accept(int handle, int *connection_handle);
+JResult j_handle_open(int *handle, const char *raw_path, size_t size, JOpenFlag flags);
+JResult j_handle_close(int handle);
+JResult j_handle_reopen(int handle, int *reopened);
+JResult j_handle_copy(int source, int destination);
+JResult j_handle_poll(HandlePoll *handles, size_t count, Timeout timeout);
+JResult j_handle_read(int handle, void *buffer, size_t size, size_t *read);
+JResult j_handle_write(int handle, const void *buffer, size_t size, size_t *written);
+JResult j_handle_call(int handle, IOCall request, void *args);
+JResult j_handle_seek(int handle, ssize64_t *offset, JWhence whence, ssize64_t *result);
+JResult j_handle_stat(int handle, JStat *state);
+JResult j_handle_connect(int *handle, const char *raw_path, size_t size);
+JResult j_handle_accept(int handle, int *connection_handle);
 
 __END_HEADER
