@@ -8,6 +8,7 @@ pranaOS_static_library("libutils") {
       "sourcelocation.h",
       "tags.h",
       "traits.h",
+      "std.h",
   ]
 
   deplibs = [
