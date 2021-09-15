@@ -36,11 +36,38 @@ public:
         assert(refcount >= 0);
     }
 
+    int refcount()
+    {
+        return _refcount;
+    }
+
 };
 
 struct AnyRef : public RefCounted<AnyRef>
 {
     virtual ~AnyRef() = default;
 };
+
+template <typename T>
+T *ref_if_not_null(T *ptr)
+{
+    if (ptr)
+    {
+        ptr->ref();
+    }
+
+    return ptr;
+}
+
+template <typename T>
+T *deref_if_not_null(T *ptr)
+{
+    if (ptr)
+    {
+        ptr->deref();
+    }
+    
+    return ptr;
+}
 
 }
