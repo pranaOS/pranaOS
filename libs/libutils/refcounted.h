@@ -6,6 +6,7 @@
 
 #pragma once
 
+// includes
 #include <assert.h>
 
 namespace Utils
@@ -21,9 +22,7 @@ private:
     NONMOVABLE(RefCounted);
 
 public:
-    RefCounted()
-    {
-    }
+    RefCounted() {}
 
     virtual ~RefCounted()
     {
@@ -36,11 +35,31 @@ public:
         assert(refcount >= 0);
     }
 
+    void deref()
+    {
+        int refcount = __atomic_sub_fetch(&_refcount, 1, __ATOMIC_SEQ_CST);
+        assert(refcount >= 0);
+
+        if (refcount == 1)
+        {
+            if constexpr (requires(const T &t) {
+                              t.one_ref_left();
+                          })
+            {
+                this->one_ref_left();
+            }
+        }
+
+        if (refcount == 0)
+        {
+            delete static_cast<T *>(this);
+        }
+    }
+
     int refcount()
     {
         return _refcount;
     }
-
 };
 
 struct AnyRef : public RefCounted<AnyRef>
@@ -66,8 +85,8 @@ T *deref_if_not_null(T *ptr)
     {
         ptr->deref();
     }
-    
+
     return ptr;
 }
 
-}
+} 
