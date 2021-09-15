@@ -3,13 +3,16 @@ import("//build/libs/TEMPLATE.gni")
 pranaOS_static_library("libutils") {
   sources = [
       "macros.h",
+      "optional.h",
       "prelude.h",
       "refcounted.h",
+      "refptr.h",
+      "ringbuffer.h",
       "sourcelocation.h",
+      "std.h",
+      "storage.h",
       "tags.h",
       "traits.h",
-      "std.h",
-      "optional.h",
   ]
 
   deplibs = [
