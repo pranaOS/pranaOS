@@ -14,7 +14,6 @@ pranaOS_static_library("libabi") {
       "process.h",
       "result.h",
       "rune.h",
-      "syscalls.cpp",
       "syscalls.h",
       "system.h",
       "task.h",
