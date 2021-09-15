@@ -34,6 +34,32 @@ public:
         return storage;
     }
 
+    ALWAYS_INLINE T unwrap_or(const T &default_value) const
+    {
+        if (present())
+        {
+            return unwrap();
+        } else {
+            return default_value;
+        }
+    }
+
+    ALWAYS_INLINE explicit Optional() 
+    {
+    }
+
+    ALWAYS_INLINE Optional(const T &value)
+    {
+        _present = true;
+        new (&_storage) T(value);
+    }
+
+    ALWAYS_INLINE Optioanl(T &&value)
+    {
+        _present = true;
+        new (&_storage) T(std::move(value));
+    }
+
     ALWAYS_INLINE Optional &operator=(Optional &&other)
     {
         if (this != &other)
