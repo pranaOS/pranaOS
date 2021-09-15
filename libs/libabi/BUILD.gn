@@ -2,13 +2,23 @@ import("//build/libs/TEMPLATE.gni")
 
 pranaOS_static_library("libabi") {
   sources = [
-      "system.h",
-      "process.h",
-      "time.h",
       "filesystem.h",
-      "task.h",
-      "result.h",
+      "handle.h",
+      "iocall.h",
+      "keyboard.h",
+      "launchpad.h",
+      "memory.h",
+      "mouse.h",
       "network.h",
+      "paths.h",
+      "process.h",
+      "result.h",
+      "rune.h",
+      "syscalls.cpp",
+      "syscalls.h",
+      "system.h",
+      "task.h",
+      "time.h",
   ]
 
   deplibs = [
