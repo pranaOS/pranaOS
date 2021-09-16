@@ -77,6 +77,75 @@ public:
     {
         ensure_capacity(capacity);
     }
+
+    Vector(std::initialize_list<T> data)
+    {
+        ensure_capacity(data.size());
+
+        for (const auto &el : data)
+        {
+            push_back(el);
+        }
+    }
+
+    Vector(AdoptTAg, T *storage, size_t size)
+        : _storage(storage),
+          _count(size),
+          _capacity(size)
+        
+    {
+    }
+
+    ~Vector()
+    {
+        clear();
+        if (_storage)
+            free(_storage);
+    }
+
+    bool operator!=(const Vector &other) const
+    {
+        return !(*this == other);
+    }
+
+    bool operator==(const Vector &other) const
+    {
+        if (this == &other)
+        {
+            return true;
+        }
+
+        if (_count != other._count)
+        {
+            return false;
+        }
+
+        for (size_t i = 0; i < _count; i++)
+        {
+            if(_storage[i] != other._storage[i])
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    void clear()
+    {
+        if (!_storage)
+        {
+            return;
+        }
+
+        for (size_t i = 0; i < _count; i++)
+        {
+            _storage[i].~T();
+        }
+
+        _count = 0;
+    }
+
 };
 
 }
