@@ -3,6 +3,7 @@ import("//build/libs/TEMPLATE.gni")
 pranaOS_static_library("libutils") {
   sources = [
       "hash.h",
+      "func.h",
       "macros.h",
       "minmax.h",
       "optional.h",
