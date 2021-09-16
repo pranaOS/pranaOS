@@ -1,5 +1,12 @@
+/*
+ * Copyright (c) 2021, Krisna Pranav
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+*/
+
 #pragma once
 
+// includes
 #include <libutils/func.h>
 
 namespace Utils
@@ -29,7 +36,7 @@ public:
         return *this;
     }
 
-    bool operator!=(const &other) const
+    bool operator!=(const ContiguousIterator<T> &other) const
     {
         return _ptr != other._ptr;
     }
@@ -38,7 +45,6 @@ public:
     {
         return *_ptr;
     }
-
 };
 
-}
+} 
