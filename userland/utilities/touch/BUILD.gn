@@ -2,7 +2,7 @@ import("//build/userland/TEMPLATE.gni")
 
 pranaOS_executable("touch") {
   install_path = "bin/"
-  sources = [ "main.c" ]
+  sources = [ "main.cpp" ]
   configs = [ "//build/userland:userland_flags" ]
   deplibs = [ "libc" ]
 }
