@@ -29,17 +29,7 @@ jobs:
           unzip latest
           sudo mv gn /usr/local/bin
 
-      - name: Create LLVM Build Environment
+      - name: Building
         run: |
           export LLVM_BIN_PATH="/usr/lib/llvm-12/bin"
           ./build.sh --target_cpu aarch32 --host llvm --bench_method external_script
-
-      - name: Building
-        run: |
-          cd out
-          ./build.sh
-
-      - name: Benching
-        run: |
-          cd out
-          python3 ../utils/bench/bench.py aarch32
