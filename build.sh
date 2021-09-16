@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# pass --target_cpu aarch32 as arg to build for arm
-
 GREEN='\033[0;32m'
 RED='\033[0;31m'
 NC='\033[0m'
