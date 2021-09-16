@@ -20,6 +20,7 @@ pranaOS_static_library("libutils") {
       "stringstorage.h",
       "tags.h",
       "traits.h",
+      "resultor.h",
   ]
 
   deplibs = [
