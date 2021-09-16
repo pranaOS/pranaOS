@@ -1,4 +1,4 @@
-name: Building For ARM Linux
+name: Building For ARM In Linux
 
 on: [push, pull_request]
 
