@@ -10,6 +10,7 @@ pranaOS_static_library("libio") {
       "seek.h",
       "write.h",
       "writer.h",
+      "memoryreader.h",
   ]
 
   deplibs = [
