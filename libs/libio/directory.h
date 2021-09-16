@@ -6,28 +6,43 @@
 
 #pragma once
 
+// includes
 #include <libio/handle.h>
 #include <libio/path.h>
 
 namespace IO
 {
 
-struct Directory : public RawHandle
+struct Directory :
+    public RawHandle
 {
 public:
     struct Entry
     {
         String name;
-        JStat stat;
-    }
+        HjStat stat;
+    };
 
 private:
     RefPtr<Handle> _handle;
     Optional<IO::Path> _path = NONE;
     Vector<Entry> _entries;
 
-    JResult read_entries();
+    HjResult read_entries();
 
+public:
+    const Optional<IO::Path> &path() { return _path; }
+    const Vector<Entry> &entries() { return _entries; }
+
+    Directory() {}
+    Directory(const char *path);
+    Directory(String path);
+    Directory(const IO::Path &path);
+    Directory(RefPtr<Handle> handle);
+
+    RefPtr<Handle> handle() override { return _handle; }
+
+    bool exist();
 };
 
-}
+} 
