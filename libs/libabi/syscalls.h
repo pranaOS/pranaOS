@@ -8,11 +8,11 @@
 
 // includes
 #include <libc/__libc__.h>
-#include <libabi/Result.h>
-#include <libutils/Prelude.h>
-#include <libabi/Handle.h>
-#include <libabi/IOCall.h>
-#include <libabi/Launchpad.h>
+#include <libabi/result.h>
+#include <libutils/prelude.h>
+#include <libabi/handle.h>
+#include <libabi/iocall.h>
+#include <libabi/launchpad.h>
 #include <libabi/system.h>
 
 #define SYSCALL_LIST(__ENTRY)     \
