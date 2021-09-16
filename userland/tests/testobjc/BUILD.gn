@@ -5,6 +5,7 @@ pranaOS_executable("testobjc") {
   sources = [ 
     "main.m",
     "print.m",
+    "ifelse.m",
    ]
   configs = [ "//build/userland:userland_flags" ]
   deplibs = [
