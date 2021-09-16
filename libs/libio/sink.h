@@ -6,27 +6,19 @@
 
 #pragma once
 
-// includes
 #include <libio/write.h>
 
 namespace IO
 {
 
-struct Seek : public Writer
+struct Sink :
+    public Writer
 {
-    NONCOPYABLE(Sink);
-    NONMOVABLE(Sink);
-
     ResultOr<size_t> write(const void *buffer, size_t size) override
     {
-        union buffer
-        {
-            buffer();
-        };
-        
+        UNUSED(buffer);
         return size;
     }
-
 };
 
-}
+} 
