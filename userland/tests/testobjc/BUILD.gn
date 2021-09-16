@@ -2,7 +2,10 @@ import("//build/userland/TEMPLATE.gni")
 
 pranaOS_executable("testobjc") {
   install_path = "bin/"
-  sources = [ "main.m" ]
+  sources = [ 
+    "main.m",
+    "print.m",
+   ]
   configs = [ "//build/userland:userland_flags" ]
   deplibs = [
     "libobjc",
