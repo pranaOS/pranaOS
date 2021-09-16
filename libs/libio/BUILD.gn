@@ -3,6 +3,7 @@ import("//build/libs/TEMPLATE.gni")
 pranaOS_static_library("libio") {
   sources = [
       "handle.h",
+      "numberscanner.h",
       "memorywriter.h",
       "reader.h",
       "scanner.h",
