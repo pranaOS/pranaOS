@@ -23,6 +23,7 @@ pranaOS_static_library("libutils") {
       "traits.h",
       "resultor.h",
       "inlineringbuffer.h",
+      "ownptr.h",
   ]
 
   deplibs = [
