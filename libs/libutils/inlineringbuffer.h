@@ -1,5 +1,12 @@
+/*
+ * Copyright (c) 2021, Krisna Pranav
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+*/
+
 #pragma once
 
+// includes
 #include <libutils/std.h>
 
 namespace Utils
@@ -21,9 +28,21 @@ public:
     InlineRingBuffer(const InlineRingBuffer &other)
         : _head(other._head),
           _tail(other._tail),
-          _used(other._used),
+          _used(other._used)
     {
         memcpy(_buffer, other._buffer, N);
+    }
+
+    InlineRingBuffer(InlineRingBuffer &&other)
+        : _head(other._head),
+          _tail(other._tail),
+          _used(other._used),
+          _buffer(other._buffer)
+    {
+        other._head = 0;
+        other._tail = 0;
+        other._used = 0;
+        other._buffer = nullptr;
     }
 
     void flush()
@@ -38,20 +57,21 @@ public:
         return *this = InlineRingBuffer(other);
     }
 
-    bool empty() const
+    InlineRingBuffer &operator=(InlineRingBuffer &&other)
     {
-        return _used == 0;
+        std::swap(_head, other._head);
+        std::swap(_tail, other._tail);
+        std::swap(_used, other._used);
+        std::swap(_buffer, other._buffer);
+
+        return *this;
     }
 
-    bool full() const
-    {
-        return _used == 0;
-    }
+    bool empty() const { return _used == 0; }
 
-    size_t used() const
-    {
-        return _used;
-    }
+    bool full() const { return _used == N; }
+
+    size_t used() const { return _used; }
 
     void put(T c)
     {
@@ -73,6 +93,13 @@ public:
         return c;
     }
 
+    T peek(size_t peek)
+    {
+        int offset = (_tail + peek) % N;
+
+        return _buffer[offset];
+    }
+
     size_t read(T *buffer, size_t size)
     {
         size_t read = 0;
@@ -90,14 +117,14 @@ public:
     {
         size_t written = 0;
 
-        while (!full() && write < size)
+        while (!full() && written < size)
         {
-            put(buffer[written])
+            put(buffer[written]);
             written++;
         }
 
-        return written
+        return written;
     }
 };
 
-}
+} 
