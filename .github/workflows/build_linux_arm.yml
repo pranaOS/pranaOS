@@ -31,7 +31,7 @@ jobs:
 
       - name: Build Environment
         run: |
-          ./gn_gen.sh --target_cpu aarch32
+          ./build.sh --target_cpu aarch32
 
       - name: Building
         run: |
