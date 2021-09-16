@@ -1,2 +1,2 @@
-all : *.c
+all : *.cpp
 	gcc $^ -o edit
