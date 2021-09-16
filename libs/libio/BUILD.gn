@@ -4,6 +4,7 @@ pranaOS_static_library("libio") {
   sources = [
       "seek.h",
       "writer.h",
+      "write.h",
   ]
 
   deplibs = [
