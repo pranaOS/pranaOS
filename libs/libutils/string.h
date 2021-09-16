@@ -1,12 +1,11 @@
 #pragma once
 
+// includes
 #include <libutils/hash.h>
 #include <libutils/refptr.h>
 #include <libutils/slice.h>
 #include <libutils/std.h>
-
-// FIXME: need to add this library for adding a custom string library ;)
-//#include <libutils/stringstorage.h>
+#include <libutils/stringstorage.h>
 
 namespace Utils
 {
