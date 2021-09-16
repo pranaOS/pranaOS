@@ -40,4 +40,23 @@ struct SeekFrom
     }
 };
 
+struct Seek
+{
+    virtual ~Seek() {}
+
+    virtual ResultOr<size_t> seek(SeekFrom from) = 0;
+    virtual ResultOr<size_t> tell() = 0;
+
+    virtual ResultOr<size_t> length()
+    {
+        original_position = TRY(seek(SeekFrom::current(0)));
+
+        end_position = TRY(seek(SeekFrom::end(0)));
+
+        TRY(SeekFrom::start(original_position));
+
+        return end_position
+    }
+};
+
 }
