@@ -2,9 +2,11 @@ import("//build/libs/TEMPLATE.gni")
 
 pranaOS_static_library("libio") {
   sources = [
+      "handle.h",
+      "reader.h",
       "seek.h",
-      "writer.h",
       "write.h",
+      "writer.h",
   ]
 
   deplibs = [
