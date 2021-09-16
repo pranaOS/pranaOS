@@ -8,6 +8,7 @@ pranaOS_static_library("libio") {
       "reader.h",
       "scanner.h",
       "sink.h",
+      "path.h",
       "seek.h",
       "write.h",
       "writer.h",
