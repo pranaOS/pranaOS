@@ -103,6 +103,31 @@ public:
             free(_storage);
     }
 
+    Vector &operator=(const Vector &other)
+    {
+        if (this != &other)
+        {
+            clear();
+
+            ensure_capacity(other.count());
+            _count = other.count();
+            typed_copy(_storage, other._storage, _count);
+        }
+        return *this;
+    }
+
+    Vector &operator=(Vector &&other)
+    {
+        if (this != &other)
+        {
+            std::swap(_storage, other._storage);
+            std::swap(_count, other._count);
+            std::swap(_capacity, other._capacity);
+        }
+
+        return *this
+    }
+
     bool operator!=(const Vector &other) const
     {
         return !(*this == other);
