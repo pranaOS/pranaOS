@@ -6,6 +6,7 @@
 
 #pragma once
 
+// includes
 #include <libio/handle.h>
 #include <libio/path.h>
 #include <libio/reader.h>
@@ -14,29 +15,34 @@
 namespace IO
 {
 
-struct Connection final : public Reader, public Writer, public RawHandle
+struct Connection final :
+    public Reader,
+    public Writer,
+    public RawHandle
 {
 private:
     RefPtr<Handle> _handle;
 
 public:
-    RefPtr<Handle> handle() override
-    {
-        return _handle;
-    }
+    RefPtr<Handle> handle() override { return _handle; }
 
-    Connection() 
-    {
-    }
-
+    Connection() {}
     Connection(RefPtr<Handle> handle) : _handle{handle} {}
 
-    ResultOr<size_t> read(void *buffer, size_t size)
+    ResultOr<size_t> read(void *buffer, size_t size) override
     {
-        if (!handle)
+        if (!_handle)
             return ERR_STREAM_CLOSED;
-        
+
         return _handle->read(buffer, size);
+    }
+
+    ResultOr<size_t> write(const void *buffer, size_t size) override
+    {
+        if (!_handle)
+            return ERR_STREAM_CLOSED;
+
+        return _handle->write(buffer, size);
     }
 
     bool closed()
@@ -50,4 +56,4 @@ public:
     }
 };
 
-}
+} 
