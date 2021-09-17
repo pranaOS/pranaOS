@@ -4,6 +4,7 @@ pranaOS_static_library("libio") {
   sources = [
       "connection.h",
       "formatter.h",
+      "format.h",
       "directory.h",
       "handle.h",
       "numberscanner.h",
