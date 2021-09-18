@@ -7,7 +7,7 @@
 
 #pragma once
 
-namespace LibUtils {
+namespace Utils {
 
 enum class IteartionDecision {
     Continue,
@@ -16,4 +16,4 @@ enum class IteartionDecision {
 
 }
 
-using LibUtils::IteartionDecision;
+using Utils::IteartionDecision;
