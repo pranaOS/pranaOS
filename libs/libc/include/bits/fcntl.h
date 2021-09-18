@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2021, Krisna Pranav
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+*/
+
 #ifndef _LIBC_BITS_FCNTL_H
 #define _LIBC_BITS_FCNTL_H
 
