@@ -41,5 +41,25 @@ class InputBitStream;
 class OutputBitStream;
 class OutputMemoryStream;
 
+template <size_t Capacity>
+class CircularDuplexStream;
+
+template <typename T>
+class Span;
+
+template <typename T, size_t Size>
+struct Array;
+
+using ReadonlyBytes = Span<const u8>;
+using Bytes = Span<u8>;
+
+template <typename T, Utils::MemoryOrder DefaultMemoryOrder>
+class Atomic;
+
+template <typename T, size_t inline_capacity = 0>
+requires(!IsRvalueReference<T>) class Vector;
 
 }
+
+using Utils::Array;
+using Utils::Atomic;
