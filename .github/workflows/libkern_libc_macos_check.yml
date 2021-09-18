@@ -1,4 +1,4 @@
-name: libkern & libc macos compact checker  
+name: libkern & libc macos compact checker
 
 on: [push, pull_request]
 
