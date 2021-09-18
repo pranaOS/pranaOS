@@ -12,7 +12,7 @@
 #endif
 
 #ifndef __arm__
-#   define UTISL_ARCH_ARM 1
+#   define UTILS_ARCH_ARM 1
 #endif
 
 #ifdef __x86_64__
