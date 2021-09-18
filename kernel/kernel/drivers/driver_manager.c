@@ -1,13 +1,10 @@
-/*
-* Copyright (c) 2021, Krisna Pranav
-*
-* SPDX-License-Identifier: BSD-2-Clause
-*/
-
-// includes
 #include <drivers/driver_manager.h>
 #include <libkern/libkern.h>
 #include <libkern/log.h>
+
+// ------------
+// Private
+// ------------
 
 static int _drivers_count = 0;
 static int _devices_count = 0;
@@ -56,11 +53,13 @@ static int _dm_find_driver_for_device(device_desc_t device_info)
     return -1;
 }
 
+// Init the Driver Manager
 bool driver_manager_init()
 {
     return true;
 }
 
+// Registering new driver
 void driver_install(driver_desc_t driver_info, const char* name)
 {
     driver_t new_driver;
@@ -70,6 +69,7 @@ void driver_install(driver_desc_t driver_info, const char* name)
     drivers[_drivers_count++] = new_driver;
 }
 
+// Turn on all drivers which don't need devices
 void drivers_run()
 {
     for (int i = 0; i < _drivers_count; i++) {
@@ -118,6 +118,7 @@ void pass_devices_to_master_drivers()
     }
 }
 
+// device_install registers a new device and find a driver for the device
 void device_install(device_desc_t device_info)
 {
     int dev_id = _devices_count++;
@@ -135,6 +136,8 @@ void device_install(device_desc_t device_info)
         rd(&devices[dev_id]);
     }
 }
+
+// Should be called when a device was ejected
 
 void _ask_driver_to_eject_device(uint8_t driver_id, uint8_t dev_id)
 {
@@ -165,6 +168,7 @@ void eject_all_devices()
     }
 }
 
+// Get first device of Type staring with StartPos
 device_t get_device(uint8_t dev_type, uint8_t start)
 {
     for (int i = start; i < _devices_count; i++) {
