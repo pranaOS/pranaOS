@@ -36,6 +36,36 @@ static IntegralConstant {
 using FalseType = IntegralConstant<bool, fase>;
 using TrueType = IntegralConstant<bool, true>;
 
+template <class T>
+using AddConst = const T;
+
+template <class T>
+struct __RemoveConst {
+    using Type = T;
+};
+
+template <class T>
+struct __RemoveConst<const T> {
+    using Type = T;
+};
+
+template <class t>
+using RemoveConst = typename __RemoveConst<T>::Type;
+
+template <class T>
+struct __RemoveVolatile {
+    using Type = T;
+};
+
+template <typename T>
+struct __RemoveVolatile<volatile T> {
+    using Type = T;
+};
+
+template <typename T>
+using RemoveVolatile = typename __RemoveVolatile<T>::Type;
+
+
 template <class>
 inline constexpr bool IsFunction = false;
 template <class Ret, class... Args>
@@ -46,3 +76,5 @@ template <class Ret, class... Args>
 }
 
 using Utils::Detail::EnableIf;
+using Utils::Detail::RemoveVolatile;
+using Utils::Detail::RemoveConst;
