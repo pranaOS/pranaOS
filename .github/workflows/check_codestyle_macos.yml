@@ -1,0 +1,18 @@
+name: Checking code formatting macOS
+
+on: [push, pull_request]
+
+env:
+  BUILD_TYPE: Release
+
+jobs:
+  check:
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Check codestyle macOS
+        shell: bash
+        run: |
+          brew install clang-format
+          find ./ -iname '*.h' -o -iname '*.cpp' -o -iname '*.c'
