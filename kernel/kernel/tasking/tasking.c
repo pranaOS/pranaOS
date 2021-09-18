@@ -2,7 +2,7 @@
  * Copyright (c) 2021, Krisna Pranav
  *
  * SPDX-License-Identifier: BSD-2-Clause
- */
+*/
 
 #ifdef FPU_ENABLED
 #include <drivers/x86/fpu.h>
@@ -35,10 +35,6 @@ static inline uint32_t _tasking_get_proc_count()
     return atomic_load(&nxt_proc);
 }
 
-/**
- * used to jump to trapend
- * the jump will start the process
- */
 #ifdef __i386__
 void _tasking_jumper()
 {
@@ -47,10 +43,6 @@ void _tasking_jumper()
     return;
 }
 #endif
-
-/**
- * TASK LOADING FUNCTIONS
- */
 
 extern thread_list_t thread_list;
 thread_t* tasking_get_thread(uint32_t tid)
@@ -129,14 +121,8 @@ static proc_t* _tasking_alloc_kernel_thread(void* entry_point)
     return p;
 }
 
-/**
- * Start init proccess
- * All others processes will fork
- */
 void tasking_start_init_proc()
 {
-    // We need to stop interrupts here, since this part of code
-    // is NOT interruptable.
     system_disable_interrupts();
     proc_t* p = _tasking_setup_proc_with_uid(0, 0);
     proc_setup_tty(p, tty_new());
@@ -165,10 +151,6 @@ proc_t* tasking_run_kernel_thread(void* entry_point, void* data)
     return p;
 }
 
-/**
- * TASKING RELATED FUNCTIONS
- */
-
 void tasking_init()
 {
     proc_init_storage();
@@ -194,15 +176,10 @@ void tasking_kill_dying()
     }
 }
 
-/**
- * SYSCALL IMPLEMENTATION
- */
-
 void tasking_fork(trapframe_t* tf)
 {
     proc_t* new_proc = _tasking_fork_proc_from_current();
 
-    /* setting output */
     set_syscall_result(new_proc->main_thread->tf, 0);
     set_syscall_result(RUNNING_THREAD->tf, new_proc->pid);
 
@@ -218,14 +195,13 @@ void tasking_fork(trapframe_t* tf)
 
 static int _tasking_do_exec(proc_t* p, thread_t* main_thread, const char* path, int argc, char** argv, char** env)
 {
-    int res = proc_load(p, main_thread, path);
-    if (res == 0) {
-        thread_fill_up_stack(p->main_thread, argc, argv, env);
+    int err = proc_load(p, main_thread, path);
+    if (err) {
+        return err;
     }
-    return res;
+    return thread_fill_up_stack(p->main_thread, argc, argv, env);
 }
 
-/* TODO: Posix & zeroing-on-demand */
 int tasking_exec(const char* path, const char** argv, const char** env)
 {
     thread_t* thread = RUNNING_THREAD;
@@ -249,7 +225,6 @@ int tasking_exec(const char* path, const char** argv, const char** env)
         int argc = ptrarr_len(argv);
         kargc += argc;
 
-        /* Validating arguments size */
         uint32_t data_len = 0;
         for (int argi = 0; argi < argc; argi++) {
             if (!str_validate_len(argv[argi], 128)) {
@@ -266,7 +241,6 @@ int tasking_exec(const char* path, const char** argv, const char** env)
     kargv = kmalloc(kargc * sizeof(char*));
     kargv[0] = kpath;
 
-    // Inlined part of kmem_bring_to_kernel_ptrarr
     for (int i = 1; i < kargc; i++) {
         kargv[i] = kmem_bring_to_kernel(argv[i - 1], strlen(argv[i - 1]) + 1);
     }
