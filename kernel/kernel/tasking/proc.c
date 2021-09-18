@@ -2,8 +2,9 @@
  * Copyright (c) 2021, Krisna Pranav
  *
  * SPDX-License-Identifier: BSD-2-Clause
- */
+*/
 
+// includes
 #include <fs/vfs.h>
 #include <io/tty/tty.h>
 #include <libkern/bits/errno.h>
@@ -21,10 +22,6 @@ static uint32_t proc_next_pid = 1;
 thread_list_t thread_list;
 int threads_cnt = 0;
 
-/**
- * LOCKLESS 
- */
-
 static ALWAYS_INLINE void proc_kill_all_threads_except_lockless(proc_t* p, thread_t* gthread);
 static ALWAYS_INLINE void proc_kill_all_threads_lockless(proc_t* p);
 static ALWAYS_INLINE int proc_setup_lockless(proc_t* p);
@@ -35,10 +32,6 @@ static ALWAYS_INLINE int proc_chdir_lockless(proc_t* p, const char* path);
 
 static ALWAYS_INLINE file_descriptor_t* proc_get_free_fd_lockless(proc_t* p);
 static ALWAYS_INLINE file_descriptor_t* proc_get_fd_lockless(proc_t* p, uint32_t index);
-
-/**
- * THREAD STORAGE
- */
 
 static thread_list_node_t* proc_alloc_thread_storage_node()
 {
@@ -74,10 +67,6 @@ static thread_t* _proc_alloc_thread()
 
     ASSERT(false);
 }
-
-/**
- * HELPER FUNCTIONS
- */
 
 #define foreach_thread(p)                                                                                                                      \
     for (thread_list_node_t* __thread_list_node = thread_list.head; __thread_list_node != NULL; __thread_list_node = __thread_list_node->next) \
@@ -121,10 +110,6 @@ int proc_init_storage()
     return 0;
 }
 
-/**
- * INIT FUNCTIONS
- */
-
 static ALWAYS_INLINE int proc_setup_lockless(proc_t* p)
 {
     p->pid = proc_alloc_pid();
@@ -144,18 +129,15 @@ static ALWAYS_INLINE int proc_setup_lockless(proc_t* p)
         return res;
     }
 
-    /* setting dentries */
     p->proc_file = NULL;
     p->cwd = NULL;
 
-    /* allocating space for open files */
     p->fds = kmalloc(MAX_OPENED_FILES * sizeof(file_descriptor_t));
     if (!p->fds) {
         return -ENOMEM;
     }
     memset((void*)p->fds, 0, MAX_OPENED_FILES * sizeof(file_descriptor_t));
 
-    /* setting up zones */
     if (dynamic_array_init_of_size(&p->zones, sizeof(proc_zone_t), 8) != 0) {
         return -ENOMEM;
     }
@@ -253,17 +235,13 @@ int proc_copy_of(proc_t* new_proc, thread_t* from_thread)
     for (int i = 0; i < from_proc->zones.size; i++) {
         proc_zone_t* zone_to_copy = (proc_zone_t*)dynamic_array_get(&from_proc->zones, i);
         if (zone_to_copy->file) {
-            dentry_duplicate(zone_to_copy->file); // For the copied zone.
+            dentry_duplicate(zone_to_copy->file);
         }
         dynamic_array_push(&new_proc->zones, zone_to_copy);
     }
 
     return 0;
 }
-
-/**
- * LOAD FUNCTIONS
- */
 
 static int _proc_load_bin(proc_t* p, file_descriptor_t* fd)
 {
@@ -272,7 +250,6 @@ static int _proc_load_bin(proc_t* p, file_descriptor_t* fd)
     code_zone->type = ZONE_TYPE_CODE;
     code_zone->flags |= ZONE_READABLE | ZONE_EXECUTABLE;
 
-    /* THIS IS FOR BSS WHICH COULD BE IN THIS ZONE */
     code_zone->flags |= ZONE_WRITABLE;
 
     proc_zone_t* bss_zone = proc_new_random_zone(p, 2 * 4096);
@@ -283,12 +260,11 @@ static int _proc_load_bin(proc_t* p, file_descriptor_t* fd)
     stack_zone->type = ZONE_TYPE_STACK;
     stack_zone->flags |= ZONE_READABLE | ZONE_WRITABLE;
 
-    /* Copying an exec code */
     uint8_t* prog = kmalloc(fd->dentry->inode->size);
     fd->ops->read(fd->dentry, prog, 0, fd->dentry->inode->size);
     vmm_copy_to_pdir(p->pdir, prog, code_zone->start, fd->dentry->inode->size);
 
-    /* Setting registers */
+
     thread_t* main_thread = p->main_thread;
     set_base_pointer(main_thread->tf, stack_zone->start + VMM_PAGE_SIZE);
     set_stack_pointer(main_thread->tf, stack_zone->start + VMM_PAGE_SIZE);
@@ -300,22 +276,21 @@ static int _proc_load_bin(proc_t* p, file_descriptor_t* fd)
 
 static ALWAYS_INLINE int proc_load_lockless(proc_t* p, thread_t* main_thread, const char* path)
 {
+    int err;
     file_descriptor_t fd;
     dentry_t* dentry;
 
-    if (vfs_resolve_path_start_from(p->cwd, path, &dentry) < 0) {
+    if (vfs_resolve_path_start_from(p->cwd, path, &dentry) != 0) {
         return -ENOENT;
     }
-    if (vfs_open(dentry, &fd, O_RDONLY) < 0) {
+    if (vfs_open(dentry, &fd, O_EXEC) != 0) {
         dentry_put(dentry);
         return -ENOENT;
     }
 
-    // Saving data to restore in case of error.
     pdirectory_t* old_pdir = p->pdir;
     dynamic_array_t old_zones = p->zones;
 
-    // Reallocating proc.
     pdirectory_t* new_pdir = vmm_new_user_pdir();
     vmm_switch_pdir(new_pdir);
     p->pdir = new_pdir;
@@ -326,15 +301,14 @@ static ALWAYS_INLINE int proc_load_lockless(proc_t* p, thread_t* main_thread, co
         return -ENOMEM;
     }
 
-    int err = elf_load(p, &fd);
+    err = elf_load(p, &fd);
     if (err) {
         goto restore;
     }
 
-success:
+    success:
     p->main_thread = main_thread;
 
-    // Clearing proc
     proc_kill_all_threads_except_lockless(p, p->main_thread);
     p->pid = p->main_thread->tid;
     if (p->proc_file) {
@@ -349,15 +323,14 @@ success:
     }
     dynamic_array_clear(&old_zones);
 
-    // Setting up proc
-    p->proc_file = dentry; // dentry isn't put, but is transfered to the proc.
+    p->proc_file = dentry;
     if (!p->cwd) {
         p->cwd = dentry_get_parent(p->proc_file);
     }
     vfs_close(&fd);
     return 0;
 
-restore:
+    restore:
     p->pdir = old_pdir;
     vmm_switch_pdir(old_pdir);
     vmm_free_pdir(new_pdir, &p->zones);
@@ -376,21 +349,15 @@ int proc_load(proc_t* p, thread_t* main_thread, const char* path)
     return res;
 }
 
-/**
- * PROC FREE FUNCTIONS
- */
-
 int proc_free_lockless(proc_t* p)
 {
     if (p->status != PROC_DYING || p->pid == 0) {
         return -ESRCH;
     }
 
-    /* closing opend fds */
     if (p->fds) {
         for (int i = 0; i < MAX_OPENED_FILES; i++) {
             if (p->fds[i].dentry) {
-                /* think as an active fd */
                 vfs_close(&p->fds[i]);
             }
         }
@@ -404,7 +371,6 @@ int proc_free_lockless(proc_t* p)
         dentry_put(p->cwd);
     }
 
-    /* Key parts deletion. After that line you can't work with this process. */
     proc_kill_all_threads_lockless(p);
     p->pid = 0;
 
@@ -429,9 +395,9 @@ int proc_die(proc_t* p)
 {
     lock_acquire(&p->lock);
     foreach_thread(p)
-    {
-        thread_die(thread);
-    }
+                {
+                    thread_die(thread);
+                }
     p->status = PROC_DYING;
     lock_release(&p->lock);
     return 0;
@@ -441,20 +407,16 @@ int proc_block_all_threads(proc_t* p, blocker_t* blocker)
 {
     lock_acquire(&p->lock);
     foreach_thread(p)
-    {
-        thread->status = THREAD_BLOCKED;
-        thread->blocker.reason = blocker->reason;
-        thread->blocker.should_unblock = blocker->should_unblock;
-        thread->blocker.should_unblock_for_signal = blocker->should_unblock_for_signal;
-        sched_dequeue(thread);
-    }
+                {
+                    thread->status = THREAD_BLOCKED;
+                    thread->blocker.reason = blocker->reason;
+                    thread->blocker.should_unblock = blocker->should_unblock;
+                    thread->blocker.should_unblock_for_signal = blocker->should_unblock_for_signal;
+                    sched_dequeue(thread);
+                }
     lock_release(&p->lock);
     return 0;
 }
-
-/**
- * PROC THREAD FUNCTIONS
- */
 
 thread_t* proc_create_thread(proc_t* p)
 {
@@ -469,11 +431,11 @@ thread_t* proc_create_thread(proc_t* p)
 static ALWAYS_INLINE void proc_kill_all_threads_except_lockless(proc_t* p, thread_t* gthread)
 {
     foreach_thread(p)
-    {
-        if (gthread && thread->tid != gthread->tid) {
-            thread_free(thread);
-        }
-    }
+                {
+                    if (gthread && thread->tid != gthread->tid) {
+                        thread_free(thread);
+                    }
+                }
 }
 
 static ALWAYS_INLINE void proc_kill_all_threads_lockless(proc_t* p)
@@ -492,10 +454,6 @@ void proc_kill_all_threads(proc_t* p)
 {
     proc_kill_all_threads_except(p, NULL);
 }
-
-/**
- * PROC FS FUNCTIONS
- */
 
 static ALWAYS_INLINE int proc_chdir_lockless(proc_t* p, const char* path)
 {
@@ -516,7 +474,6 @@ static ALWAYS_INLINE int proc_chdir_lockless(proc_t* p, const char* path)
         return -ENOTDIR;
     }
 
-    /* Put an old one back */
     if (p->cwd) {
         dentry_put(p->cwd);
     }
@@ -536,7 +493,7 @@ int proc_get_fd_id(proc_t* p, file_descriptor_t* fd)
 {
     lock_acquire(&p->lock);
     ASSERT(p->fds);
-    /* Calculating id with pointers */
+
     uint32_t start = (uint32_t)p->fds;
     uint32_t fd_ptr = (uint32_t)fd;
     fd_ptr -= start;
@@ -551,15 +508,15 @@ int proc_get_fd_id(proc_t* p, file_descriptor_t* fd)
 
 static ALWAYS_INLINE file_descriptor_t* proc_get_free_fd_lockless(proc_t* p)
 {
-    ASSERT(p->fds);
+ASSERT(p->fds);
 
-    for (int i = 0; i < MAX_OPENED_FILES; i++) {
-        if (!p->fds[i].dentry) {
-            return &p->fds[i];
-        }
-    }
+for (int i = 0; i < MAX_OPENED_FILES; i++) {
+if (!p->fds[i].dentry) {
+return &p->fds[i];
+}
+}
 
-    return NULL;
+return NULL;
 }
 
 file_descriptor_t* proc_get_free_fd(proc_t* p)
@@ -572,17 +529,17 @@ file_descriptor_t* proc_get_free_fd(proc_t* p)
 
 static ALWAYS_INLINE file_descriptor_t* proc_get_fd_lockless(proc_t* p, uint32_t index)
 {
-    ASSERT(p->fds);
+ASSERT(p->fds);
 
-    if (index >= MAX_OPENED_FILES) {
-        return NULL;
-    }
+if (index >= MAX_OPENED_FILES) {
+return NULL;
+}
 
-    if (!p->fds[index].dentry) {
-        return NULL;
-    }
+if (!p->fds[index].dentry) {
+return NULL;
+}
 
-    return &p->fds[index];
+return &p->fds[index];
 }
 
 file_descriptor_t* proc_get_fd(proc_t* p, uint32_t index)
