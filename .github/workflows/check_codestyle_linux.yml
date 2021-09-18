@@ -11,8 +11,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: Check
+      - name: Check codestyle linux
         shell: bash
         run: |
-          sudo apt-get install clang-format 
+          sudo apt-get install clang-format
           find ./ -iname '*.h' -o -iname '*.cpp' -o -iname '*.c'
