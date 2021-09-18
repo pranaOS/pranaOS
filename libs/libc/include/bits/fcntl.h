@@ -1,6 +1,10 @@
 #ifndef _LIBC_BITS_FCNTL_H
 #define _LIBC_BITS_FCNTL_H
 
+// FIXME: use #pragam once instead #ifndef
+
+//#pragma once
+
 #define SEEK_SET 0x1
 #define SEEK_CUR 0x2
 #define SEEK_END 0x3
