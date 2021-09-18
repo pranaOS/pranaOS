@@ -7,15 +7,10 @@
 #ifndef _LIBC_BITS_FCNTL_H
 #define _LIBC_BITS_FCNTL_H
 
-// FIXME: use #pragam once instead #ifndef
-
-//#pragma once
-
 #define SEEK_SET 0x1
 #define SEEK_CUR 0x2
 #define SEEK_END 0x3
 
-/* OPEN */
 #define O_RDONLY 0x1
 #define O_WRONLY 0x2
 #define O_RDWR 0x4
@@ -26,5 +21,4 @@
 #define O_EXCL 0x80
 #define O_EXEC 0x100
 
-
-#endif // _LIBC_BITS_FCNTL_H
+#endif 
