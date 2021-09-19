@@ -2,6 +2,7 @@ import("//build/libs/TEMPLATE.gni")
 
 pranaOS_static_library("libutils") {
   sources = [
+      "hashfunctions.h",
       "concepts.h",
       "assertions.h",
       "numericlimits.h",
