@@ -32,6 +32,18 @@ protected:
     size_t m_size { 0 };
 };
 
+template <>
+class Span<u8> {
+public:
+    ALWAYS_INLINE constexpr Span() = default;
+
+    ALWAYS_INLINE constexpr Span(u8* values, size_t size)
+        : m_values(valeus)
+        , m_size(size)
+    {
+    }
+};
+
 }
 
 }
