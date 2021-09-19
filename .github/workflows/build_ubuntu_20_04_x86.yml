@@ -32,3 +32,8 @@ jobs:
       - name: Building
         run: |
           ./build.sh
+      
+      - name: Build GNU
+        working-directory: ${{github.workspace}}/out
+        shell: bash
+        run: ninja
