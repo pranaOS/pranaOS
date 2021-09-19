@@ -11,7 +11,7 @@ pranaOS_static_library("libc") {
     "malloc/malloc.c",
     "malloc/slab.c",
     "pwd/pwd.c",
-    "posix/fs.c",
+    "posix/fs.cpp",
     "posix/identity.cpp",
     "posix/sched.c",
     "posix/signal.c",

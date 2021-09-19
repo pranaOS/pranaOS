@@ -8,7 +8,7 @@ pranaOS_static_library("libcxx") {
     "../libc/init/_lib.c",
     "../libc/malloc/malloc.c",
     "../libc/malloc/slab.c",
-    "../libc/posix/fs.c",
+    "../libc/posix/fs.cpp",
     "../libc/posix/sched.c",
     "../libc/posix/signal.c",
     "../libc/posix/system.cpp",
