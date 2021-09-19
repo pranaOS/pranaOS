@@ -19,12 +19,12 @@
 #define VERIFY_NOT_REACHED() VERIFY(false)
 
 extern "C" {
-void _abort();
+[[noreturn]] void _abort();
 [[noreturn]] void abort();
 }
 
-#define VERIFY_INTERRUPTS_DISABLED()
-#define VERIFY_INTERRUPTS_ENABLED
+#define VERIFY_INTERRUPTS_DISABLED() VERIFY(!(cpu_flags() & 0x200))
+#define VERIFY_INTERRUPTS_ENABLED() VERIFY(cpu_flags() & 0x200)
 
 static constexpr bool TODO = false;
 #define TODO() VERIFY(TODO)
