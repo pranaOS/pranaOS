@@ -6,6 +6,7 @@
 
 #pragma once
 
+// includes
 #include <sys/cdefs.h>
 #include <sys/types.h>
 
@@ -20,7 +21,12 @@ struct passwd {
     char* pw_dir;
     char* pw_shell;
 };
-
 typedef struct passwd passwd_t;
 
-__END_DECLS 
+void setpwent();
+void endpwent();
+passwd_t* getpwent();
+passwd_t* getpwuid(uid_t uid);
+passwd_t* getpwnam(const char* name);
+
+__END_DECLS
