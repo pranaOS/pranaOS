@@ -20,7 +20,7 @@ jobs:
       - name: Deps Installing
         run: |
           sudo apt-get update
-          sudo apt install -y llvm e2fsprogs qemu-system-i386 qemu-utils fuseext2 ninja-build nasm
+          sudo apt install -y llvm e2fsprogs qemu-system-arm qemu-utils fuseext2 ninja-build nasm
           pip3 install tabulate termcolor
 
       - name: GN Installing
@@ -31,9 +31,5 @@ jobs:
 
       - name: Building
         run: |
-          ./build.sh
-      
-      - name: Build GNU
-        working-directory: ${{github.workspace}}/out
-        shell: bash
-        run: ninja
+          export LLVM_BIN_PATH="/usr/lib/llvm-12/bin"
+          ./build.sh --target_cpu aarch32 --host llvm --bench_method external_script
