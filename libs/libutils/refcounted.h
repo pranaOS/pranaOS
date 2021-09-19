@@ -72,6 +72,27 @@ public:
         return m_ref_count.load(Utils::MemoryOrder::memory_order_relaxed);
     }
 
+protected:
+    RefCountedBase() = default;
+    ~RefCountedBase()
+    {
+        VERIFY(m_ref_count.load(Utils::MemoryOrder::memory_order_relaxed) == 0);
+    }
+
+    RefCountType deref_base() const
+    {
+        auto old_ref_count = m_ref_count.fetch_sub(1, Utils::MemoryOrder::memory_order_acq_rel);
+        VERIFY(old_ref_count > 0);
+        return old_ref_count - 1;
+    }
+
+    mutable Atomic<RefCountType> m_ref_count { 1 };
+
+};
+
+template <typename T>
+class RefCounted : public RefCountedBase {
+    
 }
 
 }
