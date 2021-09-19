@@ -2,6 +2,7 @@ import("//build/libs/TEMPLATE.gni")
 
 pranaOS_static_library("libutils") {
   sources = [
+      "numericlimits.h",
       "forward.h",
       "types.h",
       "platform.h",
