@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021, Krisna Pranav
- *
- * SPDX-License-Identifier: BSD-2-Clause
-*/
-
-// includes
 #include <fcntl.h>
 #include <signal.h>
 #include <stdio.h>

@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#pragma once
+#ifndef _LIBOBJC_CLASS_H
+#define _LIBOBJC_CLASS_H
 
 #include <libobjc/module.h>
 
@@ -18,3 +19,5 @@ void class_add_from_module(struct objc_symtab* symtab);
 IMP class_get_implementation(Class cls, SEL sel);
 
 Class objc_getClass(const char* name);
+
+#endif // _LIBOBJC_CLASS_H

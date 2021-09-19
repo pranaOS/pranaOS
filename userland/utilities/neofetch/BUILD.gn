@@ -1,8 +1,0 @@
-import("//build/userland/TEMPLATE.gni")
-
-pranaOS_executable("neofetch") {
-  install_path = "bin/"
-  sources = [ "main.cpp" ]
-  configs = [ "//build/userland:userland_flags" ]
-  deplibs = [ "libc" ]
-}

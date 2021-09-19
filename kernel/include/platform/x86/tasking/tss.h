@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#pragma once
+#ifndef _KERNEL_PLATFORM_X86_TASKING_TSS_H
+#define _KERNEL_PLATFORM_X86_TASKING_TSS_H
 
 #include <libkern/c_attrs.h>
 #include <libkern/types.h>
@@ -57,3 +58,5 @@ typedef struct tss tss_t;
 extern tss_t tss;
 
 void ltr(uint16_t seg);
+
+#endif //_KERNEL_PLATFORM_X86_TASKING_TSS_H

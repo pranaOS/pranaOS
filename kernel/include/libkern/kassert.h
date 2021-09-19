@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#pragma once
+#ifndef _KERNEL_LIBKERN_KASSERT_H
+#define _KERNEL_LIBKERN_KASSERT_H
 
 #include <libkern/c_attrs.h>
 #include <libkern/log.h>
@@ -20,3 +21,5 @@
 
 void kpanic(const char* msg) NORETURN;
 void kpanic_tf(const char* err_msg, trapframe_t* tf) NORETURN;
+
+#endif // _KERNEL_LIBKERN_KASSERT_H

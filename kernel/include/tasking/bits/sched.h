@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#pragma once
+#ifndef _KERNEL_TASKING_BITS_SCHED_H
+#define _KERNEL_TASKING_BITS_SCHED_H
 
 #define MAX_PRIO 0
 #define MIN_PRIO 11
@@ -30,3 +31,5 @@ struct sched_data {
     int enqueued_tasks;
 };
 typedef struct sched_data sched_data_t;
+
+#endif // _KERNEL_TASKING_BITS_SCHED_H

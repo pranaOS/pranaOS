@@ -4,8 +4,6 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-/* FIXME: Only for one cpu now */
-
 #include <platform/x86/registers.h>
 
 uint32_t read_cr2()

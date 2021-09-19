@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#pragma once
+#ifndef _KERNEL_TASKING_ELF_H
+#define _KERNEL_TASKING_ELF_H
 
 #define ELF_CLASS_32 1
 #define ELF_CLASS_64 2
@@ -175,3 +176,5 @@ int elf_check_header(elf_header_32_t* header);
 int elf_load(struct proc* p, struct file_descriptor* fd);
 int elf_find_symtab_unchecked(void* mapped_data, void** symtab, size_t* symtab_entries, char** strtab);
 ssize_t elf_find_function_in_symtab(void* symtab, size_t syms_n, uint32_t ip);
+
+#endif // _KERNEL_TASKING_ELF_H

@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#pragma once
+#ifndef _KERNEL_DRIVERS_AARCH32_FPUV4_H
+#define _KERNEL_DRIVERS_AARCH32_FPUV4_H
 
 #include <drivers/driver_manager.h>
 #include <libkern/mask.h>
@@ -50,3 +51,5 @@ static inline void fpu_make_unavail()
     uint32_t val = read_cpacr() & (~((0b1111) << 20));
     write_cpacr(val | ((0b0101) << 20));
 }
+
+#endif //_KERNEL_DRIVERS_AARCH32_FPUV4_H

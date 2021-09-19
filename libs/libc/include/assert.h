@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _LIBC_ASSERT_H
+#define _LIBC_ASSERT_H
 
 #include <stddef.h>
 #include <stdio.h>
@@ -18,3 +19,5 @@ __BEGIN_DECLS
 #endif // assert
 
 __END_DECLS
+
+#endif // _LIBC_ASSERT_H

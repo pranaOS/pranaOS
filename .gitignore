@@ -1,6 +1,13 @@
+# system cache
 .DS_Store
+
+# ide cache
 .vscode/
 .idea/
-cmake-build-debug/
+
+# output of the program
 mountpoint/
 out/
+
+# pci ids 
+pci.ids.gz

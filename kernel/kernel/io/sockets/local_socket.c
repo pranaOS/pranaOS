@@ -79,8 +79,8 @@ int local_socket_bind(file_descriptor_t* sock, char* path, uint32_t len)
         return -ENOENT;
     }
 
-    mode_t file_mode = S_IFSOCK | S_IRUSR | S_IXUSR | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
-    vfs_create(location, name, strlen(name), file_mode);
+    mode_t file_mode = S_IFSOCK | S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH;
+    vfs_create(location, name, strlen(name), file_mode, p->uid, p->gid);
 
     dentry_t* bind_dentry;
     int res = vfs_resolve_path_start_from(location, name, &bind_dentry);

@@ -1,4 +1,4 @@
-#pragma once 
+#pragma once
 
 #include "viewer.h"
 #include <termios.h>

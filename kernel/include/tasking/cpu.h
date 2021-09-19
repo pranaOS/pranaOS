@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#pragma once
+#ifndef _KERNEL_TASKING_CPU_H
+#define _KERNEL_TASKING_CPU_H
 
 #include <drivers/generic/fpu.h>
 #include <platform/generic/cpu.h>
@@ -32,3 +33,5 @@ static inline void cpu_tick()
         THIS_CPU->stat_user_ticks++;
     }
 }
+
+#endif // _KERNEL_TASKING_CPU_H

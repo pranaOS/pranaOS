@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#pragma once
+#ifndef _LIBOBJC_RUNTIME_H
+#define _LIBOBJC_RUNTIME_H
 
 #include <libobjc/helpers.h>
 #include <libobjc/isa.h>
@@ -22,3 +23,5 @@ static inline Class object_getClass(id object)
     }
     return object->get_isa();
 }
+
+#endif // _LIBOBJC_RUNTIME_H

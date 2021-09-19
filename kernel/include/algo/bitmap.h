@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#pragma once
+#ifndef _KERNEL_ALGO_BITMAP_H
+#define _KERNEL_ALGO_BITMAP_H
 
 #include <libkern/types.h>
 
@@ -22,3 +23,4 @@ int bitmap_set(bitmap_t bitmap, int where);
 int bitmap_unset(bitmap_t bitmap, int where);
 int bitmap_set_range(bitmap_t bitmap, int start, int len);
 int bitmap_unset_range(bitmap_t bitmap, int start, int len);
+#endif //_KERNEL_ALGO_BITMAP_H

@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-
 #include <fcntl.h>
 #include <libfoundation/Logger.h>
 #include <libg/Font.h>

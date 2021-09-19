@@ -4,9 +4,9 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#pragma once
+#ifndef _KERNEL_TASKING_THREAD_H
+#define _KERNEL_TASKING_THREAD_H
 
-// includes
 #include <drivers/generic/fpu.h>
 #include <fs/vfs.h>
 #include <libkern/lock.h>
@@ -100,6 +100,10 @@ struct thread_list {
 };
 typedef struct thread_list thread_list_t;
 
+/**
+ * THREAD FUNCTIONS
+ */
+
 int thread_setup_main(struct proc* p, thread_t* thread);
 int thread_setup(struct proc* p, thread_t* thread);
 int thread_setup_kstack(thread_t* thread);
@@ -112,11 +116,22 @@ int thread_free(thread_t* thread);
 int thread_die(thread_t* thread);
 
 static ALWAYS_INLINE int thread_is_free(thread_t* thread) { return (thread->status == THREAD_INVALID) || (thread->status == THREAD_DEAD); }
+
+/**
+ * BLOCKER FUNCTIONS
+ */
+
 int init_join_blocker(thread_t* p);
 int init_read_blocker(thread_t* p, file_descriptor_t* bfd);
 int init_write_blocker(thread_t* thread, file_descriptor_t* bfd);
 int init_sleep_blocker(thread_t* thread, uint32_t time);
 int init_select_blocker(thread_t* thread, int nfds, fd_set_t* readfds, fd_set_t* writefds, fd_set_t* exceptfds, timeval_t* timeout);
 
+/**
+ * DEBUG FUNCTIONS
+ */
+
 int thread_dump_frame(thread_t* thread);
 int thread_print_backtrace();
+
+#endif /* _KERNEL_TASKING_THREAD_H */

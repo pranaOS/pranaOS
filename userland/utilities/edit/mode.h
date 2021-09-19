@@ -1,4 +1,5 @@
-#pragma once 
+#ifndef _USERLAND_EDIT_MODE_H
+#define _USERLAND_EDIT_MODE_H
 
 #include "viewer.h"
 #ifdef __pranaOS__
@@ -22,3 +23,5 @@ enum APP_MODE {
 
 extern uint32_t mode;
 extern mode_disc_t mode_disc;
+
+#endif

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _LIBC_BITS_TYPES_H
+#define _LIBC_BITS_TYPES_H
 
 typedef char __int8_t;
 typedef short __int16_t;
@@ -21,3 +22,5 @@ typedef __int64_t __off64_t; /* Type of file sizes and offsets (LFS).  */
 typedef __uint32_t __pid_t; /* Type of process identifications.  */
 typedef __uint32_t __fsid_t; /* Type of file system IDs.  */
 typedef __uint32_t __time_t; /* Seconds since the Epoch.  */
+
+#endif // _LIBC_BITS_TYPES_H

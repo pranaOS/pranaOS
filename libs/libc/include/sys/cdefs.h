@@ -3,8 +3,8 @@
  *
  * SPDX-License-Identifier: BSD-2-Clause
  */
-
-#pragma once
+#ifndef _LIBC_SYS_CDEFS_H
+#define _LIBC_SYS_CDEFS_H
 
 #if defined(__cplusplus)
 #define __BEGIN_DECLS extern "C" {
@@ -24,3 +24,5 @@
 #define __use_instead(F) __attribute__((warning("use " F " instead")))
 #endif
 #endif
+
+#endif // _LIBC_SYS_CDEFS_H

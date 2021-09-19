@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _LIBC_BITS_SYS_STAT_H
+#define _LIBC_BITS_SYS_STAT_H
 
 #include <sys/types.h>
 
@@ -45,3 +46,5 @@ struct fstat {
     uint32_t ctime; /* time of last status change */
 };
 typedef struct fstat fstat_t;
+
+#endif // _LIBC_BITS_SYS_STAT_H

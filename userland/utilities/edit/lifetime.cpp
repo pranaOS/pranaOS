@@ -1,5 +1,5 @@
 #include "lifetime.h"
-#ifndef __pranaOS__
+#ifdef __pranaOS__
 #include <stdlib.h>
 #endif
 

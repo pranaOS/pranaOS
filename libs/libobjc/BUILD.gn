@@ -2,12 +2,12 @@ import("//build/libs/TEMPLATE.gni")
 
 pranaOS_static_library("libobjc") {
   sources = [
-    "src/NSObject.mm",
-    "src/class.mm",
-    "src/init.mm",
-    "src/memory.mm",
+    "src/NSObject.m",
+    "src/class.m",
+    "src/init.m",
+    "src/memory.m",
     "src/msgsend_$target_cpu.S",
-    "src/selector.mm",
+    "src/selector.m",
   ]
 
   include_dirs = [

@@ -1,8 +1,4 @@
-# /*
-#  * Copyright (c) 2021, Krisna Pranav
-#  *
-#  * SPDX-License-Identifier: BSD-2-Clause
-# */
+
 
 lib_c_flags = [
   "-ffreestanding",
@@ -93,6 +89,7 @@ group("libs") {
     "//libs/libcxx:libcxx",
     "//libs/libcxxabi:libcxxabi",
     "//libs/libfoundation:libfoundation",
+    "//libs/libio:libio",
     "//libs/libg:libg",
     "//libs/libui:libui",
     "//libs/libutils:libutils",

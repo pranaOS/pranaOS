@@ -27,6 +27,8 @@ public:
         LightSystemButton,
         LightSystemAccentButton,
         LightSystemBlue,
+        DarkSystemText,
+        Opaque,
     };
 
     Color() = default;

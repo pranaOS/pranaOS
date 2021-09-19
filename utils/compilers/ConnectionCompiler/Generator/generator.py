@@ -1,8 +1,4 @@
-# /*
-#  * Copyright (c) 2021, Krisna Pranav
-#  *
-#  * SPDX-License-Identifier: BSD-2-Clause
-# */
+
 
 class Message:
     def __init__(self, name, id, reply_id, decoder_magic, params, protected=False):

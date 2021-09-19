@@ -2,18 +2,25 @@ import("//build/libs/TEMPLATE.gni")
 
 pranaOS_static_library("libc") {
   sources = [
+    "__libc__.h",
     "ctype/ctype.c",
     "dirent/dirent.c",
     "init/_lib.c",
     "malloc/malloc.c",
     "malloc/slab.c",
+    "pwd/pwd.c",
     "posix/fs.c",
+    "posix/identity.cpp",
     "posix/sched.c",
     "posix/signal.c",
-    "posix/system.c",
+    "posix/system.cpp",
     "posix/tasking.c",
     "posix/time.c",
     "pthread/pthread.c",
+    "pranaos/numberformatter.h",
+    "pranaos/plugs.h",
+    "pranaos/printf.h",
+    "pranaos/time.h",
     "setjmp/$target_cpu/setjmp.s",
     "socket/socket.c",
     "stdio/printf.c",
@@ -29,7 +36,6 @@ pranaOS_static_library("libc") {
     "termios/termios.c",
     "time/strftime.c",
     "time/time.c",
-    "unistd/getopt.c",
 
     # private
     "init/_init.c",

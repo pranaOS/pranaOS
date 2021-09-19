@@ -198,7 +198,6 @@ void TerminalView::receive_keyup_event(UI::KeyUpEvent&)
 
 void TerminalView::receive_keydown_event(UI::KeyDownEvent& event)
 {
-    // FIXME: More symbols and static size of font
     if (event.key() == LFoundation::Keycode::KEY_BACKSPACE) {
         if (m_input.size()) {
             m_input.pop_back();

@@ -3,8 +3,6 @@
 #ifndef _LIBCXX_IOSFWD
 #define _LIBCXX_IOSFWD
 
-#pragma once
-
 #include <__config>
 #include <string>
 

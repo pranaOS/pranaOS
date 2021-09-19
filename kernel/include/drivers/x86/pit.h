@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#pragma once 
+#ifndef _KERNEL_DRIVERS_X86_PIT_H
+#define _KERNEL_DRIVERS_X86_PIT_H
 
 #include <libkern/types.h>
 #include <platform/x86/idt.h>
@@ -14,3 +15,5 @@
 
 void pit_setup();
 void pit_handler();
+
+#endif /* _KERNEL_DRIVERS_X86_PIT_H */

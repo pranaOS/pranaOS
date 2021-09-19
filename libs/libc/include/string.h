@@ -3,8 +3,8 @@
  *
  * SPDX-License-Identifier: BSD-2-Clause
  */
-
-#pragma once
+#ifndef _LIBC_STRING_H
+#define _LIBC_STRING_H
 
 #include <stddef.h>
 #include <sys/cdefs.h>
@@ -46,3 +46,5 @@ int strcmp(const char* a, const char* b);
 char* strncpy(char* dest, const char* src, size_t nbytes);
 
 __END_DECLS
+
+#endif // _LIBC_STRING_H

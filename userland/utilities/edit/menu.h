@@ -1,4 +1,4 @@
-#pragma once 
+#pragma once
 
 #include "mode.h"
 #include "viewer.h"

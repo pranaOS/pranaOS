@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#pragma once
+#ifndef _KERNEL_PLATFORM_AARCH32_TASKING_TRAPFRAME_H
+#define _KERNEL_PLATFORM_AARCH32_TASKING_TRAPFRAME_H
 
 #include <libkern/c_attrs.h>
 #include <libkern/log.h>
@@ -108,3 +109,5 @@ static void dump_tf(trapframe_t* tf)
     log("ip: %x", tf->user_ip);
     log("fl: %x", tf->user_flags);
 }
+
+#endif // _KERNEL_PLATFORM_AARCH32_TASKING_TRAPFRAME_H

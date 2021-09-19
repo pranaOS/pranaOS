@@ -15,7 +15,7 @@ brew install coreutils qemu e2fsprogs nasm m4 autoconf libtool automake bash gcc
 ```
 
 # gn:
-- you need to download gn 
+- you need to download gn
 - what is gn?:
 ```
 it is a compiler built by google

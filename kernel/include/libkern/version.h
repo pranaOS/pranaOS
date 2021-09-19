@@ -1,7 +1,8 @@
-#pragma once
+#ifndef _KERNEL_LIBKERN_VERSION_H
+#define _KERNEL_LIBKERN_VERSION_H
 
 #define OSTYPE "pranaOS"
-#define OSRELEASE "2.0.0"
+#define OSRELEASE "2.0.0-dev"
 #define VERSION_MAJOR 1
 #define VERSION_MINOR 0
 #define VERSION_REVISION 0
@@ -12,3 +13,5 @@
 #elif __arm__
 #define MACHINE "arm"
 #endif
+
+#endif // _KERNEL_LIBKERN_VERSION_H

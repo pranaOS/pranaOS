@@ -4,6 +4,9 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
+// #ifndef _LIBOBJC_NSOBJECT_H
+// #define _LIBOBJC_NSOBJECT_H
+
 #pragma once
 
 #include <libobjc/runtime.h>
@@ -20,3 +23,5 @@
 - (Class)class;
 
 @end
+
+// #endif // _LIBOBJC_NSOBJECT_H

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _LIBC_PTHREAD_H
+#define _LIBC_PTHREAD_H
 
 #include <bits/thread.h>
 #include <sys/_structs.h>
@@ -10,3 +11,5 @@ __BEGIN_DECLS
 int pthread_create(void* func);
 
 __END_DECLS
+
+#endif /* _LIBC_PTHREAD_H */

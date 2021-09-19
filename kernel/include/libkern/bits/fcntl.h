@@ -1,4 +1,5 @@
-#pragma once 
+#ifndef _KERNEL_LIBKERN_BITS_FCNTL_H
+#define _KERNEL_LIBKERN_BITS_FCNTL_H
 
 #define SEEK_SET 0x1
 #define SEEK_CUR 0x2
@@ -13,3 +14,6 @@
 #define O_TRUNC 0x20
 #define O_APPEND 0x40
 #define O_EXCL 0x80
+#define O_EXEC 0x100
+
+#endif // _KERNEL_LIBKERN_BITS_FCNTL_H

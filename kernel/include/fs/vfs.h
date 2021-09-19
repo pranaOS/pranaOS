@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#pragma once 
+#ifndef _KERNEL_FS_VFS_H
+#define _KERNEL_FS_VFS_H
 
 #include <algo/sync_ringbuffer.h>
 #include <drivers/driver_manager.h>
@@ -89,11 +90,11 @@ struct file_ops {
     int (*write)(dentry_t*, uint8_t*, uint32_t, uint32_t);
     int (*open)(dentry_t* dentry, struct file_descriptor* fd, uint32_t flags);
     int (*truncate)(dentry_t*, uint32_t);
-    int (*create)(dentry_t* dentry, const char* name, uint32_t len, mode_t mode);
+    int (*create)(dentry_t* dentry, const char* name, uint32_t len, mode_t mode, uid_t uid, gid_t gid);
     int (*unlink)(dentry_t* dentry);
     int (*getdents)(dentry_t* dir, uint8_t* buf, uint32_t* offset, uint32_t len);
     int (*lookup)(dentry_t* dentry, const char* name, uint32_t len, dentry_t** result);
-    int (*mkdir)(dentry_t* dir, const char* name, uint32_t len, mode_t mode);
+    int (*mkdir)(dentry_t* dir, const char* name, uint32_t len, mode_t mode, uid_t uid, gid_t gid);
     int (*rmdir)(dentry_t* dir);
     int (*ioctl)(dentry_t* dentry, uint32_t cmd, uint32_t arg);
     int (*fstat)(dentry_t* dentry, fstat_t* stat);
@@ -207,7 +208,7 @@ void vfs_eject_device(device_t* t_new_dev);
 int vfs_resolve_path(const char* path, dentry_t** result);
 int vfs_resolve_path_start_from(dentry_t* dentry, const char* path, dentry_t** result);
 
-int vfs_create(dentry_t* dir, const char* name, uint32_t len, mode_t mode);
+int vfs_create(dentry_t* dir, const char* name, uint32_t len, mode_t mode, uid_t uid, gid_t gid);
 int vfs_unlink(dentry_t* file);
 int vfs_lookup(dentry_t* dir, const char* name, uint32_t len, dentry_t** result);
 int vfs_open(dentry_t* file, file_descriptor_t* fd, uint32_t flags);
@@ -216,7 +217,7 @@ bool vfs_can_read(file_descriptor_t* fd);
 bool vfs_can_write(file_descriptor_t* fd);
 int vfs_read(file_descriptor_t* fd, void* buf, uint32_t len);
 int vfs_write(file_descriptor_t* fd, void* buf, uint32_t len);
-int vfs_mkdir(dentry_t* dir, const char* name, size_t len, mode_t mode);
+int vfs_mkdir(dentry_t* dir, const char* name, size_t len, mode_t mode, uid_t uid, gid_t gid);
 int vfs_rmdir(dentry_t* dir);
 int vfs_getdents(file_descriptor_t* dir_fd, uint8_t* buf, uint32_t len);
 int vfs_fstat(file_descriptor_t* fd, fstat_t* stat);
@@ -227,3 +228,10 @@ int vfs_umount(dentry_t* mountpoint);
 struct proc;
 struct proc_zone* vfs_mmap(file_descriptor_t* fd, mmap_params_t* params);
 int vfs_munmap(struct proc* p, struct proc_zone*);
+
+struct thread;
+int vfs_perm_to_read(file_descriptor_t* fd, struct thread* t);
+int vfs_perm_to_write(file_descriptor_t* fd, struct thread* t);
+int vfs_perm_to_execute(file_descriptor_t* fd, struct thread* t);
+
+#endif // _KERNEL_FS_VFS_H

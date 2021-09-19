@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-// includes
 #include <drivers/aarch32/gicv2.h>
 #include <libkern/libkern.h>
 #include <libkern/log.h>
@@ -23,6 +22,7 @@ static char err_buf[ERR_BUF_SIZE];
 
 static gic_descritptor_t gic_descriptor;
 
+/* IRQ */
 static irq_handler_t _irq_handlers[IRQ_HANDLERS_MAX];
 static void _irq_empty_handler();
 static inline void _irq_redirect(int int_no);
@@ -36,7 +36,7 @@ static inline uint32_t is_interrupt_enabled()
 void interrupts_setup()
 {
     system_disable_interrupts();
-    system_enable_interrupts_only_counter(); 
+    system_enable_interrupts_only_counter(); // Reset counter
     set_abort_stack((uint32_t)&STACK_ABORT_TOP);
     set_undefined_stack((uint32_t)&STACK_UNDEFINED_TOP);
     set_svc_stack((uint32_t)&STACK_SVC_TOP);
@@ -54,7 +54,7 @@ static uint32_t new_zone_for_secondary_cpu()
 void interrupts_setup_secondary_cpu()
 {
     system_disable_interrupts();
-    system_enable_interrupts_only_counter(); 
+    system_enable_interrupts_only_counter(); // Reset counter
     set_abort_stack(new_zone_for_secondary_cpu());
     set_undefined_stack(new_zone_for_secondary_cpu());
     set_svc_stack(new_zone_for_secondary_cpu());
@@ -103,7 +103,7 @@ void undefined_handler(trapframe_t* tf)
     THIS_CPU->fpu_for_pid = RUNNING_THREAD->tid;
     system_enable_interrupts_only_counter();
     return;
-#endif 
+#endif // FPU_ENABLED
 
 undefined_h:
     if (THIS_CPU->current_state == CPU_IN_USERLAND && RUNNING_THREAD) {
@@ -143,8 +143,8 @@ void data_abort_handler(trapframe_t* tf)
     cpu_enter_kernel_space();
     uint32_t fault_addr = read_far();
     uint32_t info = read_dfsr();
-    uint32_t is_pl0 = read_spsr() & 0xf; 
-    info |= ((is_pl0 != 0) << 31); 
+    uint32_t is_pl0 = read_spsr() & 0xf; // See CPSR M field values
+    info |= ((is_pl0 != 0) << 31); // Set the 31bit as type
     int res = vmm_page_fault_handler(info, fault_addr);
     if (res == SHOULD_CRASH) {
         if (THIS_CPU->current_state == CPU_IN_KERNEL || !RUNNING_THREAD) {
@@ -158,6 +158,10 @@ void data_abort_handler(trapframe_t* tf)
     cpu_leave_kernel_space();
     system_enable_interrupts_only_counter();
 }
+
+/**
+ * IRQ
+ */
 
 static void _irq_empty_handler()
 {
@@ -181,6 +185,8 @@ void irq_handler(trapframe_t* tf)
     system_disable_interrupts();
     cpu_enter_kernel_space();
     uint32_t int_disc = gic_descriptor.interrupt_descriptor();
+    /* We end the interrupt before handle it, since we can
+       call sched() and not return here. */
     gic_descriptor.end_interrupt(int_disc);
     _irq_redirect(int_disc & 0x1ff);
     cpu_leave_kernel_space();

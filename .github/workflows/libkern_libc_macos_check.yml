@@ -1,0 +1,17 @@
+name: libkern & libc macos compact checker
+
+on: [push, pull_request]
+
+env:
+  BUILD_TYPE: Release
+
+jobs:
+  check:
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: libkern & libc macos compact
+        shell: bash
+        run: find libs/libc kernel/include/libkern

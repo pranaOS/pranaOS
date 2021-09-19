@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#pragma once
+#ifndef _KERNEL_MEM_VMM_ZONER_H
+#define _KERNEL_MEM_VMM_ZONER_H
 
 #include <libkern/types.h>
 
@@ -23,3 +24,5 @@ void zoner_place_bitmap();
 zone_t zoner_new_zone(uint32_t size);
 zone_t zoner_new_zone_aligned(uint32_t size, uint32_t alignment);
 int zoner_free_zone(zone_t zone);
+
+#endif // _KERNEL_MEM_VMM_ZONER_H

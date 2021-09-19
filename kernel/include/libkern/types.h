@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _KERNEL_LIBKERN_TYPES_H
+#define _KERNEL_LIBKERN_TYPES_H
 
 #include <libkern/_types/_va_list.h>
 #include <libkern/bits/types.h>
@@ -96,3 +97,5 @@ typedef int ssize_t;
 #define unlikely(x) __builtin_expect(!!(x), 0)
 
 #define NULL ((void*)0)
+
+#endif // _KERNEL_LIBKERN_TYPES_H

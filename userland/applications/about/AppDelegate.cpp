@@ -17,7 +17,10 @@ public:
 
         window.set_title("About");
 
-        window.menubar().add_menu("Demo").add_item(UI::MenuItem("Say hello", [] { Logger::debug << "Hello!" << std::endl; }));
+        // FIXME: Popup when click on the perticular MenuItem
+        window.menubar().add_menu("Edit").add_item(UI::MenuItem("Edit", [] { Logger::debug << "Edit" << std::endl; }));
+        window.menubar().add_menu("View").add_item(UI::MenuItem("View", [] { Logger::debug << "View" << std::endl; }));
+        window.menubar().add_menu("Help").add_item(UI::MenuItem("Help", [] { Logger::debug << "Help" << std::endl; }));
 
         return true;
     }

@@ -53,7 +53,7 @@ std::unique_ptr<Message> ClientDecoder::handle(const KeyboardMessage& msg)
         // Checking if the key is down or up
         if (msg.kbd_key() >> 31) {
             uint32_t key = msg.kbd_key();
-            key &= 0xEFFFFFFF;
+            key &= 0x7FFFFFFF;
             m_event_loop.add(App::the().window(), new KeyUpEvent(key));
         } else {
             m_event_loop.add(App::the().window(), new KeyDownEvent(msg.kbd_key()));
@@ -73,6 +73,14 @@ std::unique_ptr<Message> ClientDecoder::handle(const WindowCloseRequestMessage& 
     // TODO: Currently we support only 1 window per app.
     if (App::the().window().id() == msg.win_id()) {
         m_event_loop.add(App::the(), new WindowCloseRequestEvent(msg.win_id()));
+    }
+    return nullptr;
+}
+
+std::unique_ptr<Message> ClientDecoder::handle(const ResizeMessage& msg)
+{
+    if (App::the().window().id() == msg.win_id()) {
+        m_event_loop.add(App::the().window(), new ResizeEvent(msg.win_id(), msg.rect()));
     }
     return nullptr;
 }

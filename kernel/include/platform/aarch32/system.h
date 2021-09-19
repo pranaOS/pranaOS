@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#pragma once
+#ifndef _KERNEL_PLATFORM_AARCH32_SYSTEM_H
+#define _KERNEL_PLATFORM_AARCH32_SYSTEM_H
 
 #include <libkern/c_attrs.h>
 #include <libkern/types.h>
@@ -116,3 +117,5 @@ inline static int system_cpu_id()
                  :);
     return res & 0x3;
 }
+
+#endif /* _KERNEL_PLATFORM_AARCH32_SYSTEM_H */

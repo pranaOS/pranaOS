@@ -83,10 +83,10 @@ static int _ext2_rm_from_dir_block(vfs_device_t* dev, fsdata_t fsdata, uint32_t 
 
 static int _ext2_add_child(dentry_t* dir, dentry_t* child_dentry, const char* name, int len);
 static int _ext2_rm_child(dentry_t* dir, dentry_t* child_dentry);
-static int _ext2_setup_dir(dentry_t* dir, dentry_t* parent_dir, mode_t mode);
+static int _ext2_setup_dir(dentry_t* dir, dentry_t* parent_dir, mode_t mode, uid_t uid, gid_t gid);
 
 /* FILE FUNCTIONS */
-static int _ext2_setup_file(dentry_t* file, mode_t mode);
+static int _ext2_setup_file(dentry_t* file, mode_t mode, uid_t uid, gid_t gid);
 
 /* API FUNTIONS */
 int ext2_recognize_drive(vfs_device_t* dev);
@@ -98,9 +98,9 @@ int ext2_read(dentry_t* dentry, uint8_t* buf, uint32_t start, uint32_t len);
 int ext2_write(dentry_t* dentry, uint8_t* buf, uint32_t start, uint32_t len);
 int ext2_truncate(dentry_t* dentry, uint32_t len);
 int ext2_lookup(dentry_t* dir, const char* name, uint32_t len, dentry_t** result);
-int ext2_mkdir(dentry_t* dir, const char* name, uint32_t len, mode_t mode);
+int ext2_mkdir(dentry_t* dir, const char* name, uint32_t len, mode_t mode, uid_t uid, gid_t gid);
 int ext2_getdirent(dentry_t* dir, uint32_t* offset, dirent_t* res);
-int ext2_create(dentry_t* dir, const char* name, uint32_t len, mode_t mode);
+int ext2_create(dentry_t* dir, const char* name, uint32_t len, mode_t mode, uid_t uid, gid_t gid);
 int ext2_rm(dentry_t* dentry);
 
 /**
@@ -109,7 +109,7 @@ int ext2_rm(dentry_t* dentry);
 
 static void _ext2_read_from_dev(vfs_device_t* dev, uint8_t* buf, uint32_t start, uint32_t len)
 {
-    void (*read)(device_t * d, uint32_t s, uint8_t * r) = drivers[dev->dev->driver_id].desc.functions[DRIVER_STORAGE_READ];
+    void (*read)(device_t * d, uint32_t s, uint8_t * r) = dm_function_handler(dev->dev, DRIVER_STORAGE_READ);
     int already_read = 0;
     uint32_t sector = start / 512;
     uint32_t start_offset = start % 512;
@@ -128,8 +128,8 @@ static void _ext2_read_from_dev(vfs_device_t* dev, uint8_t* buf, uint32_t start,
 
 static void _ext2_write_to_dev(vfs_device_t* dev, uint8_t* buf, uint32_t start, uint32_t len)
 {
-    void (*read)(device_t * d, uint32_t s, uint8_t * r) = drivers[dev->dev->driver_id].desc.functions[DRIVER_STORAGE_READ];
-    void (*write)(device_t * d, uint32_t s, uint8_t * r, uint32_t siz) = drivers[dev->dev->driver_id].desc.functions[DRIVER_STORAGE_WRITE];
+    void (*read)(device_t * d, uint32_t s, uint8_t * r) = dm_function_handler(dev->dev, DRIVER_STORAGE_READ);
+    void (*write)(device_t * d, uint32_t s, uint8_t * r, uint32_t siz) = dm_function_handler(dev->dev, DRIVER_STORAGE_WRITE);
     int already_written = 0;
     uint32_t sector = start / 512;
     uint32_t start_offset = start % 512;
@@ -150,7 +150,7 @@ static void _ext2_write_to_dev(vfs_device_t* dev, uint8_t* buf, uint32_t start, 
 
 static uint32_t _ext2_get_disk_size(vfs_device_t* dev)
 {
-    uint32_t (*get_size)(device_t * d) = drivers[dev->dev->driver_id].desc.functions[DRIVER_STORAGE_CAPACITY];
+    uint32_t (*get_size)(device_t * d) = dm_function_handler(dev->dev, DRIVER_STORAGE_CAPACITY);
     return get_size(dev->dev);
 }
 
@@ -767,10 +767,11 @@ static int _ext2_rm_child(dentry_t* dir, dentry_t* child_dentry)
     return -ENOENT;
 }
 
-static int _ext2_setup_dir(dentry_t* dir, dentry_t* parent_dir, mode_t mode)
+static int _ext2_setup_dir(dentry_t* dir, dentry_t* parent_dir, mode_t mode, uid_t uid, gid_t gid)
 {
     dir->inode->mode = mode;
-    dir->inode->uid = 0; // FIXME: uid of real user
+    dir->inode->uid = uid;
+    dir->inode->gid = gid;
     dir->inode->links_count = 0;
     dir->inode->blocks = 0;
     dentry_set_flag(dir, DENTRY_DIRTY);
@@ -787,10 +788,11 @@ static int _ext2_setup_dir(dentry_t* dir, dentry_t* parent_dir, mode_t mode)
  * FILE FUNCTIONS
  */
 
-static int _ext2_setup_file(dentry_t* file, mode_t mode)
+static int _ext2_setup_file(dentry_t* file, mode_t mode, uid_t uid, gid_t gid)
 {
     file->inode->mode = mode;
-    file->inode->uid = 0; // FIXME: uid of real user
+    file->inode->uid = uid;
+    file->inode->gid = gid;
     file->inode->links_count = 0;
     file->inode->blocks = 0;
     file->inode->size = 0;
@@ -921,7 +923,7 @@ int ext2_lookup(dentry_t* dir, const char* name, uint32_t len, dentry_t** result
     return -ENOENT;
 }
 
-int ext2_mkdir(dentry_t* dir, const char* name, uint32_t len, mode_t mode)
+int ext2_mkdir(dentry_t* dir, const char* name, uint32_t len, mode_t mode, uid_t uid, gid_t gid)
 {
     lock_acquire(&VFS_DEVICE_LOCK_OWNED_BY(dir));
     uint32_t new_dir_inode_indx = 0;
@@ -932,7 +934,7 @@ int ext2_mkdir(dentry_t* dir, const char* name, uint32_t len, mode_t mode)
 
     dentry_t* new_dir = dentry_get(dir->dev_indx, new_dir_inode_indx);
 
-    if (_ext2_setup_dir(new_dir, dir, mode) < 0) {
+    if (_ext2_setup_dir(new_dir, dir, mode, uid, gid) < 0) {
         dentry_put(new_dir);
         lock_release(&VFS_DEVICE_LOCK_OWNED_BY(dir));
         return -EFAULT;
@@ -1024,7 +1026,7 @@ int ext2_getdents(dentry_t* dentry, uint8_t* buf, uint32_t* offset, uint32_t len
     return already_read;
 }
 
-int ext2_create(dentry_t* dir, const char* name, uint32_t len, mode_t mode)
+int ext2_create(dentry_t* dir, const char* name, uint32_t len, mode_t mode, uid_t uid, gid_t gid)
 {
     lock_acquire(&VFS_DEVICE_LOCK_OWNED_BY(dir));
     uint32_t new_file_inode_indx = 0;
@@ -1034,7 +1036,7 @@ int ext2_create(dentry_t* dir, const char* name, uint32_t len, mode_t mode)
     }
     dentry_t* new_file = dentry_get(dir->dev_indx, new_file_inode_indx);
 
-    if (_ext2_setup_file(new_file, mode) < 0) {
+    if (_ext2_setup_file(new_file, mode, uid, gid) < 0) {
         dentry_put(new_file);
         lock_release(&VFS_DEVICE_LOCK_OWNED_BY(dir));
         return -EFAULT;

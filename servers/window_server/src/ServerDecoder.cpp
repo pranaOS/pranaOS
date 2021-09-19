@@ -5,11 +5,8 @@
  */
 
 #include "ServerDecoder.h"
-#ifdef TARGET_DESKTOP
 #include "Desktop/Window.h"
-#elif TARGET_MOBILE
 #include "Mobile/Window.h"
-#endif
 #include "WindowManager.h"
 
 namespace WinServer {
@@ -53,8 +50,10 @@ std::unique_ptr<Message> WindowServerDecoder::handle(const SetBufferMessage& msg
     if (!window) {
         return nullptr;
     }
-    window->set_buffer(msg.buffer_id());
-    window->content_bitmap().set_format(LG::PixelBitmapFormat(msg.format()));
+
+    LG::Size new_size = { msg.bounds().width(), msg.bounds().height() };
+    window->did_size_change(new_size);
+    window->set_buffer(msg.buffer_id(), new_size, LG::PixelBitmapFormat(msg.format()));
     return nullptr;
 }
 
@@ -107,12 +106,13 @@ std::unique_ptr<Message> WindowServerDecoder::handle(const SetTitleMessage& msg)
 
 std::unique_ptr<Message> WindowServerDecoder::handle(const SetBarStyleMessage& msg)
 {
-    // auto& wm = WindowManager::the();
-    // auto* window = wm.window(msg.window_id());
-    // if (!window) {
-    //     return nullptr;
-    // }
+    auto& wm = WindowManager::the();
+    auto* window = wm.window(msg.window_id());
+    if (!window) {
+        return nullptr;
+    }
 
+    window->set_style(LG::Color(msg.color()), TextStyle(msg.text_style()));
     return nullptr;
 }
 

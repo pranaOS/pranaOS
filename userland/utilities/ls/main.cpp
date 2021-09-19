@@ -43,13 +43,13 @@ int main(int argc, char** argv)
     }
 
     if (fd < 0) {
-        printf("ls: can't open file\n");
+        printf("ls: Operation not permitted\n");
         return -1;
     }
     for (;;) {
         nread = getdents(fd, buf, BUF_SIZE);
         if (nread < 0) {
-            printf("ls: can't read dir\n");
+            printf("ls: Operation not permitted\n");
             return -1;
         }
 

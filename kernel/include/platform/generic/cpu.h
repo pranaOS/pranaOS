@@ -4,11 +4,13 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#pragma once
+#ifndef _KERNEL_TASKING_BITS_CPU_H
+#define _KERNEL_TASKING_BITS_CPU_H
 
 #include <drivers/generic/fpu.h>
 #include <libkern/types.h>
 #include <mem/vmm/vmm.h>
+#include <mem/vmm/zoner.h>
 #include <platform/generic/tasking/context.h>
 #include <tasking/bits/sched.h>
 
@@ -27,8 +29,8 @@ typedef struct {
     int id;
     int int_depth_counter;
 
-    char* kstack;
     pdirectory_t* pdir;
+    zone_t sched_stack_zone;
     context_t* sched_context; // context of sched's registers
     struct thread* running_thread;
     cpu_state_t current_state;
@@ -49,3 +51,5 @@ typedef struct {
 } cpu_t;
 
 extern cpu_t cpus[CPU_CNT];
+
+#endif // _KERNEL_TASKING_BITS_CPU_H

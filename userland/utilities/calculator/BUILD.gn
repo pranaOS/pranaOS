@@ -1,0 +1,16 @@
+import("//build/userland/TEMPLATE.gni")
+
+pranaOS_executable("calculator") {
+  sources = [
+    "AppDelegate.cpp",
+  ]
+  configs = [
+    "//build/userland:userland_flags",
+  ]
+  deplibs = [
+    "libcxx",
+    "libfoundation",
+    "libg",
+    "libui"
+  ]
+}

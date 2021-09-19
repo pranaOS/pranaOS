@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#pragma once
+#ifndef _KERNEL_DRIVERS_AARCH32_SP804_H
+#define _KERNEL_DRIVERS_AARCH32_SP804_H
 
 #include <drivers/driver_manager.h>
 #include <libkern/mask.h>
@@ -38,3 +39,5 @@ struct sp804_registers {
 typedef struct sp804_registers sp804_registers_t;
 
 void sp804_install();
+
+#endif //_KERNEL_DRIVERS_AARCH32_SP804_H

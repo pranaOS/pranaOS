@@ -2,13 +2,22 @@ import("//build/libs/TEMPLATE.gni")
 
 pranaOS_static_library("libutils") {
   sources = [
-    "Macros.h",
+      "concepts.h",
+      "assertions.h",
+      "numericlimits.h",
+      "forward.h",
+      "types.h",
+      "platform.h",
+      "iterationdecision.h",
+      "stdextras.h",
   ]
 
   deplibs = [
     "libcxx",
-    "libc",
+    "libfoundation",
+    "libipc",
   ]
+
   configs = [ "//build/libs:libcxx_flags" ]
 
   if (host == "llvm") {
