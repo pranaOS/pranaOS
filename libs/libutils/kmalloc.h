@@ -16,3 +16,15 @@ inline void kfree_sized(void* ptr, size_t)
 }
 
 #endif
+
+#ifndef __pranaOS__
+#   include <libutils/types.h>
+
+#   ifndef UTILS_OS_MACOS
+extern "C" {
+inline size_t malloc_good_size(size_t size)
+}
+#   else
+#       include <malloc/malloc.h>
+#   endif
+#endif
