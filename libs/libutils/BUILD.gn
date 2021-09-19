@@ -9,6 +9,7 @@ pranaOS_static_library("libutils") {
       "badge.h",
       "checked.h",
       "noncopyable.h",
+      "refcounted.h",
       "find.h",
       "traits.h",
       "hashfunctions.h",
