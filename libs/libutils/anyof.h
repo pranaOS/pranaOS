@@ -7,9 +7,9 @@
 #pragma once
 
 // includes
-#include <libutils/Concepts.h>
-#include <libutils/Find.h>
-#include <libutils/Iterator.h>
+#include <libutils/concepts.h>
+#include <libutils/find.h>
+#include <libutils/iterator.h>
 
 namespace Utils {
 
