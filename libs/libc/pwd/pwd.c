@@ -1,4 +1,3 @@
-// includes
 #include <assert.h>
 #include <pwd.h>
 #include <stdio.h>
@@ -6,6 +5,7 @@
 
 static FILE* pwdfile = NULL;
 static char tmp_buf[512];
+
 
 static char passwd_buf[512];
 static passwd_t passwd_entry;
@@ -24,10 +24,12 @@ static passwd_t* parse_passwd_entry(char* res)
             parts[nxt_part++] = &passwd_buf[i + 1];
             passwd_buf[i] = '\0';
             if (nxt_part > 7) {
+                // More than 7 block.
                 return NULL;
             }
         }
     }
+    passwd_buf[len] = '\0';
 
     if (nxt_part != 7) {
         return NULL;
@@ -53,6 +55,7 @@ void setpwent()
 {
     pwdfile = fopen("/etc/passwd", "r");
     if (pwdfile == NULL) {
+        // Raise an error
     }
 }
 
@@ -93,7 +96,7 @@ passwd_t* getpwuid(uid_t uid)
 {
     passwd_t* passwd;
     setpwent();
-    while (passwd = getpwent()) {
+    while ((passwd = getpwent())) {
         if (passwd->pw_uid == uid) {
             return passwd;
         }
@@ -105,7 +108,7 @@ passwd_t* getpwnam(const char* name)
 {
     passwd_t* passwd;
     setpwent();
-    while (passwd = getpwent()) {
+    while ((passwd = getpwent())) {
         if (!strcmp(passwd->pw_name, name)) {
             return passwd;
         }
