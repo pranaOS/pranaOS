@@ -4,6 +4,7 @@ pranaOS_static_library("libutils") {
   sources = [
       "allof.h",
       "anyof.h",
+      "atomic.h",
       "find.h",
       "traits.h",
       "hashfunctions.h",
