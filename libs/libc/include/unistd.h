@@ -33,6 +33,10 @@ int unlink(const char* path);
 off_t lseek(int fd, off_t off, int whence);
 
 uid_t getuid();
+int setuid(uid_t uid);
+int setgid(gid_t gid);
+int setreuid(uid_t ruid, uid_t euid);
+int setregid(gid_t rgid, gid_t egid);
 char* getlogin();
 
 int nice(int inc);
