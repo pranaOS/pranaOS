@@ -8,8 +8,7 @@
 #pragma once
 
 // includes
-// FIXME: add checked library 
-// #include <libutils/Checked.h>
+#include <libutils/Checked.h>
 
 #if defined(KERNEL)
 #       include <kernel/include/mem/kmalloc.h>
