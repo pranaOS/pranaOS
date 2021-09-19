@@ -1,5 +1,4 @@
-#ifndef _LIBC_STDBOOL_H
-#define _LIBC_STDBOOL_H
+#pragma once
 
 #include <sys/cdefs.h>
 
@@ -13,5 +12,3 @@ __BEGIN_DECLS
 #endif // __bool_true_false_are_defined
 
 __END_DECLS
-
-#endif //_LIBC_STDBOOL_H
