@@ -6,6 +6,7 @@
 
 #pragma once
 
+// includes
 #include <libutils/assertions.h>
 #include <libutils/atomic.h>
 #include <libutils/checked.h>
@@ -14,7 +15,6 @@
 #include <libutils/stdextras.h>
 
 namespace Utils {
-
 
 template<class T>
 constexpr auto call_will_be_destroyed_if_present(const T* object) -> decltype(const_cast<T*>(object)->will_be_destroyed(), TrueType {})
@@ -45,12 +45,12 @@ class RefCountedBase {
     MAKE_NONMOVABLE(RefCountedBase);
 
 public:
-    using RefCountedType = unsigned int;
-    using AllowOwnPtr = FalseType
+    using RefCountType = unsigned int;
+    using AllowOwnPtr = FalseType;
 
-    void ref() cosnt
+    void ref() const
     {
-        auto old_ref_count = m_ref_count.fetch_add(1, Utils::MemoryOrder::memory_order_releaxed);
+        auto old_ref_count = m_ref_count.fetch_add(1, Utils::MemoryOrder::memory_order_relaxed);
         VERIFY(old_ref_count > 0);
         VERIFY(!Checked<RefCountType>::addition_would_overflow(old_ref_count, 1));
     }
@@ -87,7 +87,6 @@ protected:
     }
 
     mutable Atomic<RefCountType> m_ref_count { 1 };
-
 };
 
 template<typename T>
