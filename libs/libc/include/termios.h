@@ -1,5 +1,4 @@
-#ifndef _LIBC_TERMIOS_H
-#define _LIBC_TERMIOS_H
+#pragma once
 
 #include <sys/_structs.h>
 #include <sys/cdefs.h>
@@ -71,5 +70,3 @@ int tcgetattr(int fd, termios_t* termios_p);
 int tcsetattr(int fd, int optional_actions, const termios_t* termios_p);
 
 __END_DECLS
-
-#endif /* _LIBC_TERMIOS_H */
