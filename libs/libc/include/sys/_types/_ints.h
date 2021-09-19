@@ -1,5 +1,7 @@
-#ifndef _LIBC_SYS__TYPES__INTS_H
-#define _LIBC_SYS__TYPES__INTS_H
+// #ifndef _LIBC_SYS__TYPES__INTS_H
+// #define _LIBC_SYS__TYPES__INTS_H
+
+#pragma once
 
 #include <bits/types.h>
 
@@ -74,4 +76,4 @@ typedef __fsid_t fsid_t;
 #define __time_t_defined
 typedef __time_t time_t;
 #endif // __time_t_defined
-#endif // _LIBC_SYS__TYPES__INTS_H
+// #endif // _LIBC_SYS__TYPES__INTS_H
