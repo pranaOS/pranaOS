@@ -13,6 +13,7 @@ pranaOS_static_library("libutils") {
       "find.h",
       "try.h",
       "traits.h",
+      "typedtransfer.h",
       "hashfunctions.h",
       "iterator.h",
       "kmalloc.h",
