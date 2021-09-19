@@ -1179,7 +1179,7 @@
 		9F8314C426F7281800ECCBE0 /* .clang-format */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ".clang-format"; sourceTree = "<group>"; };
 		9F8314C526F7281800ECCBE0 /* BUILD.gn */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = BUILD.gn; sourceTree = "<group>"; };
 		9F8314C626F7281800ECCBE0 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		9F8314C726F7299100ECCBE0 /* allof.h.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = allof.h.h; sourceTree = "<group>"; };
+		9F8314C826F72AB200ECCBE0 /* allof.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = allof.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1701,6 +1701,7 @@
 		9F830FE726F727F200ECCBE0 /* libutils */ = {
 			isa = PBXGroup;
 			children = (
+				9F8314C826F72AB200ECCBE0 /* allof.h */,
 				9F830FE826F727F200ECCBE0 /* traits.h */,
 				9F830FE926F727F200ECCBE0 /* BUILD.gn */,
 				9F830FEA26F727F200ECCBE0 /* assertions.h */,
@@ -1714,7 +1715,6 @@
 				9F830FF226F727F200ECCBE0 /* concepts.h */,
 				9F830FF326F727F200ECCBE0 /* platform.h */,
 				9F830FF426F727F200ECCBE0 /* forward.h */,
-				9F8314C726F7299100ECCBE0 /* allof.h.h */,
 			);
 			path = libutils;
 			sourceTree = "<group>";
