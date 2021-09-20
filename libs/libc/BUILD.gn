@@ -35,7 +35,7 @@ pranaOS_static_library("libc") {
     "sysdeps/pranaos/generic/shared_buffer.c",
     "sysdeps/unix/$target_cpu/crt0.s",
     "sysdeps/unix/generic/ioctl.c",
-    "termios/termios.c",
+    "termios/termios.cpp",
     "time/strftime.cpp",
     "time/time.c",
 
