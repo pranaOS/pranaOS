@@ -21,7 +21,7 @@ pranaOS_static_library("libcxx") {
     "../libc/stdio/printf.c",
     "../libc/stdio/scanf.c",
     "../libc/stdio/stdio.c",
-    "../libc/stdlib/exit.c",
+    "../libc/stdlib/exit.cpp",
     "../libc/stdlib/pts.c",
     "../libc/stdlib/tools.c",
     "../libc/string/string.c",
