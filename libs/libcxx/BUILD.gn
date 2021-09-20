@@ -23,7 +23,7 @@ pranaOS_static_library("libcxx") {
     "../libc/stdio/stdio.c",
     "../libc/stdlib/exit.cpp",
     "../libc/stdlib/pts.c",
-    "../libc/stdlib/tools.c",
+    "../libc/stdlib/tools.cpp",
     "../libc/string/string.c",
     "../libc/sysdeps/pranaos/generic/shared_buffer.cpp",
     "../libc/sysdeps/unix/$target_cpu/crt0.s",

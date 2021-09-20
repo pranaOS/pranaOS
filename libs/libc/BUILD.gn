@@ -30,7 +30,7 @@ pranaOS_static_library("libc") {
     "stdio/stdio.c",
     "stdlib/exit.cpp",
     "stdlib/pts.c",
-    "stdlib/tools.c",
+    "stdlib/tools.cpp",
     "string/string.c",
     "sysdeps/pranaos/generic/shared_buffer.cpp",
     "sysdeps/unix/$target_cpu/crt0.s",
