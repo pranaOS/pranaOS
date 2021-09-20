@@ -32,7 +32,7 @@ pranaOS_static_library("libc") {
     "stdlib/pts.c",
     "stdlib/tools.c",
     "string/string.c",
-    "sysdeps/pranaos/generic/shared_buffer.c",
+    "sysdeps/pranaos/generic/shared_buffer.cpp",
     "sysdeps/unix/$target_cpu/crt0.s",
     "sysdeps/unix/generic/ioctl.c",
     "termios/termios.cpp",
