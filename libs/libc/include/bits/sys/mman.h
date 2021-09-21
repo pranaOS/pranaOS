@@ -1,6 +1,12 @@
-#ifndef _LIBC_BITS_SYS_MMAN_H
-#define _LIBC_BITS_SYS_MMAN_H
+/*
+ * Copyright (c) 2021, Krisna Pranav
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+*/
 
+#pragma once
+
+// includes
 #include <stddef.h>
 #include <sys/types.h>
 
@@ -23,6 +29,5 @@ struct mmap_params {
     int fd;
     off_t offset;
 };
-typedef struct mmap_params mmap_params_t;
 
-#endif // _LIBC_BITS_SYS_MMAN_H
+typedef struct mmap_params mmap_params_t;
