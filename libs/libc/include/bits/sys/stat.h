@@ -1,6 +1,12 @@
-#ifndef _LIBC_BITS_SYS_STAT_H
-#define _LIBC_BITS_SYS_STAT_H
+/*
+ * Copyright (c) 2021, Krisna Pranav
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+*/
 
+#pragma once
+
+// includes
 #include <sys/types.h>
 
 /* MODES */
@@ -45,6 +51,5 @@ struct fstat {
     uint32_t mtime; /* time of last modification */
     uint32_t ctime; /* time of last status change */
 };
-typedef struct fstat fstat_t;
 
-#endif // _LIBC_BITS_SYS_STAT_H
+typedef struct fstat fstat_t;
