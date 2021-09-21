@@ -1,6 +1,12 @@
-#ifndef _LIBC_STDDEF_H
-#define _LIBC_STDDEF_H
+/*
+ * Copyright (c) 2021, Krisna Pranav
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+*/
 
+#pragma once
+
+// includes
 #include <sys/cdefs.h>
 #include <sys/types.h>
 
@@ -25,5 +31,3 @@ typedef int ptrdiff_t;
 #define NULL ((void*)0)
 
 __END_DECLS
-
-#endif // _LIBC_STDDEF_H
