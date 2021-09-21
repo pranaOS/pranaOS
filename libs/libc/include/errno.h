@@ -1,10 +1,8 @@
-#ifndef _LIBC_ERRNO_H
-#define _LIBC_ERRNO_H
+#pragma once
 
+// includes
 #include <bits/errno.h>
 
 extern int errno;
 
 #define set_errno(x) (errno = x)
-
-#endif
