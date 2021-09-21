@@ -1,5 +1,7 @@
-#ifndef _LIBC_BITS_ERRNO_H
-#define _LIBC_BITS_ERRNO_H
+// #ifndef _LIBC_BITS_ERRNO_H
+// #define _LIBC_BITS_ERRNO_H
+
+#pragma once
 
 // clang-format off
 #define EPERM            1      /* Operation not permitted */
@@ -132,4 +134,4 @@
 #define EBADARCH        125     /* Bad arch */
 // clang-format on
 
-#endif // _LIBC_BITS_ERRNO_H
+// #endif // _LIBC_BITS_ERRNO_H
