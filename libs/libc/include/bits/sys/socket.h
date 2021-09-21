@@ -1,5 +1,10 @@
-#ifndef _LIBC_BITS_SYS_SOCKET_H
-#define _LIBC_BITS_SYS_SOCKET_H
+/*
+ * Copyright (c) 2021, Krisna Pranav
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+*/
+
+#pragma once
 
 enum SOCK_DOMAINS {
     PF_LOCAL,
@@ -22,5 +27,3 @@ enum SOCK_TYPES {
     SOCK_RDM,
     SOCK_PACKET,
 };
-
-#endif // _LIBC_BITS_SYS_SOCKET_H
