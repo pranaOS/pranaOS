@@ -1,5 +1,10 @@
-#ifndef _LIBC_SYS_SHARED_BUFFER_H
-#define _LIBC_SYS_SHARED_BUFFER_H
+/*
+ * Copyright (c) 2021, Krisna Pranav
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+*/
+
+#pragma once
 
 #include <bits/sys/select.h>
 #include <bits/time.h>
@@ -14,5 +19,3 @@ int shared_buffer_get(int id, uint8_t** buffer);
 int shared_buffer_free(int id);
 
 __END_DECLS
-
-#endif // _LIBC_SYS_SHARED_BUFFER_H

@@ -1,5 +1,10 @@
-#ifndef _LIBC_SYS_MMAN_H
-#define _LIBC_SYS_MMAN_H
+/*
+ * Copyright (c) 2021, Krisna Pranav
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+*/
+
+#pragma once
 
 #include <bits/sys/mman.h>
 #include <stddef.h>
@@ -12,5 +17,3 @@ void* mmap(void* addr, size_t length, int prot, int flags, int fd, off_t offset)
 int munmap(void* addr, size_t length);
 
 __END_DECLS
-
-#endif // _LIBC_SYS_MMAN_H

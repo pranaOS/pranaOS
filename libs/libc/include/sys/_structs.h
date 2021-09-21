@@ -1,4 +1,7 @@
-#ifndef _LIBC_SYS__STRUCTS_H
-#define _LIBC_SYS__STRUCTS_H
+/*
+ * Copyright (c) 2021, Krisna Pranav
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+*/
 
-#endif
+#pragma once
