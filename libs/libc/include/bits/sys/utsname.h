@@ -1,5 +1,10 @@
-#ifndef _LIBC_BITS_SYS_UTSNAME_H
-#define _LIBC_BITS_SYS_UTSNAME_H
+/*
+ * Copyright (c) 2021, Krisna Pranav
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+*/
+
+#pragma once
 
 #define UTSNAME_ENTRY_LEN 65
 
@@ -10,6 +15,5 @@ struct utsname {
     char version[UTSNAME_ENTRY_LEN];
     char machine[UTSNAME_ENTRY_LEN];
 };
-typedef struct utsname utsname_t;
 
-#endif // _LIBC_BITS_SYS_UTSNAME_H
+typedef struct utsname utsname_t;
