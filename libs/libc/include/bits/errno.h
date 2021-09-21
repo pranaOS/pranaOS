@@ -1,5 +1,8 @@
-// #ifndef _LIBC_BITS_ERRNO_H
-// #define _LIBC_BITS_ERRNO_H
+/*
+ * Copyright (c) 2021, Krisna Pranav
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+*/
 
 #pragma once
 
@@ -133,5 +136,3 @@
 #define EMEDIUMTYPE     124     /* Wrong medium type */
 #define EBADARCH        125     /* Bad arch */
 // clang-format on
-
-// #endif // _LIBC_BITS_ERRNO_H
