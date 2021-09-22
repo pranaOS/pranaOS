@@ -1,5 +1,4 @@
-#ifndef _KERNEL_LIBKERN_LIBKERN_H
-#define _KERNEL_LIBKERN_LIBKERN_H
+#pragma once
 
 #include <libkern/kassert.h>
 #include <libkern/mem.h>
@@ -33,5 +32,3 @@ bool ptrarr_validate_len(const char** s, uint32_t len);
        __typeof__ (b) _b = (b); \
      _a < _b ? _a : _b; })
 #endif /* min */
-
-#endif // _KERNEL_LIBKERN_LIBKERN_H
