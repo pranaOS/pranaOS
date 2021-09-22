@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#ifndef _KERNEL_IO_TTY_TTY_H
-#define _KERNEL_IO_TTY_TTY_H
+#pragma once
 
 #include <algo/sync_ringbuffer.h>
 #include <drivers/x86/keyboard.h>
@@ -88,5 +87,3 @@ extern tty_entry_t ttys[TTY_MAX_COUNT];
 
 tty_entry_t* tty_new();
 void tty_eat_key(key_t key);
-
-#endif // _KERNEL_IO_TTY_TTY_H
