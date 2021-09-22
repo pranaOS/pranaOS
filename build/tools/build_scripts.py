@@ -1,9 +1,13 @@
+#!/usr/bin/env python3
+
+# imports
 import sys
 import os
+
 QEMU_PATH_VAR = "qemu_exec"
 QEMU_PATH_ENV_VAR = ""
 QEMU_SMP_VAR = "qemu_smp"
-QEMU_SMP_ENV_VAR = "PRANAOS_QEMU_SMP"
+QEMU_SMP_ENV_VAR = "ONEOS_QEMU_SMP"
 QEMU_STD_PATH = ""
 qemu_run_cmd = ""
 arch = sys.argv[1]
@@ -11,14 +15,14 @@ base = sys.argv[2]
 out = sys.argv[3]
 
 if arch == "x86":
-    QEMU_PATH_ENV_VAR = "PRANAOS_QEMU_X86"
+    QEMU_PATH_ENV_VAR = "ONEOS_QEMU_X86"
     QEMU_STD_PATH = "qemu-system-i386"
-    qemu_run_cmd = "${2} -m 256M --drive file={1}/os-image.bin,format=raw,index=0,if=floppy -device piix3-ide,id=ide -drive id=disk,format=raw,file={1}/pranaos.img,if=none -device ide-hd,drive=disk,bus=ide.0 -serial mon:stdio -rtc base=utc -vga std".format(
+    qemu_run_cmd = "${2} -m 256M --drive file={1}/os-image.bin,format=raw,index=0,if=floppy -device piix3-ide,id=ide -drive id=disk,format=raw,file={1}/one.img,if=none -device ide-hd,drive=disk,bus=ide.0 -serial mon:stdio -rtc base=utc -vga std".format(
         base, out, QEMU_PATH_VAR)
 if arch == "aarch32":
-    QEMU_PATH_ENV_VAR = "PRANAOS_QEMU_ARM"
+    QEMU_PATH_ENV_VAR = "ONEOS_QEMU_ARM"
     QEMU_STD_PATH = "qemu-system-arm"
-    qemu_run_cmd = "${2} -M vexpress-a15 -cpu cortex-a15 -kernel {1}/base/boot/kernel.bin  -smp ${3} -serial mon:stdio -vga std -drive id=disk,if=sd,format=raw,file={1}/pranaos.img".format(
+    qemu_run_cmd = "${2} -M vexpress-a15 -cpu cortex-a15 -kernel {1}/base/boot/kernel.bin  -smp ${3} -serial mon:stdio -vga std -drive id=disk,if=sd,format=raw,file={1}/one.img".format(
         base, out, QEMU_PATH_VAR, QEMU_SMP_VAR)
 
 if base[-1] == '/':
@@ -36,9 +40,9 @@ NC='\\033[0m'
 ERROR="${{RED}}[ERROR]${{NC}}"
 SUCCESS="${{GREEN}}[SUCCESS]${{NC}}"
 
-sudo mkdir -p {0}/mountpoint
-sudo fuse-ext2 {1}/pranaos.img {0}/mountpoint -o rw+
-if [ $? -ne 0 ]; then echo -e "${{ERROR}} Can't mount pranaos.img to {0}/mountpoint" && exit 1; fi
+mkdir -p {0}/mountpoint
+sudo fuse-ext2 {1}/one.img {0}/mountpoint -o rw+
+if [ $? -ne 0 ]; then echo -e "${{ERROR}} Can't mount one.img to {0}/mountpoint" && exit 1; fi
 sudo mkdir -p {0}/mountpoint/boot
 sudo mkdir -p {0}/mountpoint/proc
 sudo mkdir -p {0}/mountpoint/dev
@@ -56,6 +60,9 @@ sudo chmod -R 755 {0}/mountpoint/System
 sudo chmod -R 755 {0}/mountpoint/Applications
 
 sudo chown -R 0 {0}/mountpoint/home/root
+sudo chown -R 0 {0}/mountpoint/bin/sudo
+sudo chmod 4755 {0}/mountpoint/bin/sudo
+
 sudo chown -R 10 {0}/mountpoint/home/user
 
 sudo umount {0}/mountpoint
