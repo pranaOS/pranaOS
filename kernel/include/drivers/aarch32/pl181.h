@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#ifndef _KERNEL_DRIVERS_AARCH32_PL181_H
-#define _KERNEL_DRIVERS_AARCH32_PL181_H
+#pragma once
 
 #include <drivers/driver_manager.h>
 #include <libkern/mask.h>
@@ -77,5 +76,3 @@ struct sd_card {
 typedef struct sd_card sd_card_t;
 
 void pl181_install();
-
-#endif //_KERNEL_DRIVERS_AARCH32_PL181_H

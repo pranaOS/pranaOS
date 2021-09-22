@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#ifndef _KERNEL_DRIVERS_DRIVER_MANAGER_H
-#define _KERNEL_DRIVERS_DRIVER_MANAGER_H
+#pragma once
 
 #include <libkern/types.h>
 
@@ -196,5 +195,3 @@ static inline void* dm_function_handler(device_t* dev, int function_id)
 {
     return dm_driver_function(dev->driver_id, function_id);
 }
-
-#endif // _KERNEL_DRIVERS_DRIVER_MANAGER_H
