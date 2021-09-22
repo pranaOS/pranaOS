@@ -113,6 +113,7 @@ group("userland") {
     "//userland/utilities/rm:rm",
     "//userland/utilities/rmdir:rmdir",
     "//userland/utilities/touch:touch",
+    "//userland/utilities/sudo:sudo",
     "//userland/utilities/uname:uname",
     "//userland/utilities/whoami:whoami",
   ]
