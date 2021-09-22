@@ -1,5 +1,4 @@
-#ifndef _KERNEL_MEM_PMM_H
-#define _KERNEL_MEM_PMM_H
+#pragma once
 
 #include <libkern/types.h>
 #include <platform/generic/pmm/settings.h>
@@ -39,5 +38,3 @@ uint32_t pmm_get_max_blocks();
 uint32_t pmm_get_used_blocks();
 uint32_t pmm_get_free_blocks();
 uint32_t pmm_get_block_size();
-
-#endif // _KERNEL_MEM_PMM_H
