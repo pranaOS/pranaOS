@@ -272,6 +272,7 @@
 		9F2809EC26FB192800120000 /* stage2.c in Sources */ = {isa = PBXBuildFile; fileRef = 9F28089426FB192700120000 /* stage2.c */; };
 		9F2809ED26FB192800120000 /* vm.c in Sources */ = {isa = PBXBuildFile; fileRef = 9F28089726FB192700120000 /* vm.c */; };
 		9F280A2626FB1A3200120000 /* typedef.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F280A2526FB1A3200120000 /* typedef.m */; };
+		9F280A2A26FB1B6900120000 /* define.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F280A2926FB1B6900120000 /* define.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -1187,6 +1188,7 @@
 		9F280A2326FB193D00120000 /* request_a_feature.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = request_a_feature.md; sourceTree = "<group>"; };
 		9F280A2426FB193D00120000 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		9F280A2526FB1A3200120000 /* typedef.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = typedef.m; sourceTree = "<group>"; };
+		9F280A2926FB1B6900120000 /* define.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = define.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -3184,6 +3186,7 @@
 				9F28078326FB192600120000 /* main.m */,
 				9F28078426FB192600120000 /* oop.m */,
 				9F280A2526FB1A3200120000 /* typedef.m */,
+				9F280A2926FB1B6900120000 /* define.m */,
 			);
 			path = testobjc;
 			sourceTree = "<group>";
@@ -4555,6 +4558,7 @@
 				9F2809E526FB192800120000 /* boot.s in Sources */,
 				9F28093326FB192700120000 /* pl111.c in Sources */,
 				9F28095C26FB192700120000 /* pde.c in Sources */,
+				9F280A2A26FB1B6900120000 /* define.m in Sources */,
 				9F28094F26FB192700120000 /* handlers.c in Sources */,
 				9F2809C526FB192700120000 /* main.cpp in Sources */,
 				9F2809AB26FB192700120000 /* main.c in Sources */,
