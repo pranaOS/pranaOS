@@ -12,8 +12,7 @@
  * Need to be fixed.
  */
 
-#ifndef _KERNEL_ALGO_DYNAMIC_ARRAY_H
-#define _KERNEL_ALGO_DYNAMIC_ARRAY_H
+#pragma once
 
 #include <libkern/types.h>
 
@@ -33,5 +32,3 @@ void* dynamic_array_get(dynamic_array_t* v, int index);
 int dynamic_array_push(dynamic_array_t* v, void* element);
 int dynamic_array_pop(dynamic_array_t* v);
 int dynamic_array_clear(dynamic_array_t* v);
-
-#endif // _KERNEL_ALGO_DYNAMIC_ARRAY_H
