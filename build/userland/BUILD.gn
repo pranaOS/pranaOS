@@ -107,6 +107,7 @@ group("userland") {
     "//userland/utilities/cat:cat",
     "//userland/utilities/calculator:calculator",
     "//userland/utilities/kill:kill",
+    "//userland/utilities/osfetch:osfetch",
     "//userland/utilities/ls:ls",
     "//userland/utilities/mkdir:mkdir",
     "//userland/utilities/rm:rm",

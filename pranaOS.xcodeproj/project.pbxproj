@@ -273,6 +273,7 @@
 		9F2809ED26FB192800120000 /* vm.c in Sources */ = {isa = PBXBuildFile; fileRef = 9F28089726FB192700120000 /* vm.c */; };
 		9F280A2626FB1A3200120000 /* typedef.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F280A2526FB1A3200120000 /* typedef.m */; };
 		9F280A2A26FB1B6900120000 /* define.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F280A2926FB1B6900120000 /* define.m */; };
+		9F280A3026FB1D0E00120000 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F280A2E26FB1D0E00120000 /* main.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -1189,6 +1190,9 @@
 		9F280A2426FB193D00120000 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		9F280A2526FB1A3200120000 /* typedef.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = typedef.m; sourceTree = "<group>"; };
 		9F280A2926FB1B6900120000 /* define.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = define.m; sourceTree = "<group>"; };
+		9F280A2D26FB1D0E00120000 /* BUILD.gn */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = BUILD.gn; sourceTree = "<group>"; };
+		9F280A2E26FB1D0E00120000 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		9F280A2F26FB1D0E00120000 /* .info.mk */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .info.mk; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -3234,6 +3238,7 @@
 		9F28079526FB192600120000 /* utilities */ = {
 			isa = PBXGroup;
 			children = (
+				9F280A2C26FB1CC800120000 /* osfetch */,
 				9F28079626FB192600120000 /* cat */,
 				9F28079A26FB192600120000 /* calculator */,
 				9F28079F26FB192600120000 /* whoami */,
@@ -4283,6 +4288,16 @@
 			path = ISSUE_TEMPLATE;
 			sourceTree = "<group>";
 		};
+		9F280A2C26FB1CC800120000 /* osfetch */ = {
+			isa = PBXGroup;
+			children = (
+				9F280A2F26FB1D0E00120000 /* .info.mk */,
+				9F280A2D26FB1D0E00120000 /* BUILD.gn */,
+				9F280A2E26FB1D0E00120000 /* main.cpp */,
+			);
+			path = osfetch;
+			sourceTree = "<group>";
+		};
 		9F8EA84026E5FB5F00BE32EE = {
 			isa = PBXGroup;
 			children = (
@@ -4533,6 +4548,7 @@
 				9F28090026FB192700120000 /* slab.c in Sources */,
 				9F28098826FB192700120000 /* dump.c in Sources */,
 				9F28090426FB192700120000 /* setjmp.s in Sources */,
+				9F280A3026FB1D0E00120000 /* main.cpp in Sources */,
 				9F28090A26FB192700120000 /* socket.c in Sources */,
 				9F2808E926FB192700120000 /* ctype.c in Sources */,
 				9F28098326FB192700120000 /* dentry.c in Sources */,
