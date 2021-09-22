@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#ifndef _KERNEL_FS_VFS_H
-#define _KERNEL_FS_VFS_H
+#pragma once
 
 #include <algo/sync_ringbuffer.h>
 #include <drivers/driver_manager.h>
@@ -233,5 +232,3 @@ struct thread;
 int vfs_perm_to_read(dentry_t* dentry, struct thread* t);
 int vfs_perm_to_write(dentry_t* dentry, struct thread* t);
 int vfs_perm_to_execute(dentry_t* dentry, struct thread* t);
-
-#endif // _KERNEL_FS_VFS_H

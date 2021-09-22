@@ -5,8 +5,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
 */
 
-#ifndef _KERNEL_FS_VFS_H
-#define _KERNEL_FS_VFS_H
+#pragma once
 
 // includes
 #include <algo/sync_ringbuffer.h>
@@ -236,5 +235,3 @@ int vfs_umount(dentry_t* mountpoint);
 struct proc;
 struct proc_zone* vfs_mmap(file_descriptor_t* fd, mmap_params_t* params);
 int vfs_munmap(struct proc* p, struct proc_zone*);
-
-#endif 
