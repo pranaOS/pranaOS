@@ -1,5 +1,4 @@
-#ifndef _KERNEL_LIBKERN_BITS_SYS_SOCKET_H
-#define _KERNEL_LIBKERN_BITS_SYS_SOCKET_H
+#pragma once
 
 enum SOCK_DOMAINS {
     PF_LOCAL,
@@ -22,5 +21,3 @@ enum SOCK_TYPES {
     SOCK_RDM,
     SOCK_PACKET,
 };
-
-#endif // _KERNEL_LIBKERN_BITS_SYS_SOCKET_H
