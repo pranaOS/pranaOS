@@ -8,6 +8,7 @@ pranaOS_executable("testobjc") {
     "ifelse.m",
     "oop.m",
     "typedef.m",
+    "define.m",
    ]
   configs = [ "//build/userland:userland_flags" ]
   deplibs = [
