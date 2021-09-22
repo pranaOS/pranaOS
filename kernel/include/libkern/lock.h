@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#ifndef _KERNEL_LIBKERN_LOCK_H
-#define _KERNEL_LIBKERN_LOCK_H
+#pragma once
 
 #include <libkern/c_attrs.h>
 #include <libkern/kassert.h>
@@ -49,5 +48,3 @@ static ALWAYS_INLINE void lock_release(lock_t* lock)
     log("release lock %s %s:%d ", #x, __FILE__, __LINE__); \
     lock_release(x);
 #endif
-
-#endif // _KERNEL_LIBKERN_LOCK_H

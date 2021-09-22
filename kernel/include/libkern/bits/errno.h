@@ -1,5 +1,4 @@
-#ifndef _KERNEL_LIBKERN_BITS_ERRNO_H
-#define _KERNEL_LIBKERN_BITS_ERRNO_H
+#pragma once
 
 // clang-format off
 #define EPERM            1      /* Operation not permitted */
@@ -131,5 +130,3 @@
 #define EMEDIUMTYPE     124     /* Wrong medium type */
 #define EBADARCH        125     /* Bad arch */
 // clang-format on
-
-#endif // _KERNEL_LIBKERN_BITS_ERRNO_H

@@ -1,5 +1,4 @@
-#ifndef _KERNEL_LIBKERN_BITS_TIME_H
-#define _KERNEL_LIBKERN_BITS_TIME_H
+#pragma once
 
 #include <libkern/types.h>
 
@@ -47,5 +46,3 @@ typedef enum {
     CLOCK_PROCESS_CPUTIME_ID,
     CLOCK_THREAD_CPUTIME_ID,
 } clockid_t;
-
-#endif // _KERNEL_LIBKERN_BITS_TIME_H

@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#ifndef _KERNEL_LIBKERN_PLATFORM_H
-#define _KERNEL_LIBKERN_PLATFORM_H
+#pragma once
 
 #include <libkern/c_attrs.h>
 
@@ -22,5 +21,3 @@ ALWAYS_INLINE int ctz32(unsigned int val)
     return 0;
 #endif
 }
-
-#endif // _KERNEL_LIBKERN_PLATFORM_H
