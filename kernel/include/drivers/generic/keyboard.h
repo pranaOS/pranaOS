@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#ifndef _KERNEL_DRIVERS_GENERIC_KEYBOARD_H
-#define _KERNEL_DRIVERS_GENERIC_KEYBOARD_H
+#pragma once
 
 #include <libkern/types.h>
 
@@ -188,5 +187,3 @@ typedef struct kbd_packet kbd_packet_t;
 int generic_keyboard_create_devfs();
 void generic_keyboard_init();
 void generic_emit_key_set1(uint32_t scancode);
-
-#endif //_KERNEL_DRIVERS_GENERIC_KEYBOARD_H
