@@ -1,7 +1,7 @@
 #pragma once
 
 #define OSTYPE "pranaOS"
-#define OSRELEASE "2.0.0-dev"
+#define OSRELEASE "leopard"
 #define VERSION_MAJOR 1
 #define VERSION_MINOR 0
 #define VERSION_REVISION 0
