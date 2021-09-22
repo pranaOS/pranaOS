@@ -1,5 +1,4 @@
-#ifndef _LIBC_STDIO__INTERNAL_H
-#define _LIBC_STDIO__INTERNAL_H
+#pragma once
 
 #include <stdbool.h>
 #include <stddef.h>
@@ -13,5 +12,3 @@ typedef int (*_getch_callback)(void* callback_params);
 typedef int (*_putch_callback)(char ch, char* buf_base, size_t* written, void* callback_params);
 
 __END_DECLS
-
-#endif // _LIBC_STDIO__INTERNAL_H
