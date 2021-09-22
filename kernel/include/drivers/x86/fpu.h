@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#ifndef _KERNEL_DRIVERS_X86_FPU_H
-#define _KERNEL_DRIVERS_X86_FPU_H
+#pragma once
 
 #include <libkern/types.h>
 #include <platform/x86/registers.h>
@@ -47,5 +46,3 @@ static inline void fpu_make_unavail()
     uint32_t cr0 = read_cr0() | (1 << 3);
     write_cr0(cr0);
 }
-
-#endif //_KERNEL_DRIVERS_X86_FPU_H

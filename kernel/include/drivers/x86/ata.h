@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#ifndef _KERNEL_DRIVERS_X86_ATA_H
-#define _KERNEL_DRIVERS_X86_ATA_H
+#pragma once
 
 #include <drivers/driver_manager.h>
 #include <drivers/x86/display.h>
@@ -43,5 +42,3 @@ void ata_add_new_device(device_t* t_new_device);
 void ata_install();
 void ata_init(ata_t* ata, uint32_t port, bool is_master);
 bool ata_indentify(ata_t* ata);
-
-#endif //_KERNEL_DRIVERS_X86_ATA_H
