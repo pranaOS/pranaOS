@@ -1,5 +1,4 @@
-#ifndef _KERNEL_LIBKERN_BITS_SYS_MMAN_H
-#define _KERNEL_LIBKERN_BITS_SYS_MMAN_H
+#pragma once
 
 #include <libkern/types.h>
 
@@ -23,5 +22,3 @@ struct mmap_params {
     off_t offset;
 };
 typedef struct mmap_params mmap_params_t;
-
-#endif // _KERNEL_LIBKERN_BITS_SYS_MMAN_H
