@@ -1,5 +1,4 @@
-#ifndef _LIBC_BITS_SYS_IOCTLS_H
-#define _LIBC_BITS_SYS_IOCTLS_H
+#pragma once
 
 /* TTY */
 #define TIOCGPGRP 0x0101
@@ -13,5 +12,3 @@
 #define BGA_SWAP_BUFFERS 0x0101
 #define BGA_GET_HEIGHT 0x0102
 #define BGA_GET_WIDTH 0x0103
-
-#endif // _LIBC_BITS_SYS_IOCTLS_H

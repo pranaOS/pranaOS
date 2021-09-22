@@ -1,5 +1,4 @@
-#ifndef _LIBC_SYSDEP_H
-#define _LIBC_SYSDEP_H
+#pragma once
 
 #include <bits/syscalls.h>
 #include <errno.h>
@@ -49,5 +48,3 @@ static inline int _syscall_impl(sysid_t sysid, int p1, int p2, int p3, int p4, i
     } while (0);
 
 __END_DECLS
-
-#endif // _LIBC_SYSDEP_H

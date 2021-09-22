@@ -4,12 +4,8 @@
  * SPDX-License-Identifier: BSD-2-Clause
 */
 
-//#ifndef _LIBC_UNISTD_H
-//#define _LIBC_UNISTD_H
-
 #pragma once
 
-// includes
 #include <fcntl.h>
 #include <stddef.h>
 #include <sys/cdefs.h>
@@ -42,5 +38,3 @@ char* getlogin();
 int nice(int inc);
 
 __END_DECLS
-
-//#endif
