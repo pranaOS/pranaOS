@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#ifndef _KERNEL_TASKING_TASKING_H
-#define _KERNEL_TASKING_TASKING_H
+#pragma once
 
 #include <drivers/generic/fpu.h>
 #include <fs/vfs.h>
@@ -73,5 +72,3 @@ int signal_rem_pending(thread_t* thread, int signo);
 
 int signal_restore_thread_after_handling_signal(thread_t* thread);
 int signal_dispatch_pending(thread_t* thread);
-
-#endif // _KERNEL_TASKING_TASKING_H

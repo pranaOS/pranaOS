@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#ifndef _KERNEL_TASKING_SIGNAL_H
-#define _KERNEL_TASKING_SIGNAL_H
+#pragma once
 
 #include <libkern/types.h>
 
@@ -19,5 +18,3 @@ enum SIGNAL_ACTION {
     SIGINT,
 
 };
-
-#endif // _KERNEL_TASKING_SIGNAL_H
