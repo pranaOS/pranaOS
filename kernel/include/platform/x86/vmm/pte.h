@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#ifndef _KERNEL_PLATFORM_X86_VMM_PTE_H
-#define _KERNEL_PLATFORM_X86_VMM_PTE_H
+#pragma once
 
 #include <libkern/types.h>
 
@@ -46,5 +45,3 @@ bool page_desc_is_cow(page_desc_t pte);
 uint32_t page_desc_get_frame(page_desc_t pte);
 uint32_t page_desc_get_settings(page_desc_t pte);
 uint32_t page_desc_get_settings_ignore_cow(page_desc_t pte);
-
-#endif //_KERNEL_PLATFORM_X86_VMM_PTE_H
