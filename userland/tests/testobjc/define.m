@@ -9,4 +9,12 @@
 #include <libobjc/helpers.h>
 #include <stdio.h>
 
-#define HELLO 1
+#define TRUE 1
+#define FALSE 0
+
+int main() {
+    printf("Value of True: %d\n", TRUE);
+    printf("Value of False: %d\n", FALSE);
+    
+    return 0;
+}
