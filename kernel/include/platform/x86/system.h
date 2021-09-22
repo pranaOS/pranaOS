@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#ifndef _KERNEL_PLATFORM_X86_SYSTEM_H
-#define _KERNEL_PLATFORM_X86_SYSTEM_H
+#pragma once
 
 #include <libkern/c_attrs.h>
 #include <libkern/types.h>
@@ -89,5 +88,3 @@ inline static int system_cpu_id()
 {
     return 0;
 }
-
-#endif /* _KERNEL_PLATFORM_X86_SYSTEM_H */
