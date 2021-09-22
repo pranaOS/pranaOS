@@ -1,5 +1,4 @@
-#ifndef _BOOT_X86_STAGE2_MEM_VM_H
-#define _BOOT_X86_STAGE2_MEM_VM_H
+#pragma once
 
 #include "../types.h"
 #include "pde.h"
@@ -24,5 +23,3 @@ typedef struct pdirectory {
 } pdirectory_t;
 
 int vm_setup();
-
-#endif // _BOOT_X86_STAGE2_MEM_VM_H
