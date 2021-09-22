@@ -3,4 +3,5 @@
 - note: not directly used in this project just an inspiration
 
 - [macOS](https://github.com/apple/darwin-xnu) APPLE PUBLIC SOURCE LICENSE
-- [serenityOS](https://github.com/serenity/SerenityOS) BSD 2-Clause
+- [serenityOS](https://github.com/SerenityOS/serenity) BSD 2-Clause
+- [linux](https://github.com/torvalds/linux) GPL-2.0
