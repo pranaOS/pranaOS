@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#ifndef _KERNEL_PLATFORM_X86_TASKING_TRAPFRAME_H
-#define _KERNEL_PLATFORM_X86_TASKING_TRAPFRAME_H
+#pragma once
 
 #include <libkern/c_attrs.h>
 #include <libkern/types.h>
@@ -127,5 +126,3 @@ static inline void tf_setup_as_kernel_thread(trapframe_t* tf)
     tf->ss = tf->ds;
     tf->eflags = FL_IF;
 }
-
-#endif // _KERNEL_PLATFORM_X86_TASKING_TRAPFRAME_H
