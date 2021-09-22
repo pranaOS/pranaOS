@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#ifndef _KERNEL_PLATFORM_AARCH32_VMM_PF_TYPES_H
-#define _KERNEL_PLATFORM_AARCH32_VMM_PF_TYPES_H
+#pragma once
 
 #include <libkern/types.h>
 
@@ -48,5 +47,3 @@ static inline int _vmm_is_page_permission_fault(uint32_t info)
 {
     return ((info & 0b1111) == 0b1111);
 }
-
-#endif //_KERNEL_PLATFORM_AARCH32_VMM_PF_TYPES_H

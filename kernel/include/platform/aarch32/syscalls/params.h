@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#ifndef _KERNEL_PLATFORM_AARCH32_SYSCALLS_PARAMS_H
-#define _KERNEL_PLATFORM_AARCH32_SYSCALLS_PARAMS_H
+#pragma once
 
 #include <platform/aarch32/tasking/trapframe.h>
 
@@ -19,5 +18,3 @@
 #define return_with_val(val) \
     (return_val = val);      \
     return
-
-#endif // _KERNEL_PLATFORM_AARCH32_SYSCALLS_PARAMS_H

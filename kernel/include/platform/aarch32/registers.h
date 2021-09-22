@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#ifndef _KERNEL_PLATFORM_AARCH32_REGISTERS_H
-#define _KERNEL_PLATFORM_AARCH32_REGISTERS_H
+#pragma once
 
 #include <libkern/types.h>
 #include <platform/aarch32/system.h>
@@ -126,5 +125,3 @@ static inline uint32_t read_cpu_id_register()
                  :);
     return res;
 }
-
-#endif /* _KERNEL_PLATFORM_AARCH32_REGISTERS_H */
