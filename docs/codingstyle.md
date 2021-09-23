@@ -37,3 +37,41 @@ public:
     }
 };
 ```
+
+### namespace:
+
+- right:
+```c++
+namespace myNamespace {
+}
+```
+
+### calling namespace:
+
+- wrong:
+```c++
+
+#include <iostream>
+
+using namespace std;
+
+int main()
+{
+    cout << "hello world";
+    return 0;
+}
+
+```
+
+- right:
+```c++
+
+#include <iostream>
+
+int main()
+{
+    std::cout << "hello world";
+    return 0;
+}
+
+```
