@@ -17,12 +17,12 @@ out = sys.argv[3]
 if arch == "x86":
     QEMU_PATH_ENV_VAR = "ONEOS_QEMU_X86"
     QEMU_STD_PATH = "qemu-system-i386"
-    qemu_run_cmd = "${2} -m 256M --drive file={1}/os-image.bin,format=raw,index=0,if=floppy -device piix3-ide,id=ide -drive id=disk,format=raw,file={1}/one.img,if=none -device ide-hd,drive=disk,bus=ide.0 -serial mon:stdio -rtc base=utc -vga std".format(
+    qemu_run_cmd = "${2} -m 256M --drive file={1}/os-image.bin,format=raw,index=0,if=floppy -device piix3-ide,id=ide -drive id=disk,format=raw,file={1}/pranaos.img,if=none -device ide-hd,drive=disk,bus=ide.0 -serial mon:stdio -rtc base=utc -vga std".format(
         base, out, QEMU_PATH_VAR)
 if arch == "aarch32":
     QEMU_PATH_ENV_VAR = "ONEOS_QEMU_ARM"
     QEMU_STD_PATH = "qemu-system-arm"
-    qemu_run_cmd = "${2} -M vexpress-a15 -cpu cortex-a15 -kernel {1}/base/boot/kernel.bin  -smp ${3} -serial mon:stdio -vga std -drive id=disk,if=sd,format=raw,file={1}/one.img".format(
+    qemu_run_cmd = "${2} -M vexpress-a15 -cpu cortex-a15 -kernel {1}/base/boot/kernel.bin  -smp ${3} -serial mon:stdio -vga std -drive id=disk,if=sd,format=raw,file={1}/pranaos.img".format(
         base, out, QEMU_PATH_VAR, QEMU_SMP_VAR)
 
 if base[-1] == '/':
@@ -41,8 +41,8 @@ ERROR="${{RED}}[ERROR]${{NC}}"
 SUCCESS="${{GREEN}}[SUCCESS]${{NC}}"
 
 mkdir -p {0}/mountpoint
-sudo fuse-ext2 {1}/one.img {0}/mountpoint -o rw+
-if [ $? -ne 0 ]; then echo -e "${{ERROR}} Can't mount one.img to {0}/mountpoint" && exit 1; fi
+sudo fuse-ext2 {1}/pranaos.img {0}/mountpoint -o rw+
+if [ $? -ne 0 ]; then echo -e "${{ERROR}} Can't mount pranaos.img to {0}/mountpoint" && exit 1; fi
 sudo mkdir -p {0}/mountpoint/boot
 sudo mkdir -p {0}/mountpoint/proc
 sudo mkdir -p {0}/mountpoint/dev
