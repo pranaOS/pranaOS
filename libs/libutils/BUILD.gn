@@ -19,6 +19,7 @@ pranaOS_static_library("libutils") {
       "hashfunctions.h",
       "iterator.h",
       "kmalloc.h",
+      "simd.h",
       "concepts.h",      
       "numericlimits.h",
       "forward.h",
