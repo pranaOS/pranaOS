@@ -14,28 +14,28 @@
 #include <string.h>
 #include <unistd.h>
 
-#define _IO_MAGIC 0xFBAD0000 /* Magic number */
+#define _IO_MAGIC 0xFBAD0000 
 #define _IO_MAGIC_MASK 0xFFFF0000
-#define _IO_USER_BUF 0x0001 /* Don't deallocate buffer on close. */
+#define _IO_USER_BUF 0x0001 
 #define _IO_UNBUFFERED 0x0002
-#define _IO_NO_READS 0x0004 /* Reading not allowed.  */
-#define _IO_NO_WRITES 0x0008 /* Writing not allowed.  */
+#define _IO_NO_READS 0x0004 
+#define _IO_NO_WRITES 0x0008 
 #define _IO_EOF_SEEN 0x0010
 #define _IO_ERR_SEEN 0x0020
-#define _IO_DELETE_DONT_CLOSE 0x0040 /* Don't call close(_fileno) on close.  */
-#define _IO_LINKED 0x0080 /* In the list of all open files.  */
+#define _IO_DELETE_DONT_CLOSE 0x0040 
+#define _IO_LINKED 0x0080 
 #define _IO_IN_BACKUP 0x0100
 #define _IO_LINE_BUF 0x0200
-#define _IO_TIED_PUT_GET 0x0400 /* Put and get pointer move in unison.  */
+#define _IO_TIED_PUT_GET 0x0400 
 #define _IO_CURRENTLY_PUTTING 0x0800
 #define _IO_IS_APPENDING 0x1000
 #define _IO_IS_FILEBUF 0x2000
-/* 0x4000  No longer used, reserved for compat.  */
+
 #define _IO_USER_LOCK 0x8000
 
 struct __fbuf {
     char* base;
-    char* ptr; /* current pointer */
+    char* ptr; 
     size_t size;
 };
 
@@ -47,12 +47,12 @@ struct __rwbuf {
 };
 
 struct __file {
-    int _flags; /* flags, below; this FILE is free if 0 */
-    int _file; /* fileno, if Unix descriptor, else -1 */
-    size_t _r; /* read space left */
-    size_t _w; /* write space left */
-    __rwbuf_t _bf; /* rw buffer */
-    int _ungotc; /* ungot char. If spot is empty, it equals to UNGOTC_EMPTY */
+    int _flags; 
+    int _file; 
+    size_t _r; 
+    size_t _w; 
+    __rwbuf_t _bf;
+    int _ungotc; 
 };
 
 static FILE _stdstreams[3];
@@ -60,13 +60,11 @@ FILE* stdin = &_stdstreams[0];
 FILE* stdout = &_stdstreams[1];
 FILE* stderr = &_stdstreams[2];
 
-/* Static functions */
 static inline int _can_read(FILE* file);
 static inline int _can_write(FILE* file);
 static inline int _can_use_buffer(FILE* file);
 static int _parse_mode(const char* mode, mode_t* flags);
 
-/* Buffer */
 static inline int _free_buf(FILE* stream);
 static size_t _do_system_write(const void* ptr, size_t size, FILE* stream);
 static int _resize_buf(FILE* stream, size_t size);
@@ -74,19 +72,15 @@ static ssize_t _flush_wbuf(FILE* stream);
 static void _split_rwbuf(FILE* stream);
 static int _resize_buf(FILE* stream, size_t size);
 
-/* Stream */
 static int _init_stream(FILE* file);
 static int _init_file_with_fd(FILE* file, int fd);
 static int _open_file(FILE* file, const char* path, const char* mode);
 static FILE* _fopen_internal(const char* path, const char* mode);
 
-/* Read/write */
 static size_t _do_system_read(char* ptr, size_t size, FILE* stream);
 static size_t _do_system_write(const void* ptr, size_t size, FILE* stream);
 static size_t _fread_internal(char* ptr, size_t size, FILE* stream);
 static size_t _fwrite_internal(const void* ptr, size_t size, FILE* stream);
-
-/* Public functions */
 
 FILE* fopen(const char* path, const char* mode)
 {
@@ -100,7 +94,6 @@ int fclose(FILE* stream)
 {
     int res;
 
-    /* Flush & close the stream, and then free any allocated memory. */
     fflush(stream);
     res = close(stream->_file);
 
@@ -135,8 +128,6 @@ size_t fwrite(const void* ptr, size_t size, size_t count, FILE* stream)
 
     return _fwrite_internal(ptr, size * count, stream);
 }
-
-/* TODO: Implement fseek */
 
 int fputc(int c, FILE* stream)
 {
@@ -224,7 +215,6 @@ char* fgets(char* s, int size, FILE* stream)
         return NULL;
     }
 
-    /* We need to flush the stdout and stderr streams before reading. */
     fflush(stdout);
     fflush(stderr);
 
@@ -242,6 +232,11 @@ char* fgets(char* s, int size, FILE* stream)
     return s;
 }
 
+char* gets(char* str)
+{
+    return fgets(str, 4096, stdout);
+}
+
 int setvbuf(FILE* stream, char* buf, int mode, size_t size)
 {
     if (!stream) {
@@ -254,7 +249,6 @@ int setvbuf(FILE* stream, char* buf, int mode, size_t size)
         return -1;
     }
 
-    /* Clear the buffer type flags and reset it. */
 
     stream->_flags &= ~(int)(_IO_UNBUFFERED | _IO_LINE_BUF);
     if (mode & _IOLBF)
@@ -376,8 +370,6 @@ static inline int _can_use_buffer(FILE* file)
     return (file->_flags & _IO_UNBUFFERED) == 0;
 }
 
-/* Because this checks the first and second character only, the possible
-   combinations are: r, w, a, r+ and w+. */
 static int _parse_mode(const char* mode, mode_t* flags)
 {
     int has_plus, len;
@@ -402,8 +394,6 @@ static int _parse_mode(const char* mode, mode_t* flags)
         *flags = O_APPEND | O_CREAT;
         return 0;
 
-        /* TODO: Add binary mode when the rest will support such option. */
-
     default:
         return -1;
     }
@@ -411,11 +401,8 @@ static int _parse_mode(const char* mode, mode_t* flags)
     return -1;
 }
 
-/* Buffer */
-
 static inline int _free_buf(FILE* stream)
 {
-    /* Don't free the buffer if the user provided one with setvbuf. */
     if (stream->_flags & _IO_USER_BUF)
         return 0;
 
@@ -432,7 +419,6 @@ static void _split_rwbuf(FILE* stream)
     rsize = ((stream->_bf.size + 1) / 2) & (size_t)~0x03;
     wsize = (stream->_bf.size - rsize) & (size_t)~0x03;
 
-    /* TODO: Base on stream flags. */
     stream->_bf.rbuf.base = stream->_bf.base;
     stream->_bf.rbuf.ptr = stream->_bf.rbuf.base;
     stream->_bf.rbuf.size = rsize;
@@ -480,8 +466,6 @@ static ssize_t _flush_wbuf(FILE* stream)
     stream->_bf.wbuf.ptr = stream->_bf.wbuf.base;
     return (ssize_t)write;
 }
-
-/* Stream */
 
 static int _init_stream(FILE* file)
 {
@@ -531,8 +515,6 @@ static FILE* _fopen_internal(const char* path, const char* mode)
     return file;
 }
 
-/* Read */
-
 static size_t _do_system_read(char* ptr, size_t size, FILE* stream)
 {
     ssize_t read_size = read(stream->_file, ptr, size);
@@ -566,7 +548,6 @@ static size_t _fread_internal(char* ptr, size_t size, FILE* stream)
 
     total_size = 0;
 
-    /* If the ungot char buffer is not empty, push it onto the buffer first. */
     if (stream->_ungotc != UNGOTC_EMPTY) {
         ptr[0] = (char)stream->_ungotc;
         ptr++;
@@ -574,8 +555,7 @@ static size_t _fread_internal(char* ptr, size_t size, FILE* stream)
         total_size++;
         stream->_ungotc = UNGOTC_EMPTY;
     }
-
-    /* First read any bytes still sitting in the read buffer. */
+ 
     if (stream->_r) {
         read_from_buf = min(stream->_r, size);
         memcpy(ptr, stream->_bf.rbuf.ptr, read_from_buf);
@@ -586,7 +566,6 @@ static size_t _fread_internal(char* ptr, size_t size, FILE* stream)
         total_size += read_from_buf;
     }
 
-    /* Read the remaining bytes that were not stored in the read buffer. */
     while (size > 0) {
         stream->_bf.rbuf.ptr = stream->_bf.rbuf.base;
         stream->_r = _do_system_read(
