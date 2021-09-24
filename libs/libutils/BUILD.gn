@@ -6,6 +6,7 @@ pranaOS_static_library("libutils") {
       "anyof.h",
       "assertions.h",
       "atomic.h",
+      "binarysearch.h",
       "badge.h",
       "bytebuffer.h",
       "checked.h",
