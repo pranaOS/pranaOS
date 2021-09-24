@@ -56,6 +56,7 @@ int getchar();
 int ungetc(int c, FILE* stream);
 
 char* fgets(char* str, int size, FILE* stream);
+char* gets(char* str);
 
 int feof(FILE* stream);
 
