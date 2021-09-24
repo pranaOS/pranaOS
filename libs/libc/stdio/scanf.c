@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021, Krisna Pranav
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+*/
+
+// includes
 #include "_internal.h"
 #include <ctype.h>
 #include <errno.h>
@@ -62,7 +69,6 @@ static int _scanf_internal(const char* format, _lookupch_callback lookupch, _get
             p++;
         }
         if (*p == '%' && *(p + 1)) {
-            // Reading arguments
         parse_args:
             p++;
             switch (*p) {
@@ -103,6 +109,16 @@ static int _scanf_internal(const char* format, _lookupch_callback lookupch, _get
                     passed += read;
                 }
                 break;
+            case 's': {
+                int rv = 0;
+                char* value = va_arg(arg, char*);
+                while (!isspace(lookupch(callback_params))) {
+                    char ch = getch(callback_params);
+                    value[rv++] = ch;
+                    passed++;
+                }
+                break;
+            }
             }
             p++;
         } else {
