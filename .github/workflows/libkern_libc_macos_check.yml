@@ -14,4 +14,4 @@ jobs:
 
       - name: libkern & libc macos compact
         shell: bash
-        run: find libs/libc kernel/include/libkern
+        run: find libs/libc kernel/include/libkern libs/libutils
