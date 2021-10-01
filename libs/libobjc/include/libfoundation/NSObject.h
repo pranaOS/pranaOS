@@ -12,6 +12,10 @@
     Class isa;
 }
 
+@interface NSLog {
+    printf();
+}
+
 + (id)init;
 + (id)new;
 + (id)alloc;
