@@ -1,5 +1,5 @@
 set(LIBC_SOURCES
-        "limits.h",
+    "limits.h",
     "bits/stdint.h",
     "__libc__.h",
     "ctype/ctype.c",
@@ -39,4 +39,4 @@ set(LIBC_SOURCES
     "init/_init.c",
 )
 
-file(GLOB AK_SOURCES CONFIGURE_DEPENDS "../libutils/*.cpp")
+file(GLOB LIBC_SOURCES CONFIGURE_DEPENDS "../libutils/*.cpp")
