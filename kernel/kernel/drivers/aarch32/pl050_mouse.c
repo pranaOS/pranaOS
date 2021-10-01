@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
+// includes
 #include <algo/ringbuffer.h>
 #include <drivers/aarch32/pl050.h>
 #include <drivers/generic/mouse.h>
@@ -16,9 +17,6 @@
 #include <mem/vmm/zoner.h>
 #include <platform/aarch32/interrupts.h>
 #include <tasking/tasking.h>
-
-// #define DEBUG_PL050
-// #define MOUSE_DRIVER_DEBUG
 
 static ringbuffer_t mouse_buffer;
 static zone_t mapped_zone;
@@ -57,7 +55,7 @@ static void pl050_mouse_recieve_notification(uint32_t msg, uint32_t param)
         file_ops_t fops = { 0 };
         fops.can_read = _mouse_can_read;
         fops.read = _mouse_read;
-        devfs_inode_t* res = devfs_register(mp, MKDEV(10, 1), "mouse", 5, 0, &fops);
+        devfs_inode_t* res = devfs_register(mp, MKDEV(10, 1), "mouse", 5, 0500, &fops);
 
         dentry_put(mp);
     }
