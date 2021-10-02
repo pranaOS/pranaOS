@@ -36,6 +36,9 @@ A unix operating system written from scratch in c / c++
 
 - thank you jetbrains for sponsoring pranaOS
 
+## Mirror:
+- [gitlab](https://gitlab.com/krish_pranav/pranaos)
+
 ### Some Sources Took From Other Projects:
 - [license](https://github.com/pranaOS/pranaOS/blob/master/docs/otherprojectslicense.md)
 
