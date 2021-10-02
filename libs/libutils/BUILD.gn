@@ -27,6 +27,7 @@ pranaOS_static_library("libutils") {
       "numericlimits.h",
       "forward.h",
       "types.h",
+      "optional.h",
       "platform.h",
       "iterationdecision.h",
       "stdextras.h",
