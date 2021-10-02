@@ -5,3 +5,13 @@
 */
 
 #pragma once
+
+#include <libutils/result.h>
+
+namespace Utils {
+
+class GenericLexer {
+
+};
+
+}
