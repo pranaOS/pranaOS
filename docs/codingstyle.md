@@ -1,11 +1,9 @@
-### pranaOS Coding Style
+# pranaOS Coding Style
 
-- coding style:
+### Headers:
+Use `#pragma` once instead of `#define` and `#ifdef` for header guards.
 
-### Header:
-- header should be like this
-
-- wrong:
+###### Wrong:
 ```c++
 #ifndef YOUR_HEADER_H
 #define YOUR_HEADER_H
@@ -23,7 +21,7 @@ public:
 #endif
 ```
 
-- right:
+###### Right:
 ```c++
 #pragma once 
 
@@ -38,17 +36,17 @@ public:
 };
 ```
 
-### namespace:
+### Defining Namespaces:
 
-- right:
+###### Right:
 ```c++
 namespace myNamespace {
 }
 ```
 
-### calling namespace:
+### Calling Namespaces:
 
-- wrong:
+###### Wrong:
 ```c++
 
 #include <iostream>
@@ -63,7 +61,7 @@ int main()
 
 ```
 
-- right:
+###### Right:
 ```c++
 
 #include <iostream>
