@@ -3,11 +3,10 @@
 # imports
 import sys
 import os
-
 QEMU_PATH_VAR = "qemu_exec"
 QEMU_PATH_ENV_VAR = ""
 QEMU_SMP_VAR = "qemu_smp"
-QEMU_SMP_ENV_VAR = "ONEOS_QEMU_SMP"
+QEMU_SMP_ENV_VAR = "PRANAOS_QEMU_SMP"
 QEMU_STD_PATH = ""
 qemu_run_cmd = ""
 arch = sys.argv[1]
@@ -15,12 +14,12 @@ base = sys.argv[2]
 out = sys.argv[3]
 
 if arch == "x86":
-    QEMU_PATH_ENV_VAR = "ONEOS_QEMU_X86"
+    QEMU_PATH_ENV_VAR = "PRANAOS_QEMU_X86"
     QEMU_STD_PATH = "qemu-system-i386"
     qemu_run_cmd = "${2} -m 256M --drive file={1}/os-image.bin,format=raw,index=0,if=floppy -device piix3-ide,id=ide -drive id=disk,format=raw,file={1}/pranaos.img,if=none -device ide-hd,drive=disk,bus=ide.0 -serial mon:stdio -rtc base=utc -vga std".format(
         base, out, QEMU_PATH_VAR)
 if arch == "aarch32":
-    QEMU_PATH_ENV_VAR = "ONEOS_QEMU_ARM"
+    QEMU_PATH_ENV_VAR = "PRANAOS_QEMU_ARM"
     QEMU_STD_PATH = "qemu-system-arm"
     qemu_run_cmd = "${2} -M vexpress-a15 -cpu cortex-a15 -kernel {1}/base/boot/kernel.bin  -smp ${3} -serial mon:stdio -vga std -drive id=disk,if=sd,format=raw,file={1}/pranaos.img".format(
         base, out, QEMU_PATH_VAR, QEMU_SMP_VAR)
@@ -49,22 +48,6 @@ sudo mkdir -p {0}/mountpoint/dev
 sudo mkdir -p {0}/mountpoint/tmp
 sudo cp -r {0}/base/* {0}/mountpoint/
 sudo cp -r {1}/base/* {0}/mountpoint/
-
-sudo chmod -R 644 {0}/mountpoint/proc
-sudo chmod -R 644 {0}/mountpoint/dev
-sudo chmod -R 666 {0}/mountpoint/tmp
-sudo chmod -R 755 {0}/mountpoint/bin
-sudo chmod -R 700 {0}/mountpoint/home
-sudo chmod 777 {0}/mountpoint/home
-sudo chmod -R 755 {0}/mountpoint/System
-sudo chmod -R 755 {0}/mountpoint/Applications
-
-sudo chown -R 0 {0}/mountpoint/home/root
-sudo chown -R 0 {0}/mountpoint/bin/sudo
-sudo chmod 4755 {0}/mountpoint/bin/sudo
-
-sudo chown -R 10 {0}/mountpoint/home/user
-
 sudo umount {0}/mountpoint
 if [ $? -ne 0 ]; then echo -e "${{ERROR}} Can't umount {0}/mountpoint" && exit 1; fi
 echo -e "${{SUCCESS}} Sync"
