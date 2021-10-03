@@ -52,7 +52,7 @@ NAMEOFAPP_INSTALL_PATH = bin/
 
 - BUILD.gn:
 ```
-"userland/utilities/nameofapp:nameofapp",
+"//userland/utilities/nameofapp:nameofapp",
 "//userland/utilities/touch:touch",
 "//userland/utilities/sudo:sudo",
 "//userland/utilities/uname:uname",
