@@ -1,34 +1,60 @@
 # Contibution guide:
 
-- the thing your going to contribute should be usefull
+- building [pranaOS](https://github.com/pranaOS/pranaOS/blob/master/docs/build.md)
 
-## Create Application For pranaOS:
+## Creating cli app:
 
-- to make you work easier:
-
-- note: clone this repo inside pranaOS
-```
-git clone https://github.com/pranaOS/pranaOSdeveloper
-cd pranaOSdeveloper
-```
-
-- create a command line application to pranaOS
-
-```
-cd pranaOSdeveloper/create-commandline-pranaOS
-python3 createcommandline.py
+- creating files
+```bash
+mkdir nameofyourapp
+cd nameofyourapp
+touch main.cpp; touch BUILD.gn; touch .info.mk
 ```
 
-# Pull Request:
+- code:
 
-- pull request header:
-```
-library or application: what changes you've done
+- main.cpp
+```c++
+#include <stdio.h>
+
+int main()
+{
+    /* code */
+
+    return 0;
+}
+
 ```
 
-- pull request:
+- BUILD.gn
 ```
-what you done:
-what it does:
-author: 
+import("//build/userland/TEMPLATE.gni")
+
+pranaOS_executable("nameofyourapp") {
+  install_path = "bin/"
+  sources = [ "main.cpp" ]
+  configs = [ "//build/userland:userland_flags" ]
+  deplibs = [ "libc" ]
+}
+```
+
+- .info.mk
+
+```
+APPS += NAMEOFAPP
+
+NAMEOFAPP_NAME = nameofapp
+NAMEOFAPP_LIBS = c
+NAMEOFAPP_INSTALL_PATH = bin/
+```
+
+- after doing this steps navigate to build/userland
+
+- BUILD.gn:
+```
+"userland/utilities/nameofapp:nameofapp",
+"//userland/utilities/touch:touch",
+"//userland/utilities/sudo:sudo",
+"//userland/utilities/uname:uname",
+"//userland/utilities/whoami:whoami",
 ```
