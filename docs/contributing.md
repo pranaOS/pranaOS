@@ -58,3 +58,11 @@ NAMEOFAPP_INSTALL_PATH = bin/
 "//userland/utilities/uname:uname",
 "//userland/utilities/whoami:whoami",
 ```
+
+- to check that you have done everything correctly:
+```
+cd out/
+./all.sh
+```
+
+- open an terminal in pranaOS and type the cli app you have created
