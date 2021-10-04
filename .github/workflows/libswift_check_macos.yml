@@ -1,4 +1,4 @@
-name: swift
+name: libswift_check_macos
 
 on: [push, pull_request]
 
@@ -21,3 +21,9 @@ jobs:
         run: |
           brew install swift
           swift --version
+      
+      - name: test 
+        run: |
+          swiftc libs/libc/include/swift/hello.swift -o hello 
+          ./hello
+
