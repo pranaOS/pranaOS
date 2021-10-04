@@ -1,0 +1,23 @@
+name: swift
+
+on: [push, pull_request]
+
+env:
+  BUILD_TYPE: Release
+
+jobs:
+  bench:
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.8"
+          architecture: "x64"
+
+      - name: Pouring Deps
+        run: |
+          brew install swift
+          swift --version
