@@ -21,6 +21,7 @@ pranaOS_static_library("libutils") {
       "result.h",
       "try.h",
       "traits.h",
+      "typelist.h",
       "span.h",
       "typedtransfer.h",
       "hashfunctions.h",
