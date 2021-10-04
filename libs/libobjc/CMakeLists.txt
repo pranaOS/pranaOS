@@ -13,4 +13,4 @@ set(LIBOBJC_SOURCES
     "src/init.m",
 )
 
-file(GLOB LIOBJC_SOURCES CONFIGURE_DEPENDS "../libutils/*.cpp")
+file(GLOB LIOBJC_SOURCES CONFIGURE_DEPENDS "include/")
