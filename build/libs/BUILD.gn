@@ -76,6 +76,13 @@ config("libobjcc_flags") {
   asmflags = lib_asm_flags
 }
 
+config("libswift_flags") {
+  cflags = lib_c_flags
+  cflags_objcc = lib_objcc_flags
+  cflags_cc = lib_cc_flags
+  asmflags = lib_asm_flags
+}
+
 config("libcxx_flags") {
   cflags = lib_c_flags
   asmflags = lib_asm_flags
@@ -97,5 +104,9 @@ group("libs") {
 
   if (objc_support) {
     deps += [ "//libs/libobjc:libobjc" ]
+  }
+
+  if (objc_support) {
+    deps += [ "//libs/libswift:libswift" ]
   }
 }
