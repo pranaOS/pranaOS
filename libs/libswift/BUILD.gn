@@ -1,0 +1,20 @@
+import("//build/libs/TEMPLATE.gni")
+
+pranaOS_static_library("libswift") {
+  sources = [
+  ]
+
+  include_dirs = [
+    "include/",
+    "//libs/libc/include/",
+    "//libs/",
+  ]
+
+  deplibs = [ "libc" ]
+
+  configs = [ "//build/libs:libswift_flags" ]
+
+  if (host == "llvm" && target_cpu != "aarch32") {
+    cflags = [ "-flto" ]
+  }
+}
