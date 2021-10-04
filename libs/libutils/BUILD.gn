@@ -8,6 +8,7 @@ pranaOS_static_library("libutils") {
       "assertions.h",
       "atomic.h",
       "binarysearch.h",
+      "bitcast.h",
       "badge.h",
       "bytebuffer.h",
       "bytereader.h",
