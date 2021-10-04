@@ -1,5 +1,5 @@
 # pranaOS
-A unix operating system written from scratch in c / c++
+A unix operating system written from scratch in c / c++ targeting x86 and arm
 
 [![forthebadge](https://forthebadge.com/images/badges/made-with-c.svg)](https://forthebadge.com)
 [![forthebadge](https://forthebadge.com/images/badges/made-with-c-plus-plus.svg)](https://forthebadge.com)
