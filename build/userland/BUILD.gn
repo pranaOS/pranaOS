@@ -128,5 +128,9 @@ group("userland") {
     if (objc_support) {
       deps += [ "//userland/tests/testobjc:testobjc" ]
     }
+
+    if (swift_support) {
+      deps += [ "//userland/tests/testswift:testswift" ]
+    }
   }
 }
