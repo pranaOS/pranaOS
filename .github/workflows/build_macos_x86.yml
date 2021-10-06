@@ -22,12 +22,7 @@ jobs:
         mv gn /usr/local/bin
         
     - name: Create Build Environment
-      run: ./build.sh
-
-    - name: Build
-      working-directory: ${{github.workspace}}/out
-      shell: bash
-      run: ninja
+      run: gn gen out --args='target_cpu="x86" host="gnu"'
 
     - name: Cleaning GNU Build Environment
       run: rm -rf out
