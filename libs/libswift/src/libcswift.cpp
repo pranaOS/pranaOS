@@ -26,3 +26,7 @@ ssize_t _swift_stdlib_write(int fd, const void *buf, size_t nbyte) {
 int _swift_stdlib_close(int fd) {
     return fd;
 }
+
+int _swift_stdlib_close(int fd, int buf) {
+    return fd, buf;
+}
