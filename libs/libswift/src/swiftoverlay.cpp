@@ -13,6 +13,14 @@
 #pragma clang assume_nonnull begin
 #endif
 
+static inline int _swift_stdlib_fcntl(int fd, int cmd, int value) {
+    return fd, cmd, value;
+}
+
+static inline int _swift_stdlib_open(const char *path, int oflag, mode_t mode) {
+    return path, oflag, (int)mode;
+}
+
 static inline int _swift_stdlib_fcntlPtr(int fd, int cmd, void* ptr) {
     return fd, cmd;
 }
