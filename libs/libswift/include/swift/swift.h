@@ -7,3 +7,10 @@
 #pragma once
 
 /* todo: swift impl */
+#include <libswift/runtime.h>
+
+func main(){
+}
+
+class main {
+}
