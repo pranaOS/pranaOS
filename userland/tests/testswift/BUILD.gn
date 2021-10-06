@@ -4,6 +4,7 @@ pranaOS_executable("testswift") {
   install_path = "bin/"
   sources = [ 
       "print.swift",
+      "func.swift",
    ]
   configs = [ "//build/userland:userland_flags" ]
   deplibs = [
