@@ -11,6 +11,23 @@
 bool EnableOverride;
 bool Ran;
 
+namespace {
+
+    template <typename T>
+    T getEmptyValue() {
+        return (T)0;
+    }
+
+}
+
+#define OVERRIDE(name, ret, attrs, ccAttrs, namespace, typedArgs)   \
+
+struct OverrideSection {
+    uintptr_t version;
+};
+
+#define OVERRIDE(name, ret, attrs)  \
+
 class CompatibilityOverrideRuntimeTest
 {
 public:
