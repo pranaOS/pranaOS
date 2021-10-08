@@ -9,15 +9,12 @@ A unix operating system written from scratch in c / c++ targeting x86 and arm
 - building pranaOS
 - view the [build instructions](https://github.com/pranaOS/pranaOS/blob/master/docs/build.md)
 
-
-## Future Plans Of pranaOS
-- view the future plans of [pranaos](https://github.com/pranaOS/pranaOS/blob/master/plans/pranaOSfutureplans.pdf)
-
 ## Libraries:
 - Runtime Support: libc, libcxx, libobjc, libswift
 - Functionality Support: libfoundation
 - UI Functionality Support: LibG, LibUI
 - [learn more](https://github.com/pranaOS/pranaOS/blob/master/docs/libraries.md)
+
 
 ## Contributing Docs:
 - pranaOS is an open source project so you can contribute to it instructions for contributing to pranaOS will be find below pr's are always welcome!!!! ;)
@@ -26,6 +23,9 @@ A unix operating system written from scratch in c / c++ targeting x86 and arm
 
 ## Have any issues???:
 - have any doubts or found any bugs create open a [issue](https://github.com/pranaOS/pranaOS/issues/new/choose)
+
+## Future Plans Of pranaOS
+- view the future plans of [pranaos](https://github.com/pranaOS/pranaOS/blob/master/plans/pranaOSfutureplans.pdf)
 
 ## Get In Touch:
 - Join our discord server: [pranaOS discord](https://discord.gg/XmpBTmy9Bz)
