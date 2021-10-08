@@ -6,24 +6,31 @@
 
 #pragma once
 
-#ifndef __pranaOS__
-#   ifdef KERNEL
-#       include <libutils/types.h>
-#   else
-#   include <libutils/types.h>
-#   include <stdarg.h>
+#ifdef __pranaOS__
+#    ifdef KERNEL
+#        include <libutils/types.h>
+#    else
+#        include <libutils/types.h>
+#        include <stdarg.h>
 
 extern "C" {
-
-void dbgputstr(const char*, size_t);
-
+    void dbgputstr(const char*, size_t);
+    int sprintf(char* buf, const char* fmt, ...) __attribute__((format(printf, 2, 3)));
+    int snprintf(char* buffer, size_t, const char* fmt, ...) __attribute__((format(printf, 3, 4)));
 }
-#   endif
+
+#    endif
 #else
-#   include <stdio.h>
+#    include <stdio.h>
 
 inline void dbgputstr(const char* characters, size_t length)
 {
     fwrite(characters, 1, length, stderr);
 }
+
 #endif
+template<size_t N>
+inline void dbgputstr(const char (&array)[N])
+{
+    return ::dbgputstr(array, N);
+}
