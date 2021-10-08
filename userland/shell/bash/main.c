@@ -123,7 +123,7 @@ void _cmd_processor()
 
 void _cmd_loop_start()
 {
-    write(1, "> ", 2);
+    write(1, "you@pranaOS:# ", 2);
 }
 
 void _cmd_loop_end()
