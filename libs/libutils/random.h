@@ -12,3 +12,7 @@
 #if defined(__pranaOS__)
 #   include <stdlib.h>
 #endif
+
+#if defined(__unix__)
+#   include <unistd.h>
+#endif
