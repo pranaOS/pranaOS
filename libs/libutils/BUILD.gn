@@ -18,6 +18,7 @@ pranaOS_static_library("libutils") {
       "genericlexer.h",
       "refcounted.h",
       "find.h",
+      "ptr32.h",
       "result.h",
       "try.h",
       "traits.h",
