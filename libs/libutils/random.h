@@ -16,3 +16,7 @@
 #if defined(__unix__)
 #   include <unistd.h>
 #endif
+
+#if defined(UTILS_OS_MACOS)
+#   include <sys/random.h>
+#endif
