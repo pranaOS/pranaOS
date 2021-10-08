@@ -2,7 +2,7 @@
 
 ## custom libraries of pranaOS
 
-- [libc]() - Standard C Library.
+- [libc](https://github.com/pranaOS/pranaOS/tree/master/libs/libc) - Standard C Library.
 - [libabi]() - Support Library For C Library.
 - [libcxx]() - Standard Library for C++, C++ 17 and above.
 - [libcxx-abi]() - Support Library For libcxx.
