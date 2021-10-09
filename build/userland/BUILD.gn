@@ -128,6 +128,5 @@ group("userland") {
     if (objc_support) {
       deps += [ "//userland/tests/testobjc:testobjc" ]
     }
-
   }
 }
