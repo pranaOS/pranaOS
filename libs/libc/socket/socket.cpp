@@ -30,7 +30,7 @@ int connect(int sockfd, const char* name, int len)
 }
 
 /* recive response */
-int response(int sockfd, const char* name, int len);
+int response(int sockfd, const char* name, int len)
 {
     int res = DO_SYSCALL_3(SYS_CONNECT, sockfd, name, len);
     RETURN_WITH_ERRNO(res, 0, -1);
