@@ -19,6 +19,12 @@ __BEGIN_DECLS
 #define EOF (-1)
 #define UNGOTC_EMPTY (-0x400)
 
+extern "C" {
+#define SEEK_SET 0
+#define SEEK_CUR 1
+#define SEEK_END
+}
+
 #define STDIN 0
 #define STDOUT 1
 #define STDERR 2
