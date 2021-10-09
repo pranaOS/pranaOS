@@ -6,7 +6,6 @@
 
 // includes
 #include <sys/socket.h>
-#include <socket.h>
 #include <sysdep.h>
 
 /* socket connection */
