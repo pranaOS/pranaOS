@@ -3,7 +3,7 @@ set(LIBC_SOURCES
     "bits/stdint.h",
     "__libc__.h",
     "ctype/ctype.c",
-    "dirent/dirent.c",
+    "dirent/dirent.cpp",
     "init/_lib.c",
     "malloc/malloc.c",
     "malloc/slab.c",
