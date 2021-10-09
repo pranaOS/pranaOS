@@ -36,7 +36,7 @@ set(LIBC_SOURCES
     "termios/termios.cpp",
     "time/strftime.cpp",
     "time/time.c",
-    "init/_init.c",
+    "init/_init.cpp",
 )
 
 file(GLOB LIBC_SOURCES CONFIGURE_DEPENDS "../libutils/*.cpp")
