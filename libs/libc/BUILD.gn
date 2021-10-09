@@ -41,7 +41,7 @@ pranaOS_static_library("libc") {
     "time/time.c",
 
     # private
-    "init/_init.cpp",
+    "init/_init.c",
   ]
 
   if (target_cpu == "aarch32") {
