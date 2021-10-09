@@ -14,7 +14,7 @@ pranaOS_static_library("libcxx") {
     "../libc/posix/system.cpp",
     "../libc/posix/tasking.cpp",
     "../libc/posix/time.cpp",
-    "../libc/pthread/pthread.c",
+    "../libc/pthread/pthread.cpp",
     "../libc/pwd/pwd.c",
     "../libc/pwd/shadow.c",
     "../libc/setjmp/$target_cpu/setjmp.s",

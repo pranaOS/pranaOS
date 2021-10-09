@@ -16,7 +16,7 @@ set(LIBC_SOURCES
     "posix/system.cpp",
     "posix/tasking.cpp",
     "posix/time.cpp",
-    "pthread/pthread.c",
+    "pthread/pthread.cpp",
     "pranaos/numberformatter.h",
     "pranaos/plugs.h",
     "pranaos/printf.h",
