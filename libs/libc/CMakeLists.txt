@@ -22,7 +22,7 @@ set(LIBC_SOURCES
     "pranaos/printf.h",
     "pranaos/time.h",
     "setjmp/$target_cpu/setjmp.s",
-    "socket/socket.c",
+    "socket/socket.cpp",
     "stdio/printf.c",
     "stdio/scanf.c",
     "stdio/stdio.c",

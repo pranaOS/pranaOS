@@ -18,7 +18,7 @@ pranaOS_static_library("libcxx") {
     "../libc/pwd/pwd.c",
     "../libc/pwd/shadow.c",
     "../libc/setjmp/$target_cpu/setjmp.s",
-    "../libc/socket/socket.c",
+    "../libc/socket/socket.cpp",
     "../libc/stdio/printf.c",
     "../libc/stdio/scanf.c",
     "../libc/stdio/stdio.c",
