@@ -131,6 +131,11 @@ long double nanl(const char*) NOEXCEPT;
 double nan(const char*) NOEXCEPT;
 float nanf(const char*) NOEXCEPT;
 
+/* positive difference */
+double fdim(double x, double y) NOEXCEPT;
+float fdimf(float x, float y) NOEXCEPT;
+long double fdiml(long double x, long double y) NOEXCEPT;
+
 /* floating point multiply and add */
 double fma(double x, double y, double z) NOEXCEPT;
 float fmaf(float x, float y, float z) NOEXCEPT;
