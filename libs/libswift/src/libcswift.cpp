@@ -1,14 +1,31 @@
 /*
+ * Copyright (c) 2018 Apple Inc. and the Swift project authors
  * Copyright (c) 2021, Krisna Pranav
  *
  * SPDX-License-Identifier: BSD-2-Clause
 */
 
-// includes
+/* includes */
 #include <Math.h>
 #include <stdio.h>
+#include <iostream>
 #include <sys/types.h>
 
+/* end of includes */
+
+/* defined some error code */
+
+#define ERROR 400
+#define PASS 100
+#define NOTFOUND 404
+
+/* end of defined values */
+
+/*
+ * FIXME: pass the defined values to int funcs to prevent errors.
+ */
+
+/* swift stdlib funcs */
 size_t _swift_stdlib_fwrite_stdout(const void *ptr,
                                                   size_t size,
                                                   size_t nitems) {
@@ -30,3 +47,14 @@ int _swift_stdlib_close(int fd) {
 int _swift_stdlib_close(int fd, int buf) {
     return fd, buf;
 }
+
+int _swift_stdlib_open(int fd, int buf) {
+    return fd, buf;
+}
+
+size_t _swift_stdlib_error(int fd, const void *buf) {
+    std::cout << ERROR << std::endl;
+    return fd, buf;
+}
+
+/* end of swift stdlib code */
