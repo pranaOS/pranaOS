@@ -114,5 +114,21 @@ typedef double double_t;
 /* Floating point operators */
 long double fabsl(long double) NOEXCEPT;
 double fabs(double) NOEXCEPT;
+float fabsf(float) NOEXCEPT;
+long double fmodl(long double, long double) NOEXCEPT;
+double fmod(double, double) NOEXCEPT;
+float fmodf(float, float) NOEXCEPT;
+long double fmaxl(long double, long double) NOEXCEPT;
+double fmax(double, double) NOEXCEPT;
+float fmaxf(float, float) NOEXCEPT;
+long double fminl(long double, long double) NOEXCEPT;
+double fmin(double, double) NOEXCEPT;
+float fminf(float, float) NOEXCEPT;
+long double remainderl(long double, long double) NOEXCEPT;
+double remainder(double, double) NOEXCEPT;
+float remainderf(float, float) NOEXCEPT;
+long double nanl(const char*) NOEXCEPT;
+double nan(const char*) NOEXCEPT;
+float nanf(const char*) NOEXCEPT;
 
 __END_DECLS
