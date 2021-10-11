@@ -1,8 +1,10 @@
 # system cache
 .DS_Store
 
-# ide cache
+# vscode cache
 .vscode/
+
+# jetbrains cache
 .idea/
 
 # output of the program
@@ -11,3 +13,6 @@ out/
 
 # pci ids 
 pci.ids.gz
+
+# cmake build
+cmake-build-debug/
