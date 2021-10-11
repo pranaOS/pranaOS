@@ -131,6 +131,29 @@ long double nanl(const char*) NOEXCEPT;
 double nan(const char*) NOEXCEPT;
 float nanf(const char*) NOEXCEPT;
 
+/* Exponential functions */
+long double expl(long double) NOEXCEPT;
+double exp(double) NOEXCEPT;
+float expf(float) NOEXCEPT;
+long double exp2l(long double) NOEXCEPT;
+double exp2(double) NOEXCEPT;
+float exp2f(float) NOEXCEPT;
+long double expm1l(long double) NOEXCEPT;
+double expm1(double) NOEXCEPT;
+float expm1f(float) NOEXCEPT;
+long double logl(long double) NOEXCEPT;
+double log(double) NOEXCEPT;
+float logf(float) NOEXCEPT;
+double log2(double) NOEXCEPT;
+float log2f(float) NOEXCEPT;
+long double log2l(long double) NOEXCEPT;
+long double log10l(long double) NOEXCEPT;
+double log10(double) NOEXCEPT;
+float log10f(float) NOEXCEPT;
+long double log1pl(long double) NOEXCEPT;
+double log1p(double) NOEXCEPT;
+float log1pf(float) NOEXCEPT;
+
 /* positive difference */
 double fdim(double x, double y) NOEXCEPT;
 float fdimf(float x, float y) NOEXCEPT;
