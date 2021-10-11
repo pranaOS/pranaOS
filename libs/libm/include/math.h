@@ -131,6 +131,11 @@ long double nanl(const char*) NOEXCEPT;
 double nan(const char*) NOEXCEPT;
 float nanf(const char*) NOEXCEPT;
 
+/* floating point multiply and add */
+double fma(double x, double y, double z) NOEXCEPT;
+float fmaf(float x, float y, float z) NOEXCEPT;
+long double fmal(long double x, long double y, long double z) NOEXCEPT;
+
 /* remainedr and part of quotient */
 double remquo(double x, double y, int* quo) NOEXCEPT;
 float remquof(float x, float y, int* quo) NOEXCEPT;
