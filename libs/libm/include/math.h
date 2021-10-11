@@ -131,4 +131,9 @@ long double nanl(const char*) NOEXCEPT;
 double nan(const char*) NOEXCEPT;
 float nanf(const char*) NOEXCEPT;
 
+/* remainedr and part of quotient */
+double remquo(double x, double y, int* quo) NOEXCEPT;
+float remquof(float x, float y, int* quo) NOEXCEPT;
+long double remquol(long double x, long double y, int* quo) NOEXCEPT;
+
 __END_DECLS
