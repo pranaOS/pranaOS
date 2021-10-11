@@ -1,26 +1,31 @@
+
+
 #pragma once
 
+// includes
 #include <sys/cdefs.h>
 
 __BEGIN_DECLS
 
-/* define RTLD */
-
+/* defined RTLD */
 #define RTLD_DEFAULT 0
 #define RTLD_LAZY 2
 #define RTLD_NOW 4
+#define RTLD_GLOBAL 8
+#define RTLD_LOCAL 16
 
+/* dl info structure */
 typedef struct __Dl_info {
-    const char* dli_fname;
-    void* dli_fbase;
-    const char* dli_sname;
-    void* dli_saddr;
+   const char* dli_fname;
+   void* dli_fbase;
+   const char* dli_sname;
+   void* dli_saddr;
 } Dl_info;
 
 int dlclose(void*);
 char* dlerror();
 void* dlopen(const char*, int);
 void* dlsym(void*, const char*);
-int dladdr(void*, Dl_info);
+int dladdr(void*, Dl_info*);
 
 __END_DECLS
