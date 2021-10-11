@@ -154,6 +154,20 @@ long double log1pl(long double) NOEXCEPT;
 double log1p(double) NOEXCEPT;
 float log1pf(float) NOEXCEPT;
 
+/* Power functions */
+long double powl(long double x, long double y) NOEXCEPT;
+double pow(double x, double y) NOEXCEPT;
+float powf(float x, float y) NOEXCEPT;
+long double sqrtl(long double) NOEXCEPT;
+double sqrt(double) NOEXCEPT;
+float sqrtf(float) NOEXCEPT;
+long double cbrtl(long double) NOEXCEPT;
+double cbrt(double) NOEXCEPT;
+float cbrtf(float) NOEXCEPT;
+long double hypotl(long double, long double) NOEXCEPT;
+double hypot(double, double) NOEXCEPT;
+float hypotf(float, float) NOEXCEPT;
+
 /* positive difference */
 double fdim(double x, double y) NOEXCEPT;
 float fdimf(float x, float y) NOEXCEPT;
