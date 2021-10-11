@@ -72,4 +72,31 @@ __BEGIN_DECLS
 #define M_SQRT2f32 1.41421356237309504880f
 #define M_SQRT1_2f32 0.70710678118654752440f
 
+#define FP_NAN 0
+#define FP_INFINITE 1
+#define FP_ZERO 2
+#define FP_SUBNORMAL 3
+#define FP_NORMAL 4
+#define fpclassify(x) __builtin_fpclassify(FP_NAN, FP_INFINITE, FP_ZERO, FP_SUBNORMAL, FP_ZERO, x)
+
+#define signbit(x) __builtin_signbit(x)
+#define isnan(x) __builtin_isnan(x)
+#define isinf(x) __builtin_isinf_sign(x)
+#define isfinite(x) __builtin_isfinite(x)
+#define isnormal(x) __builtin_isnormal(x)
+#define isgreater(x, y) __builtin_isgreater((x), (y))
+#define isgreaterequal(x, y) __builtin_isgreaterequal((x), (y))
+#define isless(x, y) __builtin_isless((x), (y))
+#define islessequal(x, y) __builtin_islessequal((x), (y))
+#define islessgreater(x, y) __builtin_islessgreater((x), (y))
+#define isunordered(x, y) __builtin_isunordered((x), (y))
+
+#define DOUBLE_MAX ((double)0b0111111111101111111111111111111111111111111111111111111111111111)
+#define DOUBLE_MIN ((double)0b0000000000010000000000000000000000000000000000000000000000000000)
+
+#define FP_ILOGB0 INT_MIN
+#define FP_ILOGNAN INT_MAX
+
+#define FLT_EVAL_METHOD __FLT_EVAL_METHOD__
+
 __END_DECLS
