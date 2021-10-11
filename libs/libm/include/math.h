@@ -99,4 +99,20 @@ __BEGIN_DECLS
 
 #define FLT_EVAL_METHOD __FLT_EVAL_METHOD__
 
+/* FLT EVAL METHOD */
+#if FLT_EVAL_METHOD == 0
+typedef float float_t;
+typedef double double_t;
+#elif FLT_EVAL_METHOD == 1
+typedef double float_t;
+typedef double double_t;
+#else
+typedef float float_t;
+typedef double double_t;
+#endif
+
+/* Floating point operators */
+long double fabsl(long double) NOEXCEPT;
+double fabs(double) NOEXCEPT;
+
 __END_DECLS
