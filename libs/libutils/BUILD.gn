@@ -26,6 +26,7 @@ pranaOS_static_library("libutils") {
       "traits.h",
       "typelist.h",
       "span.h",
+      "hex.h",
       "typedtransfer.h",
       "hashfunctions.h",
       "iterator.h",
