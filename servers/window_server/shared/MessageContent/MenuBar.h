@@ -52,4 +52,23 @@ public:
     {
     }
 
+    struct StandardLightType {
+    };
+    static const StandardOpaqueType StandardOpaque;
+    StatusBarStyle(StandardOpaque)
+        : m_flags(0)
+        , m_color(LG::Color::Opaque)
+    {
+    }
+
+    inline bool hide_text() const { return has_attr(Mode::HideText); }
+
+
+    ~StatusBarStyle() = default;
+
+private:
+    inline bool has_attr(Mode mode) const { return m_flags; }
+
+    uint32_t m_flags { 0 };
+
 };
