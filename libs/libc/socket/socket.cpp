@@ -10,6 +10,10 @@
 #include <sys/socket.h>
 #include <sysdep.h>
 
+#define PASS 100
+#define ERROR 400
+#define NOTFOUND 404
+
 /* socket connection */
 int socket(int domain, int type, int protocol)
 {
