@@ -32,6 +32,11 @@ struct SafeArea {
     static const int Right = 8;
 };
 
+struct Padding {
+    static const int System = 8;
+    static const int Title = 12;
+};
+
 class Window;
 
 class View : public Responder {
