@@ -4,18 +4,13 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
+// includes
 #include <fs/procfs/procfs.h>
 #include <fs/vfs.h>
 #include <libkern/bits/errno.h>
 #include <libkern/libkern.h>
 #include <tasking/tasking.h>
 
-/**
- * inode: xxxxPPPPPPPPPPBBBBBBBBBBBBBBBBBB 
- * x - level bits
- * P - pid bits
- * B - bits of files at this level
- */
 #define PROCFS_PID_LEVEL 2
 
 /* PID */
@@ -25,6 +20,9 @@ int procfs_pid_lookup(dentry_t* dir, const char* name, uint32_t len, dentry_t** 
 /* FILES */
 static bool procfs_pid_memstat_can_read(dentry_t* dentry, uint32_t start);
 static int procfs_pid_memstat_read(dentry_t* dentry, uint8_t* buf, uint32_t start, uint32_t len);
+
+static bool procfs_pid_exe_can_read(dentry_t* dentry, uint32_t start);
+static int procfs_pid_exe_read(dentry_t* dentry, uint8_t* buf, uint32_t start, uint32_t len);
 
 /**
  * DATA
@@ -45,15 +43,26 @@ const file_ops_t procfs_pid_stat_ops = {
     .read = procfs_pid_memstat_read,
 };
 
+const file_ops_t procfs_pid_exe_ops = {
+    .can_read = procfs_pid_exe_can_read,
+    .read = procfs_pid_exe_read,
+};
+
 static const procfs_files_t static_procfs_files[] = {
-    { .name = "memstat", .mode = 0, .ops = &procfs_pid_memstat_ops },
-    { .name = "stat", .mode = 0, .ops = &procfs_pid_stat_ops },
+    { .name = "memstat", .mode = 0444, .ops = &procfs_pid_memstat_ops },
+    { .name = "stat", .mode = 0444, .ops = &procfs_pid_stat_ops },
+    { .name = "exe", .mode = 0444, .ops = &procfs_pid_exe_ops },
 };
 #define PROCFS_STATIC_FILES_COUNT_AT_LEVEL (sizeof(static_procfs_files) / sizeof(procfs_files_t))
 
 /**
  * HELPERS
  */
+
+uint32_t procfs_pid_get_pid_from_inode_index(uint32_t inode_index)
+{
+    return (inode_index >> 18) & 0b1111111111;
+}
 
 static uint32_t procfs_pid_sfiles_get_inode_index(dentry_t* dir, int fileid)
 {
@@ -147,4 +156,30 @@ static int procfs_pid_memstat_read(dentry_t* dentry, uint8_t* buf, uint32_t star
     }
     memcpy(buf, "reading mem", 12);
     return 12;
+}
+
+static bool procfs_pid_exe_can_read(dentry_t* dentry, uint32_t start)
+{
+    return true;
+}
+
+static int procfs_pid_exe_read(dentry_t* dentry, uint8_t* buf, uint32_t start, uint32_t len)
+{
+    int pid = procfs_pid_get_pid_from_inode_index(dentry->inode_indx);
+    thread_t* th = thread_by_pid(pid);
+    if (!th) {
+        return -EFAULT;
+    }
+
+    int req_len = vfs_get_absolute_path(th->process->proc_file, NULL, 0);
+    if (len < req_len) {
+        return -EFAULT;
+    }
+
+    if (start == req_len) {
+        return 0;
+    }
+
+    req_len = vfs_get_absolute_path(th->process->proc_file, (char*)buf, len);
+    return req_len - 1;
 }
