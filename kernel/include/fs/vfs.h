@@ -64,6 +64,7 @@ struct dentry {
     uint32_t dev_indx;
     vfs_device_t* dev;
 
+    char* filename;
     struct dentry* parent;
     struct dentry* mountpoint;
     struct dentry* mounted_dentry;
@@ -162,6 +163,7 @@ typedef struct socket socket_t;
 void dentry_flusher();
 
 void dentry_set_parent(dentry_t* to, dentry_t* parent);
+void dentry_set_filename(dentry_t* to, char* filename);
 dentry_t* dentry_get(uint32_t dev_indx, uint32_t inode_indx);
 dentry_t* dentry_get_no_inode(uint32_t dev_indx, uint32_t inode_indx, int* newly_allocated);
 dentry_t* dentry_get_parent(dentry_t* dentry);
