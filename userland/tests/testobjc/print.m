@@ -4,15 +4,28 @@
  * SPDX-License-Identifier: BSD-2-Clause
 */
 
-// includes
+/* includes */
 #include <libfoundation/NSObject.h>
 #include <libobjc/helpers.h>
 #include <stdio.h>
 
-int main()
-{
-    // NSLog(@"hello world")
-    printf("hello world");
+/* my ns object implementation class */
+@implementation NSMyObject
+
+/* init function */
+- (instancetype) init {
+    self = [super init]
+    if (!self) {
+        return nil;
+    }
     
-    return 0;
+    return self;
 }
+
+/* void printing function */
+- (void) print {
+    printf("Hello, World!\n");
+    fflush(stdout);
+}
+
+@end
