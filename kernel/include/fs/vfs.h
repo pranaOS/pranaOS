@@ -223,6 +223,7 @@ int vfs_rmdir(dentry_t* dir);
 int vfs_getdents(file_descriptor_t* dir_fd, uint8_t* buf, uint32_t len);
 int vfs_fstat(file_descriptor_t* fd, fstat_t* stat);
 
+int vfs_get_absolute_path(dentry_t* dent, char* buf, int len);
 int vfs_mount(dentry_t* mountpoint, device_t* dev, uint32_t fs_indx);
 int vfs_umount(dentry_t* mountpoint);
 
