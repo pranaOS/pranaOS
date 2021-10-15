@@ -10,13 +10,15 @@
 #include <stdio.h>
 
 
-typedef struct About {
+typedef struct About 
+{
     NSString *author;
     NSString *language;
     NSString *operatingsystem
 } About;
 
-int main() {
+int main() 
+{
     About about;
     
     about.author = "Krisna Pranav";
