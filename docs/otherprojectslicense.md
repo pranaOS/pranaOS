@@ -5,4 +5,4 @@
 - [macOS](https://github.com/apple/darwin-xnu) APPLE PUBLIC SOURCE LICENSE
 - [serenityOS](https://github.com/SerenityOS/serenity) BSD 2-Clause
 - [linux](https://github.com/torvalds/linux) GPL-2.0
-- [opuntia](https://github.com/opuntiaOS-Project/opuntiaOS.git) BSD 2-Clause
+- [opuntiaOS](https://github.com/opuntiaOS-Project/opuntiaOS.git) BSD 2-Clause
