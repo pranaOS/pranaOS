@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021, Krisna Pranav
+ * Copyright (c) 2020, the SerenityOS developers.
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+ */
+
 
 #pragma once
 
@@ -32,6 +39,7 @@ public:
 protected:
     T* m_values { nullptr };
     size_t m_size { 0 };
+    size_t size { 0 };
 };
 
 template<>
