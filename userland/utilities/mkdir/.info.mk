@@ -1,5 +1,0 @@
-APPS += MKDIR
-
-MKDIR_NAME = mkdir
-MKDIR_LIBS = c
-MKDIR_INSTALL_PATH = bin/

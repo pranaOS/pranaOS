@@ -1,5 +1,0 @@
-APPS += UNAME
-
-UNAME_NAME = uname
-UNAME_LIBS = c
-UNAME_INSTALL_PATH = bin/

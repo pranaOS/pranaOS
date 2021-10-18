@@ -1,5 +1,0 @@
-APPS += RMDIR
-
-RMDIR_NAME = rmdir
-RMDIR_LIBS = c
-RMDIR_INSTALL_PATH = bin/

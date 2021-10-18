@@ -1,5 +1,0 @@
-APPS += TOUCH
-
-TOUCH_NAME = touch
-TOUCH_LIBS = c
-TOUCH_INSTALL_PATH = bin/

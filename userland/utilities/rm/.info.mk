@@ -1,5 +1,0 @@
-APPS += RM
-
-RM_NAME = rm
-RM_LIBS = c
-RM_INSTALL_PATH = bin/

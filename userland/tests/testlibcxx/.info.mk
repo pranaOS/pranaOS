@@ -1,5 +1,0 @@
-APPS += TESTLIBCXX
-
-TEST_NAME = testlibcxx
-TEST_LIBS = c
-TEST_INSTALL_PATH = bin/
