@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#if defined __CYGWIN__ || defined __pranaOS_ 
+#if defined __pranaOS__ 
 #       ifndef __OBJC_RUNTIME_INTERNAL__
 #               define OBJC_PUBLIC __attribute__((dllexport))
 #       else
