@@ -34,6 +34,27 @@ extern "C" {
 #       define __STD_MACROS 1
 #endif
 
+#include <stdint.h>
+#include <limits.h>
+
+#ifndef class_setVersion
+#       define class_setVersion
+#endif
+
+#ifndef class_getClassMethod
+#       define class_getClassMethod
+#endif
+
+#ifndef objc_getClass
+#       define objc_getClass
+#endif
+
+#ifndef objc_lookupClass
+#       define objc_lookupClass
+#endif
+
+typedef struct objc_ivar* Ivar;
+
 typedef struct objc_class *Class;
 
 }
