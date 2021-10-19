@@ -88,6 +88,26 @@ struct objc_super
 #   endif
 };
 
+typedef id (*IMP)(id, SEL, ...);
+
+typedef struct objc_methods *Methods;
+
+#       ifndef STRICT_APPLE_COMPATIBILITY
+typedef signed char BOOL;
+#       else
+#               if defined(__vxworks) || defined(_WIN32)
+typedef int BOOL;
+#       else
+typedef unsigned char BOOL;
+#        endif
+#endif
+
+#   define Methods Methods_t
+#endif
+
+typedef struct objc_property* objc_property_t;
+
+
 #endif
 
 }
