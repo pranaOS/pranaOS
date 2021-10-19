@@ -55,6 +55,39 @@ extern "C" {
 
 typedef struct objc_ivar* Ivar;
 
+#ifnef __objc_include_gnu
+
+#       define __objc_include_gnu
+#       define __objc_api_gnu
+
+#if !defined(__clang__) && !defined(__OBJC_RUNTIME_INTERNAL_)
+typedef const struct objc_selector *SEL;
+#else
+typedef struct objc_selector *SEL;
+#endif
+
 typedef struct objc_class *Class;
+
+typedef struct objc_object
+{
+
+#ifndef __OBJC_RUNTIME_INTERNAL__
+        __attribute__((deprecated))
+#endif
+    Class isa;
+} *id;
+
+struct objc_super
+{
+    __unsafe_unretain id receiver;
+    
+#   if !defined(__cplusplus) && !__OBJC2__
+    Class class;
+#   else
+    Class super_class;
+#   endif
+};
+
+#endif
 
 }
