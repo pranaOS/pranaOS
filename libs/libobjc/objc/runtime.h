@@ -36,6 +36,9 @@ extern "C" {
 
 #include <stdint.h>
 #include <limits.h>
+#include <stddef.h>
+#include <sys/types.h>
+#include "Availability.h"
 
 #ifndef class_setVersion
 #       define class_setVersion
@@ -106,6 +109,24 @@ typedef unsigned char BOOL;
 #endif
 
 typedef struct objc_property* objc_property_t;
+
+#ifndef __OBJC__
+@class Protocol;
+#else
+typedef struct objc_protocol Protocol;
+#endif
+
+struct objc_method_description
+{
+    SEL name;
+    const char *types;
+}
+
+typedef struct
+{
+    const char *name;
+    const char *value;
+} objc_property_attribute_t;
 
 
 #endif
