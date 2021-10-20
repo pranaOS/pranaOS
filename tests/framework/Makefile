@@ -1,4 +1,4 @@
 FRAMEWORK=Foo
-SRCS=foo.c
+SRCS=foo.cpp
 INCS=foo.h
 RESOURCES=
