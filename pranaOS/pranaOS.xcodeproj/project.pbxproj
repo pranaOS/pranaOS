@@ -6,8 +6,12 @@
 	objectVersion = 55;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		1875FD672720410D009852FE /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 1875FD662720410D009852FE /* main.m */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXCopyFilesBuildPhase section */
-		18BDF482271E7BE300F4A3C9 /* CopyFiles */ = {
+		1875FD612720410D009852FE /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = /usr/share/man/man1/;
@@ -19,16 +23,12 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		1829171A272030BA0046DFCD /* tests */ = {isa = PBXFileReference; lastKnownFileType = folder; path = tests; sourceTree = "<group>"; };
-		18BDF484271E7BE300F4A3C9 /* pranaOS */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = pranaOS; sourceTree = BUILT_PRODUCTS_DIR; };
-		18BDF48E271E7C1800F4A3C9 /* libs */ = {isa = PBXFileReference; lastKnownFileType = folder; path = libs; sourceTree = "<group>"; };
-		18BDF48F271E7C2200F4A3C9 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
-		18BDF490271E7C2200F4A3C9 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		18BDF491271E7C2200F4A3C9 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
+		1875FD632720410D009852FE /* pranaOS */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = pranaOS; sourceTree = BUILT_PRODUCTS_DIR; };
+		1875FD662720410D009852FE /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		18BDF481271E7BE300F4A3C9 /* Frameworks */ = {
+		1875FD602720410D009852FE /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -38,36 +38,40 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		18BDF47B271E7BE300F4A3C9 = {
+		1875FD5A2720410D009852FE = {
 			isa = PBXGroup;
 			children = (
-				1829171A272030BA0046DFCD /* tests */,
-				18BDF491271E7C2200F4A3C9 /* .gitignore */,
-				18BDF48F271E7C2200F4A3C9 /* LICENSE */,
-				18BDF490271E7C2200F4A3C9 /* README.md */,
-				18BDF48E271E7C1800F4A3C9 /* libs */,
-				18BDF485271E7BE300F4A3C9 /* Products */,
+				1875FD652720410D009852FE /* pranaOS */,
+				1875FD642720410D009852FE /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		18BDF485271E7BE300F4A3C9 /* Products */ = {
+		1875FD642720410D009852FE /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				18BDF484271E7BE300F4A3C9 /* pranaOS */,
+				1875FD632720410D009852FE /* pranaOS */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		1875FD652720410D009852FE /* pranaOS */ = {
+			isa = PBXGroup;
+			children = (
+				1875FD662720410D009852FE /* main.m */,
+			);
+			path = pranaOS;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		18BDF483271E7BE300F4A3C9 /* pranaOS */ = {
+		1875FD622720410D009852FE /* pranaOS */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 18BDF48B271E7BE300F4A3C9 /* Build configuration list for PBXNativeTarget "pranaOS" */;
+			buildConfigurationList = 1875FD6A2720410D009852FE /* Build configuration list for PBXNativeTarget "pranaOS" */;
 			buildPhases = (
-				18BDF480271E7BE300F4A3C9 /* Sources */,
-				18BDF481271E7BE300F4A3C9 /* Frameworks */,
-				18BDF482271E7BE300F4A3C9 /* CopyFiles */,
+				1875FD5F2720410D009852FE /* Sources */,
+				1875FD602720410D009852FE /* Frameworks */,
+				1875FD612720410D009852FE /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -75,24 +79,24 @@
 			);
 			name = pranaOS;
 			productName = pranaOS;
-			productReference = 18BDF484271E7BE300F4A3C9 /* pranaOS */;
+			productReference = 1875FD632720410D009852FE /* pranaOS */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		18BDF47C271E7BE300F4A3C9 /* Project object */ = {
+		1875FD5B2720410D009852FE /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastUpgradeCheck = 1300;
 				TargetAttributes = {
-					18BDF483271E7BE300F4A3C9 = {
+					1875FD622720410D009852FE = {
 						CreatedOnToolsVersion = 13.0;
 					};
 				};
 			};
-			buildConfigurationList = 18BDF47F271E7BE300F4A3C9 /* Build configuration list for PBXProject "pranaOS" */;
+			buildConfigurationList = 1875FD5E2720410D009852FE /* Build configuration list for PBXProject "pranaOS" */;
 			compatibilityVersion = "Xcode 13.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -100,28 +104,29 @@
 				en,
 				Base,
 			);
-			mainGroup = 18BDF47B271E7BE300F4A3C9;
-			productRefGroup = 18BDF485271E7BE300F4A3C9 /* Products */;
+			mainGroup = 1875FD5A2720410D009852FE;
+			productRefGroup = 1875FD642720410D009852FE /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				18BDF483271E7BE300F4A3C9 /* pranaOS */,
+				1875FD622720410D009852FE /* pranaOS */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		18BDF480271E7BE300F4A3C9 /* Sources */ = {
+		1875FD5F2720410D009852FE /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1875FD672720410D009852FE /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		18BDF489271E7BE300F4A3C9 /* Debug */ = {
+		1875FD682720410D009852FE /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -180,7 +185,7 @@
 			};
 			name = Debug;
 		};
-		18BDF48A271E7BE300F4A3C9 /* Release */ = {
+		1875FD692720410D009852FE /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -232,7 +237,7 @@
 			};
 			name = Release;
 		};
-		18BDF48C271E7BE300F4A3C9 /* Debug */ = {
+		1875FD6B2720410D009852FE /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
@@ -240,7 +245,7 @@
 			};
 			name = Debug;
 		};
-		18BDF48D271E7BE300F4A3C9 /* Release */ = {
+		1875FD6C2720410D009852FE /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
@@ -251,25 +256,25 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		18BDF47F271E7BE300F4A3C9 /* Build configuration list for PBXProject "pranaOS" */ = {
+		1875FD5E2720410D009852FE /* Build configuration list for PBXProject "pranaOS" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				18BDF489271E7BE300F4A3C9 /* Debug */,
-				18BDF48A271E7BE300F4A3C9 /* Release */,
+				1875FD682720410D009852FE /* Debug */,
+				1875FD692720410D009852FE /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		18BDF48B271E7BE300F4A3C9 /* Build configuration list for PBXNativeTarget "pranaOS" */ = {
+		1875FD6A2720410D009852FE /* Build configuration list for PBXNativeTarget "pranaOS" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				18BDF48C271E7BE300F4A3C9 /* Debug */,
-				18BDF48D271E7BE300F4A3C9 /* Release */,
+				1875FD6B2720410D009852FE /* Debug */,
+				1875FD6C2720410D009852FE /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = 18BDF47C271E7BE300F4A3C9 /* Project object */;
+	rootObject = 1875FD5B2720410D009852FE /* Project object */;
 }
