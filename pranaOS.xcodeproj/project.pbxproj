@@ -19,6 +19,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		1829171A272030BA0046DFCD /* tests */ = {isa = PBXFileReference; lastKnownFileType = folder; path = tests; sourceTree = "<group>"; };
 		18BDF484271E7BE300F4A3C9 /* pranaOS */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = pranaOS; sourceTree = BUILT_PRODUCTS_DIR; };
 		18BDF48E271E7C1800F4A3C9 /* libs */ = {isa = PBXFileReference; lastKnownFileType = folder; path = libs; sourceTree = "<group>"; };
 		18BDF48F271E7C2200F4A3C9 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
@@ -40,6 +41,7 @@
 		18BDF47B271E7BE300F4A3C9 = {
 			isa = PBXGroup;
 			children = (
+				1829171A272030BA0046DFCD /* tests */,
 				18BDF491271E7C2200F4A3C9 /* .gitignore */,
 				18BDF48F271E7C2200F4A3C9 /* LICENSE */,
 				18BDF490271E7C2200F4A3C9 /* README.md */,
