@@ -1,4 +1,5 @@
 FRAMEWORK=Foo
 SRCS=foo.cpp
 INCS=foo.h
+OBJC=foo.m
 RESOURCES=
