@@ -1,0 +1,4 @@
+FRAMEWORK=Foo
+SRCS=foo.c
+INCS=foo.h
+RESOURCES=
