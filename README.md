@@ -5,6 +5,10 @@
 [![forthebadge](https://forthebadge.com/images/badges/made-with-c-plus-plus.svg)](https://forthebadge.com)
 
 
+### Social Media:
+- [twitter](https://twitter.com/os_prana)
+- [discord](https://discord.gg/XmpBTmy9Bz)
+
 ### Licenses:
 - i just took some source code from other projects the see the license [here](https://github.com/pranaOS/pranaOS/tree/master/licenses)
 
