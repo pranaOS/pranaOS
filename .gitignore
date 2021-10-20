@@ -1,1 +1,13 @@
+# system cache
 .DS_Store
+
+# vscode cache
+.vscode/
+
+# idea cachce
+.idea/
+
+config.log
+config.status
+
+dist/
