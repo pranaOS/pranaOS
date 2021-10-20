@@ -5,8 +5,8 @@
 [![forthebadge](https://forthebadge.com/images/badges/made-with-c-plus-plus.svg)](https://forthebadge.com)
 
 
-- soon pranaOS will come with security, awsome gui etc..
-- work in progress
+### Licenses:
+- i just took some source code from other projects the see the license [here](https://github.com/pranaOS/pranaOS/tree/master/licenses)
 
 - pranaOS is licensed under BSD-2 Clause
 ```
