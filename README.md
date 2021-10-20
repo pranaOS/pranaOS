@@ -1,4 +1,6 @@
 # pranaOS
+- A BSD Based Operting System Target x86 And ARM
+
 
 [![forthebadge](https://forthebadge.com/images/badges/made-with-c-plus-plus.svg)](https://forthebadge.com)
 
