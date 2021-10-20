@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
+/* import */
 #import <Founation/Foundation.h>
 
 int main()
