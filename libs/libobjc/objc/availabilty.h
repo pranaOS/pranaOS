@@ -1,5 +1,4 @@
 /*
- * Copyright (c) 2021, Krisna Pranav
  * Copyright (c) 2002 Apple Computer, Inc. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-2-Clause
