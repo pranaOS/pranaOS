@@ -1,5 +1,5 @@
 # pranaOS
-- A Unix Operting System Target x86 And ARM
+- A Unix Operting System Target x86 Fully Built Using C++
 
 
 [![forthebadge](https://forthebadge.com/images/badges/made-with-c-plus-plus.svg)](https://forthebadge.com)
