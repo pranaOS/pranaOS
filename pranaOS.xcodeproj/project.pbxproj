@@ -22,6 +22,8 @@
 		185B2FE12726F0CE00C959BE /* kernel */ = {isa = PBXFileReference; lastKnownFileType = folder; path = kernel; sourceTree = "<group>"; };
 		185B2FE22726F0D400C959BE /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		185B2FE32726F0D400C959BE /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		185B2FE52726F15C00C959BE /* .github */ = {isa = PBXFileReference; lastKnownFileType = folder; path = .github; sourceTree = "<group>"; };
+		185B2FE62726F16000C959BE /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		1875FD632720410D009852FE /* pranaOS */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = pranaOS; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -39,6 +41,8 @@
 		1875FD5A2720410D009852FE = {
 			isa = PBXGroup;
 			children = (
+				185B2FE62726F16000C959BE /* .gitignore */,
+				185B2FE52726F15C00C959BE /* .github */,
 				185B2FE32726F0D400C959BE /* LICENSE */,
 				185B2FE22726F0D400C959BE /* README.md */,
 				185B2FE12726F0CE00C959BE /* kernel */,
