@@ -19,12 +19,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		185B2FE12726F0CE00C959BE /* kernel */ = {isa = PBXFileReference; lastKnownFileType = folder; path = kernel; sourceTree = "<group>"; };
+		185B2FE22726F0D400C959BE /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		185B2FE32726F0D400C959BE /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		1875FD632720410D009852FE /* pranaOS */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = pranaOS; sourceTree = BUILT_PRODUCTS_DIR; };
-		1875FD6D2720412F009852FE /* tests */ = {isa = PBXFileReference; lastKnownFileType = folder; path = tests; sourceTree = "<group>"; };
-		1875FD6E2720412F009852FE /* libs */ = {isa = PBXFileReference; lastKnownFileType = folder; path = libs; sourceTree = "<group>"; };
-		1875FD6F27204137009852FE /* licenses */ = {isa = PBXFileReference; lastKnownFileType = folder; path = licenses; sourceTree = "<group>"; };
-		1875FD7027204137009852FE /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
-		1875FD7127204137009852FE /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -41,11 +39,9 @@
 		1875FD5A2720410D009852FE = {
 			isa = PBXGroup;
 			children = (
-				1875FD7027204137009852FE /* LICENSE */,
-				1875FD6F27204137009852FE /* licenses */,
-				1875FD7127204137009852FE /* README.md */,
-				1875FD6E2720412F009852FE /* libs */,
-				1875FD6D2720412F009852FE /* tests */,
+				185B2FE32726F0D400C959BE /* LICENSE */,
+				185B2FE22726F0D400C959BE /* README.md */,
+				185B2FE12726F0CE00C959BE /* kernel */,
 				1875FD642720410D009852FE /* Products */,
 			);
 			sourceTree = "<group>";
