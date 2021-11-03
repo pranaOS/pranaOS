@@ -1,0 +1,10 @@
+if (ARCH STREQUAL i386)
+    set(pranaOSArch i386)
+elseif (ARCH STREQUAL x86_64)
+    set(pranaOSArch x86_64)
+else ()
+    message(WARNING "unexpected ARCH ${ARCH}, using default value \"x86_64\"")
+    set(pranaOSArch i386)
+endif ()
+
+message(STATUS "pranaOSArch is ${pranaOSArch}")
