@@ -1,10 +1,8 @@
-/*
- * Copyright (c) 2021, Krisna Pranav
- *
- * SPDX-License-Identifier: GPL-3.0
- */
-
 #pragma once
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #define SCHAR_MIN (-128)
 #define SCHAR_MAX 127
@@ -26,6 +24,10 @@
 #define ULONG_MAX 0xffffffffUL
 
 #define LLONG_MAX                                                              \
-    9223372036854775807i64
+    9223372036854775807i64 
 #define LLONG_MIN                                                              \
-    (-9223372036854775807i64 - 1)
+    (-9223372036854775807i64 - 1) 
+
+#ifdef __cplusplus
+}
+#endif
