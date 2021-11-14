@@ -1,0 +1,22 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  build-macos:
+    runs-on: macos-latest
+
+    steps:
+    - name: get code
+      uses: actions/checkout@v2
+      
+    - name: setup brew
+      shell: bash
+      run: |
+        brew install x86_64-elf-binutils
+        brew install x86_64-elf-gcc
+
+    - name: make build dir
+      shell: bash
+      run: |
+        mkdir ${{github.workspace}}/build
