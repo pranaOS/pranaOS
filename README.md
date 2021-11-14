@@ -5,7 +5,11 @@
 [![forthebadge](https://forthebadge.com/images/badges/made-with-c-plus-plus.svg)](https://forthebadge.com)
 
 
-### Social Media:
+## Have Any Issues??:
+- contact our [discord](https://discord.gg/XmpBTmy9Bz)
+
+
+## Social Media:
 - [twitter](https://twitter.com/os_prana)
 - [discord](https://discord.gg/XmpBTmy9Bz)
 
