@@ -1,10 +1,49 @@
-#ifndef __cplusplus
+#ifdef __cplusplus
 extern "C" {
 #endif
 
 #if defined(__arm__) || defined(__aarch64__)
 
 #include "math.h"
+
+unsigned long udivmodsi4(unsigned long num, unsigned long den, int modwanted) {
+    unsigned long bit = 1;
+    unsigned long res = 0;
+    while (den < num && bit && !(den & (1L << 31))) {
+        den <<= 1;
+        bit <<= 1;
+    }
+    while (bit) {
+        if (num >= den) {
+            num -= den;
+            res |= bit;
+        }
+        bit >>= 1;
+        den >>= 1;
+    }
+    if (modwanted) {
+        return num;
+    }
+    return res;
+}
+
+long divsi3(long a, long b) {
+    int  neg = 0;
+    long res;
+    if (a < 0) {
+        a   = -a;
+        neg = !neg;
+    }
+    if (b < 0) {
+        b   = -b;
+        neg = !neg;
+    }
+    res = udivmodsi4(a, b, 0);
+    if (neg) {
+        res = -res;
+    }
+    return res;
+}
 
 long modsi3(long a, long b) {
     int  neg = 0;
@@ -25,6 +64,6 @@ long modsi3(long a, long b) {
 
 #endif
 
-#ifndef __cplusplus
+#ifdef __cplusplus
 }
 #endif
