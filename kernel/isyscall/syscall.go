@@ -30,3 +30,22 @@ func (r *Request) Arg(n int) uintptr {
 func (r *Request) SetRet(v uintptr) {
 	r.tf.SetRet(v)
 }
+
+func (r *Request) SetErrorNO(errno syscall.Errno) {
+	r.SetRet(Errno(errno))
+}
+
+func Errno(code syscall.Errno) uintptr {
+	return uintptr(-code)
+}
+
+func Error(err error) uintptr {
+	if err == nil {
+		return 0
+	}
+	if code, ok := err.(syscall.Errno); ok {
+		return Errno(code)
+	}
+	ret := uintptr(syscall.EINVAL)
+	return -ret
+}
