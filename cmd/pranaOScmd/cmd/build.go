@@ -26,7 +26,7 @@ var buildCmd = &cobra.Command{
 func runBuild(args []string) error {
 	b := build.NewBuilder(build.Config{
 		GoRoot:       goroot,
-		EggosVersion: pranaosversion,
+		EggosVersion: pranaOSVersion,
 		GoArgs:       args,
 	})
 	err := b.Build()
