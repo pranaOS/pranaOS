@@ -1,0 +1,14 @@
+megs: 1024
+romimage: file=$BXSHARE/BIOS-bochs-latest
+vgaromimage: file=$BXSHARE/VGABIOS-lgpl-latest
+vga: extension=vbe
+
+ata0-master: type=cdrom, path=pranaos.iso, status=inserted
+boot: cdrom
+
+com1: enabled=1,mode=file,dev="serial"
+mouse: enabled=0
+
+debug: action=ignore, cpu0=report
+
+magic_break:enabled=1
