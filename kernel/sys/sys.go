@@ -8,14 +8,29 @@ const PageSize = 4 << 10
 
 func Outb(port uint16, data byte)
 
+func Inb(port uint16) byte
+
+func Outl(port uint16, data uint32)
+
+func Inl(port uint16) uint32
+
+func Cli()
+
+func Sti()
+
+func Hlt()
+
+func Cr2() uintptr
+
+func Flags() uintptr
+
 func UnsafeBuffer(p uintptr, n int) []byte {
 	return (*[1 << 30]byte)(unsafe.Pointer(p))[:n]
 }
 
-//go:nosplit
 func Memclr(p uintptr, n int) {
 	s := (*(*[1 << 30]byte)(unsafe.Pointer(p)))[:n]
-	// the compiler will emit runtime.memclrNoHeapPointers
+
 	for i := range s {
 		s[i] = 0
 	}
