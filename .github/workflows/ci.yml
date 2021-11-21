@@ -18,10 +18,6 @@ jobs:
         run: |
           go mod tidy
 
-      - name: Check mage versrion
-        run: |
-          mage --version
-
   macosbuild:
     runs-on: macos-latest
     steps:
@@ -35,8 +31,3 @@ jobs:
       - name: Install Go Deps
         run: |
           go mod tidy
-
-      - name: Check mage versrion
-        run: |
-          mage --version
-  
