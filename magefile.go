@@ -1,6 +1,9 @@
 package main
 
-import "os"
+import (
+	"os"
+	"regexp"
+)
 
 var (
 	TOOLPREFIX = detectToolPrefix()
@@ -42,4 +45,35 @@ func detectToolPrefix() string {
 	panic('
 	** ERROR could not able to find x86_64 gcc please download and run again **
 	')
+}
+
+func hasOutput(regstr, cmd string, args ...string) bool {
+	out, err := cmdOutput(cmd, args...)
+	if err != nil{
+		return false
+	}
+	
+	match, err := regexp.Match(regstr, []byte(out))
+	if err != nil {
+		return false
+	}
+
+	return match
+}
+
+
+func rmGlob(pattern string) error {
+	match, err := filepath.Glob(pattern)
+	if err != nil {
+		return err
+	}
+
+	for _, file := range match {
+		err = os.Remove(file)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
