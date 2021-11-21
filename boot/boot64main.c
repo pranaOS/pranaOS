@@ -1,12 +1,3 @@
-/**
- * @file boot64main.c
- * @version 0.1
- * @date 2021-11-21
- * 
- * @copyright Copyright (c) 2021 Krisna Pranav
- * 
- */
-
 typedef unsigned short uint16;
 typedef unsigned int uint32;
 typedef unsigned long uint64;
