@@ -2,21 +2,33 @@ name: CI
 
 on: [push, pull_request]
 
+
 jobs:
-  build-macos:
-    runs-on: macos-latest
-
+  linuxbuild:
+    runs-on: ubuntu-latest
     steps:
-    - name: get code
-      uses: actions/checkout@v2
+      - name: Setup go
+        uses: actions/setup-go@v2
+        with:
+          go-version: '1.16'
+      - name: Checkout repository
+        uses: actions/checkout@v2
       
-    - name: setup brew
-      shell: bash
-      run: |
-        brew install x86_64-elf-binutils
-        brew install x86_64-elf-gcc
+      - name: Install Go Deps
+        run: |
+          go mod tidy
 
-    - name: make build dir
-      shell: bash
-      run: |
-        mkdir ${{github.workspace}}/build
+  macosbuild:
+    runs-on: macos-latest
+    steps:
+      - name: Setup go
+        uses: actions/setup-go@v2
+        with:
+          go-version: '1.16'
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Install Go Deps
+        run: |
+          go mod tidy
+  

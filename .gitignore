@@ -1,13 +1,27 @@
-# system cache
-.DS_Store
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
 
 # vscode cache
 .vscode/
 
-# idea cachce
+# jetbrains cache
 .idea/
 
-config.log
-config.status
+# system cache
+.DS_Store
 
-dist/
+# builded binary of main.go
+gorestapi
+
+# release folder
+release/

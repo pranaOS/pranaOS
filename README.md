@@ -1,8 +1,5 @@
 # pranaOS
-- A unix operating system targeting x86 built using c and c++
-
-
-[![forthebadge](https://forthebadge.com/images/badges/made-with-c-plus-plus.svg)](https://forthebadge.com)
+- A unix operating system built using golang
 
 
 ## Have Any Issues??:
