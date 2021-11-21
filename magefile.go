@@ -4,20 +4,33 @@ import "os"
 
 var (
 	TOOLPREFIX = detectToolPrefix()
-	CC = TOOLPREFIX + "gcc"
-	LD = TOOLPREFIX + "ld"
+	CC         = TOOLPREFIX + "gcc"
+	LD         = TOOLPREFIX + "ld"
 
-	CFLAGS = initCflags()
+	CFLAGS  = initCflags()
 	LDFLAGS = initLdflags()
 )
 
 var (
-	GOTAGS = "new phy"
+	GOTAGS    = "nes phy prometheus"
 	GOGCFLAGS = ""
 )
 
 var (
 	QEMU64 = "qemu-system-x86_64"
+	QEMU32 = "qemu-system-i386"
+
+	QEMU_OPT       = initQemuOpt()
+	QEMU_DEBUG_OPT = initQemuDebugOpt()
+)
+
+var (
+	pranaosBin string
+)
+
+const (
+	goMajorVersionSupported    = 1
+	maxGoMinorVersionSupported = 16
 )
 
 func detectToolPrefix() string {
