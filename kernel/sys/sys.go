@@ -20,3 +20,13 @@ func Memclr(p uintptr, n int) {
 		s[i] = 0
 	}
 }
+
+func FuncPC(f interface{}) uintptr {
+	return **(**uintptr)(unsafe.Pointer((uintptr(unsafe.Pointer(&f)) + PtrSize)))
+}
+
+func Fxsave(addr uintptr)
+
+func SetAX(val uintptr)
+
+func CS() uintptr
