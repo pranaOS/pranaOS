@@ -4,6 +4,7 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
+	"path/filepath"
 )
 
 type Config struct {
@@ -28,7 +29,7 @@ func NewBuilder(cfg Config) *Builder {
 
 func (b *Builder) Build() error {
 	if b.cfg.Basedir == "" {
-		basedir, err := ioutil.TempDir("", "eggos-build")
+		basedir, err := ioutil.TempDir("", "pranaos-build")
 		if err != nil {
 			return err
 		}
@@ -46,13 +47,33 @@ func (b *Builder) Build() error {
 	return b.buildPkg()
 }
 
-func fixGoTags() bool {
+func (b *Builder) gobin() string {
+	if b.cfg.GoRoot == "" {
+		return "go"
+	}
+	return filepath.Join(b.cfg.GoRoot, "bin", "go")
+}
 
+func (b *Builder) fixGoTags() bool {
+	args := b.cfg.GoArgs
+	for i, arg := range args {
+		if arg == "-tags" {
+			if i >= len(b.cfg.GoArgs)-1 {
+				return false
+			}
+			idx := i + 1
+			tags := args[idx]
+			tags += " pranaos"
+			args[idx] = tags
+			return true
+		}
+	}
+	return false
 }
 
 func (b *Builder) buildPkg() error {
 	var buildArgs []string
-	ldflags := "-E github.com/icexin/eggos/kernel.rt0 -T 0x100000"
+	ldflags := "-E github.com/pranaOS/pranaOS/kernel.rt0 -T 0x100000"
 	if !b.cfg.BuildTest {
 		buildArgs = append(buildArgs, "build")
 	} else {
@@ -60,7 +81,7 @@ func (b *Builder) buildPkg() error {
 	}
 	hasGoTags := b.fixGoTags()
 	if !hasGoTags {
-		buildArgs = append(buildArgs, "-tags", "eggos")
+		buildArgs = append(buildArgs, "-tags", "pranaos")
 	}
 	buildArgs = append(buildArgs, "-ldflags", ldflags)
 	buildArgs = append(buildArgs, "-overlay", b.overlayFile())
