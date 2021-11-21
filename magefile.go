@@ -4,6 +4,20 @@ import "os"
 
 var (
 	TOOLPREFIX = detectToolPrefix()
+	CC = TOOLPREFIX + "gcc"
+	LD = TOOLPREFIX + "ld"
+
+	CFLAGS = initCflags()
+	LDFLAGS = initLdflags()
+)
+
+var (
+	GOTAGS = "new phy"
+	GOGCFLAGS = ""
+)
+
+var (
+	QEMU64 = "qemu-system-x86_64"
 )
 
 func detectToolPrefix() string {
