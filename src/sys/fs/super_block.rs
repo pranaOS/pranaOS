@@ -36,4 +36,23 @@ impl SuperBlock {
             None
         }
     }
+
+    pub fn write(&self) {
+        let mut block = Block::new(SUPERBLOCK_ADDR);
+        let data = block.data_mut();
+
+        let size = self.block_size;
+    }
+
+    pub fn block_size(&self) -> u32 {
+        self.block_size
+    }
+
+    pub fn block_count(&self) -> u32 {
+        self.block_count
+    }
+
+    pub fn bitmap_area(&self) -> u32 {
+        SUPERBLOCK_ADDR + 2
+    }
 }
