@@ -20,8 +20,4 @@
 # system cache
 .DS_Store
 
-# builded binary of main.go
-gorestapi
-
-# release folder
-release/
+disk.img
