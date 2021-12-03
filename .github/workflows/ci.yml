@@ -13,10 +13,6 @@ jobs:
           go-version: '1.16'
       - name: Checkout repository
         uses: actions/checkout@v2
-      
-      - name: Install Go Deps
-        run: |
-          go mod tidy
 
   macosbuild:
     runs-on: macos-latest
@@ -27,7 +23,3 @@ jobs:
           go-version: '1.16'
       - name: Checkout repository
         uses: actions/checkout@v2
-
-      - name: Install Go Deps
-        run: |
-          go mod tidy
