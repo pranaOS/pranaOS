@@ -17,7 +17,7 @@ pub struct File {
     name: String,
     addr: u32,
     size: u32,
-    dir: Dir,
+    dir: Dir, 
     offset: u32,
 }
 
@@ -46,6 +46,20 @@ impl File {
         None
     }
 
+    pub fn open(pathname: &str) -> Option<Self> {
+        let pathname = realpath(pathname);
+        let dirname = dirname(&pathname);
+        let filename = filename(&pathname);
+        if let Some(dir) = Dir::open(dirname) {
+            if let Some(dir_entry) = dir.find(filename) {
+                if dir_entry.is_file() {
+                    return Some(dir_entry.into());
+                }
+            }
+        }
+        None
+    }
+
     pub fn name(&self) -> String {
         self.name.clone()
     }
@@ -56,18 +70,18 @@ impl File {
 
     pub fn seek(&mut self, pos: SeekFrom) -> Result<u32, ()> {
         let offset = match pos {
-            SeekFrom::Start(i) => i as i32,
+            SeekFrom::Start(i)   => i as i32,
             SeekFrom::Current(i) => i + self.offset as i32,
-            SeekFrom::End(i) => i + self.size  as i32 - 1,
+            SeekFrom::End(i)     => i + self.size as i32 - 1,
         };
-        if offset < 0 || offset > self.size as i32 {
+        if offset < 0 || offset > self.size as i32 { 
             return Err(())
         }
         self.offset = offset as u32;
 
-        Ok(self.offset);
+        Ok(self.offset)
     }
-
+    
     pub fn read_to_string(&mut self) -> String {
         let mut buf = vec![0; self.size()];
         if let Ok(bytes) = self.read(&mut buf) {
@@ -176,5 +190,54 @@ fn test_file_create() {
     super::format_mem();
     assert!(File::create("/test").is_some());
     assert_eq!(File::create("/hello").unwrap().name(), "hello");
+    super::dismount();
+}
+
+#[test_case]
+fn test_file_write() {
+    super::mount_mem();
+    super::format_mem();
+    let mut file = File::create("/test").unwrap();
+    let buf = "Hello, World!".as_bytes();
+    assert_eq!(file.write(&buf), Ok(buf.len()));
+    super::dismount();
+}
+
+#[test_case]
+fn test_file_open() {
+    super::mount_mem();
+    super::format_mem();
+    assert!(File::open("/test").is_none());
+    let mut file = File::create("/test").unwrap();
+    let buf = "Hello, World!".as_bytes();
+    file.write(&buf).unwrap();
+    assert!(File::open("/test").is_some());
+    super::dismount();
+}
+
+#[test_case]
+fn test_file_read() {
+    super::mount_mem();
+    super::format_mem();
+    let mut file = File::create("/test").unwrap();
+    let input = "Hello, World!".as_bytes();
+    file.write(&input).unwrap();
+
+    let mut file = File::open("/test").unwrap();
+    let mut output = [0u8; 13];
+    assert_eq!(file.read(&mut output), Ok(input.len()));
+    assert_eq!(input, output);
+    super::dismount();
+}
+
+#[test_case]
+fn test_file_delete() {
+    super::mount_mem();
+    super::format_mem();
+    assert!(File::open("/test").is_none());
+    assert!(File::create("/test").is_some());
+    assert!(File::open("/test").is_some());
+    assert!(File::delete("/test").is_ok());
+    assert!(File::open("/test").is_none());
     super::dismount();
 }
