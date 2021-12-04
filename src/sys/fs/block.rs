@@ -30,7 +30,7 @@ impl Block {
                 }
                 block.write();
 
-                some(block)
+                Some(block)
             }
         }
     }
@@ -60,6 +60,7 @@ impl Block {
     pub fn data_mut(&mut self) -> &mut [u8] {
         &mut self.buf[..]
     }
+    
 }
 
 pub struct LinkedBlock {
@@ -68,7 +69,7 @@ pub struct LinkedBlock {
 
 impl LinkedBlock {
     pub fn new(addr: u32) -> Self {
-        Self { block: Blok::new(addr) }
+        Self { block: Block::new(addr) }
     }
 
     pub fn alloc() -> Option<Self> {
@@ -106,5 +107,16 @@ impl LinkedBlock {
         } else {
             Some(Self::read(addr))
         }
+    }
+
+    pub fn alloc_next(&mut self) -> Option<Self> {
+        let new_block = LinkedBlock::alloc()?;
+        self.set_next_addr(new_block.addr());
+        self.write();
+        Some(new_block)
+    }
+
+    pub fn set_next_addr(&mut self, addr: u32) {
+        self.block.buf[0..4].clone_from_slice(&addr.to_be_bytes());
     }
 }
