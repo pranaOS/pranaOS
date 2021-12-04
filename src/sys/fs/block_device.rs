@@ -24,7 +24,7 @@ pub trait BlockDeviceIO {
 }
 
 impl BlockDeviceIO for BlockDevice {
-    fn read(&self, addr: u32, buf: &mut [u8 ]) {
+    fn read(&self, addr: u32, buf: &mut [u8]) {
         match self {
             BlockDevice::Mem(dev) => dev.read(addr, buf),
             BlockDevice::Ata(dev) => dev.read(addr, buf),
@@ -33,7 +33,7 @@ impl BlockDeviceIO for BlockDevice {
 
     fn write(&mut self, addr: u32, buf: &[u8]) {
         match self {
-            BlockDevice::Mem(dev) => dev.write(addr, self),
+            BlockDevice::Mem(dev) => dev.write(addr, buf),
             BlockDevice::Ata(dev) => dev.write(addr, buf),
         }
     }
@@ -83,15 +83,34 @@ impl BlockDeviceIO for MemBlockDevice {
 }
 
 pub fn mount_mem() {
-    let mem = sys::allocator::memory_size() / 2;
-    let len = mem / super::BLOCK_SIZE;
+    let mem = sys::allocator::memory_size() / 2; 
+    let len = mem / super::BLOCK_SIZE; 
     let dev = MemBlockDevice::new(len);
     *BLOCK_DEVICE.lock() = Some(BlockDevice::Mem(dev));
+}
+
+pub fn format_mem() {
+    debug_assert!(is_mounted());
+    if let Some(sb) = SuperBlock::new() {
+        sb.write();
+        let root = Dir::root();
+        BitmapBlock::alloc(root.addr());
+    }
 }
 
 #[derive(Clone)]
 pub struct AtaBlockDevice {
     dev: sys::ata::Drive
+}
+
+impl AtaBlockDevice {
+    pub fn new(bus: u8, dsk: u8) -> Option<Self> {
+        if let Some(dev) = sys::ata::Drive::identify(bus, dsk) {
+            Some(Self { dev })
+        } else {
+            None
+        }
+    }
 }
 
 impl BlockDeviceIO for AtaBlockDevice {
@@ -100,7 +119,7 @@ impl BlockDeviceIO for AtaBlockDevice {
     }
 
     fn write(&mut self, block_addr: u32, buf: &[u8]) {
-        sys::ata::write(sys.dev.bus, self.dev.dsk, block_addr, buf);
+        sys::ata::write(self.dev.bus, self.dev.dsk, block_addr, buf);
     }
 
     fn block_size(&self) -> usize {
@@ -128,7 +147,7 @@ pub fn format_ata() {
     }
 }
 
-pub fn is_mounted() {
+pub fn is_mounted() -> bool {
     BLOCK_DEVICE.lock().is_some()
 }
 
