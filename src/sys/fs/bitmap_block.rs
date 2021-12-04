@@ -27,7 +27,7 @@ impl BitmapBlock {
         let i = BitmapBlock::buffer_index(addr);
         if !bitmap[i / 8].get_bit(i % 8) {
             bitmap[i / 8].set_bit(i % 8, true);
-            blcok.write();
+            block.write();
             super_block::inc_alloc_count();
         }
     }
@@ -39,6 +39,26 @@ impl BitmapBlock {
         bitmap[i / 8].set_bit(i % 8, false);
         block.write();
         super_block::dec_alloc_count();
+    }
+
+    pub fn next_free_addr() -> Option<u32> {
+        let sb = SuperBlock::read();
+        let size = sb.block_size();
+        let n = sb.block_count() / size / 8;
+        for i in 0..n {
+            let block = Block::read(sb.bitmap_area() + i);
+            let bitmap = block.data();
+            for j in 0..size {
+                for k in 0..8 {
+                    if !bitmap[j as usize].get_bit(k) {
+                        let bs = BITMAP_SIZE as u32;
+                        let addr = sb.data_area() + i * bs + j * 8 + k as u32;
+                        return Some(addr);
+                    }
+                }
+            }
+        }
+        None
     }
 }
 
