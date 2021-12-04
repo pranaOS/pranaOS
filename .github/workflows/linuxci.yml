@@ -23,8 +23,7 @@ jobs:
         override: true
 
       name: Check Rust Version
-      steps: |
-        rustc --version
+      steps: rustc --version
 
       name: Install Deps
       steps: |
