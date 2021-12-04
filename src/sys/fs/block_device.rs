@@ -56,3 +56,32 @@ impl BlockDeviceIO for BlockDevice {
 pub struct MemBlockDevice {
     dev: Vec<[u8; super::BLOCK_SIZE]>,
 }
+
+impl MemBlockDevice {
+    pub fn new(len: usize) -> Self {
+        let dev = vec![[0; super::BLOCK_SIZE]; len];
+        Self { dev }
+    }
+}
+
+impl BlockDeviceIO for MemBlockDevice {
+    fn read(&self, block_index: u32, buf: &mut [u8]) {
+        buf[..].clone_from_slice(&self.dev[block_index as usize][..]);
+    }
+
+    fn write(&mut self, block_index: u32, buf: &[u8]) {
+        self.dev[block_index as usize][..].clone_from_slice(&buf[..]);
+    }
+
+    fn block_size(&self) -> usize {
+        super::BLOCK_SIZE
+    }
+
+    fn block_count(&self) -> usize {
+        self.dev.len()
+    }
+}
+
+pub fn mount_mem() {
+    
+}
