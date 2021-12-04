@@ -1,10 +1,8 @@
 # pranaOS
-- A unix operating system built using golang
-
+- A unix operating system built using rust
 
 ## Have Any Issues??:
 - contact our [discord](https://discord.gg/XmpBTmy9Bz)
-
 
 ## Social Media:
 - [twitter](https://twitter.com/os_prana)
