@@ -27,8 +27,8 @@ class pranaOSFuse(Operations):
         addr = self.image_offset * self.block_size
         self.image.seek(addr)
         block = self.image.read(self.block_size)
-        assert block[0:8] == b"MOROS FS" # Signature
-        assert block[8] == 1 # Version
+        assert block[0:8] == b"PRANAOS FS"
+        assert block[8] == 1
 
     def destroy(self, path):
         self.image.close()
