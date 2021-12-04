@@ -23,6 +23,22 @@ pub trait BlockDeviceIO {
     fn block_count(&self) -> usize;
 }
 
+impl BlockDeviceIO for BlockDevice {
+    fn read(&self, addr: u32, buf: &mut [u8 ]) {
+        match self {
+            BlockDevice::Mem(dev) => dev.read(addr, buf),
+            BlockDevice::Ata(dev) => dev.read(addr, buf),
+        }
+    }
+
+    fn write(&mut self, addr: u32, buf: &[u8]) {
+        match self {
+            BlockDevice::Mem(dev) => dev.write(addr, self),
+            BlockDevice::Ata(dev) => dev.write(addr, buf),
+        }
+    }
+}
+
 pub struct MemBlockDevice {
-    
+    dev: Vec<[u8; super::BLOCK_SIZE]>,
 }
