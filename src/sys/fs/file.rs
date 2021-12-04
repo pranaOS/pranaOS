@@ -93,5 +93,39 @@ impl File {
 }
 
 impl FileIO for File {
-    
+    fn read(&mut self, buf: &mut [u8]) -> Result<usize, ()> {
+        let buf_len = buf.len();
+        let mut addr = size.addr;
+        let mut bytes = 0;
+        let mut pos = 0;
+        loop {
+            let block = LinkedBlock::read(addr);
+            let data = block.data();
+            let data_len = data.len();
+            for i in 0..data_len {
+                if pos == self.offset {
+                    if bytes == buf_len || pos as usize == self.size() {
+                        return Ok(bytes);
+                    }
+                    buf[bytes] = data[i];
+                    bytes += 1;
+                    self.offset += 1;
+                }
+                pos += 1;
+            }
+            match block.next() {
+                Some(next_block) => addr = next_block.addr(),
+                None => return Ok(bytes),
+            }
+        }
+    }
+}
+
+#[test_case]
+fn test_file_create() {
+    super::mount_mem();
+    super::format_mem();
+    assert!(File::create("/test").is_some());
+    assert_eq!(File::create("/hello").unwrap().name(), "hello");
+    super::dismount();
 }
