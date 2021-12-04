@@ -37,6 +37,20 @@ impl BlockDeviceIO for BlockDevice {
             BlockDevice::Ata(dev) => dev.write(addr, buf),
         }
     }
+
+    fn block_size(&self) -> usize {
+        match self {
+            BlockDevice::Mem(dev) => dev.block_size() as usize,
+            BlockDevice::Ata(dev) => dev.block_size() as usize,
+        }
+    }
+
+    fn block_count(&self) -> usize {
+        match self {
+            BlockDevice::Mem(dev) => dev.block_count() as usize,
+            BlockDevice::Ata(dev) => dev.block_count() as usize,
+        }
+    }
 }
 
 pub struct MemBlockDevice {
