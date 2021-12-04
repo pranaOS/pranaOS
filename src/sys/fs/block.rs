@@ -79,5 +79,32 @@ impl LinkedBlock {
         Self { block: Block::read(addr) }
     }
 
-    
+    pub fn write(&self) {
+        self.block.write()
+    }
+
+    pub fn addr(&self) -> u32 {
+        self.block.addr()
+    }
+
+    pub fn data(&self) -> &[u8] {
+        &self.block.buf[DATA_OFFSET..super::BLOCK_SIZE]
+    }
+
+    pub fn data_mut(&mut self) -> &mut [u8] {
+        &mut self.block.buf[DATA_OFFSET..super::BLOCK_SIZE]
+    }
+
+    pub fn len(&self) -> usize {
+        super::BLOCK_SIZE - DATA_OFFSET
+    }
+
+    pub fn next(&self) -> Option<Self> {
+        let addr = u32::from_be_bytes(self.block.buf[0..4].try_into().unwrap());
+        if addr == 0 {
+            None
+        } else {
+            Some(Self::read(addr))
+        }
+    }
 }
