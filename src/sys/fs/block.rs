@@ -48,4 +48,36 @@ impl Block {
             block_device.write(self.addr, &self.buf);
         }
     }
+
+    pub fn addr(&self) -> u32 {
+        self.addr
+    }
+
+    pub fn data(&self) -> &[u8] {
+        &self.buf[..]
+    }
+
+    pub fn data_mut(&mut self) -> &mut [u8] {
+        &mut self.buf[..]
+    }
+}
+
+pub struct LinkedBlock {
+    block: Block
+}
+
+impl LinkedBlock {
+    pub fn new(addr: u32) -> Self {
+        Self { block: Blok::new(addr) }
+    }
+
+    pub fn alloc() -> Option<Self> {
+        Block::alloc().map(|block| Self { block })
+    }
+
+    pub fn read(addr: u32) -> Self {
+        Self { block: Block::read(addr) }
+    }
+
+    
 }
