@@ -78,5 +78,17 @@ impl SuperBlock {
         SUPERBLOCK_ADDR + 2
     }
 
-    
+    pub fn data_area(&self) -> u32 {
+        let bs = super::BITMAP_SIZE as u32;
+        let total = self.block_count;
+        let offset = self.bitmap_area();
+        let rest = (total - offset) * bs / (bs + 1);
+        self.bitmap_area() + rest / bs
+    }   
+}
+
+pub fn dec_alloc_count() {
+    let mut sb = SuperBlock::read();
+    sb.alloc_count -= 1;
+    sb.write();
 }
