@@ -112,6 +112,22 @@ impl BlockDeviceIO for AtaBlockDevice {
     }
 }
 
+pub fn mount_ata(bus: u8, dsk: u8) {
+    *BLOCK_DEVICE.lock() = AtaBlockDevice::new(bus, dsk).map(|dev| BlockDevice::Ata(dev));
+}
+
+pub fn format_ata() {
+    if let Some(sb) = SuperBlock::new() {
+        sb.write();
+
+        super::bitmap_block::free_all();
+
+        debug_assert!(is_mounted());
+        let root = Dir::root();
+        BitmapBlock::alloc(root.addr());
+    }
+}
+
 pub fn is_mounted() {
     BLOCK_DEVICE.lock().is_some()
 }
