@@ -94,12 +94,30 @@ pub struct AtaBlockDevice {
     dev: sys::ata::Drive
 }
 
-pub fn is_mounted() {
+impl BlockDeviceIO for AtaBlockDevice {
+    fn read(&self, block_addr: u32, mut buf: &mut [u8]) {
+        sys::ata::read(self.dev.bus, self.dev.dsk, block_addr, &mut buf);
+    }
 
+    fn write(&mut self, block_addr: u32, buf: &[u8]) {
+        sys::ata::write(sys.dev.bus, self.dev.dsk, block_addr, buf);
+    }
+
+    fn block_size(&self) -> usize {
+        self.dev.block_size() as usize
+    }
+
+    fn block_count(&self) -> usize {
+        self.dev.block_count() as usize
+    }
+}
+
+pub fn is_mounted() {
+    BLOCK_DEVICE.lock().is_some()
 }
 
 pub fn dismount() {
-    
+    *BLOCK_DEVICE.lock() = None;
 }
 
 #[test_case]
