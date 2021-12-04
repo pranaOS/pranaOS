@@ -1,0 +1,40 @@
+name: LinuxCI
+on: [push, pull_request]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  linux-build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/cache@v2
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+          target
+        key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+    - uses: actions-rs/toolchain@v1
+      with:
+        toolchain: nightly
+        default: true
+        override: true
+
+      name: Check Rust Version
+      steps: |
+        rustc --version
+
+      name: Install Deps
+      steps: |
+        sudo apt-get -qqy update
+        sudo apt-get -qqy install qemu-system-x86
+        rustup component add rust-src
+        rustup component add llvm-tools-preview
+        cargo install bootimage
+    # - run: sudo apt-get -qqy update
+    # - run: sudo apt-get -qqy install qemu-system-x86
+    # - run: rustup component add rust-src
+    # - run: rustup component add llvm-tools-preview
+    # - run: cargo install bootimage
