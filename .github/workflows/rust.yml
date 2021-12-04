@@ -21,7 +21,4 @@ jobs:
       
     - name: check rust version
       run: rustc --version
-
-    - name: Build deps
-      run: make
     
