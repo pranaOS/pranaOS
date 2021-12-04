@@ -95,9 +95,9 @@ impl File {
 impl FileIO for File {
     fn read(&mut self, buf: &mut [u8]) -> Result<usize, ()> {
         let buf_len = buf.len();
-        let mut addr = size.addr;
-        let mut bytes = 0;
-        let mut pos = 0;
+        let mut addr = self.addr;
+        let mut bytes = 0; 
+        let mut pos = 0; 
         loop {
             let block = LinkedBlock::read(addr);
             let data = block.data();
@@ -118,6 +118,55 @@ impl FileIO for File {
                 None => return Ok(bytes),
             }
         }
+    }
+
+    fn write(&mut self, buf: &[u8]) -> Result<usize, ()> {
+        let buf_len = buf.len();
+        let mut addr = self.addr;
+        let mut bytes = 0; 
+        let mut pos = 0; 
+        while bytes < buf_len {
+            let mut block = LinkedBlock::read(addr);
+            let data = block.data_mut();
+            let data_len = data.len();
+            for i in 0..data_len {
+                if pos == self.offset {
+                    if bytes == buf_len {
+                        break;
+                    }
+                    data[i] = buf[bytes];
+                    bytes += 1;
+                    self.offset += 1;
+                }
+                pos += 1;
+            }
+
+            addr = match block.next() {
+                Some(next_block) => {
+                    if bytes < buf_len {
+                        next_block.addr()
+                    } else {
+                        0
+                    }
+                }
+                None => {
+                    if bytes < buf_len {
+                        match LinkedBlock::alloc() {
+                            Some(next_block) => next_block.addr(),
+                            None => return Err(()),
+                        }
+                    } else {
+                        0
+                    }
+                }
+            };
+
+            block.set_next_addr(addr);
+            block.write();
+        }
+        self.size = self.offset;
+        self.dir.update_entry(&self.name, self.size);
+        Ok(bytes)
     }
 }
 
