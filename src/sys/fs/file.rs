@@ -79,4 +79,19 @@ impl File {
     pub fn addr(&self) -> u32 {
         self.addr
     }
+
+    pub fn delete(pathname: &str) -> Result<(), ()> {
+        let pathname = realpath(pathname);
+        let dirname = dirname(&pathname);
+        let filename = filename(&pathname);
+        if let Some(mut dir) = Dir::open(dirname) {
+            dir.delete_entry(filename)
+        } else {
+            Err(())
+        }
+    }
+}
+
+impl FileIO for File {
+    
 }
