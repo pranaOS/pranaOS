@@ -83,5 +83,29 @@ impl BlockDeviceIO for MemBlockDevice {
 }
 
 pub fn mount_mem() {
+    let mem = sys::allocator::memory_size() / 2;
+    let len = mem / super::BLOCK_SIZE;
+    let dev = MemBlockDevice::new(len);
+    *BLOCK_DEVICE.lock() = Some(BlockDevice::Mem(dev));
+}
+
+#[derive(Clone)]
+pub struct AtaBlockDevice {
+    dev: sys::ata::Drive
+}
+
+pub fn is_mounted() {
+
+}
+
+pub fn dismount() {
     
+}
+
+#[test_case]
+fn test_mount_mem() {
+    assert!(!is_mounted());
+    mount_mem();
+    assert!(is_mounted());
+    dismount();
 }
