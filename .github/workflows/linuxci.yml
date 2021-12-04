@@ -22,16 +22,16 @@ jobs:
         default: true
         override: true
 
-      name: Check Rust Version
-      steps: rustc --version
+      - name: Check Rust Version
+        run: rustc --version
 
-      name: Install Deps
-      steps: |
-        sudo apt-get -qqy update
-        sudo apt-get -qqy install qemu-system-x86
-        rustup component add rust-src
-        rustup component add llvm-tools-preview
-        cargo install bootimage
+      - name: Install Deps
+        run: |
+          sudo apt-get -qqy update
+          sudo apt-get -qqy install qemu-system-x86
+          rustup component add rust-src
+          rustup component add llvm-tools-preview
+          cargo install bootimage
     # - run: sudo apt-get -qqy update
     # - run: sudo apt-get -qqy install qemu-system-x86
     # - run: rustup component add rust-src
