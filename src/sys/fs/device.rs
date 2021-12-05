@@ -65,4 +65,11 @@ impl FileIO for Device {
             Device::Random(io) => io.read(buf),
         }
     }
+    fn write(&mut self, buf: &[u8]) -> Result<usize, ()> {
+        match self {
+            Device::File(io) => io.write(buf),
+            Device::Console(io) => io.write(buf),
+            Device::Random(io) => io.write(buf),
+        }
+    }
 }
