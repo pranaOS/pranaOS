@@ -42,7 +42,7 @@ impl Dir {
             return None;
         }
         
-        let dir = Dir::root();
+        let mut dir = Dir::root();
         let pathname = realpath(pathname);
 
         if pathname == "/" {
@@ -68,6 +68,15 @@ impl Dir {
 
     pub fn addr(&self) -> u32 {
         self.addr
+    }
+
+    pub fn find(&self, name: &str) -> Option<DirEntry> {
+        for entry in self.entries() {
+            if entry.name() == name {
+                return Some(entry);
+            }
+        }
+        None 
     }
 }
 
