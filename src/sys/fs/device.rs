@@ -39,6 +39,22 @@ impl Device {
         }
         None
     }
+
+    pub fn open(pathname: &str) -> Option<Self> {
+        let pathname = realpath(pathname);
+        let dirname = dirname(&pathname);
+        let filename = filename(&pathname);
+        if let Some(dir) = Dir::open(dirname) {
+            if let Some(dir_entry) = dir.find(filename) {
+                if dir_entry.is_device() {
+                    let block = LinkedBlock::read(dir_entry.addr());
+                    let data = block.data();
+                    return Some(Self::new(data[0]));
+                }
+            }
+        }
+        None
+    }
 }
 
 impl FileIO for Device {
