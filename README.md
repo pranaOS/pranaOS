@@ -1,6 +1,9 @@
 # pranaOS
 - A unix operating system built using rust
 
+[![CI](https://github.com/pranaOS/pranaOS/actions/workflows/rust.yml/badge.svg?branch=master)](https://github.com/pranaOS/pranaOS/actions/workflows/rust.yml)
+
+
 ## Have Any Issues??:
 - contact our [discord](https://discord.gg/XmpBTmy9Bz)
 
