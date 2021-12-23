@@ -1,7 +1,7 @@
 # pranaOS
 - A unix operating system built using rust
 
-<img src="">
+<img src="https://raw.githubusercontent.com/pranaOS/pranaOS/master/imgs/eagle.jpeg">
 
 [![CI](https://github.com/pranaOS/pranaOS/actions/workflows/rust.yml/badge.svg?branch=master)](https://github.com/pranaOS/pranaOS/actions/workflows/rust.yml)
 
