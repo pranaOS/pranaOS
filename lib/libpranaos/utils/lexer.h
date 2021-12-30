@@ -3,19 +3,20 @@
 #include <string>
 
 namespace utils {
-    class lexer {
+    class lexer
+    {
     private:
         std::string _source = {};
         int _index = 0;
         bool _eof = false;
-
+    
     public:
         lexer(const std::string source)
         :
         _source(source)
         {
         }
-        
+
         lexer()
         {
         }
@@ -28,19 +29,37 @@ namespace utils {
         char peek(int how_many = 1) const
         {
             int i = _index + how_many;
-            if (i >= _source.length() || i < 0) return '\0';
+
+            if(i >= _source.length() || i < 0) return '\0';
 
             return _source[i];
         }
-        
+
         char current() const
         {
             return _source[_index];
         }
 
-        bool is_eof();
+        char advance(int how_many = 1)
+        {
+            int i = _index + how_many;
 
-        explicit operator bool() {
+            if(i >= _source.length() || i < 0)
+            {
+                _eof = true;
+                
+                return '\0';
+            }
+
+            _index = i;
+
+            return current();
+        }
+
+        bool is_eof() const { return _eof; }
+
+        explicit operator bool()
+        {
             return !is_eof();
         }
     };
