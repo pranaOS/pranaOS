@@ -1,0 +1,224 @@
+#pragma once
+
+#include <cstddef>
+#include <cstdint>
+#include <type_traits>
+#include <utility>
+
+// BUGS:
+// * std::unique_ptr does not work with polymorphic classes
+
+namespace std
+{
+    template <typename T>
+    class allocator
+    {
+    public:
+        typedef T value_type;
+        typedef T* pointer;
+        typedef const T* const_pointer;
+        typedef T& reference;
+        typedef const T& const_reference;
+        typedef std::size_t size_type;
+        typedef std::ptrdiff_t difference_type;
+
+        allocator() { }
+
+        ~allocator() { }
+
+        pointer allocate(size_t n)
+        {
+            return ::operator new(n * sizeof(T));
+        }
+
+        void deallocate(pointer p, size_t n)
+        {
+            ::operator delete(p);
+        }
+    };
+
+    template <typename T>
+    class default_delete
+    {
+    public:
+        default_delete() { }
+
+        void operator()(T* ptr) const
+        {
+            static_assert(sizeof(T) > 0, "can't delete pointer to incomplete type");
+
+            delete ptr;
+        }
+    };
+
+    /* array deletion overload */
+    template <typename T>
+    class default_delete<T[]>
+    {
+    public:
+        default_delete() { }
+
+        template<typename U>
+        default_delete(const default_delete<U>& other) { }
+
+        void operator()(T* ptr) const
+        {
+            static_assert(sizeof(T) > 0, "can't delete pointer to incomplete type");
+
+            delete[] ptr;
+        }
+    };
+
+    template <typename T, typename Deleter = default_delete<T>>
+    class unique_ptr
+    {
+    private:
+        T* _pointer;
+        Deleter _deleter; 
+
+    public:
+        unique_ptr()
+        :
+        _pointer(nullptr)
+        {
+        }
+
+        explicit unique_ptr(T* pointer, Deleter deleter)
+        :
+        _pointer(pointer),
+        _deleter(deleter)
+        {
+        }
+
+        explicit unique_ptr(T* pointer)
+        :
+        _pointer(pointer),
+        _deleter(Deleter())
+        {
+        }
+
+        unique_ptr(const unique_ptr&) = delete;
+        unique_ptr& operator=(const unique_ptr&) = delete;
+
+        unique_ptr& operator=(std::nullptr_t)
+        {
+            _pointer = nullptr;
+
+            return *this;
+        }
+
+        unique_ptr& operator=(unique_ptr&& r)
+        {
+            reset(r.release());
+            _deleter = std::move(r.get_deleter());
+
+            return *this;
+        }
+
+        template <typename U, typename E>
+        unique_ptr& operator=(unique_ptr<U, E>&& r)
+        {
+            reset(r.release());
+            _deleter = std::move(r.get_deleter());
+
+            return *this;
+        }
+
+        T* release()
+        {
+            T* p = get();
+            _pointer = nullptr;
+
+            return p;
+        }
+
+        void reset(T* pointer = nullptr)
+        {
+            _deleter(_pointer);
+            _pointer = pointer;
+        }
+
+        void swap(unique_ptr& other)
+        {
+            std::swap(_pointer, other._pointer);
+            std::swap(_deleter, other._deleter);
+        }
+
+        T* get() const
+        {
+            return _pointer;
+        }
+
+        typename std::add_lvalue_reference<Deleter>::type get_deleter()
+        {
+            return _deleter;
+        }
+
+        typename std::add_lvalue_reference<typename std::add_const<Deleter>::type>::type get_deleter() const
+        {
+            return _deleter;
+        }
+
+        T* operator->() const
+        {
+            return get();
+        }
+
+        typename std::add_lvalue_reference<T>::type operator[](int index) const
+        {
+            return get()[index];
+        }
+
+        typename std::add_lvalue_reference<T>::type operator*() const
+        {
+            return *get();
+        }
+
+        explicit operator bool() const
+        {
+            return get() != nullptr;
+        }
+
+        ~unique_ptr()
+        {
+            if(get() != nullptr)
+            {
+                _deleter(get());
+                _pointer = nullptr;
+            }
+        }
+    };
+
+    template<typename T, typename... Args>
+    enable_if_t<!is_array_v<T>, std::unique_ptr<T>> make_unique(Args&&... args)
+    {
+        return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
+    }
+    
+    template <typename T>
+    enable_if_t<is_same<T, remove_extent_t<T>[]>::value, unique_ptr<T>> make_unique(size_t n)
+    {
+        return unique_ptr<T>(new remove_extent_t<T>[n]());
+    }
+    
+    template <typename T, typename... Args>
+    enable_if_t<is_bounded_array_v<T>> make_unique(Args&&...) = delete;
+
+    inline void* align(size_t alignment, size_t size, void*& ptr, size_t& space) noexcept
+    {
+        const uintptr_t intptr = reinterpret_cast<uintptr_t>(ptr);
+        const auto aligned = (intptr - 1u + alignment) & -alignment;
+        const auto diff = aligned - intptr;
+
+        if(size + diff > space)
+        {
+            return nullptr;
+        }
+        else
+        {
+            space -= diff;
+
+            return ptr = reinterpret_cast<void*>(aligned);
+        }
+    }
+}
