@@ -4,22 +4,30 @@
 #include <cstddef>
 
 namespace utils {
-    class bitmap {
+    class bitmap
+    {
     private:
+    
         uint8_t* _buff = nullptr;
         size_t _size = 0;
 
     public:
+
         bitmap(uint8_t* buff, size_t size) :
-            _buff(buff),
-            _size(size)
+        _buff(buff),
+        _size(size)
         {
         }
 
         void reassign(uint8_t* buff, size_t size)
         {
             _buff = buff;
-            _size = size
+            _size = size;
         }
+
+        size_t get_size() { return _size; }
+
+        bool get(int index);
+        void set(int index, bool value);
     };
 }
