@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace ackos
+namespace pranaos
 {
     struct system_info
     {
