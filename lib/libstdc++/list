@@ -1,0 +1,337 @@
+#pragma once
+
+#include <initializer_list>
+
+#include <cstddef>
+
+namespace std
+{
+    template <typename T>
+    class list
+    {
+    private:
+        struct list_node
+        {
+            T data;
+            list_node* next = nullptr;
+            list_node* prev = nullptr;
+
+            list_node()
+            {
+            }
+
+            explicit list_node(T d)
+            :
+            data(d)
+            {
+            }
+        };
+
+        list_node* _head = nullptr;
+        list_node* _tail = nullptr;
+        size_t _size = 0;
+
+    public:
+        class iterator
+        {
+        public:
+            iterator(list_node* ptr)
+            :
+            _node(ptr)
+            {
+            }
+
+            iterator& operator++()
+            {
+                _node = _node->next;
+
+                return *this;
+            }
+
+            iterator operator++(int)
+            {
+                iterator iterator = *this;
+                ++(*this);
+
+                return iterator;
+            }
+
+            iterator& operator--()
+            {
+                _node = _node->prev;
+
+                return *this;
+            }
+
+            iterator operator--(int)
+            {
+                iterator iterator = *this;
+                --(*this);
+
+                return iterator;
+            }
+
+            T* operator->()
+            {
+                return &_node->data;
+            }
+
+            T& operator*()
+            {
+                return _node->data;
+            }
+
+            bool operator==(const iterator& rhs)
+            {
+                return _node == rhs._node;
+            }
+
+            bool operator!=(const iterator& rhs)
+            {
+                return _node != rhs._node;
+            }
+        private:
+            list_node* _node;
+
+            friend list;
+        };
+
+        class const_iterator
+        {
+        public:
+            const_iterator(list_node* ptr)
+            :
+            _node(ptr)
+            {
+            }
+
+            const_iterator& operator++()
+            {
+                _node = _node->next;
+
+                return *this;
+            }
+
+            const_iterator operator++(int)
+            {
+                iterator iterator = *this;
+                ++(*this);
+
+                return iterator;
+            }
+
+            const_iterator& operator--()
+            {
+                _node = _node->prev;
+
+                return *this;
+            }
+
+            const_iterator operator--(int)
+            {
+                iterator iterator = *this;
+                --(*this);
+
+                return iterator;
+            }
+
+            const T* operator->()
+            {
+                return &_node->data;
+            }
+
+            const T& operator*()
+            {
+                return _node->data;
+            }
+
+            bool operator==(const const_iterator& rhs) const
+            {
+                return _node == rhs._node;
+            }
+
+            bool operator!=(const const_iterator& rhs) const
+            {
+                return _node != rhs._node;
+            }
+        private:
+            mutable list_node* _node;
+
+            friend list;
+        };
+
+        list()
+        {
+        }
+
+        list(const list<T>& old)
+        {
+            clear();
+
+            for(const T& item : old)
+            {
+                push_back(item);
+            }
+        }
+
+        list(const initializer_list<T> l)
+        {
+            clear();
+
+            for(const T& item : l)
+            {
+                push_back(item);
+            }
+        }
+
+        void push_back(const T& value)
+        {
+            list_node* node = new list_node(value);
+
+            if(_tail == nullptr)
+            {
+                _head = node;
+            }
+            else
+            {
+                _tail->next = node;
+
+                node->prev = _tail;
+                node->next = nullptr;
+            }
+
+            _tail = node;
+            _size++;
+        }
+
+        void push_front(const T& value)
+        {
+            list_node* node = new list_node(value);
+
+            if(_head == nullptr)
+            {
+                _tail = node;
+            }
+            else
+            {
+                _head->prev = node;
+
+                node->prev = _tail;
+                node->next = _head;
+            }
+
+            _head = node;
+            _size++;
+        }
+
+        void pop_front()
+        {
+            list_node* node = _head;
+
+            if(size() == 0)
+            {
+                return;
+            }
+            else if(size() == 1)
+            {
+                _head = nullptr;
+                _tail = nullptr;
+            }
+            else
+            {
+                node->next->prev = nullptr;
+                _head = node->next;
+            }
+
+            delete node;
+
+            _size--;
+        }
+
+        void pop_back()
+        {
+            list_node* node = _tail;
+
+            if(size() == 0)
+            {
+                return;
+            }
+            else if(size() == 1)
+            {
+                _head = nullptr;
+                _tail = nullptr;
+            }
+            else
+            {
+                node->prev->next = nullptr;
+                _tail = node->prev;
+            }
+
+            delete node;
+
+            _size--;
+        }
+
+        size_t size() const
+        {
+            return _size;
+        }
+
+        bool empty() const
+        {
+            return _size == 0;
+        }
+
+        void clear()
+        {
+            list_node* n = _head;
+
+            while(n != nullptr)
+            {
+                list_node* next_node = n->next;
+
+                delete n;
+                n = next_node;
+            }
+
+            _head = nullptr;
+            _tail = nullptr;
+            _size = 0;
+        }
+
+        iterator begin()
+        {
+            return iterator(_head);
+        }
+
+        const_iterator begin() const
+        {
+            return const_iterator(_head);
+        }
+
+        iterator end()
+        {
+            return iterator(nullptr);
+        }
+
+        const_iterator end() const
+        {
+            return const_iterator(nullptr);
+        }
+
+        const_iterator cbegin() const
+        {
+            return const_iterator(_head);
+        }
+
+        const_iterator cend() const
+        {
+            return const_iterator(nullptr);
+        }
+
+        ~list()
+        {
+            clear();
+        }
+    };
+}
