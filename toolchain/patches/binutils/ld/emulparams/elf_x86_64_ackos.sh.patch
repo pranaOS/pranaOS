@@ -1,0 +1,4 @@
+--- /dev/null	2021-04-03 08:45:33.714950542 +1100
++++ b/ld/emulparams/elf_x86_64_pranaos.sh	2021-04-03 11:06:16.500054938 +1100
+@@ -0,0 +1 @@
++. ${srcdir}/emulparams/elf_x86_64.sh

@@ -1,0 +1,10 @@
+--- a/gas/configure.tgt
++++ b/gas/configure.tgt
+@@ -255,6 +255,7 @@
+   i386-*-*nt*)				fmt=coff em=pe ;;
+   i386-*-rdos*)				fmt=elf ;;
+   i386-*-darwin*)			fmt=macho ;;
++  i386-*-pranaos*)			fmt=elf ;;
+ 
+   ia16-*-elf*)				fmt=elf ;;
+ 

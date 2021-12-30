@@ -1,0 +1,12 @@
+--- a/libgcc/config.host
++++ b/libgcc/config.host
+@@ -737,6 +737,9 @@
+ 	;;
+ x86_64-*-openbsd*)
+ 	;;
++x86_64-*-pranaos*)
++	tmake_file="$tmake_file t-libgcc-pic"
++	;;
+ i[34567]86-*-linux*)
+ 	extra_parts="$extra_parts crtprec32.o crtprec64.o crtprec80.o crtfastmath.o"
+ 	tmake_file="${tmake_file} i386/t-crtpc t-crtfm i386/t-crtstuff t-dfprules"

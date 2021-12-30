@@ -1,0 +1,15 @@
+--- a/libstdc++-v3/crossconfig.m4
++++ b/libstdc++-v3/crossconfig.m4
+@@ -291,6 +291,12 @@
+     AC_DEFINE(HAVE_SQRTF)
+     AC_DEFINE(HAVE_TANF)
+     AC_DEFINE(HAVE_TANHF)
++    ;;
++  *-pranaos*)
++    GLIBCXX_CHECK_COMPILER_FEATURES
++    GLIBCXX_CHECK_LINKER_FEATURES
++    GLIBCXX_CHECK_MATH_SUPPORT
++    GLIBCXX_CHECK_STDLIB_SUPPORT
+ 
+ dnl # Different versions and execution modes implement different
+ dnl # subsets of these functions.  Instead of hard-coding, test for C

@@ -89,6 +89,7 @@ if [ ! -d "build/gcc" ]; then
 	mkdir -p "build/gcc"
 	pushd "build/gcc"
 		echo "Configuring GCC"
+		# You must provide the full path when using the configure script
 		"$DIR/$GCC_DIR/configure" \
 				--target=$COMPILER_TARGET \
 				--prefix="$DIR/$COMPILER_PREFIX" \
@@ -98,6 +99,7 @@ if [ ! -d "build/gcc" ]; then
 				--disable-bootstrap \
 				--with-newlib \
 				--with-sysroot=$DIR/$COMPILER_SYSROOT
+		# make -C "$DIR/../" install-headers || exit 1
 
 		echo "Running make all-gcc on GCC"
 		make -j $MAKEJOBS all-gcc
@@ -113,6 +115,11 @@ if [ ! -d "build/gcc" ]; then
 
 		make -C $(DIR)/.. build-sysroot
 
+		# echo "Compiling libstdc++"
+		# make all-target-libstdc++-v3
+
+		# echo "Installing libstdc++"
+		# make install-target-libstdc++-v3
 	popd
     else
         echo "build/gcc already exists, skipping";

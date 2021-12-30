@@ -1,0 +1,34 @@
+--- a/ld/Makefile.in
++++ b/ld/Makefile.in
+@@ -765,6 +765,7 @@
+ 	eelf32xtensa.c \
+ 	eelf32z80.c \
+ 	eelf_i386.c \
++	eelf_i386_pranaos.c \
+ 	eelf_i386_be.c \
+ 	eelf_i386_fbsd.c \
+ 	eelf_i386_ldso.c \
+@@ -932,6 +933,7 @@
+ 	eelf_k1om.c \
+ 	eelf_k1om_fbsd.c \
+ 	eelf_x86_64.c \
++	eelf_x86_64_pranaos.c \
+ 	eelf_x86_64_cloudabi.c \
+ 	eelf_x86_64_fbsd.c \
+ 	eelf_x86_64_sol2.c \
+@@ -1368,6 +1370,7 @@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eelf64tilegx.Po@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eelf64tilegx_be.Po@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eelf_i386.Po@am__quote@
++@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eelf_i386_pranaos.Po@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eelf_i386_be.Po@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eelf_i386_fbsd.Po@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eelf_i386_ldso.Po@am__quote@
+@@ -1380,6 +1383,7 @@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eelf_l1om_fbsd.Po@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eelf_s390.Po@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eelf_x86_64.Po@am__quote@
++@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eelf_x86_64_pranaos.Po@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eelf_x86_64_cloudabi.Po@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eelf_x86_64_fbsd.Po@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eelf_x86_64_sol2.Po@am__quote@

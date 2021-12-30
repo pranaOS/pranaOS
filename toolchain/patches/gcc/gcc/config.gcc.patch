@@ -1,0 +1,26 @@
+--- a/gcc/config.gcc
++++ b/gcc/config.gcc
+@@ -933,6 +933,13 @@
+   esac
+   target_has_targetdm=yes
+   ;;
++*-*-pranaos*)
++  gas=yes
++  gnu_ld=yes
++  default_use_cxa_atexit=yes
++  use_gcc_stdint=provide
++  native_system_header_dir=/usr/lib/include
++  ;;
+ *-*-*vms*)
+   extra_options="${extra_options} vms/vms.opt"
+   xmake_file=vms/x-vms
+@@ -1877,6 +1884,9 @@
+     tm_file="${tm_file} i386/unix.h i386/att.h dbxelf.h elfos.h newlib-stdint.h i386/i386elf.h i386/x86-64.h i386/rdos.h i386/rdos64.h"
+     tmake_file="i386/t-i386elf t-svr4"
+     ;;
++x86_64-*-pranaos*)
++    tm_file="${tm_file} i386/unix.h i386/att.h dbxelf.h elfos.h glibc-stdint.h i386/i386elf.h i386/x86-64.h pranaos.h"
++    ;;
+ i[34567]86-*-dragonfly*)
+ 	tm_file="${tm_file} i386/unix.h i386/att.h dbxelf.h elfos.h dragonfly.h dragonfly-stdint.h i386/dragonfly.h"
+ 	tmake_file="${tmake_file} i386/t-crtstuff"
