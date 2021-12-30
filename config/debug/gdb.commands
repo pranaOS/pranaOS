@@ -1,0 +1,7 @@
+target remote localhost:1234
+
+symbol-file %s
+
+break %s
+
+layout next
