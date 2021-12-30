@@ -1,4 +1,4 @@
-name: C++ CI/CD
+name: C++ Workflow
 
 on: [push]
 
