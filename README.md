@@ -5,7 +5,7 @@
 <img src="https://raw.githubusercontent.com/pranaOS/pranaOS/master/imgs/eagle.jpeg" width="200" height="200">
 </p>
 
-[![CI](https://github.com/pranaOS/pranaOS/actions/workflows/rust.yml/badge.svg?branch=master)](https://github.com/pranaOS/pranaOS/actions/workflows/rust.yml)
+[![CI](https://github.com/pranaOS/pranaOS/actions/workflows/cpp.yml/badge.svg?branch=master)](https://github.com/pranaOS/pranaOS/actions/workflows/cpp.yml)
 
 
 ## Have Any Issues??:
