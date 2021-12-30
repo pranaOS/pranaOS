@@ -1,0 +1,122 @@
+#pragma once
+
+#include <memory>
+#include <cstdio>
+
+namespace std
+{
+    template <typename T>
+    class function;
+
+    template <typename ReturnType, typename... Args>
+    class function<ReturnType(Args...)>
+    {
+    public:
+        template <typename T>
+        function& operator=(T t)
+        {
+            _call = new callable<T>(t);
+
+            return *this;
+        }
+
+        function& operator=(const function& other)
+        {
+            // if(_call != nullptr) delete _call; - FIXME
+
+            _call = other._call == nullptr ? nullptr : other._call->clone();
+
+            return *this;
+        }
+
+        function& operator=(function&& other)
+        {
+            _call = other._call;
+
+            other._call = nullptr;
+        }
+
+        function& operator=(std::nullptr_t)
+        {
+            _call = nullptr;
+
+            return *this;
+        }
+
+        function(const function& other)
+        {
+            operator=(other);
+        }
+
+        function(function&& other)
+        {
+            operator=(other);
+        }
+
+        template <typename T>
+        function(T t)
+        {
+            operator=(t);
+        }
+
+        function()
+        {
+            _call = nullptr;
+        }
+
+        ReturnType operator()(Args... args) const
+        {
+            return _call->invoke(args...);
+        }
+
+        operator bool() const
+        {
+            return _call != nullptr;
+        }
+
+        ~function()
+        {
+            if(_call != nullptr)
+            {
+                delete _call;
+            }
+        }
+
+    private:
+        class callable_base
+        {
+        public:
+            virtual ~callable_base() = default;
+            virtual ReturnType invoke(Args...) = 0;
+            virtual callable_base* clone() = 0;
+        };
+
+        template <typename T>
+        class callable : public callable_base
+        {
+        public:
+            callable(const T& t)
+            :
+            _t(t)
+            {
+            }
+
+            ~callable() override = default;
+
+            ReturnType invoke(Args... args) override
+            {
+                return _t(args...);
+            }
+
+            callable_base* clone() override
+            {
+                return new callable<T>(_t);
+            }
+
+        private:
+            T _t;
+        };
+
+        callable_base* _call = nullptr;
+    };
+}
