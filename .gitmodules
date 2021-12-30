@@ -1,0 +1,4 @@
+[submodule "submodules/limine"]
+	path = submodules/limine
+	url = https://github.com/limine-bootloader/limine.git
+	branch = latest-binary
