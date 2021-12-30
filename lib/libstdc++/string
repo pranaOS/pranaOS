@@ -1,0 +1,310 @@
+#pragma once
+
+#include <cstring>
+
+namespace std
+{
+    template <typename T>
+    class basic_string
+    {
+    private:
+        T* _str = nullptr;
+        size_t _size = 0;
+        size_t _capacity = 0;
+
+        void efficient_resize(size_t new_size, size_t extra_space = 10)
+        {
+            if(new_size > _capacity)
+            {
+                resize(new_size + extra_space);
+                _size = new_size;
+            }
+            else
+            {
+                _size = new_size;
+            }
+        }
+
+        void copy_string(T* dest, const T* source, size_t size_of_source)
+        {
+            for(int i = 0; i < size_of_source; i++)
+            {
+                dest[i] = source[i];
+            }
+
+            dest[size_of_source] = '\0';
+        }
+
+    public:
+        class iterator
+        {
+        public:
+            iterator(T* ptr)
+            :
+            _cp(ptr)
+            {
+            }
+
+            iterator& operator++()
+            {
+                _cp++;
+
+                return *this;
+            }
+
+            iterator operator++(int)
+            {
+                iterator iterator = *this;
+                ++(*this);
+
+                return iterator;
+            }
+
+            iterator& operator--()
+            {
+                _cp--;
+
+                return *this;
+            }
+
+            iterator operator--(int)
+            {
+                iterator iterator = *this;
+                --(*this);
+
+                return iterator;
+            }
+
+            T* operator->()
+            {
+                return _cp;
+            }
+
+            T& operator*()
+            {
+                return *_cp;
+            }
+
+            bool operator==(const iterator& rhs)
+            {
+                return _cp == rhs._cp;
+            }
+
+            bool operator!=(const iterator& rhs)
+            {
+                return _cp != rhs._cp;
+            }
+        private:
+            T* _cp;
+        };
+
+        basic_string()
+        {
+            resize(1);
+
+            at(0) = '\0';
+            _size = 0;
+            _capacity = 0;
+        }
+
+        basic_string(const T* str)
+        {
+            operator=(str);
+        }
+
+        basic_string(const basic_string<T>& old)
+        {
+            operator=(old);
+        }
+
+        basic_string(size_t n, T c)
+        {
+            if(n < 1) return;
+
+            resize(n);
+            for(int i = 0; i < n; i++)
+            {
+                _str[i] = c;
+            }
+        }
+
+        void operator=(const T* str)
+        {
+            if(str == nullptr) return;
+
+            clear();
+
+            size_t str_size = strlen(str);
+
+            if(str_size > _capacity) resize(str_size);
+            copy_string(_str, str, str_size);
+        }
+
+        void operator=(const basic_string<T>& str)
+        {
+            if(str._str == nullptr) return;
+
+            operator=(str.c_str());
+        }
+
+        basic_string<T>& append(const basic_string<T>& str)
+        {
+            if(str.length() == 0) return *this;
+
+            size_t old_size = length();
+
+            efficient_resize(length() + str.length());
+            copy_string(&_str[old_size], str.c_str(), str.length());
+
+            return *this;
+        }
+
+        basic_string<T>& append(const T* cstr)
+        {
+            if(cstr == nullptr)
+            {
+                return *this;
+            }
+
+            size_t old_size = length();
+            size_t str_size = strlen(cstr);
+
+            efficient_resize(length() + str_size);
+            copy_string(&_str[old_size], cstr, str_size);
+
+            return *this;
+        }
+
+        basic_string<T>& append(size_t n, char c)
+        {
+            append(basic_string<T>(n, c));
+
+            return *this;
+        }
+
+        void operator+=(const std::basic_string<T>& str)
+        {
+            append(str);
+        }
+
+        void operator+=(const T* str)
+        {
+            append(str);
+        }
+
+        std::basic_string<T> operator+(const std::basic_string<T>& rhs)
+        {
+            std::basic_string<T> s;
+            s += *this;
+            s += rhs;
+
+            return s;
+        }
+
+        void resize(size_t size)
+        {
+            if(size < 1) return;
+
+            _capacity = size;
+            _size = size;
+
+            T* new_str = new T[_capacity + 1];
+
+            if(_str != nullptr)
+            {
+                copy_string(new_str, _str, size);
+
+                delete[] _str;
+            }
+            _str = new_str;
+        }
+
+        bool operator==(const std::basic_string<T>& other) const
+        {
+            if(other._size != _size) return false;
+
+            for(int i = 0; i < _size; i++)
+            {
+                if(at(i) != other.at(i))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        bool operator==(const T* cstr) const
+        {
+            return operator==(std::basic_string<T>(cstr));
+        }
+
+        T& at(int index) const
+        {
+            return _str[index];
+        }
+
+        T& operator[](int index) const
+        {
+            return at(index);
+        }
+
+        const T* c_str() const
+        {
+            return _str;
+        }
+
+        void clear()
+        {
+            for(int i = 0; i < _size; i++)
+            {
+                _str[i] = '\0';
+            }
+        }
+
+        size_t length() const
+        {
+            return _size;
+        }
+
+        size_t size() const
+        {
+            return _size;
+        }
+
+        bool empty() const
+        {
+            return _size == 0;
+        }
+
+        size_t capacity() const
+        {
+            return _capacity;
+        }
+
+        iterator begin()
+        {
+            return iterator(_str);
+        }
+
+        iterator end()
+        {
+            return iterator(_str + _size);
+        }
+
+        ~basic_string()
+        {
+            if(_str != nullptr)
+            {
+                delete[] _str;
+            }
+        }
+    };
+
+    using string = basic_string<char>;
+
+    std::string to_string(int32_t value);
+    std::string to_string(uint32_t value);
+    std::string to_string(int64_t value);
+    std::string to_string(uint64_t value);
+}
