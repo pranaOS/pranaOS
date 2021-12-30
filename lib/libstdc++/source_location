@@ -1,0 +1,42 @@
+#pragma once
+
+#include <cstdint>
+
+namespace std
+{
+    class source_location
+    {
+    public:
+        static constexpr source_location current(const char* file = __builtin_FILE(), const char* func = __builtin_FUNCTION(), int line = __builtin_LINE(), int column = 0)
+        {
+            source_location loc;
+
+            loc._file = file;
+            loc._func = func;
+            loc._line = line;
+            loc._column = column;
+
+            return loc;
+        }
+
+        constexpr source_location()
+        :
+        _file("unknown"),
+        _func("unknown"),
+        _line(0),
+        _column(0)
+        {
+        }
+
+        constexpr uint32_t line() const { return _line; }
+        constexpr uint32_t column() const { return _column; }
+        constexpr const char* file_name() const { return _file; }
+        constexpr const char* function_name() const { return _func; }
+
+    private:
+        const char* _file;
+        const char* _func;
+        int _line;
+        int _column;
+    };
+}
