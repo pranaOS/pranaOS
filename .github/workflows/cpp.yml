@@ -21,7 +21,3 @@ jobs:
         run: |
           sudo apt-get update  
           sudo apt install build-essential nasm gcc g++ bison flex xorriso qemu-system-x86 libgmp3-dev libmpc-dev libmpfr-dev texinfo libisl-dev
-      
-      - name: Install toolchain
-        run: |
-          ./toolchain/build.sh
