@@ -156,3 +156,51 @@ char* strncpy(char* dest, const char* src, size_t size)
 
     return (char*)memcpy(dest, src, size);
 }
+
+char* strcat(char* dest, const char* src, size_t size)
+{
+    return strcpy(dest + strlen(dest), src);
+}
+
+char* strncat(char* dest, const char* src, size_t size)
+{
+    char* s = dest;
+    dest += strlen(dest);
+
+    size_t ss = strnlen(src, size);
+    dest[ss] = '\0';
+
+    memcpy(dest, src, ss);
+
+    return s;
+}
+
+char* strncpy(char* dest, const char* src, size_t size)
+{
+    size_t len = strnlen(src, size);
+
+    if(len != size)
+    {
+        memset(dest + size, '\0', size - len);
+    }
+
+    return (char*)memcpy(dest, src, size);
+}
+
+char* strcat(char* dest, const char* src, size_t size)
+{
+    return strcpy(dest + strlen(dest), src);
+}
+
+char* strncat(char* dest, const char* src, size_t size)
+{
+    char* s = dest;
+    dest += strlen(dest);
+
+    size_t ss = strnlen(src, size);
+    dest[ss] = '\0';
+
+    memcpy(dest, src, ss);
+  
+    return s;
+}
