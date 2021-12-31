@@ -159,3 +159,20 @@ int fprintf(FILE* file, const char* fmt, ...)
 
     return length;
 }
+
+int vprintf(const char* fmt, va_list args)
+{
+    return vfprintf(stdout, fmt, args);
+}
+
+int printf(const char* fmt, ...)
+{
+    va_list args;
+    va_start(args, fmt);
+
+    int lenght = vprintf(fmt, args);
+
+    va_end(args);
+
+    return length;
+}
