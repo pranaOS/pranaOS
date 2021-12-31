@@ -97,3 +97,65 @@ int getchar()
 {
     return fgetc(stdin);
 }
+
+int puts(const char* str)
+{
+    int r = 0;
+
+    for (r = 0; r < strlen(str); r++)
+    {
+        putchar(str[r]);
+    }
+
+    if (r > 0)
+    {
+        putchar('\n');
+
+        r++;
+    }
+
+    return r;
+}
+
+int vsprintf(char* buff, const char* fmt, va_list args)
+{
+    return vsnprintf(buff, 0, fmt, args);
+}
+
+int snprintf(char* buff, size_t n, const char* fmt, ...)
+{
+    va_list args;
+    va_start(args, fmt);
+
+    int length = vsnprintf(buff, n, fmt, args);
+
+    va_end(args);
+    
+    return length;
+}
+
+int vfprintf(FILE* file, const char* fmt, va_list args) 
+{
+    va_list new_list;
+    va_copy(new_list, args);
+    size_t size = calculate_vfprintf_buff_size(fmt, new_list);
+
+    char buff[size];
+    int length = vsnprintf(buff, size, fmt, args);
+
+    fputs(buff, file);
+
+    return length;
+}
+
+int fprintf(FILE* file, const char* fmt, ...)
+{
+    va_list args;
+    va_start(args, fmt);
+
+    int length = vfprintf(file, fmt, args);
+
+    va_end(args);
+
+    return length;
+}
