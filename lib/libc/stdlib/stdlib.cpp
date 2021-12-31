@@ -50,3 +50,43 @@ static char* int_to_string(T value, char* str, int base)
     return rc;
 }
 
+char* ltoa(int64_t value, char* str, int base)
+{
+    return int_to_string<int64_t>(value, str, base);
+}
+
+char* ultoa(uint64_t value, char* str, int base)
+{
+    return int_to_string<uint64_t>(value, str, base);
+}
+
+char* utoa(uint32_t value, char* str, int base)
+{
+    return int_to_string<uint32_t>(value, str, base);
+}
+
+char* itoa(int value, char* str, int base)
+{
+    return int_to_string<int>(value, str, base);
+}
+
+#ifndef BUILD_DISABLE_FPA
+
+void ftoa(float value, char* str, int precision)
+{
+
+}
+
+double pow(double x, double y)
+{
+    double result = x;
+
+    for(double d = 0.0f; d < y; d++)
+    {
+        result *= x;
+    }
+
+    return result;
+}
+
+#endif
