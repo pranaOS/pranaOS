@@ -95,7 +95,7 @@ void* memset(void* ptr, int value, size_t num)
     return ptr;
 }
 
-size_t strlen(const char* str)
+size_t strlen(const char* str) 
 {
     size_t len = 0;
 
@@ -111,7 +111,7 @@ size_t strnlen(const char* str, size_t len)
 {
     size_t i;
 
-    for (i = 0; i < len; i++)
+    for(i = 0; i < len; i++)
     {
         if(str[i] == '\0')
         {
@@ -149,36 +149,6 @@ char* strncpy(char* dest, const char* src, size_t size)
 {
     size_t len = strnlen(src, size);
 
-    if (len != size)
-    {
-        memset(dest + size, '\0', size - len);
-    }
-
-    return (char*)memcpy(dest, src, size);
-}
-
-char* strcat(char* dest, const char* src, size_t size)
-{
-    return strcpy(dest + strlen(dest), src);
-}
-
-char* strncat(char* dest, const char* src, size_t size)
-{
-    char* s = dest;
-    dest += strlen(dest);
-
-    size_t ss = strnlen(src, size);
-    dest[ss] = '\0';
-
-    memcpy(dest, src, ss);
-
-    return s;
-}
-
-char* strncpy(char* dest, const char* src, size_t size)
-{
-    size_t len = strnlen(src, size);
-
     if(len != size)
     {
         memset(dest + size, '\0', size - len);
@@ -203,4 +173,89 @@ char* strncat(char* dest, const char* src, size_t size)
     memcpy(dest, src, ss);
   
     return s;
+}
+
+size_t strlcat(char *dest, const char *src, size_t size)
+{
+    size_t src_len = strlen(src);
+    size_t dest_len = strnlen(dest, size);
+
+    if(dest_len == size)
+    {
+        return size + src_len;
+    }
+    else if(src_len < (size - dest_len))
+    {
+        memcpy(dest + dest_len, src, src_len + 1);
+    }
+    else
+    {
+        memcpy(dest + dest_len, src, size - 1);
+        dest[dest_len + size - 1] = '\0';
+    }
+
+    return dest_len + src_len;
+}
+
+int strcmp(const char* str1, const char* str2)
+{
+    char c1, c2;
+
+    do
+    {
+        c1 = (char)*str1++;
+        c2 = (char)*str2++;
+
+        if(c1 == '\0')
+        {
+            return c1 - c2;
+        }
+    }
+    while(c1 == c2);
+
+    return c1 - c2;
+}
+
+int strncmp(const char* str1, const char* str2, size_t size)
+{
+    while(size > 0 && *str1 && (*str1 == *str2))
+    {
+        ++str1;
+        ++str2;
+        --size;
+    }
+
+    if(size == 0)
+    {
+        return 0;
+    }
+
+    return (*(char*)str1 - *(char*)str2);
+}
+
+char* strdup(const char* s)
+{
+    size_t len = strlen(s) + 1;
+
+    char* mem = (char*)malloc(len);
+    if (mem == NULL)
+    {
+        return NULL;
+    }
+
+    return (char*)memcpy(mem, s, len);
+}
+
+char* strndup(const char* s, size_t size)
+{
+    size_t len = strnlen(s, size);
+
+    char* mem = (char*)malloc(len + 1);
+    if (mem == NULL)
+    {
+        return NULL;
+    }
+    mem[len] = '\0';
+
+    return (char*)memcpy(mem, s, len);
 }
