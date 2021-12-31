@@ -90,3 +90,28 @@ double pow(double x, double y)
 }
 
 #endif
+
+int abs(int i)
+{
+    return i < 0 ? -i : i;
+}
+
+int sqrt(int x)
+{
+    int quotient = 0;
+    int i = 0;
+
+    bool answer_found = false;
+    while(answer_found == false)
+    {
+        if(i * i == x)
+        {
+          quotient = i;
+          answer_found = true;
+        }
+
+        i++;
+    }
+
+    return quotient;
+}
