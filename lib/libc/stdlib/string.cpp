@@ -94,3 +94,65 @@ void* memset(void* ptr, int value, size_t num)
 
     return ptr;
 }
+
+size_t strlen(const char* str)
+{
+    size_t len = 0;
+
+    while(str[len])
+    {
+        len++;
+    }
+
+    return len;
+}
+
+size_t strnlen(const char* str, size_t len)
+{
+    size_t i;
+
+    for (i = 0; i < len; i++)
+    {
+        if(str[i] == '\0')
+        {
+            break;
+        }
+    }
+
+    return i;
+}
+
+char* strcpy(char* dest, const char* src)
+{
+    return (char*)memcpy(dest, src, strlen(src) + 1);
+}
+
+size_t strlcpy(char* dest, const char* src, size_t size)
+{
+    size_t src_len = strlen(src);
+
+    if((src_len + 1) < size)
+    {
+        memcpy(dest, src, src_len + 1);
+    }
+    else if(size != 0)
+    {
+        memcpy(dest, src, src_len - 1);
+
+        dest[size - 1] = '\0';
+    }
+
+    return src_len;
+}
+
+char* strncpy(char* dest, const char* src, size_t size)
+{
+    size_t len = strnlen(src, size);
+
+    if (len != size)
+    {
+        memset(dest + size, '\0', size - len);
+    }
+
+    return (char*)memcpy(dest, src, size);
+}
