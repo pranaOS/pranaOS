@@ -43,3 +43,34 @@ struct ubsan_type_mismatch_info
     uintptr_t alignment;
     uint8_t type_check_kind;
 };
+
+struct ubsan_out_of_bounds_info
+{
+    ubsan_source_location location;
+    ubsan_type_descriptor* lhs_type;
+    ubsan_type_descriptor* rhs_type;
+};
+
+struct ubsan_overflow_info
+{
+    ubsan_source_location location;
+    ubsan_type_descriptor* type;
+};
+
+struct ubsan_unreachable_info
+{
+    ubsan_source_location location;
+};
+
+struct ubsan_shift_out_of_bounds_info
+{
+    ubsan_source_location location;
+    ubsan_type_descriptor* lhs_type;
+    ubsan_type_descriptor* rhs_type;
+};
+
+struct ubsan_vla_bound_not_positive_info
+{
+    ubsan_source_location location;
+    ubsan_type_descriptor* type;
+};
