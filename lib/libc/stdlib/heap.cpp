@@ -60,3 +60,132 @@ void __stdlib_heap_initialise()
 
     heap_root->is_free = true;
 }
+
+
+__BEGIN_DECLS
+void* malloc(size_t size)
+{
+    if(size < 1)
+    {
+        return NULL;
+    }
+
+    size -= size % 8;
+    if((size % 8) != 0)
+    {
+        size += 8;
+    }
+
+    heap_block* block = heap_root;
+
+    while (true)
+    {
+        if(block->size >= size)
+        {
+            if(block->size > size + sizeof(heap_block))
+            {
+                heap_block* new_block = (heap_block*)block + sizeof(heap_block) + size;
+
+                new_block->is_free = true;
+                new_block->size = block->size - sizeof(heap_block) + size;
+
+                new_block->next_free = block->next_free;
+                new_block->next = block->next;
+                new_block->previous_free = block->previous_free;
+                new_block->previous = block;
+
+                block->next_free = new_block;
+                block->next = new_block;
+                block->size = size;
+            }
+            if(block == heap_root)
+            {
+                heap_root = block->next_free;
+            }
+            block->is_free = false;
+
+            if(block->previous_free != nullptr)
+            {
+                block->previous_free->next_free = block->next_free;
+            }
+
+            if(block->previous != nullptr)
+            {
+                block->previous->next_free = block->next_free;
+            }
+
+            if(block->next_free != nullptr)
+            {
+                block->next_free->previous_free = block->previous_free;
+            }
+
+            if(block->next != nullptr)
+            {
+                block->next->previous_free = block->previous_free;
+            }
+
+            return block + 1;
+        }
+
+        if(block->next_free == nullptr)
+        {
+            return nullptr;
+        }
+
+        block = block->next_free;
+    }
+    return nullptr;
+}
+
+void free(void* mem)
+{
+    if(mem == nullptr)
+    {
+        fprintf(stderr, "free(): double free detected (address is 0x%x)\n", mem);
+
+        while(true);
+    }
+
+    heap_block* block = ((heap_block*)mem) - 1;
+    block->is_free = true;
+
+    if(block < heap_root)
+    {
+        heap_root = block;
+    }
+
+    if(block->next_free != nullptr)
+    {
+        if(block->next_free->previous_free < block)
+        {
+            block->next_free->previous_free = block;
+        }
+    }
+
+    if(block->next != nullptr)
+    {
+        block->next->previous = block;
+        if(block->next->is_free)
+        {
+            heap_merge_blocks(block, block->next);
+        }
+    }
+
+    if(block->previous_free != nullptr)
+    {
+        if(block->previous_free->next_free > block)
+        {
+            block->previous_free->next_free = block;
+        }
+    }
+
+    if(block->previous != nullptr)
+    {
+        block->previous->next = block;
+        if(block->previous->is_free)
+        {
+            heap_merge_blocks(block, block->previous);
+        }
+    }
+}
+__END_DECLS
