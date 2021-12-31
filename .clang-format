@@ -1,0 +1,29 @@
+---
+
+BasedOnStyle: LLVM
+
+Language: Cpp
+
+UseTab: Never
+IndentWidth: 4
+TabWidth: 4
+
+DerivePointerAlignment: false
+PointerAlignment: Left
+
+BreakBeforeBraces: Allman
+
+SpaceBeforeParens: false
+
+AlignAfterOpenBracket: Align
+AlignEscapedNewlines: Left
+
+AllowShortFunctionsOnASingleLine: None
+
+AlwaysBreakTemplateDeclarations: Yes
+
+AllowShortLoopsOnASingleLine: true
+
+BinPackArguments: false
+
+ColumnLimit: 0
