@@ -74,3 +74,49 @@ struct ubsan_vla_bound_not_positive_info
     ubsan_source_location location;
     ubsan_type_descriptor* type;
 };
+
+static void ubsan_log_info(ubsan_source_location* location, const char* fmt, ...)
+{
+    fprintf(_ubsan_output, "ubsan! %s:%d:%d\n", location->filename, location->line, location->column);
+
+    va_list v;
+    va_start(v, fmt);
+
+    vfprintf(_ubsan_output, fmt, v);
+
+    fputc('\n', _ubsan_output);
+
+    va_end(v);
+}
+
+static void ubsan_handle_type_mismatch(ubsan_type_mismatch_info* info, uintptr_t pointer)
+{
+    if((void*)pointer == nullptr)
+    {
+        ubsan_log_info(&info->location, "nullptr referenced\n");
+    }
+}
+
+static void ubsan_handle_pointer_overflow(ubsan_overflow_info* info, uintptr_t base, uintptr_t result)
+{
+    if(base >= 0 && result >= 0)
+    {
+        if(base > result)
+        {
+            ubsan_log_info(&info->location, "addition of an unsigned offset to %d overflowed to %d\n", base, result);
+        }
+        else
+        {
+            ubsan_log_info(&info->location, "subtraction of an unsigned offset to %d overflowed to %d\n", base, result);
+        }
+    }
+    else
+    {
+        ubsan_log_info(&info->location, "pointer index expression with base %d overflowed to %d\n", base, result);
+    }
+}
+
+static void ubsan_handle_out_of_bounds(ubsan_out_of_bounds_info* info, uintptr_t index)
+{
+    ubsan_log_info(&info->location, "index %d is out of bounds for type %s\n", index, info->lhs_type->name);
+}
