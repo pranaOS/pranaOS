@@ -6,7 +6,8 @@
 #include <sys/types.h>
 #include <libpranaos/syscalls.h>
 
-struct FILE {
+struct FILE
+{
     int flags;
     off_t offset;
     char* buff;
@@ -19,7 +20,7 @@ static FILE _stdin = { .flags = O_RDONLY, .offset = 0, .buff = nullptr, .buff_si
 static FILE _stdout = { .flags = O_WRONLY, .offset = 0, .buff = nullptr, .buff_size = 0, .fd = STDOUT_FILENO, .status = 0 };
 static FILE _stderr = { .flags = O_WRONLY, .offset = 0, .buff = nullptr, .buff_size = 0, .fd = STDERR_FILENO, .status = 0  };
 
-FILE* stdint = &_stdin;
+FILE* stdin = &_stdin;
 FILE* stdout = &_stdout;
 FILE* stderr = &_stderr;
 
@@ -50,7 +51,7 @@ size_t fwrite(const void* buff, size_t size, size_t count, FILE* file)
     size_t bytes = count * size;
     size_t bytes_written = write(file->fd, buff, bytes);
 
-    if (bytes == bytes_written)
+    if(bytes == bytes_written)
     {
         return count;
     }
@@ -61,6 +62,7 @@ size_t fwrite(const void* buff, size_t size, size_t count, FILE* file)
 int fputc(int c, FILE* file)
 {
     fwrite((const void*)&c, 1, 1, file);
+
     return c;
 }
 
@@ -102,12 +104,12 @@ int puts(const char* str)
 {
     int r = 0;
 
-    for (r = 0; r < strlen(str); r++)
+    for(r = 0; r < strlen(str); r++)
     {
         putchar(str[r]);
     }
 
-    if (r > 0)
+    if(r > 0)
     {
         putchar('\n');
 
@@ -115,6 +117,129 @@ int puts(const char* str)
     }
 
     return r;
+}
+
+int vsnprintf(char* buff, size_t n, const char* fmt, va_list args)
+{
+    int length = 0;
+    size_t fmt_len = strlen(fmt);
+
+    while(char ch = *fmt++)
+    {
+        if(n != 0 && length > n)
+        {
+            break;
+        }
+
+        if(ch == '%')
+        {
+            switch(ch = *fmt++)
+            {
+                case '%':
+                {
+                    buff[length] = '%';
+                    length++;
+
+                    break;
+                }
+                case 'c':
+                {
+                    char c = va_arg(args, int);
+
+                    if(c != 0)
+                    {
+                        buff[length] = c;
+                        length++;
+                    }
+
+                    break;
+                }
+                case 's':
+                {
+                    char* str = va_arg(args, char*);
+
+                    for(int i = 0; i < strlen(str); i++)
+                    {
+                        buff[length + i] = str[i];
+                    }
+                    length += strlen(str);
+
+                    break;
+                }
+                case 'd':
+                {
+                    int interger = va_arg(args, int);
+
+                    char itoa_buff[128];
+                    itoa(interger, itoa_buff, 10);
+
+                    for(int i = 0; i < strlen(itoa_buff); i++)
+                    {
+                        buff[length + i] = itoa_buff[i];
+                    }
+                    length += strlen(itoa_buff);
+
+                    break;
+                }
+                case 'x':
+                {
+                    int interger = va_arg(args, uint32_t);
+
+                    char itoa_buff[128];
+                    utoa(interger, itoa_buff, 16);
+
+                    for(int i = 0; i < strlen(itoa_buff); i++)
+                    {
+                        buff[length + i] = itoa_buff[i];
+                    }
+                    length += strlen(itoa_buff);
+
+                    break;
+                }
+                case 'l':
+                {
+                    if((fmt_len - strlen(fmt)) < fmt_len)
+                    {
+                        ch = *fmt++;
+
+                        switch(ch)
+                        {
+                            default:
+                            {
+                                buff[length] = '?';
+                                length++;
+                                ch = *fmt--;
+
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        buff[length] = '?';
+                        length++;
+                    }
+
+                    break;
+                }
+                default:
+                {
+                    buff[length] = '?';
+                    length++;
+                }
+            }
+
+        }
+        else
+        {
+            buff[length] = ch;
+            length++;
+        }
+    }
+
+    buff[length] = '\0';
+
+    return length;
 }
 
 int vsprintf(char* buff, const char* fmt, va_list args)
@@ -130,7 +255,106 @@ int snprintf(char* buff, size_t n, const char* fmt, ...)
     int length = vsnprintf(buff, n, fmt, args);
 
     va_end(args);
-    
+
+    return length;
+}
+
+int sprintf(char* buff, const char* fmt, ...)
+{
+    va_list args;
+    va_start(args, fmt);
+
+    int length = vsprintf(buff, fmt, args);
+
+    va_end(args);
+
+    return length;
+}
+
+static size_t calculate_vfprintf_buff_size(const char* fmt, va_list args)
+{
+    size_t length = 0;
+    size_t fmt_len = strlen(fmt);
+
+    while(char ch = *fmt++)
+    {
+        if(ch == '%')
+        {
+            switch(ch = *fmt++)
+            {
+                case '%':
+                {
+                    length++;
+
+                    break;
+                }
+                case 'c':
+                {
+                    char c = va_arg(args, int);
+
+                    if(c != 0)
+                    {
+                        length++;
+                    }
+
+                    break;
+                }
+                case 's':
+                {
+                    char* str = va_arg(args, char*);
+
+                    length += strlen(str);
+
+                    break;
+                }
+                case 'd':
+                {
+                    length += 128;
+
+                    break;
+                }
+                case 'x':
+                {
+                    length += 128;
+
+                    break;
+                }
+                case 'l':
+                {
+                    if((fmt_len - strlen(fmt)) < fmt_len)
+                    {
+                        ch = *fmt++;
+
+                        switch(ch)
+                        {
+                            default:
+                            {
+                                length++;
+                                ch = *fmt--;
+
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        length++;
+                    }
+
+                    break;
+                }
+                default:
+                {
+                    length++;
+                }
+            }
+        }
+        else
+        {
+            length++;
+        }
+    }
+
     return length;
 }
 
@@ -160,17 +384,17 @@ int fprintf(FILE* file, const char* fmt, ...)
     return length;
 }
 
-int vprintf(const char* fmt, va_list args)
+int vprintf(const char* fmt, va_list args) 
 {
     return vfprintf(stdout, fmt, args);
 }
 
-int printf(const char* fmt, ...)
+int printf(const char* fmt, ...) 
 {
     va_list args;
     va_start(args, fmt);
 
-    int lenght = vprintf(fmt, args);
+    int length = vprintf(fmt, args);
 
     va_end(args);
 
