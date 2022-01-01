@@ -1,5 +1,7 @@
 #pragma once
 
-#define std() asm("std" ::)
+#define sti() asm("sti" ::)
+#define cli() asm("cli" ::)
+#define nop() asm("asm" ::)
 
 extern void arch_idle_cpu(void);
