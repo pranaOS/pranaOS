@@ -42,13 +42,33 @@
 struct pci_device_s;
 typedef struct pci_device_s pci_device_t;
 
-typedef int (*pci_device_initializer_t)(pci_device_t *pci_dev);
+typedef int (*pci_device_initialiser_t)(pci_device_t *pci_dev);
 
 struct pci_device_s
 {
-    uint16_t bus;
-    uint16_t device;
-    uint16_t function;
+	uint16_t bus;
+	uint16_t device;
+	uint16_t function;
 
-    const char* name;
+	uint16_t                 vendor_id;
+	uint16_t                 device_id;
+	uint16_t                 command;
+	uint8_t                  class_code;
+	uint8_t                  subclass;
+	uint8_t                  prog_if;
+	uint8_t                  rev_id;
+	uint8_t                  header_type;
+	void *                   header;
+	pci_device_initialiser_t driver;
+	const char *             name;
+	struct pci_device_s *    next;
 };
+
+typedef struct
+{
+	uint32_t BAR[6];
+	uint8_t  interrupt_line;
+	uint8_t  interrupt_pin;
+	uint8_t  min_grant;
+	uint8_t  max_latency;
+} pci_common_header_t;
