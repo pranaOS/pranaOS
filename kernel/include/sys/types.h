@@ -1,5 +1,4 @@
-#ifndef _SYS_TYPES_H
-#define _SYS_TYPES_H
+#pragma once
 
 #include <stddef.h>
 #include <stdint.h>
@@ -53,5 +52,3 @@ typedef uint32_t     reg_t;
 typedef unsigned int uint;
 
 typedef unsigned long suseconds_t;
-
-#endif
