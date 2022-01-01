@@ -2,9 +2,32 @@
 
 #include <stdint.h>
 
-#if 0
+#if 0 
 
-#endif 
+	#define PCI_UNCLASSIFIED                       0x00
+	#define PCI_MASS_STORAGE_CONTROLLER            0x01
+	#define PCI_NETWORK_CONTROLLER                 0x02
+	#define PCI_DISPLAY_CONTROLLER                 0x03
+	#define PCI_MULTIMEDIA_CONTROLLER              0x04
+	#define PCI_MEMORY_CONTROLLER                  0x05
+	#define PCI_BRIDGE_DEVICE                      0x06
+	#define PCI_SIMPLE_COMMUNICATION_CONTROLLER    0x07
+	#define PCI_BASE_SYSTEM_PERIPHERAL             0x08
+	#define PCI_INPUT_DEVICE_CONTROLLER            0x09
+	#define PCI_DOCKING_STATION                    0x0A
+	#define PCI_PROCESSOR                          0x0B
+	#define PCI_SERIAL_BUS_CONTROLLER              0x0C
+	#define PCI_WIRELESS_CONTROLLER                0x0D
+	#define PCI_INTELLIGENT_CONTROLLER             0x0E
+	#define PCI_SATELLITE_COMMUNICATION_CONTROLLER 0x0F
+	#define PCI_ENCRYPTION_CONTROLLER              0x10
+	#define PCI_SIGNAL_PROCESSING_CONTROLLER       0x11
+	#define PCI_PROCESSING_ACCELERATOR             0x12
+	#define PCI_NON_ESSENTIAL_INSTRUMENTATION      0x13
+	#define PCI_CO_PROCESSOR                       0x40
+	#define PCI_UNASSIGNED_CLASS                   0xFF
+
+#endif
 
 #define PCI_VENDOR_OFFSET 0x0
 #define PCI_DEVICE_ID_OFFSET 0x2 
