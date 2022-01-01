@@ -20,3 +20,20 @@ struct stat
 	time_t    st_ctime;
 };
 #endif
+
+struct stat
+{
+	short     st_dev;
+	short     st_ino;
+	int    st_mode;
+	int   st_nlink;
+	int     st_uid;
+	int     st_gid;
+	int     st_rdev;
+	int     st_size;
+	int st_blksize;
+	int  st_blocks;
+	int    st_atime;
+	int    st_mtime;
+	int    st_ctime;
+};
