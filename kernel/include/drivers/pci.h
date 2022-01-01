@@ -2,7 +2,7 @@
 
 #include <stdint.h>
 
-#if 0 
+#if 0
 
 	#define PCI_UNCLASSIFIED                       0x00
 	#define PCI_MASS_STORAGE_CONTROLLER            0x01
@@ -29,15 +29,15 @@
 
 #endif
 
-#define PCI_VENDOR_OFFSET 0x0
-#define PCI_DEVICE_ID_OFFSET 0x2 
-#define PCI_COMMAND_OFFSET 0x4
+#define PCI_VENDOR_OFFSET         0x0
+#define PCI_DEVICE_ID_OFFSET      0x2
+#define PCI_COMMAND_OFFSET        0x4
 #define PCI_INTERRUPT_LINE_OFFSET 0x3C
-#define PCI_INTERRUPT_PIC_OFFSET 0x3E
+#define PCI_INTERRUPT_PIN_OFFSET  0x3E
 
-#define PCI_BAR_MEM 0x0
-#define PCI_BAR_IO 0x1
-#define PCI_BAR_NONE 0x3 
+#define PCI_BAR_MEM  0x0
+#define PCI_BAR_IO   0x1
+#define PCI_BAR_NONE 0x3
 
 struct pci_device_s;
 typedef struct pci_device_s pci_device_t;
@@ -72,3 +72,15 @@ typedef struct
 	uint8_t  min_grant;
 	uint8_t  max_latency;
 } pci_common_header_t;
+
+void pci_write_dword(uint16_t bus, uint16_t slot, uint16_t function,
+                     uint16_t offset, uint32_t value);
+
+pci_device_t *pci_find_by_class(int classcode, int subclass, int prog_if);
+
+pci_device_t *pci_find_by_vendor(int vendor, int device);
+
+uint32_t pci_get_bar_by_index(pci_device_t *pcidev, uint32_t index);
+uint32_t pci_get_bar_by_type(pci_device_t *pcidev, uint8_t type);
+int init_pci();
+int init_pci_devices();
