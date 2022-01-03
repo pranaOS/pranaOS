@@ -1,6 +1,6 @@
 #include <print_pm.h>
 #include <types.h>
-#include <fs/ext2.h>
+#include <fs/fs.h>
 
 #define PART_OFFSET 	(0x7c00 + 0x1BE) 
 
