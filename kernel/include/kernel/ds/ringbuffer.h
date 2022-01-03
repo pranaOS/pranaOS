@@ -12,6 +12,9 @@ typedef uint32_t cb_flags_t;
 struct ringbuffer {
     unsigned long size;
 
+    volatile unsigned long virtual_end;
+    volatile unsigned long virtual_begin;
+
     char *buffer_start;
     char *buffer_end;
 
