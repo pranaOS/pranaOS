@@ -13,3 +13,34 @@ void print_char(char c)
     videoMem[loc+1] = 0x0F;
     loc += 2;
 }
+
+
+void print(char *txt)
+{
+	char c;
+	size_t i = 0;
+
+
+	while ((c = txt[i]) != 0)
+	{
+		if (c == '\n')
+		{
+			loc += (VIDEO_COLS - ((loc/2) % VIDEO_COLS)) * 2;
+		}
+		else 
+		{
+			print_char(txt[i]);
+		}
+		i++;
+	}
+
+}
+
+int strlen(char *str)
+{
+    int size = 0;
+    while (str[size])
+        size++;
+    
+    return size;
+}
