@@ -46,3 +46,16 @@ int flagforce_alloc_frame(page_t *page, int is_kernel, int writeable);
 
 int map_frame(page_t *page, unsigned int addr, int remap, int is_kernel,
               int is_writable_from_userspace);
+
+phys_addr_t virt_to_phys(void *virtual_address);
+
+void switch_page_directory(page_directory_t *dir);
+
+page_t *get_page(uint32_t virtual_address, int make_page_table,
+                page_directory_t *dir);
+
+void alloc_virt(offset_t start, size_t size, int user);
+
+page_directory_t *duplicate_current_page_directory();
+
+int init_paging();
