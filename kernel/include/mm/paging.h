@@ -26,7 +26,14 @@ typedef struct page_table
 } page_table_t;
 
 typedef struct page_directory {
-
+    page_t pages[AMOUNT_OF_PAGES_PER_TABLE];
 } page_directory_t;
 
 int get_frame(unsigned int frame_addr);
+
+page_directory_t *get_kernel_dir();
+page_directory_t *get_current_dir(); 
+void set_current_dir(page_directory_t *new);
+
+unsigned long phys_freeram_amount();
+unsigned long phys_freeswap_amout();
