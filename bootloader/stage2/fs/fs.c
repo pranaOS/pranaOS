@@ -150,5 +150,36 @@ unsigned int _ext2_get_block_loc(inode_t *inode, unsigned int block, superblock_
 
 void _load_kernel(inode_t *kernel_inode, superblock_t *sb, unsigned int blocksize, unsigned int disk)
 {
-    
+	unsigned int total_block_count = kernel_inode->size / (1024 << sb->block_size_frag);
+	unsigned int placement_address = PLACEMENT_START;	
+
+	print("block count: "); print_int(total_block_count);
+
+	unsigned int copy_iter = 0;
+
+	print("Kernel size: "); print_int(kernel_inode->size); print("\n");
+
+	for (size_t i = 0; i < total_block_count; i++)
+	{
+		unsigned int x = _ext2_get_block_loc(kernel_inode, i, sb, blocksize, disk);
+		print(" "); print_int(x);
+		if (x == 0)
+		{
+			print("Too large ?");
+			break;
+		}
+
+		load_ext2_block(x, placement_address, sb, blocksize, disk);
+		placement_address += (1024 << sb->block_size_frag);
+		
+		if (placement_address == (placement_address + 512 * 1024))
+		{
+			memcpy(KERNEL_ENTRY + (512 * 1024 * copy_iter), PLACEMENT_START, 512*1024);
+			copy_iter++;
+			placement_address = PLACEMENT_START;
+		}
+	}
+
+	memcpy(KERNEL_ENTRY + (512 * 1024 * copy_iter), PLACEMENT_START, placement_address - PLACEMENT_START);
+	print("placement_address: "); print_int(placement_address); print("\n");
 }
