@@ -4,9 +4,11 @@
 #include <fs/fs.h>
 #include <sys/types.h>
 
-
 struct DIR_s;
 typedef struct DIR_s DIR;
+
+struct filesystem_s;
+typedef struct filesystem_s filesystem_t;
 
 #include <stddef.h>
 #include <stdint.h>
@@ -40,3 +42,36 @@ typedef struct dirent *(*read_dir_fpointer)(DIR *dirstream);
 typedef DIR *(*open_dir_fpointer)(vfs_node_t *);
 typedef int (*close_dir_fpointer)(DIR *dirstream);
 typedef int (*ioctl_fpointer)(int request, char *args);
+
+struct vfs_node_s
+{
+	char *   name; 
+	uint8_t  type; 
+	uint16_t permissions; 
+	uid_t    uid;         
+	gid_t    gid;         
+	id_t     id;          
+	size_t   filelength;  
+	filesystem_t
+		*    fs_info;
+	offset_t offset; 
+	nlink_t nlink;    
+
+	open_fpointer  open;  
+	close_fpointer close; 
+
+	read_fpointer  read;  
+	write_fpointer write; 
+	creat_fpointer creat; 
+	ioctl_fpointer cmd; 
+
+	open_dir_fpointer  opendir;
+	close_dir_fpointer closedir;
+	read_dir_fpointer  readdir; 
+
+	vfs_node_t *ptr;      
+	vfs_node_t *nextnode; 
+	vfs_node_t *dirlist;  
+	                      
+	vfs_node_t *parent;   
+};
