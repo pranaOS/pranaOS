@@ -7,10 +7,10 @@
 #define BUFFERED (1 << 1)
 
 struct pipe {
-    struct ringbuffer *circbuf;
-    int pipefd[2];
-    flags_t flags;
-};  
+	struct ringbuffer *circbuf;
+	int                pipefd[2];
+	flags_t            flags;
+};
 
 int pipe_close(vfs_node_t *node);
 
@@ -21,4 +21,9 @@ ssize_t pipe_read(vfs_node_t *node, unsigned int offset, void *buffer,
 ssize_t pipe_write(vfs_node_t *node, unsigned int offset, const void *buffer,
                    size_t size, int flags);
 
-int pipe(int pipefd[2]);
+ssize_t pipe_remove(vfs_node_t *node, unsigned int offset, int location);
+
+int          pipe(int pipefd[2]);
+struct pipe *pipe_create();
+void         pipe_destroy(struct pipe *);
+int          mkfifo(const char *path);
