@@ -104,3 +104,22 @@ inode_t *get_inode_ref(unsigned int inode_index, unsigned int startinode, unsign
 	
 	return (inode_t*) (((unsigned int) buf) + _inode_offset_rel_to_block(inode_index, sb));
 }
+
+void load_ext2_block(unsigned int block, unsigned int placement_address, superblock_t *sb, unsigned int bs, unsigned int disk)
+{
+	load_block(disk, global_offset + block * ((1024 << sb->block_size_frag) / bs), (1024 << sb->block_size_frag) / bs, placement_address % 0x10, placement_address / 0x10);
+}
+
+unsigned int _handle_indirirect_bp(unsigned int indirect_bp_index, unsigned int block, superblock_t *sb, unsigned int bs, unsigned int disk)
+{
+	uint32_t *indirect_bp = (uint32_t*) malloc(1024 << sb->block_size_frag, 1);
+
+	print(" "); print_int(indirect_bp);
+
+	load_ext2_block(indirect_bp_index, (uint32_t) indirect_bp, sb, bs, disk);
+	unsigned int ret = indirect_bp[block];
+
+	free(0x1000);
+
+	return ret;
+}
