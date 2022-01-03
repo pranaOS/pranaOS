@@ -37,3 +37,12 @@ void set_current_dir(page_directory_t *new);
 
 unsigned long phys_freeram_amount();
 unsigned long phys_freeswap_amout();
+unsigned long sharedram_amount();
+unsigned long bufferram_amount();
+
+int alloc_frame(page_t *page, int is_kernel, int is_writable_from_userspace);
+int realloc_frame(page_t *page, int is_kernel, int is_writable_from_userspace);
+int flagforce_alloc_frame(page_t *page, int is_kernel, int writeable);
+
+int map_frame(page_t *page, unsigned int addr, int remap, int is_kernel,
+              int is_writable_from_userspace);
