@@ -1,4 +1,4 @@
-name: C++ Workflow
+name: C Workflow
 
 on: [push]
 
