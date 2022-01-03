@@ -43,3 +43,33 @@ typedef struct {
 	uint16_t		uid;
 	uint16_t		gid;
 } superblock_t;
+
+typedef struct {
+	uint16_t		type_permissions;	
+	uint16_t 		uid;
+	uint32_t 		size;				
+	uint32_t 		last_access_time; 	
+	uint32_t 		creation_time; 		
+	uint32_t 		last_mod_time; 		
+	uint32_t 		deletion_time; 		
+
+	uint16_t		gid;
+	
+	uint16_t		hard_link_count;
+	uint32_t 		disk_sectors; 		
+
+	uint32_t 		flags;				
+	uint32_t 		os_specific_value_1;
+
+	uint32_t 		direct_block_pointer[12];
+	uint32_t 		single_indirect_block_pointer;
+	uint32_t 		double_indirect_block_pointer;
+	uint32_t 		triple_indirect_block_pointer;
+
+	uint32_t 		gen_number;
+	uint32_t 		reserved;
+	uint32_t 		reserved2;
+	uint32_t 		block_addr_fragment;
+	uint32_t 		os_specific_value_2[3]; 
+
+} inode_t;
