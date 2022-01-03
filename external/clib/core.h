@@ -11,3 +11,6 @@
 	#define eclib_malloc malloc
 	#define eclib_free   free
 #endif 
+
+#define ECLIB_EIND   1
+#define ECLIB_EDESTR 2
