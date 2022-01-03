@@ -36,3 +36,8 @@ typedef struct partition_s
 	uint32_t 	part_start_lba;
 	uint32_t 	total_sects;
 } partition_t;
+
+int determine_fs(unsigned int startlba, unsigned int total_sects, unsigned int disk, unsigned int blocksize)
+{
+    return FS_TYPE_EXT2;
+}
