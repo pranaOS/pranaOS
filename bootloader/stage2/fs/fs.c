@@ -73,3 +73,13 @@ typedef struct {
 	uint32_t 		os_specific_value_2[3]; 
 
 } inode_t;
+
+typedef struct {
+	uint32_t 		block_bitmap; 			
+	uint32_t 		inode_bitmap;			
+	uint32_t 		start_inode_table; 		
+	uint16_t 		unallocated_block_count;
+	uint16_t 		unallocated_inode_count;
+	uint16_t 		directory_count;
+	uint8_t			unused[14];
+} bgd_t;
