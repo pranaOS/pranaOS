@@ -41,3 +41,25 @@ int determine_fs(unsigned int startlba, unsigned int total_sects, unsigned int d
 {
     return FS_TYPE_EXT2;
 }
+
+int load_kernel(unsigned int startlba, unsigned int total_sects, unsigned int disk, unsigned int blocksize)
+{
+    switch (determine_fs(startlba, total_sects, disk, blocksize)) {
+        case FS_TYPE_EXT2:
+            load_ext2_kernel(KERNEL_NAME, startlba, total_sects, disk, blocksize);
+            return 0;
+        
+        default:
+            return 1;
+    }
+    return 0;
+}
+
+void findkernel(unsigned int disk, unsigned int blocksize)
+{
+    print("Finding bootable partition table\n");
+
+    print("disk: "); print_int(disk); print(" bs: "); print_int(blocksize); print("\n");
+
+    int jump = 0;
+}
