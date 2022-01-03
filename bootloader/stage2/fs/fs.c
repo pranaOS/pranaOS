@@ -2,14 +2,15 @@
 #include <mem/mem.h>
 #include <load.h>
 
-#define SUPERBLOCK_POS 0x0400
-#define EXT2_SIGNATURE 0xEF53
-#define ROOT_INODE 0x0002
-#define INODE_SIZE 0x0080
+#define SUPERBLOCK_POS 	0x0400
+#define EXT2_SIGNATURE 	0xEF53
+#define ROOT_INODE 		0x0002
+#define INODE_SIZE 		0x0080
 #define PLACEMENT_START 0xF000
 
 unsigned int global_offset = 0;
 
+#pragma pack(1)
 typedef struct {
 	uint32_t 		total_inodes;
 	uint32_t 		total_blocks;
@@ -27,10 +28,10 @@ typedef struct {
 	uint32_t 		last_mount_time;		
 	uint32_t 		last_written_time;		
 
-	uint16_t		mount_amount_since_last_check;
+	uint16_t		mount_amount_since_last_check;	
 	uint16_t		max_mounts_after_check;
 
-	uint16_t		ext2_signature;
+	uint16_t		ext2_signature;	
 	uint16_t		fs_state;		
 	uint16_t		when_error; 	
 	uint16_t		minor_version;
@@ -42,8 +43,10 @@ typedef struct {
 
 	uint16_t		uid;
 	uint16_t		gid;
+
 } superblock_t;
 
+#pragma pack(1)
 typedef struct {
 	uint16_t		type_permissions;	
 	uint16_t 		uid;
@@ -74,6 +77,7 @@ typedef struct {
 
 } inode_t;
 
+#pragma pack(1)
 typedef struct {
 	uint32_t 		block_bitmap; 			
 	uint32_t 		inode_bitmap;			
@@ -117,6 +121,7 @@ unsigned int _handle_indirirect_bp(unsigned int indirect_bp_index, unsigned int 
 	print(" "); print_int(indirect_bp);
 
 	load_ext2_block(indirect_bp_index, (uint32_t) indirect_bp, sb, bs, disk);
+
 	unsigned int ret = indirect_bp[block];
 
 	free(0x1000);
@@ -151,7 +156,7 @@ unsigned int _ext2_get_block_loc(inode_t *inode, unsigned int block, superblock_
 void _load_kernel(inode_t *kernel_inode, superblock_t *sb, unsigned int blocksize, unsigned int disk)
 {
 	unsigned int total_block_count = kernel_inode->size / (1024 << sb->block_size_frag);
-	unsigned int placement_address = PLACEMENT_START;	
+	unsigned int placement_address = PLACEMENT_START;
 
 	print("block count: "); print_int(total_block_count);
 
@@ -182,4 +187,35 @@ void _load_kernel(inode_t *kernel_inode, superblock_t *sb, unsigned int blocksiz
 
 	memcpy(KERNEL_ENTRY + (512 * 1024 * copy_iter), PLACEMENT_START, placement_address - PLACEMENT_START);
 	print("placement_address: "); print_int(placement_address); print("\n");
+}
+
+int load_ext2_kernel(char *kernel_name, unsigned int startlba, unsigned int total_lba, unsigned int disk, unsigned int blocksize_phys)
+{
+	print("Loading kernel from ext2 filesystem\n");
+
+	unsigned int superblock_lba = startlba + (SUPERBLOCK_POS / blocksize_phys);
+
+	global_offset = startlba;
+	
+	superblock_t *sb = (superblock_t*) malloc(sizeof(superblock_t), 1);
+
+	bgd_t *bgd = malloc(sizeof(bgd_t), 0);
+
+	load_block(disk, superblock_lba, 1, (unsigned int) sb, 0);
+	load_block(disk, superblock_lba + (1024 << sb->block_size_frag) / blocksize_phys, 1, (unsigned int) bgd, 0);
+
+	print("Superblock loaded successfully\n");
+
+	if (sb->ext2_signature != EXT2_SIGNATURE)
+	{
+		print("Cannot load kernel, not a ext2 filesystem or superblock was loaded incorrectly\n");
+		return 1;
+	}
+
+	inode_t *inode_refrence = get_inode_ref(KERNEL_INODE, bgd->start_inode_table, blocksize_phys, sb, disk);
+	
+	print("Starting to load kernel\n");
+
+	_load_kernel(inode_refrence, sb, blocksize_phys, disk);
+
 }
