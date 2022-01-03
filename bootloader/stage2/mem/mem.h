@@ -2,4 +2,4 @@
 
 #include <types.h>
 
-void *malloc(int aligned);
+void *malloc(size_t size, int aligned);
