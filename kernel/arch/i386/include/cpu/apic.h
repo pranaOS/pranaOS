@@ -2,8 +2,7 @@
 
 #include <stdint.h>
 
-struct madt
-{
+struct madt {
 	uint32_t signature;
 	uint32_t length;
 	uint8_t  revistion;
@@ -13,9 +12,11 @@ struct madt
 	uint32_t OEM_rev;
 	uint32_t creator_id;
 	uint32_t creator_rev;
+
 	uint32_t local_apic;
 	uint32_t flags;
-};
 
-int init_apic();
+} __attribute__((packed));
+
+int  init_apic();
 void apic_send_eio(int inter);
