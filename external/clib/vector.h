@@ -49,3 +49,32 @@
 	type x;                        \
 	memset(&x, 0, sizeof(type));   \
 	return x;
+
+#define _define_vector_create(type, name)                              \
+	name name##_create()                                   \
+	{                                                                  \
+		name vec = eclib_malloc(sizeof(struct vec_s_##name));    \
+		vec->buffer    = eclib_malloc(sizeof(type) * VECTOR_STARTCAP); \
+		vec->capacity  = VECTOR_STARTCAP;                              \
+		vec->size      = 0;                                            \
+		vec->destroyed = 0;                                            \
+		vec->iter      = 0;                                            \
+		vec->error     = 0;                                            \
+		return vec;                                                    \
+	}
+
+#define _define_vector_get(type, name)                        \
+	type name##_get(name vec, unsigned int index) \
+	{                                                         \
+		vec->error = 0;                                       \
+		if (!CHECK_INDEX(vec, index))                         \
+		{                                                     \
+			_ret_error(ECLIB_EIND, vec, type);                \
+		}                                                     \
+		if (vec->destroyed)                                   \
+		{                                                     \
+			_ret_error(ECLIB_EDESTR, vec, type);              \
+		}                                                     \
+                                                              \
+		return *(type *) VECTOR_GET(vec, index, type);        \
+	}
