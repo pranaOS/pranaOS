@@ -123,3 +123,32 @@ unsigned int _handle_indirirect_bp(unsigned int indirect_bp_index, unsigned int 
 
 	return ret;
 }
+
+unsigned int _ext2_get_block_loc(inode_t *inode, unsigned int block, superblock_t *sb, unsigned int blocksize, unsigned int disk)
+{
+	if (block < 12)
+	{
+		return inode->direct_block_pointer[block];
+	}
+	else
+	{
+		if (block < (1024 << sb->block_size_frag) / 4 + 12)
+		{
+			return _handle_indirirect_bp(inode->single_indirect_block_pointer, block - 12, sb, blocksize, disk);
+		}
+		else if (block < (unsigned int) pow((1024 << sb->block_size_frag) / 4, 2) + 12)
+		{
+			print("Double indirect\n");
+			return 0;
+		}
+		else
+		{
+			return 0;
+		}
+	}
+}
+
+void _load_kernel(inode_t *kernel_inode, superblock_t *sb, unsigned int blocksize, unsigned int disk)
+{
+    
+}
