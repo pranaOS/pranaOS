@@ -1,5 +1,5 @@
 # pranaOS
-- A unix operating system built using rust
+- A unix operating system built using clang
 
 <p align="center">
 <img src="https://raw.githubusercontent.com/pranaOS/pranaOS/master/imgs/eagle.jpeg" width="200" height="200">
