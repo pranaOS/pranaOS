@@ -83,3 +83,24 @@ typedef struct {
 	uint16_t 		directory_count;
 	uint8_t			unused[14];
 } bgd_t;
+
+unsigned int _inode_offset_block(unsigned int inode_index, superblock_t *sb)
+{
+	return ((inode_index - 1) % sb->inodes_in_blockgroup * INODE_SIZE / (1024 << sb->block_size_frag));
+}
+
+unsigned int _inode_offset_rel_to_block(unsigned int inode_index, superblock_t *sb)
+{
+	return ((inode_index - 1) % sb->inodes_in_blockgroup % ((1024 << sb->block_size_frag) / INODE_SIZE)) * INODE_SIZE; 
+}
+
+inode_t *get_inode_ref(unsigned int inode_index, unsigned int startinode, unsigned int blocksize, superblock_t *sb, unsigned int disk)
+{
+	void *buf = malloc(1024 << sb->block_size_frag, 0);
+	
+	print("location: "); print_int(global_offset + _inode_offset_block(inode_index, sb) * ((1024 << sb->block_size_frag) / blocksize)); print("\n");
+	
+	load_block(disk, global_offset + (_inode_offset_block(inode_index, sb) + startinode) * ((1024 << sb->block_size_frag) / blocksize), (1024 << sb->block_size_frag) / blocksize, (unsigned int) buf, 0);
+	
+	return (inode_t*) (((unsigned int) buf) + _inode_offset_rel_to_block(inode_index, sb));
+}
