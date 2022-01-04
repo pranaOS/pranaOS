@@ -5,16 +5,21 @@
 #include <stdint.h>
 
 typedef struct ata_drive_s {
-    uint32_t base;
-    uint32_t ctrl;
+	uint32_t base;
+	uint32_t ctrl;
 
-    int id;
-    int mode;
-    int type;
-    int signature
-    int max_lba;
+	int id;
+	int mode;
+	int type;
+	int slave;
 
-    char model[41];
+	int capabilities;
+	int command_set; 
+	int signature;
+	int max_lba;
+
+	char model[41];
+
 } ata_drive_t;
 
 int init_ata(pci_device_t *pci_dev);
