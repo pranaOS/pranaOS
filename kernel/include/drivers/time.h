@@ -13,6 +13,8 @@ struct time_s {
 	int tm_isdst;
 };
 
-int init_time();
+void init_time();
 
 struct time_s *get_time();
+
+void time_add_delta(unsigned int milliseconds);
