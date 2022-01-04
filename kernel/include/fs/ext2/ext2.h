@@ -110,7 +110,12 @@ typedef struct {
 } __attribute__((packed)) ext2_inode_t;
 
 typedef struct {
+    uint32_t inode;
+    uint16_t total_size_of_entry;
+    uint8_t name_length;
 
+    uint8_t type_indicator;
+    char name;
 } __attribute__((packed)) ext2_directory_entry_t;
 
 filesystem_t *init_ext2_filesystem(char *name, unsigned int ext2_start, disk_t *disk_info);
