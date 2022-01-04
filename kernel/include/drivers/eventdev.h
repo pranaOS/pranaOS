@@ -1,3 +1,3 @@
 #pragma once
 
-int eventdev();
+int eventdev_create();
