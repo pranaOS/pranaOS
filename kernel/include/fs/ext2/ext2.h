@@ -67,3 +67,23 @@ typedef struct {
 	uint32_t orphan_inode_list_head;
 
 } __attribute__((packed)) ext2_superblock_t;
+
+typedef struct {
+    uint32_t block_bitmap;
+    uint32_t inode_bitmap;
+    uint32_t start_inode_table;
+    uint32_t unallocated_block_count;
+    uint16_t unallocated_inode_count;
+    uint16_t directory_count;
+    uint8_t unused[14];
+} __attribute__((packed)) ext2_block_group_descriptor_t;
+
+typedef struct {
+
+} __attribute__((packed)) ext2_inode_t;
+
+typedef struct {
+
+} __attribute__((packed)) ext2_directory_entry_t;
+
+filesystem_t *init_ext2_filesystem(char *name, unsigned int ext2_start, disk_t *disk_info);
