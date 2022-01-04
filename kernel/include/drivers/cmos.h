@@ -1,5 +1,4 @@
 #pragma once
 
 int cmos_read(int addr);
-
-int bin(int val);
+int bcd_to_bin(int val);
