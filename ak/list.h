@@ -38,6 +38,16 @@ namespace pranaOS {
 
             void remove(int index);
             void remove(const T &e);
+        
+        private:
+            ListNode<T>* head_;
+            ListNode<T>* tail_;
+            system::MutexLock lock;
+
+            int size_;
+
+            ListNode<t>* insertInternal(const T &e, ListNode<T>* pos);
+            void removeInternal(ListNode<T> *pos);
         }
     }
 }
