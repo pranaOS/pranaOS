@@ -24,3 +24,19 @@
 
 - pranaOS is licensed under GPL-3.0
 
+
+## Contributors:
+- Thanks for those who contributed to this project :)
+<br>
+ <a href="https://github.com/pranaOS/pranaOS/graphs/contributors">
+   <img src="https://contributors-img.web.app/image?repo=pranaOS/pranaOS" />
+</a>
+
+## License:
+- pranaOS is licensed under [GPL-3.0](https://github.com/pranaOS/pranaOS/blob/master/LICENSE)
+
+- you can use the code in your project if you need! :)
+
+## Inspired by:
+- [SerenityOS](https://github.com/SerenityOS/Serenity)
+- [macOS](https://github.com/apple/darwin-xnu)
