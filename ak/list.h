@@ -94,3 +94,11 @@ namespace pranaOS {
         };
     }
 }
+
+using namespace pranaOS::ak;
+
+template <typename T>
+ListNode<T>* List<T>::insertInternal(const T& e, ListNode<T>* pos)
+[
+    this->lock.lock();
+]
