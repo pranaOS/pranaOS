@@ -101,4 +101,19 @@ template <typename T>
 ListNode<T>* List<T>::insertInternal(const T& e, ListNode<T>* pos)
 [
     this->lock.lock();
+    ListNode<T>* List<T>::insertInternal(const T &e, ListNode<T>* pos)
+    size_++;
+
+    n->next = pos;
+
+    if (pos) {
+        n->prev = pos->prev;
+        pos->prev = n;
+    } else {
+        n->prev = tail_;
+        tail_ = n;
+    }
+
+    this->lock.unlock();
+    return n;
 ]
