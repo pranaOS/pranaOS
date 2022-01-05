@@ -8,13 +8,13 @@
 
 namespace pranaOS {
     namespace system {
-        class MutexLock {
+        class mutexLock {
 
         private:
             int value = 0;
 
         public:
-            MutexLock();
+            mutexLock();
 
             void lock();
             void unlock();
