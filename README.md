@@ -7,6 +7,13 @@
 
 [![CI](https://github.com/pranaOS/pranaOS/actions/workflows/cpp.yml/badge.svg?branch=master)](https://github.com/pranaOS/pranaOS/actions/workflows/cpp.yml)
 
+## Building:
+## building pranaOS:
+- Build options:
+
+- ```make pranaOS``` to build iso
+- ```make clean``` remove the iso
+- ```make qemu``` build iso and run it
 
 ## Have Any Issues??:
 - contact our [discord](https://discord.gg/XmpBTmy9Bz)
