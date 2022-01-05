@@ -21,7 +21,7 @@ namespace pranaOS {
 
             ~List()
             {
-                this->Clear();
+                this->clear();
             }
 
             int size() { 
@@ -30,7 +30,14 @@ namespace pranaOS {
 
             void push_back(const T &e)
             void push_front(const T &e);
-            void Clear();
+            void clear();
+
+            T getat(int index);
+            T operator[](int index);
+            int indexof(const T &e);
+
+            void remove(int index);
+            void remove(const T &e);
         }
     }
 }
