@@ -44,15 +44,17 @@ namespace pranaOS {
             return res;
         }
     }
-    constexpr common::uint32_t operator"" _KB(unsigned long long no)
+    constexpr ak::uint32_t operator"" _KB(unsigned long long no)
     {
         return no * 1024;
     }
-    constexpr common::uint32_t operator"" _MB(unsigned long long no)
+
+    constexpr ak::uint32_t operator"" _MB(unsigned long long no)
     {
         return no * (1024_KB);
     }
-    constexpr common::uint32_t operator"" _GB(unsigned long long no)
+    
+    constexpr ak::uint32_t operator"" _GB(unsigned long long no)
     {
         return no * (1024_MB);
     }
