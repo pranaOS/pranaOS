@@ -7,7 +7,19 @@
 
 [![CI](https://github.com/pranaOS/pranaOS/actions/workflows/cpp.yml/badge.svg?branch=master)](https://github.com/pranaOS/pranaOS/actions/workflows/cpp.yml)
 
-## Building:
+# Features:
+## Kernel:
+- x86 kernel
+- filesystem
+
+## Libraries:
+- runtime support for: libc, libcpp, libobjc, libjs
+- ui function: libui
+
+## Userland:
+- simple terminal and some apps
+
+# Building:
 ## building pranaOS:
 - Build options:
 
