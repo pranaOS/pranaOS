@@ -2,9 +2,16 @@
 
 #include <stdint.h>
 
-#define BUFSIZ 0x400
-#define EOF    -1
+namespace pranaOSStdio {
 
-int putchar(int);
-int puts(const char *);
-int readline(char *data, int dataend, char *buf, int size);
+    class Stdio {
+
+    #define BUFSIZ 0x400
+    #define EOF    -1
+
+    public:
+        int putchar(int);
+        int puts(const char *);
+        int readline(char *data, int dataend, char *buf, int size);
+    }
+}
