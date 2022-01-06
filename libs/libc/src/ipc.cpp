@@ -19,3 +19,16 @@ int IPC::IPCSend(int dest, int type, unsigned int arg1, unsigned int arg2, unsig
 
     return IPCSend(message);
 }
+
+int IPC::IPCSend(IPCMessage message) {
+    return DoSyscall(SYSCALL_IPC_SEND, (uint32_t)&message);
+}
+
+int IPC::IPCAvailable() {
+    return DoSyscall(SYSCALL_IPC_AVAILABLE);
+}
+
+IPCMessage IPC::ICPReceive(int formID, int* errOut, int type) {
+    IPCMessage result;
+    return result;
+}
