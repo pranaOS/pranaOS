@@ -1,7 +1,7 @@
 # Contributing:
 
 ## Coding style:
-- check out the coding style before contributing to this project :)
+- check out the [coding style](https://github.com/pranaOS/pranaOS/blob/master/docs/codingstyle.md) before contributing to this project :)
 
 ## PullRequest:
 
