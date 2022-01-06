@@ -5,9 +5,12 @@
 namespace pranaOSConvert {
     class Convert {
     public:
-        static char* intToString(int n);
-        static char* intToHexString(uint8_t w);
-        static char* intToHexString(uint16_t w);
-        static char* intToHexString(uint32_t w);
+        static char* IntToString(int i);
+
+        static char* IntToHexString(uint8_t w);
+        static char* IntToHexString(uint16_t w);
+        static char* IntToHexString(uint32_t w);
+
+        static int StringToInt(char* string);
     };
 }
