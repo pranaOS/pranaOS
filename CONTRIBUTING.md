@@ -1,5 +1,8 @@
 # Contributing:
 
+## Coding style:
+- check out the coding style before contributing to this project :)
+
 ## PullRequest:
 
 ## Library:
