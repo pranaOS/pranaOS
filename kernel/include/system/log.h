@@ -11,5 +11,8 @@ namespace pranaOS {
             Warning,
             Error
         };
+
+        void log(LogLevel level, const char* __restrict__ format, ...);
+        void print(const char* data);
     }
 }
