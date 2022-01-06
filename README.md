@@ -7,6 +7,8 @@
 
 [![CI](https://github.com/pranaOS/pranaOS/actions/workflows/cpp.yml/badge.svg?branch=master)](https://github.com/pranaOS/pranaOS/actions/workflows/cpp.yml)
 
+<a href="https://github.com/pranaOS/pranaOS"><img title="Stars" src="https://img.shields.io/github/stars/pranaOS/pranaOS?style=social" ></a>
+
 # Features:
 ## Kernel:
 - x86 kernel
