@@ -14,19 +14,24 @@ namespace pranaOS {
             VGA_COLOR_BLUE = 1,
             VGA_COLOR_GREEN = 2,
             VGA_COLOR_CYAN = 3,
-            VGA_COLOR_READ = 4,
+            VGA_COLOR_RED = 4,
             VGA_COLOR_MAGENTA = 5,
             VGA_COLOR_BROWN = 6,
             VGA_COLOR_LIGHT_GREY = 7,
             VGA_COLOR_DARK_GREY = 8,
-            VGA_COLOR_LIGHT_GREEN = 9
-            VGA_COLOR_LIGHT_BLUE = 10,
+            VGA_COLOR_LIGHT_BLUE = 9,
+            VGA_COLOR_LIGHT_GREEN = 10,
+            VGA_COLOR_LIGHT_CYAN = 11,
+            VGA_COLOR_LIGHT_RED = 12,
+            VGA_COLOR_LIGHT_MAGENTA = 13,
+            VGA_COLOR_LIGHT_BROWN = 14,
+            VGA_COLOR_WHITE = 15
         };
 
         class BootConsole {
         public:
             static ak::uint8_t foregroundcolor;
-            static ak::uint8_t backgroudcolor;
+            static ak::uint8_t backgroundcolor;
 
             static void init(bool enableSerial = false);
 
@@ -37,11 +42,17 @@ namespace pranaOS {
             static void writeline();
 
             static void clear();
-
             static void setx(int x);
             static void sety(int y);
 
             static ak::uint16_t* getbuffer();
+        
+        private:
+            static int xoffset;
+            static int yoffset;
+            static bool writetoserial;
+
+            static void scroll();
         };
     }
 }
