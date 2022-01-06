@@ -8,8 +8,7 @@ int isspace(char c) {
 }
 
 
-char* convert::inttostring(int n)
-{
+char* Convert::intToString(int n) {
     static char ret[24];
     int numChars = 0;
     bool isNegative = false;
