@@ -21,10 +21,12 @@
 ## Userland:
 - simple terminal and some apps
 
-# Building:
-## building pranaOS:
-- Build options:
+# Requirements:
+```i686-elf-gcc``` i686 compiler to compile this project
+```make``` 
+```nasm``` nasm to build the asm file
 
+# Building:
 - ```make pranaOS``` to build iso
 - ```make clean``` remove the iso and remove the builded files 
 - ```make qemu``` build iso and run it
