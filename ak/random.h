@@ -8,7 +8,7 @@ namespace pranaOS {
         public:
             static int next(uint32_t max = 32767);
             static int next(uint32_t min, uint32_t max);             
-            static void setseed(uint32_t seed);
+            static void setSeed(uint32_t seed);
         private:
             static uint32_t next;
         };
