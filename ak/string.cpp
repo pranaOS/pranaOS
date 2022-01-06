@@ -53,8 +53,7 @@ bool String::contains(const char* str, char c) {
     return false;
 }
 
-List<char*> String::Split(const char* str, char d)
-{
+List<char*> String::Split(const char* str, char d) {
     List<char*> result = List<char*>();
     int len = String::strlen(str);
     int pos = 0;
@@ -83,4 +82,52 @@ List<char*> String::Split(const char* str, char d)
         }
     }
     return result;
+}
+
+char* String::uppercase(char* str) { 
+    int len = strlen(str);
+    int i = 0;
+	while (i < len)
+	{
+		if ((short)str[i] >= 97 && (short)str[i] <= 122)
+			str[i] -= 32;
+		i++;
+	}
+    return str;
+}
+
+char* String::lowercase(char* str) {
+    int len = strlen(str);
+    int i = 0;
+	while (i < len)
+	{
+		if ((short)str[i] >= 65 && (short)str[i] <= 90)
+			str[i] += 32;
+		i++;
+	}
+    return str;
+} 
+
+char* String::uppercase(char* str) { 
+    int len = strlen(str);
+    int i = 0;
+	while (i < len)
+	{
+		if ((short)str[i] >= 97 && (short)str[i] <= 122)
+			str[i] -= 32;
+		i++;
+	}
+    return str;
+}
+
+char* String::lowercase(char* str) {
+    int len = strlen(str);
+    int i = 0;
+	while (i < len)
+	{
+		if ((short)str[i] >= 65 && (short)str[i] <= 90)
+			str[i] += 32;
+		i++;
+	}
+    return str;
 }
