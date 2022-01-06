@@ -23,11 +23,3 @@ exec('find ak', function(error, stdout, stderr) {
         console.log('error: ' + error);
     }
 });
-
-exec('find scripts', function(error, stdout, stderr) {
-    console.log('scripts stdout: ' + stdout);
-    console.log('scripts stderr: ' + stderr);
-    if (error !== null) {
-        console.log('error: ' + error);
-    }
-});
