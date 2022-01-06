@@ -30,7 +30,15 @@ jobs:
         run: |
           node --version
           g++ --version
+
+      - name: Build
+        run: |
+          make pranaOS
         
+      - name: Clean
+        run: |
+          make clean 
+
       - name: Run tests
         run: |
           node tests/dirtest.js
