@@ -34,8 +34,7 @@ jobs:
       - image: cimg/node:16.10
     steps:
       - checkout
-      - node/install-packages:
-          pkg-manager: npm
+
       - run:
           name: change dir
           command: cd tests/
