@@ -49,8 +49,8 @@ jobs:
 
       - name: Deps Installing
         run: |
-          sudo apt-get update  
-          sudo apt install build-essential nasm gcc g++ bison flex xorriso qemu-system-x86 libgmp3-dev libmpc-dev libmpfr-dev texinfo libisl-dev
+          brew update
+          brew install make nasm i686-elf-gcc
 
       - name: Check version of tools
         run: |
