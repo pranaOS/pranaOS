@@ -52,3 +52,35 @@ bool String::contains(const char* str, char c) {
 
     return false;
 }
+
+List<char*> String::Split(const char* str, char d)
+{
+    List<char*> result = List<char*>();
+    int len = String::strlen(str);
+    int pos = 0;
+
+    for(int i = 0; i < len; i++) {
+        if(str[i] == d) {
+            int itemLen = i - pos;
+            if(itemLen > 0) {
+                char* part = new char[itemLen + 1];
+                MemOperator::memcpy(part, str + pos, itemLen);
+                part[itemLen] = '\0';
+                result.push_back(part);
+            }
+
+            pos = i + 1;   
+        }
+    }
+
+    if(pos > 0) {
+        int lastLen = len - pos;
+        if(lastLen > 0) {
+            char* part = new char[lastLen + 1];
+            MemoryOperations::memcpy(part, str + pos, lastLen);
+            part[lastLen] = '\0';
+            result.push_back(part);
+        }
+    }
+    return result;
+}
