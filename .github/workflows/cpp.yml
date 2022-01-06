@@ -27,6 +27,7 @@ jobs:
           node --version
           g++ --version
         
-      # - name: Run tests
-      #   run: |
-
+      - name: Run tests
+        run: |
+          node tests/dirtest.js
+          node tests/checkVersion.js
