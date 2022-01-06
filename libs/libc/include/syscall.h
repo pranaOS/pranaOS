@@ -6,12 +6,12 @@
  * 
  */
 
-namespace Syscall {
+namespace pranaOSSyscall {
     #define SYSCALL_RET_SUCCES 1
     #define SYSCALL_RET_ERROR 0
     #define PROC_ARG_LEN_MAX 100
 
-    enum SystCalls {
+    enum Syscalls {
         SYSCALL_EXIT = 0, 
         SYSCALL_LOG,
         SYSCALL_PRINT,
