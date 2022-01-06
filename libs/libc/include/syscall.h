@@ -1,5 +1,11 @@
 #pragma once
 
+/**
+ * this contains the syscalls require for the kernel or proejct
+ * @brief this namespace contains all the syscall functions 
+ * 
+ */
+
 namespace Syscall {
     #define SYSCALL_RET_SUCCES 1
     #define SYSCALL_RET_ERROR 0
