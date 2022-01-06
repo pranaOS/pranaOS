@@ -1,6 +1,6 @@
 #pragma once
 
-namespace IPC {
+namespace pranaOSIPC {
 
     enum IPCMessageType : int
     {
