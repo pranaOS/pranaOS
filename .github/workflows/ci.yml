@@ -30,11 +30,6 @@ jobs:
         run: |
           node --version
           g++ --version
-        
-      - name: Run tests
-        run: |
-          node tests/dirtest.js
-          node tests/checkVersion.js
 
   build-macos:
     runs-on: macos-latest
