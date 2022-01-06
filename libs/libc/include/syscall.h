@@ -6,13 +6,22 @@ namespace Syscalls {
     #define PROC_ARG_LEN_MAX 100
 
     enum SystCalls {
-        SYSCALL_EXIT = 0,
+        SYSCALL_EXIT = 0, 
         SYSCALL_LOG,
         SYSCALL_PRINT,
         SYSCALL_FILE_EXISTS,
         SYSCALL_DIR_EXISTS,
         SYSCALL_GET_FILESIZE,
         SYSCALL_READ_FILE,
-        
-    }
+        SYSCALL_WRITE_FILE,
+        SYSCALL_CREATE_FILE,
+        SYSCALL_CREATE_DIRECTORY,
+        SYSCALL_EJECT_DISK,
+        SYSCALL_GUI_GETLFB,
+        SYSCALL_GET_SCREEN_PROPERTIES,
+        SYSCALL_GET_HEAP_START,
+        SYSCALL_GET_HEAP_END,
+        SYSCALL_SET_HEAP_SIZE,
+
+    };
 }
