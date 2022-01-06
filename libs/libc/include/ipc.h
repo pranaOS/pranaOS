@@ -13,5 +13,18 @@ namespace Ipc {
         int source;
         int dest;
         int type;
-    }
+
+        unsigned int arg1;
+        unsigned int arg2;
+        unsigned int arg3;
+        unsigned int arg4;
+        unsigned int arg5;
+        unsigned int arg6;
+    };
+
+    int IPCSend(int dest, int type = IPCMessageType::None, unsigned int arg1 = 0, unsigned int arg2 = 0, unsigned int arg3 = 0, unsigned int arg4 = 0, unsigned int arg5 = 0, unsigned int arg6 = 0);
+
+    int IPCSend(IPCMessage message);
+
+    int IPCAvailable();
 }
