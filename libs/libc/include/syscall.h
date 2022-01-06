@@ -1,7 +1,7 @@
 #pragma once
 
-namespace Syscalls {
-    #define SYSCALL_RET_SUCCESS 1
+namespace Syscall {
+    #define SYSCALL_RET_SUCCES 1
     #define SYSCALL_RET_ERROR 0
     #define PROC_ARG_LEN_MAX 100
 
@@ -49,4 +49,6 @@ namespace Syscalls {
         SYSCALL_END_LISTING,
         SYSCALL_GET_SYSINFO_VALUE,
     };
+
+    int DoSyscall(unsigned int intNum, unsigned int arg1 = 0, unsigned int arg2 = 0, unsigned int arg3 = 0, unsigned int arg4 = 0, unsigned int arg5 = 0);
 }
