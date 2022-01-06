@@ -7,8 +7,7 @@ namespace pranaOS {
         #define phys2virt(x) ((x) + 3_GB)
         #define virt2phys(x) ((x) - 3_GB)
 
-        class MemoryOperations
-        {
+        class MemOperator {
         public:
             static void* memmove(void* dstptr, const void* srcptr, uint32_t size);
             static int memcmp(const void* aptr, const void* bptr, uint32_t size);
