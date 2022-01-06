@@ -1,7 +1,5 @@
 #pragma once
 
-#include <fs/dirent.h>
-#include <fs/vfs.h>
 #include <stdint.h>
 
 #define BUFSIZ 0x400
