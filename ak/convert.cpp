@@ -38,3 +38,20 @@ char* Convert::intToString(int n) {
     } while (n);
     return ret;
 }
+
+char* Convert::intToString32(uint32_t n) {
+    static char ret[32];
+    int numChars = 0;
+    int temp = n;
+
+    do
+    {
+        numChars++;
+        temp /= 10;
+    } while (temp);
+    
+    ret[numChars] = 0;
+
+    int i = numChars - 1;
+
+}
