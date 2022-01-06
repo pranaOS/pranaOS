@@ -37,6 +37,11 @@ namespace pranaOS {
             static void writeline();
 
             static void clear();
+
+            static void setx(int x);
+            static void sety(int y);
+
+            static ak::uint16_t* getbuffer();
         };
     }
 }
