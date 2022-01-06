@@ -1,12 +1,12 @@
-# vscode cache
+# ide caches
 .vscode/
-
-# jetbrains cache
 .idea/
 
 # system cache
 .DS_Store
 
-disk.img
+# iso
+pranaos.iso
 
-target/
+# builded output
+build/
