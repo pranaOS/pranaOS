@@ -6,7 +6,7 @@
 
 namespace CactusOS
 {
-    namespace common
+    namespace ak
     {
         class Print
         {
