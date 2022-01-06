@@ -1,4 +1,4 @@
-#include "math.h"
+#include <math.h>
 
 int pow(int x, int n)
 {

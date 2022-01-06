@@ -1,8 +1,12 @@
 #pragma once
 
-#include "types.h"
-#include "list.h"
-#include "memoperator.h"
+// #include "types.h"
+// #include "list.h"
+// #include "memoperator.h"
+
+#include <types.h>
+#include <list.h>
+#include <memoperator.h>
 
 namespace pranaOS {
     namespace ak {
