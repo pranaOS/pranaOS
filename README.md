@@ -5,7 +5,9 @@
 <img src="https://raw.githubusercontent.com/pranaOS/pranaOS/master/imgs/eagle.jpeg" width="200" height="200">
 </p>
 
-[![CI](https://github.com/pranaOS/pranaOS/actions/workflows/cpp.yml/badge.svg?branch=master)](https://github.com/pranaOS/pranaOS/actions/workflows/cpp.yml)
+[![macCI](https://github.com/pranaOS/pranaOS/actions/workflows/macos.yml/badge.svg?branch=master)](https://github.com/pranaOS/pranaOS/actions/workflows/macos.yml)
+
+[![linuxCI](https://github.com/pranaOS/pranaOS/actions/workflows/linux.yml/badge.svg?branch=master)](https://github.com/pranaOS/pranaOS/actions/workflows/linux.yml)
 
 <a href="https://github.com/pranaOS/pranaOS"><img title="Stars" src="https://img.shields.io/github/stars/pranaOS/pranaOS?style=social" ></a>
 
