@@ -37,3 +37,18 @@ jobs:
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v1
+
+  cpp-check:
+    name: Cpp Code Check
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+    
+    - name: install requirements
+      run: |
+        brew install clang-format
+    
+    - name: checkformat
+      run: find ./kernel/ ./libs/ ./ak
