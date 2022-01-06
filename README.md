@@ -38,6 +38,10 @@
 
 - pranaOS is licensed under GPL-3.0
 
+## Contribtuions
+- pranaOS is an open-source project you can contribute to it :)
+- check out the [CONTRIBUTING](CONTRIBUTING.md) docs
+
 
 ## Contributors:
 - Thanks for those who contributed to this project :)
