@@ -26,7 +26,7 @@
 - Build options:
 
 - ```make pranaOS``` to build iso
-- ```make clean``` remove the iso
+- ```make clean``` remove the iso and remove the builded files 
 - ```make qemu``` build iso and run it
 
 ## Have Any Issues??:
