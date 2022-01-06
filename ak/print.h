@@ -1,7 +1,7 @@
 #pragma once
 
-#include "types.h"
-#include "convert.h"
+#include <types.h>
+#include <convert.h>
 #include <system/console.h>
 
 namespace pranaOS

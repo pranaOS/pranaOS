@@ -1,6 +1,6 @@
 #pragma once
 
-#include "core.h"
+#include <core.h>
 
 #define VECTOR_STARTCAP            8
 #define CHECK_INDEX(vec, ind)      (ind < vec->size && !vec->destroyed)
