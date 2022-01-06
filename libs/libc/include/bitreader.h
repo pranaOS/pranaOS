@@ -2,7 +2,7 @@
 
 #include <types.h>
 
-namespace bitreader {
+namespace pranaOSBitreader {
     class BitReader {
     public:
         BitReader(uint8_t* data) {
