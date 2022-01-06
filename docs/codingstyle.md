@@ -1,6 +1,6 @@
 # CodingStyle:
 
-- headers:
+## headers:
 - wrong
 ```c++
 #ifndef NAMEOFTHEHEADER
@@ -16,4 +16,21 @@ int x = 1;
 #pragma once
 
 int x = 1;
+```
+
+## class and functions name:
+- wrong
+```c++
+class myclass {
+public:
+    static void myvoid();
+};
+```
+
+- right
+```c++
+class myClass {
+public:
+    static void myVoid();
+};
 ```
