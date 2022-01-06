@@ -1,0 +1,21 @@
+#pragma once
+
+#include "types.h"
+#include "list.h"
+#include "memoperator.h"
+
+namespace pranaOS {
+    namespace ak {
+        #define isalpha(c) (((unsigned)c|32)-'a' < 26)
+
+        class String {
+        public:
+            static int strlen(const char* str);
+            static bool strcmp(const char* strA, const char* strB);
+            static bool strncmp(const char* s1, const char* s2, int n);
+            static int indexof(const char* str, char c, ak::uint32_t skip = 0);
+            static bool contains(const char* str, char c);
+            static List<char*> split(const char* str, char d);
+        };
+    }
+}
