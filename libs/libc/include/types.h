@@ -13,4 +13,16 @@ namespace Types {
     typedef unsigned long long int      uint64_t;
     typedef unsigned long long          uintptr_t;
 
+    constexpr uint32_t operator"" _KB(unsigned long long no) {
+        return no * 1024;
+    }
+
+    constexpr uint32_t operator"" _MB(unsigned long long no) {
+        return no * 1024_KB;
+    }
+
+    constexpr uint32_t operator_"" _GB(unsigned long long no) {
+        return no * 1024_MB;
+    }
+
 }
