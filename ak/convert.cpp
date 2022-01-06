@@ -39,8 +39,7 @@ char* Convert::intToString(int n) {
     return ret;
 }
 
-char* Convert::intToString32(uint32_t n)
-{
+char* Convert::intToString32(uint32_t n) {
     static char ret[32];
     int numChars = 0;
     int temp = n;
@@ -59,4 +58,17 @@ char* Convert::intToString32(uint32_t n)
         n /= 10;
     } while (n);
     return ret;
+}
+
+char* Convert::IntToHexString(uint8_t w) {
+    static const char* digits = "0123456789";
+    uint32_t hexSize = sizeof(uint8_t) << 1;
+    char* rc = new char[hexSize + 1]; 
+
+    MemOperator::memset(rc, 0, hexSize + 1);
+
+    for (uint32_t i=0, j=(hexSize-1)*4 ; i<hexSize; ++i,j-=4)
+        rc[i] = digits[(w>>j) & 0x0f];
+        
+    return rc;
 }
