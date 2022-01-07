@@ -1,6 +1,7 @@
 #pragma once
 
 namespace pranaOSLog {
+
     enum logLevel {
         None,
         Info,
@@ -9,6 +10,5 @@ namespace pranaOSLog {
     };
 
     void log(logLevel level, char* msg);
-
-    void print();
-} 
+    void print(const char* __restrict__ format, ...);
+}
