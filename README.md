@@ -54,11 +54,17 @@
    <img src="https://contributors-img.web.app/image?repo=pranaOS/pranaOS" />
 </a>
 
+## Inspired by:
+- [SerenityOS](https://github.com/SerenityOS/Serenity)
+- [macOS](https://github.com/apple/darwin-xnu)
+
+## Other projects:
+- some code i took from other project
+- [libobjc](https://github.com/pranaOS/pranaOS/tree/master/libs/libobjc) took from official gcc-mirror [LICENSE](https://github.com/pranaOS/pranaOS/blob/master/libs/libobjc/COPYING)
+
+## NOTE I HAVE ADDED THE LICENSE OF THE SOURCE CODE THAT I TOOK FROM OTHER PROJECTS
+
 ## License:
 - pranaOS is licensed under [GPL-3.0](https://github.com/pranaOS/pranaOS/blob/master/LICENSE)
 
 - you can use the code in your project if you need! :)
-
-## Inspired by:
-- [SerenityOS](https://github.com/SerenityOS/Serenity)
-- [macOS](https://github.com/apple/darwin-xnu)
