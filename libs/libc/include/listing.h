@@ -1,6 +1,9 @@
 #pragma once
 
 namespace pranaOSListing {
-    #define DIR_LISTING 1
-    #define DISK_LISTING 2
-} 
+    /* directory listing */
+    #define DIRECTORY_LISTING 0
+
+    /* disk listing */
+    #define DISK_LISTING 1
+}
