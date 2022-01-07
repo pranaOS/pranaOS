@@ -39,6 +39,11 @@ namespace pranaOSMath {
         static long min(long a, long b);
         static long constrain(long x, long a, long b);
         static long map(long x, long in_min, long in_max, long out_min, long out_max);
-        
-    }
+
+        static float fMod(float a, float b);
+        static double floor(double x);
+        static double sqrt(double n);
+
+        static double round(double n, uint32_t digits);
+    };
 }
