@@ -24,4 +24,21 @@ namespace pranaOSMath {
         uint8_t flushToZero : 1;
         uint16_t reserved;
     } __attribute__((packed));
+
+    class math {
+    public:
+        static void enableFPU();
+
+        static long abs(long v);
+        static double fAbs(double x);
+        static long sign(long v);
+        static double sin(double x);
+        static double cos(double x);
+
+        static long max(long a, long b);
+        static long min(long a, long b);
+        static long constrain(long x, long a, long b);
+        static long map(long x, long in_min, long in_max, long out_min, long out_max);
+        
+    }
 }
