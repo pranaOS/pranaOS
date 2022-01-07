@@ -1,6 +1,7 @@
 #pragma once
 
 namespace pranaOSTime {
+
     class dateTime {
     public:
         signed char day = -1;
@@ -12,5 +13,8 @@ namespace pranaOSTime {
         signed char hours = -1;
 
         static dateTime current();
+
+        char* toString();
     };
+    
 }
