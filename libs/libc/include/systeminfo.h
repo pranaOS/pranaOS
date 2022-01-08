@@ -50,4 +50,14 @@ namespace pranaOSsystemInfo {
         static siPropertyProvider properties;
         static bool requestSystemInfo();  
     };
+
+    struct sharedSystemInfo {
+        unsigned int mousex;
+        unsigned int mousey;
+        signed int mousez;
+
+        bool mouseLeftButton;
+        bool mouseRightButton;
+        bool mouseScroolButton;
+    } __attribute__((packed));
 }
