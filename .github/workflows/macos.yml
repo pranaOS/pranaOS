@@ -1,4 +1,4 @@
-name: macOS C++ Workflow
+name: macos C++ (latest + 11)
 
 on:
   push:
