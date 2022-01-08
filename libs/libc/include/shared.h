@@ -44,4 +44,31 @@ namespace pranaOSshared {
         rughtCtrl = (1 << 6),
         alt = (1 << 7) 
     }
+
+    inline KEYPACKET_FLAGS operator|(KEYPACKET_FLAGS a, KEYPACKET_FLAGs b) {
+        return static_cast<KEYPACKET_FLAGS>(static_cast<int>(a) | static_cast<int>(b));
+    }
+
+    enum specialKeys : uint8_t {
+        escapeKey = 27,
+        capsLockKey = 128,
+        numLockKey,
+        leftShiftKey,
+        rightShiftKey,
+        leftCtrlKey,
+        rightCtrlKey,
+        altKey,
+        F1Key,
+        F2Key,
+        F3Key,
+        F4Key,
+        F5Key,
+        F6Key,
+        F7Key,
+        F8Key,
+        F9Key,
+        F10Key,
+        F11Key,
+        F12Key,
+    };
 }
