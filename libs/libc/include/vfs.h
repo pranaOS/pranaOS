@@ -12,8 +12,10 @@ namespace pranaOSVfs {
     bool dirExists(char* filename);
 
     int createFile(char* path);
-    int createDir(char* path);
+    int createDirectory(char* path);
 
     uint32_t getFileSize(char* filename);
-    List<vfsEntry> directoryListing(char* path);
+    List<vfsEntry> dirListing(char* path);
+
+    bool ejectDisk(char* path);
 }
