@@ -4,7 +4,7 @@
 #include <system/serialport.h>
 #include <stdarg.h>
 
-namespace pranaOS {
+namespace pranaOSConsole {
     namespace system {
         #define VGA_WIDTH 80
         #define VGA_HEIGHT 25
@@ -28,7 +28,7 @@ namespace pranaOS {
             VGA_COLOR_WHITE = 15
         };
 
-        class BootConsole {
+        class bootConsole {
         public:
             static ak::uint8_t foregroundcolor;
             static ak::uint8_t backgroundcolor;
