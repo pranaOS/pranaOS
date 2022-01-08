@@ -20,8 +20,14 @@ namespace pranaOSProc {
     class Process {
     public:
         static int ID;
-
         static sharedSystemInfo* systemInfo;
+
+        static int run(const char* path, bool black = false);
+        
+        static bool createSharedMemory(int proc2ID, uint32_t virtStart, uint32_t len); 
+        static bool createSharedMemory(int proc2ID, uint32_t virtStart1, uint32_t virtStart2, uint32_t len);
+
+        static bool deleteSharedMemory(int proc2ID, uint32_t virtStart, uint32_t len);
 
     private:
         static int numThreads;
