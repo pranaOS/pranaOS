@@ -2,6 +2,8 @@
 #include <mem/mem.h>
 #include <load.h>
 
+using namespace bootloader;
+
 #define SUPERBLOCK_POS 	0x0400
 #define EXT2_SIGNATURE 	0xEF53
 #define ROOT_INODE 		0x0002
