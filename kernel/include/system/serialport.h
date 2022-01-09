@@ -14,7 +14,7 @@ namespace Kernel {
             COM4 = 0x2E8
         };
 
-        class serialport {
+        class serialPort {
         public:
             static int serialReceiveReady();
             static int serialSendReady();
