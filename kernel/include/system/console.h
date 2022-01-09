@@ -38,8 +38,8 @@ namespace pranaOSConsole {
             static void write(char c);
             static void write(char* str);
 
-            static void writeline(char* str);
-            static void writeline();
+            static void writeLine(char* str);
+            static void writeLine();
 
             static void clear();
             static void setx(int x);
@@ -50,7 +50,7 @@ namespace pranaOSConsole {
         private:
             static int xoffset;
             static int yoffset;
-            static bool writetoserial;
+            static bool writeToSerial;
 
             static void scroll();
         };
