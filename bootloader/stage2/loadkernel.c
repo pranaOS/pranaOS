@@ -2,6 +2,8 @@
 #include <types.h>
 #include <fs/fs.h>
 
+using namespace bootloader;
+
 #define PART_OFFSET 	(0x7c00 + 0x1BE) 
 
 #define FLAG_ACTIVE 	(1 << 7)
