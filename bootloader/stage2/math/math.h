@@ -1,3 +1,5 @@
 #pragma once 
 
-int pow(int x, int n);
+namespace math {
+    int pow(int x, int n);
+}
