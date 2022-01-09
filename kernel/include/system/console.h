@@ -4,7 +4,7 @@
 #include <system/serialport.h>
 #include <stdarg.h>
 
-namespace pranaOSConsole {
+namespace Kernel {
     namespace system {
         #define VGA_WIDTH 80
         #define VGA_HEIGHT 25

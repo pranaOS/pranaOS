@@ -1,8 +1,9 @@
 #include <system/console.h>
 
 using namespace pranaOSConsole;
-using namespace pranaOS::ak;
-using namespace pranaOS::system;
+using namespace Kernel::system;
+using namespace Kernel::ak;
+using namespace Kernel;
 
 int bootConsole::xOffset = 0;
 int bootConsole::yOffset = 0;
@@ -40,4 +41,48 @@ void bootConsole::write(char c) {
     static char* str = " ";
     str[0] = c;
     write(str);
+}
+
+void bootConsole::write(char* str) {
+    if (writeToSerial)
+        Serialport::WriteStr(str);
+
+    for(int i = 0; str[i] != '\0'; ++i)
+    {
+        switch(str[i])
+        {
+            case '\n':
+                XOffset = 0;
+                YOffset++;
+                break;
+            case '\t':
+                Write("    "); //4 spaces for tab
+                break;
+            default:
+                uint16_t attrib = (BackgroundColor << 4) | (ForegroundColor & 0x0F);
+                volatile uint16_t * where;
+                where = (volatile uint16_t *)videoMemory + (YOffset * 80 + XOffset) ;
+                *where = str[i] | (attrib << 8);
+                XOffset++;
+                break;
+        }
+
+        if(XOffset >= 80)
+        {
+            XOffset = 0;
+            YOffset++;
+        }
+
+        if(YOffset >= 25)
+        {
+            Scroll();
+            XOffset = 0;
+            YOffset = 24;
+        }
+    }
+}
+void BootConsole::WriteLine(char* str)
+{
+    BootConsole::Write(str);
+    BootConsole::Write("\n");
 }

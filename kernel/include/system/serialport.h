@@ -3,7 +3,7 @@
 #include <ak/types.h>
 #include <core/port.h>
 
-namespace pranaOS {
+namespace Kernel {
     namespace system {
 
         enum COMPort
@@ -14,17 +14,17 @@ namespace pranaOS {
             COM4 = 0x2E8
         };
 
-        class Serialport {
+        class serialport {
         public:
-            static int serialreceiveready();
-            static int serialsendready();
+            static int serialReceiveReady();
+            static int serialSendReady();
 
             static bool initialized;
             static void init(COMPort port);
 
             static char read();
             static void write(char a);
-            static void writestr(char* str);
+            static void writeStr(char* str);
 
         private:
             static COMPort portaddress;
