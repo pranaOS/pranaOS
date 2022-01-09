@@ -48,7 +48,7 @@ jobs:
     
     - name: install requirements
       run: |
-        brew install clang-format
+        brew install clang-format llvm gcc@11
     
     - name: checkformat
       run: find ./kernel/ ./libs/ ./ak
