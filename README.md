@@ -60,7 +60,7 @@
 - pranaOS [project structure](https://github.com/pranaOS/pranaOS/blob/master/docs/projectstructure.md) in a plain markdown text
 
 ## Special mentions:
-- thanks for those who [stared](https://github.com/pranaOS/pranaOS/stargazers) this project
+- thanks for those who [stared](https://github.com/pranaOS/pranaOS/stargazers) ⭐ this project
 - special thanks for those who is [contributing](https://github.com/pranaOS/pranaOS/graphs/contributors) to this project
 - thanks jetbrains for sponsoring this project
 <img src="https://raw.githubusercontent.com/pranaOS/pranaOS/master/imgs/jetbrains.jpg" width="200" height="200">
