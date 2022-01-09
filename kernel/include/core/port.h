@@ -2,7 +2,7 @@
 
 #include <ak/types.h>
 
-namespace pranaOS {
+namespace Kernel {
     namespace core {
         #define insl(port, buffer, count) asm volatile("cld; rep; insl" :: "D" (buffer), "d" (port), "c" (count))
 

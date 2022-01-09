@@ -6,7 +6,7 @@
  * @brief mutex lock
  */
 
-namespace pranaOS {
+namespace Kernel {
     namespace system {
         class mutexLock {
 

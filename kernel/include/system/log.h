@@ -2,7 +2,7 @@
 
 #include <ak/types.h>
 
-namespace pranaOS {
+namespace Kernel {
 
     namespace system {
 
