@@ -11,6 +11,9 @@
 
 ## Kernel:
 - The kernel is the essential center of a computer operating system (OS)
+- [include] require for building kernel
+- [src] main kernel
+
 
 ## Libs:
 - This folder contains the many libraries such as 
