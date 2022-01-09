@@ -11,8 +11,8 @@
 
 ## Kernel:
 - The kernel is the essential center of a computer operating system (OS)
-- [include] require for building kernel
-- [src] main kernel
+- [include](https://github.com/pranaOS/pranaOS/tree/master/kernel/include) require for building kernel
+- [src](https://github.com/pranaOS/pranaOS/tree/master/kernel/src) main kernel
 
 
 ## Libs:
