@@ -45,7 +45,7 @@ namespace Kernel {
             static void setx(int x);
             static void sety(int y);
 
-            static ak::uint16_t* getbuffer();
+            static ak::uint16_t* getBuffer();
         
         private:
             static int xoffset;
