@@ -26,3 +26,18 @@ void bootSonsole::scroll() {
         *where = ' ' | (attrib << 8);
     }
 }
+
+void bootConsole::init(bool enableSerial) {    
+    bootConsole::writeToSerial = enableSerial;
+
+    if (enableSerial) {
+        Serialport::Init(COMPort::COM1);
+        bootConsole::writeLine()
+    }
+}
+
+void bootConsole::write(char c) {
+    static char* str = " ";
+    str[0] = c;
+    write(str);
+}
