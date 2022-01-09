@@ -56,6 +56,9 @@
 - [SerenityOS](https://github.com/SerenityOS/Serenity)
 - [macOS](https://github.com/apple/darwin-xnu)
 
+## pranaOS project structure
+- pranaOS [project structure](https://github.com/pranaOS/pranaOS/blob/master/docs/projectstructure.md) in a plain markdown text
+
 ## Other projects:
 - some code i took from other project
 - [libobjc](https://github.com/pranaOS/pranaOS/tree/master/libs/libobjc) took from official gcc-mirror [LICENSE](https://github.com/pranaOS/pranaOS/blob/master/libs/libobjc/COPYING)
