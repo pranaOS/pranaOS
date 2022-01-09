@@ -67,5 +67,3 @@ jobs:
         run: |
           node --version
           g++ --version
-
-#ubuntu-18.04
