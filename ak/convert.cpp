@@ -3,8 +3,7 @@
 
 using namespace pranaOS::ak;
 
-int isSpace(char c)
-{
+int isSpace(char c) {
     return c == ' ' || c == '\t' || c == '\n' || c == '\v' || c == '\f' || c == '\r';
 }
 
