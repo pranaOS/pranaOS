@@ -1,9 +1,9 @@
 #include <system/console.h>
 
-using namespace pranaOSConsole;
+using namespace Kernel;
 using namespace Kernel::system;
 using namespace Kernel::ak;
-using namespace Kernel;
+
 
 int bootConsole::xOffset = 0;
 int bootConsole::yOffset = 0;
@@ -81,8 +81,18 @@ void bootConsole::write(char* str) {
         }
     }
 }
-void BootConsole::WriteLine(char* str)
-{
-    BootConsole::Write(str);
-    BootConsole::Write("\n");
+
+void BootConsole::writeLine(char* str) {
+    BootConsole::write(str);
+    BootConsole::write("\n");
 }
+
+uint16_t* bootConsole::getBuffer() {
+    return videoMemory;
+}
+
+void bootConsole::setX(int x) {
+    xOffset = x;
+}
+
+void bootConsole
