@@ -1,16 +1,16 @@
 #pragma once
 
-#include <types.h>
+#include "types.h"
 
 namespace pranaOSConvert {
     class Convert {
     public:
-        static char* IntToString(int i);
+        static char* intToString(int i);
 
-        static char* IntToHexString(uint8_t w);
-        static char* IntToHexString(uint16_t w);
-        static char* IntToHexString(uint32_t w);
+        static char* intToHexString(pranaOSTypes::uint8_t w);
+        static char* intToHexString(pranaOSTypes::uint16_t w);
+        static char* intToHexString(pranaOSTypes::uint32_t w);
 
-        static int StringToInt(char* string);
+        static int stringToInt(char* string);
     };
 }
