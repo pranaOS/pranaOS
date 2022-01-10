@@ -9,3 +9,5 @@ int pow(int x, int n) {
 	}
 	return r;	
 }
+
+void

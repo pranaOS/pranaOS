@@ -1,0 +1,472 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 55;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		18FDA9AA278C78D3002319F1 /* Makefile in Sources */ = {isa = PBXBuildFile; fileRef = 18FDA99E278C78D2002319F1 /* Makefile */; };
+		18FDA9B9278C7943002319F1 /* string.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 18FDA9AC278C7942002319F1 /* string.cpp */; };
+		18FDA9BA278C7943002319F1 /* convert.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 18FDA9AE278C7942002319F1 /* convert.cpp */; };
+		18FDA9BB278C7943002319F1 /* memoperator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 18FDA9B0278C7942002319F1 /* memoperator.cpp */; };
+		18FDA9BC278C7943002319F1 /* random.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 18FDA9B3278C7942002319F1 /* random.cpp */; };
+		18FDA9BD278C7943002319F1 /* print.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 18FDA9B5278C7942002319F1 /* print.cpp */; };
+		18FDA9C4278C797F002319F1 /* Makefile in Sources */ = {isa = PBXBuildFile; fileRef = 18FDA9BF278C797F002319F1 /* Makefile */; };
+		18FDA9C5278C797F002319F1 /* defines.asm in Sources */ = {isa = PBXBuildFile; fileRef = 18FDA9C1278C797F002319F1 /* defines.asm */; };
+		18FDA9D8278C79D7002319F1 /* loadkernel.c in Sources */ = {isa = PBXBuildFile; fileRef = 18FDA9CA278C79D6002319F1 /* loadkernel.c */; };
+		18FDA9D9278C79D7002319F1 /* print_pm.c in Sources */ = {isa = PBXBuildFile; fileRef = 18FDA9CB278C79D6002319F1 /* print_pm.c */; };
+		18FDA9DA278C79D7002319F1 /* print.asm in Sources */ = {isa = PBXBuildFile; fileRef = 18FDA9CC278C79D6002319F1 /* print.asm */; };
+		18FDA9DB278C79D7002319F1 /* Makefile in Sources */ = {isa = PBXBuildFile; fileRef = 18FDA9CE278C79D6002319F1 /* Makefile */; };
+		18FDA9DC278C79D7002319F1 /* math.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 18FDA9D0278C79D7002319F1 /* math.cpp */; };
+		18FDA9DD278C79D7002319F1 /* switch.asm in Sources */ = {isa = PBXBuildFile; fileRef = 18FDA9D1278C79D7002319F1 /* switch.asm */; };
+		18FDA9DE278C79D7002319F1 /* load_block.asm in Sources */ = {isa = PBXBuildFile; fileRef = 18FDA9D3278C79D7002319F1 /* load_block.asm */; };
+		18FDA9DF278C79D7002319F1 /* gdt.asm in Sources */ = {isa = PBXBuildFile; fileRef = 18FDA9D5278C79D7002319F1 /* gdt.asm */; };
+		18FDA9E0278C79D7002319F1 /* main.asm in Sources */ = {isa = PBXBuildFile; fileRef = 18FDA9D7278C79D7002319F1 /* main.asm */; };
+		18FDA9E6278C79F0002319F1 /* malloc.c in Sources */ = {isa = PBXBuildFile; fileRef = 18FDA9E3278C79F0002319F1 /* malloc.c */; };
+		18FDA9E7278C79F0002319F1 /* memcpy.c in Sources */ = {isa = PBXBuildFile; fileRef = 18FDA9E5278C79F0002319F1 /* memcpy.c */; };
+		18FDA9EC278C7A07002319F1 /* fs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 18FDA9EB278C7A07002319F1 /* fs.cpp */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		18FDA98D278C78AB002319F1 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		18FDA98F278C78AB002319F1 /* pranaOS */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = pranaOS; sourceTree = BUILT_PRODUCTS_DIR; };
+		18FDA999278C78D2002319F1 /* fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = fonts; path = ../fonts; sourceTree = "<group>"; };
+		18FDA99A278C78D2002319F1 /* imgs */ = {isa = PBXFileReference; lastKnownFileType = folder; name = imgs; path = ../imgs; sourceTree = "<group>"; };
+		18FDA99B278C78D2002319F1 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
+		18FDA99C278C78D2002319F1 /* scripts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = scripts; path = ../scripts; sourceTree = "<group>"; };
+		18FDA99D278C78D2002319F1 /* tests */ = {isa = PBXFileReference; lastKnownFileType = folder; name = tests; path = ../tests; sourceTree = "<group>"; };
+		18FDA99E278C78D2002319F1 /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; name = Makefile; path = ../Makefile; sourceTree = "<group>"; };
+		18FDA99F278C78D2002319F1 /* libs */ = {isa = PBXFileReference; lastKnownFileType = folder; name = libs; path = ../libs; sourceTree = "<group>"; };
+		18FDA9A0278C78D2002319F1 /* CODE_OF_CONDUCT.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = CODE_OF_CONDUCT.md; path = ../CODE_OF_CONDUCT.md; sourceTree = "<group>"; };
+		18FDA9A2278C78D2002319F1 /* docs */ = {isa = PBXFileReference; lastKnownFileType = folder; name = docs; path = ../docs; sourceTree = "<group>"; };
+		18FDA9A3278C78D2002319F1 /* kernel */ = {isa = PBXFileReference; lastKnownFileType = folder; name = kernel; path = ../kernel; sourceTree = "<group>"; };
+		18FDA9A4278C78D2002319F1 /* bootloader */ = {isa = PBXFileReference; lastKnownFileType = folder; name = bootloader; path = ../bootloader; sourceTree = "<group>"; };
+		18FDA9A5278C78D3002319F1 /* CONTRIBUTING.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = CONTRIBUTING.md; path = ../CONTRIBUTING.md; sourceTree = "<group>"; };
+		18FDA9A6278C78D3002319F1 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
+		18FDA9A7278C78D3002319F1 /* AUTHORS */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = AUTHORS; path = ../AUTHORS; sourceTree = "<group>"; };
+		18FDA9A8278C78D3002319F1 /* config */ = {isa = PBXFileReference; lastKnownFileType = folder; name = config; path = ../config; sourceTree = "<group>"; };
+		18FDA9A9278C78D3002319F1 /* pranaOS */ = {isa = PBXFileReference; lastKnownFileType = folder; name = pranaOS; sourceTree = "<group>"; };
+		18FDA9AC278C7942002319F1 /* string.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = string.cpp; path = ../../ak/string.cpp; sourceTree = "<group>"; };
+		18FDA9AD278C7942002319F1 /* memoperator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = memoperator.h; path = ../../ak/memoperator.h; sourceTree = "<group>"; };
+		18FDA9AE278C7942002319F1 /* convert.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = convert.cpp; path = ../../ak/convert.cpp; sourceTree = "<group>"; };
+		18FDA9AF278C7942002319F1 /* print.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = print.h; path = ../../ak/print.h; sourceTree = "<group>"; };
+		18FDA9B0278C7942002319F1 /* memoperator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = memoperator.cpp; path = ../../ak/memoperator.cpp; sourceTree = "<group>"; };
+		18FDA9B1278C7942002319F1 /* types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = types.h; path = ../../ak/types.h; sourceTree = "<group>"; };
+		18FDA9B2278C7942002319F1 /* random.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = random.h; path = ../../ak/random.h; sourceTree = "<group>"; };
+		18FDA9B3278C7942002319F1 /* random.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = random.cpp; path = ../../ak/random.cpp; sourceTree = "<group>"; };
+		18FDA9B4278C7942002319F1 /* list.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = list.h; path = ../../ak/list.h; sourceTree = "<group>"; };
+		18FDA9B5278C7942002319F1 /* print.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = print.cpp; path = ../../ak/print.cpp; sourceTree = "<group>"; };
+		18FDA9B6278C7943002319F1 /* ak.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ak.h; path = ../../ak/ak.h; sourceTree = "<group>"; };
+		18FDA9B7278C7943002319F1 /* string.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = string.h; path = ../../ak/string.h; sourceTree = "<group>"; };
+		18FDA9B8278C7943002319F1 /* convert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = convert.h; path = ../../ak/convert.h; sourceTree = "<group>"; };
+		18FDA9BF278C797F002319F1 /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; name = Makefile; path = ../../bootloader/Makefile; sourceTree = "<group>"; };
+		18FDA9C0278C797F002319F1 /* smaller.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = smaller.sh; path = ../../bootloader/smaller.sh; sourceTree = "<group>"; };
+		18FDA9C1278C797F002319F1 /* defines.asm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.asm.asm; name = defines.asm; path = ../../bootloader/defines.asm; sourceTree = "<group>"; };
+		18FDA9C7278C79AB002319F1 /* mbr.asm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.asm.asm; name = mbr.asm; path = ../../../bootloader/stage1/mbr.asm; sourceTree = "<group>"; };
+		18FDA9C8278C79AB002319F1 /* print.asm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.asm.asm; name = print.asm; path = ../../../bootloader/stage1/print.asm; sourceTree = "<group>"; };
+		18FDA9CA278C79D6002319F1 /* loadkernel.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = loadkernel.c; path = ../../../bootloader/stage2/loadkernel.c; sourceTree = "<group>"; };
+		18FDA9CB278C79D6002319F1 /* print_pm.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = print_pm.c; path = ../../../bootloader/stage2/print_pm.c; sourceTree = "<group>"; };
+		18FDA9CC278C79D6002319F1 /* print.asm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.asm.asm; name = print.asm; path = ../../../bootloader/stage2/print.asm; sourceTree = "<group>"; };
+		18FDA9CD278C79D6002319F1 /* math.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = math.h; sourceTree = "<group>"; };
+		18FDA9CE278C79D6002319F1 /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; name = Makefile; path = ../../../bootloader/stage2/Makefile; sourceTree = "<group>"; };
+		18FDA9CF278C79D6002319F1 /* print_pm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = print_pm.h; path = ../../../bootloader/stage2/print_pm.h; sourceTree = "<group>"; };
+		18FDA9D0278C79D7002319F1 /* math.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = math.cpp; sourceTree = "<group>"; };
+		18FDA9D1278C79D7002319F1 /* switch.asm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.asm.asm; name = switch.asm; path = ../../../bootloader/stage2/switch.asm; sourceTree = "<group>"; };
+		18FDA9D2278C79D7002319F1 /* linker.ld */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = linker.ld; path = ../../../bootloader/stage2/linker.ld; sourceTree = "<group>"; };
+		18FDA9D3278C79D7002319F1 /* load_block.asm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.asm.asm; name = load_block.asm; path = ../../../bootloader/stage2/load_block.asm; sourceTree = "<group>"; };
+		18FDA9D4278C79D7002319F1 /* types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = types.h; path = ../../../bootloader/stage2/types.h; sourceTree = "<group>"; };
+		18FDA9D5278C79D7002319F1 /* gdt.asm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.asm.asm; name = gdt.asm; path = ../../../bootloader/stage2/gdt.asm; sourceTree = "<group>"; };
+		18FDA9D6278C79D7002319F1 /* load.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = load.h; path = ../../../bootloader/stage2/load.h; sourceTree = "<group>"; };
+		18FDA9D7278C79D7002319F1 /* main.asm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.asm.asm; name = main.asm; path = ../../../bootloader/stage2/main.asm; sourceTree = "<group>"; };
+		18FDA9E2278C79F0002319F1 /* math.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = math.h; sourceTree = "<group>"; };
+		18FDA9E3278C79F0002319F1 /* malloc.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = malloc.c; sourceTree = "<group>"; };
+		18FDA9E4278C79F0002319F1 /* mem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mem.h; sourceTree = "<group>"; };
+		18FDA9E5278C79F0002319F1 /* memcpy.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = memcpy.c; sourceTree = "<group>"; };
+		18FDA9EA278C7A07002319F1 /* fs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = fs.h; path = ../../../../bootloader/stage2/fs/fs.h; sourceTree = "<group>"; };
+		18FDA9EB278C7A07002319F1 /* fs.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = fs.cpp; path = ../../../../bootloader/stage2/fs/fs.cpp; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		18FDA98C278C78AB002319F1 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		18FDA986278C78AB002319F1 = {
+			isa = PBXGroup;
+			children = (
+				18FDA9BE278C7973002319F1 /* bootloader */,
+				18FDA9AB278C7930002319F1 /* ak */,
+				18FDA9A7278C78D3002319F1 /* AUTHORS */,
+				18FDA9A4278C78D2002319F1 /* bootloader */,
+				18FDA9A0278C78D2002319F1 /* CODE_OF_CONDUCT.md */,
+				18FDA9A8278C78D3002319F1 /* config */,
+				18FDA9A5278C78D3002319F1 /* CONTRIBUTING.md */,
+				18FDA9A2278C78D2002319F1 /* docs */,
+				18FDA999278C78D2002319F1 /* fonts */,
+				18FDA99A278C78D2002319F1 /* imgs */,
+				18FDA9A3278C78D2002319F1 /* kernel */,
+				18FDA99F278C78D2002319F1 /* libs */,
+				18FDA9A6278C78D3002319F1 /* LICENSE */,
+				18FDA99E278C78D2002319F1 /* Makefile */,
+				18FDA9A9278C78D3002319F1 /* pranaOS */,
+				18FDA99B278C78D2002319F1 /* README.md */,
+				18FDA99C278C78D2002319F1 /* scripts */,
+				18FDA99D278C78D2002319F1 /* tests */,
+				18FDA990278C78AB002319F1 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		18FDA990278C78AB002319F1 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				18FDA98F278C78AB002319F1 /* pranaOS */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		18FDA9AB278C7930002319F1 /* ak */ = {
+			isa = PBXGroup;
+			children = (
+				18FDA9B6278C7943002319F1 /* ak.h */,
+				18FDA9AE278C7942002319F1 /* convert.cpp */,
+				18FDA9B8278C7943002319F1 /* convert.h */,
+				18FDA9B4278C7942002319F1 /* list.h */,
+				18FDA9B0278C7942002319F1 /* memoperator.cpp */,
+				18FDA9AD278C7942002319F1 /* memoperator.h */,
+				18FDA9B5278C7942002319F1 /* print.cpp */,
+				18FDA9AF278C7942002319F1 /* print.h */,
+				18FDA9B3278C7942002319F1 /* random.cpp */,
+				18FDA9B2278C7942002319F1 /* random.h */,
+				18FDA9AC278C7942002319F1 /* string.cpp */,
+				18FDA9B7278C7943002319F1 /* string.h */,
+				18FDA9B1278C7942002319F1 /* types.h */,
+			);
+			path = ak;
+			sourceTree = "<group>";
+		};
+		18FDA9BE278C7973002319F1 /* bootloader */ = {
+			isa = PBXGroup;
+			children = (
+				18FDA9C9278C79B4002319F1 /* stage2 */,
+				18FDA9C6278C79A4002319F1 /* stage1 */,
+				18FDA9C1278C797F002319F1 /* defines.asm */,
+				18FDA9BF278C797F002319F1 /* Makefile */,
+				18FDA9C0278C797F002319F1 /* smaller.sh */,
+			);
+			path = bootloader;
+			sourceTree = "<group>";
+		};
+		18FDA9C6278C79A4002319F1 /* stage1 */ = {
+			isa = PBXGroup;
+			children = (
+				18FDA9C7278C79AB002319F1 /* mbr.asm */,
+				18FDA9C8278C79AB002319F1 /* print.asm */,
+			);
+			path = stage1;
+			sourceTree = "<group>";
+		};
+		18FDA9C9278C79B4002319F1 /* stage2 */ = {
+			isa = PBXGroup;
+			children = (
+				18FDA9E9278C7A03002319F1 /* fs */,
+				18FDA9E8278C79F3002319F1 /* mem */,
+				18FDA9E1278C79DD002319F1 /* math */,
+				18FDA9D5278C79D7002319F1 /* gdt.asm */,
+				18FDA9D2278C79D7002319F1 /* linker.ld */,
+				18FDA9D3278C79D7002319F1 /* load_block.asm */,
+				18FDA9D6278C79D7002319F1 /* load.h */,
+				18FDA9CA278C79D6002319F1 /* loadkernel.c */,
+				18FDA9D7278C79D7002319F1 /* main.asm */,
+				18FDA9CE278C79D6002319F1 /* Makefile */,
+				18FDA9CB278C79D6002319F1 /* print_pm.c */,
+				18FDA9CF278C79D6002319F1 /* print_pm.h */,
+				18FDA9CC278C79D6002319F1 /* print.asm */,
+				18FDA9D1278C79D7002319F1 /* switch.asm */,
+				18FDA9D4278C79D7002319F1 /* types.h */,
+			);
+			path = stage2;
+			sourceTree = "<group>";
+		};
+		18FDA9E1278C79DD002319F1 /* math */ = {
+			isa = PBXGroup;
+			children = (
+				18FDA9D0278C79D7002319F1 /* math.cpp */,
+				18FDA9CD278C79D6002319F1 /* math.h */,
+			);
+			path = math;
+			sourceTree = "<group>";
+		};
+		18FDA9E8278C79F3002319F1 /* mem */ = {
+			isa = PBXGroup;
+			children = (
+				18FDA9E3278C79F0002319F1 /* malloc.c */,
+				18FDA9E2278C79F0002319F1 /* math.h */,
+				18FDA9E4278C79F0002319F1 /* mem.h */,
+				18FDA9E5278C79F0002319F1 /* memcpy.c */,
+			);
+			path = mem;
+			sourceTree = "<group>";
+		};
+		18FDA9E9278C7A03002319F1 /* fs */ = {
+			isa = PBXGroup;
+			children = (
+				18FDA9EB278C7A07002319F1 /* fs.cpp */,
+				18FDA9EA278C7A07002319F1 /* fs.h */,
+			);
+			path = fs;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		18FDA98E278C78AB002319F1 /* pranaOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 18FDA996278C78AB002319F1 /* Build configuration list for PBXNativeTarget "pranaOS" */;
+			buildPhases = (
+				18FDA98B278C78AB002319F1 /* Sources */,
+				18FDA98C278C78AB002319F1 /* Frameworks */,
+				18FDA98D278C78AB002319F1 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = pranaOS;
+			productName = pranaOS;
+			productReference = 18FDA98F278C78AB002319F1 /* pranaOS */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		18FDA987278C78AB002319F1 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastUpgradeCheck = 1300;
+				TargetAttributes = {
+					18FDA98E278C78AB002319F1 = {
+						CreatedOnToolsVersion = 13.0;
+					};
+				};
+			};
+			buildConfigurationList = 18FDA98A278C78AB002319F1 /* Build configuration list for PBXProject "pranaOS" */;
+			compatibilityVersion = "Xcode 13.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 18FDA986278C78AB002319F1;
+			productRefGroup = 18FDA990278C78AB002319F1 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				18FDA98E278C78AB002319F1 /* pranaOS */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		18FDA98B278C78AB002319F1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				18FDA9E7278C79F0002319F1 /* memcpy.c in Sources */,
+				18FDA9E6278C79F0002319F1 /* malloc.c in Sources */,
+				18FDA9DF278C79D7002319F1 /* gdt.asm in Sources */,
+				18FDA9EC278C7A07002319F1 /* fs.cpp in Sources */,
+				18FDA9BD278C7943002319F1 /* print.cpp in Sources */,
+				18FDA9D9278C79D7002319F1 /* print_pm.c in Sources */,
+				18FDA9C5278C797F002319F1 /* defines.asm in Sources */,
+				18FDA9BB278C7943002319F1 /* memoperator.cpp in Sources */,
+				18FDA9B9278C7943002319F1 /* string.cpp in Sources */,
+				18FDA9DD278C79D7002319F1 /* switch.asm in Sources */,
+				18FDA9DA278C79D7002319F1 /* print.asm in Sources */,
+				18FDA9DE278C79D7002319F1 /* load_block.asm in Sources */,
+				18FDA9BC278C7943002319F1 /* random.cpp in Sources */,
+				18FDA9E0278C79D7002319F1 /* main.asm in Sources */,
+				18FDA9BA278C7943002319F1 /* convert.cpp in Sources */,
+				18FDA9D8278C79D7002319F1 /* loadkernel.c in Sources */,
+				18FDA9AA278C78D3002319F1 /* Makefile in Sources */,
+				18FDA9DB278C79D7002319F1 /* Makefile in Sources */,
+				18FDA9DC278C79D7002319F1 /* math.cpp in Sources */,
+				18FDA9C4278C797F002319F1 /* Makefile in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		18FDA994278C78AB002319F1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 11.3;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		18FDA995278C78AB002319F1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 11.3;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		18FDA997278C78AB002319F1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		18FDA998278C78AB002319F1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		18FDA98A278C78AB002319F1 /* Build configuration list for PBXProject "pranaOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				18FDA994278C78AB002319F1 /* Debug */,
+				18FDA995278C78AB002319F1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		18FDA996278C78AB002319F1 /* Build configuration list for PBXNativeTarget "pranaOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				18FDA997278C78AB002319F1 /* Debug */,
+				18FDA998278C78AB002319F1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 18FDA987278C78AB002319F1 /* Project object */;
+}
