@@ -27,6 +27,8 @@
 		18FDA9E6278C79F0002319F1 /* malloc.c in Sources */ = {isa = PBXBuildFile; fileRef = 18FDA9E3278C79F0002319F1 /* malloc.c */; };
 		18FDA9E7278C79F0002319F1 /* memcpy.c in Sources */ = {isa = PBXBuildFile; fileRef = 18FDA9E5278C79F0002319F1 /* memcpy.c */; };
 		18FDA9EC278C7A07002319F1 /* fs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 18FDA9EB278C7A07002319F1 /* fs.cpp */; };
+		18FDAA00278C7B1B002319F1 /* loader.s in Sources */ = {isa = PBXBuildFile; fileRef = 18FDA9FF278C7B1B002319F1 /* loader.s */; };
+		18FDAA03278C7B29002319F1 /* console.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 18FDAA02278C7B29002319F1 /* console.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -52,12 +54,9 @@
 		18FDA99F278C78D2002319F1 /* libs */ = {isa = PBXFileReference; lastKnownFileType = folder; name = libs; path = ../libs; sourceTree = "<group>"; };
 		18FDA9A0278C78D2002319F1 /* CODE_OF_CONDUCT.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = CODE_OF_CONDUCT.md; path = ../CODE_OF_CONDUCT.md; sourceTree = "<group>"; };
 		18FDA9A2278C78D2002319F1 /* docs */ = {isa = PBXFileReference; lastKnownFileType = folder; name = docs; path = ../docs; sourceTree = "<group>"; };
-		18FDA9A3278C78D2002319F1 /* kernel */ = {isa = PBXFileReference; lastKnownFileType = folder; name = kernel; path = ../kernel; sourceTree = "<group>"; };
-		18FDA9A4278C78D2002319F1 /* bootloader */ = {isa = PBXFileReference; lastKnownFileType = folder; name = bootloader; path = ../bootloader; sourceTree = "<group>"; };
 		18FDA9A5278C78D3002319F1 /* CONTRIBUTING.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = CONTRIBUTING.md; path = ../CONTRIBUTING.md; sourceTree = "<group>"; };
 		18FDA9A6278C78D3002319F1 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		18FDA9A7278C78D3002319F1 /* AUTHORS */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = AUTHORS; path = ../AUTHORS; sourceTree = "<group>"; };
-		18FDA9A8278C78D3002319F1 /* config */ = {isa = PBXFileReference; lastKnownFileType = folder; name = config; path = ../config; sourceTree = "<group>"; };
 		18FDA9A9278C78D3002319F1 /* pranaOS */ = {isa = PBXFileReference; lastKnownFileType = folder; name = pranaOS; sourceTree = "<group>"; };
 		18FDA9AC278C7942002319F1 /* string.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = string.cpp; path = ../../ak/string.cpp; sourceTree = "<group>"; };
 		18FDA9AD278C7942002319F1 /* memoperator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = memoperator.h; path = ../../ak/memoperator.h; sourceTree = "<group>"; };
@@ -97,6 +96,16 @@
 		18FDA9E5278C79F0002319F1 /* memcpy.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = memcpy.c; sourceTree = "<group>"; };
 		18FDA9EA278C7A07002319F1 /* fs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = fs.h; path = ../../../../bootloader/stage2/fs/fs.h; sourceTree = "<group>"; };
 		18FDA9EB278C7A07002319F1 /* fs.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = fs.cpp; path = ../../../../bootloader/stage2/fs/fs.cpp; sourceTree = "<group>"; };
+		18FDA9EF278C7A3B002319F1 /* config_addr */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; name = config_addr; path = ../../../config/debug/config_addr; sourceTree = "<group>"; };
+		18FDA9F3278C7AC8002319F1 /* cpu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = cpu.h; path = ../../../../kernel/include/core/cpu.h; sourceTree = "<group>"; };
+		18FDA9F4278C7AC8002319F1 /* port.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = port.h; path = ../../../../kernel/include/core/port.h; sourceTree = "<group>"; };
+		18FDA9F6278C7AD5002319F1 /* console.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = console.h; path = ../../../../kernel/include/system/console.h; sourceTree = "<group>"; };
+		18FDA9F7278C7AD5002319F1 /* log.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = log.h; path = ../../../../kernel/include/system/log.h; sourceTree = "<group>"; };
+		18FDA9F8278C7AD5002319F1 /* serialport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = serialport.h; path = ../../../../kernel/include/system/serialport.h; sourceTree = "<group>"; };
+		18FDA9FB278C7AF3002319F1 /* lock.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = lock.h; path = ../../../../../kernel/include/system/tasking/lock.h; sourceTree = "<group>"; };
+		18FDA9FC278C7AFE002319F1 /* linker.ld */ = {isa = PBXFileReference; lastKnownFileType = text; name = linker.ld; path = ../../kernel/linker.ld; sourceTree = "<group>"; };
+		18FDA9FF278C7B1B002319F1 /* loader.s */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; name = loader.s; path = ../../../../kernel/src/boot/loader.s; sourceTree = "<group>"; };
+		18FDAA02278C7B29002319F1 /* console.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = console.cpp; path = ../../../../kernel/src/system/console.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -113,17 +122,16 @@
 		18FDA986278C78AB002319F1 = {
 			isa = PBXGroup;
 			children = (
+				18FDA9F0278C7AA3002319F1 /* kernel */,
+				18FDA9ED278C7A2E002319F1 /* config */,
 				18FDA9BE278C7973002319F1 /* bootloader */,
 				18FDA9AB278C7930002319F1 /* ak */,
 				18FDA9A7278C78D3002319F1 /* AUTHORS */,
-				18FDA9A4278C78D2002319F1 /* bootloader */,
 				18FDA9A0278C78D2002319F1 /* CODE_OF_CONDUCT.md */,
-				18FDA9A8278C78D3002319F1 /* config */,
 				18FDA9A5278C78D3002319F1 /* CONTRIBUTING.md */,
 				18FDA9A2278C78D2002319F1 /* docs */,
 				18FDA999278C78D2002319F1 /* fonts */,
 				18FDA99A278C78D2002319F1 /* imgs */,
-				18FDA9A3278C78D2002319F1 /* kernel */,
 				18FDA99F278C78D2002319F1 /* libs */,
 				18FDA9A6278C78D3002319F1 /* LICENSE */,
 				18FDA99E278C78D2002319F1 /* Makefile */,
@@ -235,6 +243,94 @@
 			path = fs;
 			sourceTree = "<group>";
 		};
+		18FDA9ED278C7A2E002319F1 /* config */ = {
+			isa = PBXGroup;
+			children = (
+				18FDA9EE278C7A37002319F1 /* debug */,
+			);
+			path = config;
+			sourceTree = "<group>";
+		};
+		18FDA9EE278C7A37002319F1 /* debug */ = {
+			isa = PBXGroup;
+			children = (
+				18FDA9EF278C7A3B002319F1 /* config_addr */,
+			);
+			path = debug;
+			sourceTree = "<group>";
+		};
+		18FDA9F0278C7AA3002319F1 /* kernel */ = {
+			isa = PBXGroup;
+			children = (
+				18FDA9FD278C7B08002319F1 /* src */,
+				18FDA9FC278C7AFE002319F1 /* linker.ld */,
+				18FDA9F1278C7ABC002319F1 /* include */,
+			);
+			path = kernel;
+			sourceTree = "<group>";
+		};
+		18FDA9F1278C7ABC002319F1 /* include */ = {
+			isa = PBXGroup;
+			children = (
+				18FDA9F5278C7ACE002319F1 /* system */,
+				18FDA9F2278C7AC0002319F1 /* core */,
+			);
+			path = include;
+			sourceTree = "<group>";
+		};
+		18FDA9F2278C7AC0002319F1 /* core */ = {
+			isa = PBXGroup;
+			children = (
+				18FDA9F3278C7AC8002319F1 /* cpu.h */,
+				18FDA9F4278C7AC8002319F1 /* port.h */,
+			);
+			path = core;
+			sourceTree = "<group>";
+		};
+		18FDA9F5278C7ACE002319F1 /* system */ = {
+			isa = PBXGroup;
+			children = (
+				18FDA9FA278C7AE7002319F1 /* tasking */,
+				18FDA9F6278C7AD5002319F1 /* console.h */,
+				18FDA9F7278C7AD5002319F1 /* log.h */,
+				18FDA9F8278C7AD5002319F1 /* serialport.h */,
+			);
+			path = system;
+			sourceTree = "<group>";
+		};
+		18FDA9FA278C7AE7002319F1 /* tasking */ = {
+			isa = PBXGroup;
+			children = (
+				18FDA9FB278C7AF3002319F1 /* lock.h */,
+			);
+			path = tasking;
+			sourceTree = "<group>";
+		};
+		18FDA9FD278C7B08002319F1 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				18FDAA01278C7B24002319F1 /* system */,
+				18FDA9FE278C7B12002319F1 /* boot */,
+			);
+			path = src;
+			sourceTree = "<group>";
+		};
+		18FDA9FE278C7B12002319F1 /* boot */ = {
+			isa = PBXGroup;
+			children = (
+				18FDA9FF278C7B1B002319F1 /* loader.s */,
+			);
+			path = boot;
+			sourceTree = "<group>";
+		};
+		18FDAA01278C7B24002319F1 /* system */ = {
+			isa = PBXGroup;
+			children = (
+				18FDAA02278C7B29002319F1 /* console.cpp */,
+			);
+			path = system;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -301,6 +397,7 @@
 				18FDA9C5278C797F002319F1 /* defines.asm in Sources */,
 				18FDA9BB278C7943002319F1 /* memoperator.cpp in Sources */,
 				18FDA9B9278C7943002319F1 /* string.cpp in Sources */,
+				18FDAA03278C7B29002319F1 /* console.cpp in Sources */,
 				18FDA9DD278C79D7002319F1 /* switch.asm in Sources */,
 				18FDA9DA278C79D7002319F1 /* print.asm in Sources */,
 				18FDA9DE278C79D7002319F1 /* load_block.asm in Sources */,
@@ -310,6 +407,7 @@
 				18FDA9D8278C79D7002319F1 /* loadkernel.c in Sources */,
 				18FDA9AA278C78D3002319F1 /* Makefile in Sources */,
 				18FDA9DB278C79D7002319F1 /* Makefile in Sources */,
+				18FDAA00278C7B1B002319F1 /* loader.s in Sources */,
 				18FDA9DC278C79D7002319F1 /* math.cpp in Sources */,
 				18FDA9C4278C797F002319F1 /* Makefile in Sources */,
 			);
