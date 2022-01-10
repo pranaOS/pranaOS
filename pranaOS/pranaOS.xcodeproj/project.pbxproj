@@ -42,6 +42,7 @@
 		18FDAA4A278C7C4F002319F1 /* Object.m in Sources */ = {isa = PBXBuildFile; fileRef = 18FDAA45278C7C4F002319F1 /* Object.m */; };
 		18FDAA4B278C7C4F002319F1 /* Protocol.m in Sources */ = {isa = PBXBuildFile; fileRef = 18FDAA46278C7C4F002319F1 /* Protocol.m */; };
 		18FDAA6B278C7CE4002319F1 /* ipc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 18FDAA6A278C7CE4002319F1 /* ipc.cpp */; };
+		18FDAA6D278C7D2A002319F1 /* convert.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 18FDAA6C278C7D2A002319F1 /* convert.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -166,6 +167,7 @@
 		18FDAA67278C7CDA002319F1 /* stdio.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = stdio.h; path = ../../../../libs/libc/include/stdio.h; sourceTree = "<group>"; };
 		18FDAA68278C7CDA002319F1 /* types.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = types.h; path = ../../../../libs/libc/include/types.h; sourceTree = "<group>"; };
 		18FDAA6A278C7CE4002319F1 /* ipc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ipc.cpp; path = ../../../../libs/libc/src/ipc.cpp; sourceTree = "<group>"; };
+		18FDAA6C278C7D2A002319F1 /* convert.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = convert.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -546,6 +548,7 @@
 			isa = PBXGroup;
 			children = (
 				18FDAA6A278C7CE4002319F1 /* ipc.cpp */,
+				18FDAA6C278C7D2A002319F1 /* convert.cpp */,
 			);
 			path = src;
 			sourceTree = "<group>";
@@ -628,6 +631,7 @@
 				18FDA9DA278C79D7002319F1 /* print.asm in Sources */,
 				18FDA9DE278C79D7002319F1 /* load_block.asm in Sources */,
 				18FDAA3E278C7C3D002319F1 /* define.m in Sources */,
+				18FDAA6D278C7D2A002319F1 /* convert.cpp in Sources */,
 				18FDA9BC278C7943002319F1 /* random.cpp in Sources */,
 				18FDA9E0278C79D7002319F1 /* main.asm in Sources */,
 				18FDAA40278C7C3D002319F1 /* for.m in Sources */,
