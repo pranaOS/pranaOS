@@ -64,7 +64,7 @@
 		18A8F4D5278DBF930030A69D /* config_addr */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = config_addr; sourceTree = "<group>"; };
 		18A8F4D6278DBFAB0030A69D /* console.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = console.cpp; sourceTree = "<group>"; };
 		18A8F4D8278DBFB30030A69D /* loader.s */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; path = loader.s; sourceTree = "<group>"; };
-		18A8F4DA278DBFBC0030A69D /* linker.ld */ = {isa = PBXFileReference; lastKnownFileType = file; name = linker.ld; path = kernel/linker.ld; sourceTree = SOURCE_ROOT; };
+		18A8F4DA278DBFBC0030A69D /* linker.ld */ = {isa = PBXFileReference; lastKnownFileType = text; name = linker.ld; path = kernel/linker.ld; sourceTree = SOURCE_ROOT; };
 		18A8F4DB278DBFD10030A69D /* log.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = log.h; sourceTree = "<group>"; };
 		18A8F4DC278DBFD10030A69D /* serialport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = serialport.h; sourceTree = "<group>"; };
 		18A8F4DD278DBFD10030A69D /* console.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = console.h; sourceTree = "<group>"; };
@@ -125,6 +125,7 @@
 		18A8F522278DC1300030A69D /* do.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = do.js; sourceTree = "<group>"; };
 		18A8F523278DC1300030A69D /* string.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = string.js; sourceTree = "<group>"; };
 		18A8F524278DC1300030A69D /* while.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = while.js; sourceTree = "<group>"; };
+		18A8F527278DC2B80030A69D /* interrupthandler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = interrupthandler.h; sourceTree = "<group>"; };
 		18FDA98F278C78AB002319F1 /* pranaOS */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = pranaOS; sourceTree = BUILT_PRODUCTS_DIR; };
 		18FDA9F3278C7AC8002319F1 /* cpu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = cpu.h; path = ../../../../kernel/include/core/cpu.h; sourceTree = "<group>"; };
 		18FDA9F4278C7AC8002319F1 /* port.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = port.h; path = ../../../../kernel/include/core/port.h; sourceTree = "<group>"; };
@@ -248,6 +249,7 @@
 				18A8F4DB278DBFD10030A69D /* log.h */,
 				18A8F4DC278DBFD10030A69D /* serialport.h */,
 				18FDA9FA278C7AE7002319F1 /* tasking */,
+				18A8F527278DC2B80030A69D /* interrupthandler.h */,
 			);
 			path = system;
 			sourceTree = "<group>";
