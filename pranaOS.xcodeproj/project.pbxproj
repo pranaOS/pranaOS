@@ -131,7 +131,6 @@
 		18A8F52A278DC6A70030A69D /* interrupthandler.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = interrupthandler.cpp; sourceTree = "<group>"; };
 		18A8F537278DC9410030A69D /* port.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = port.h; sourceTree = "<group>"; };
 		18A8F538278DC9410030A69D /* cpu.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cpu.h; sourceTree = "<group>"; };
-		18A8F539278DC9B20030A69D /* docs */ = {isa = PBXFileReference; lastKnownFileType = text; path = docs; sourceTree = SOURCE_ROOT; };
 		18A8F53A278DC9B80030A69D /* docs */ = {isa = PBXFileReference; lastKnownFileType = folder; path = docs; sourceTree = "<group>"; };
 		18FDA98F278C78AB002319F1 /* pranaOS */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = pranaOS; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -195,7 +194,6 @@
 		18FDA9AB278C7930002319F1 /* ak */ = {
 			isa = PBXGroup;
 			children = (
-				18A8F539278DC9B20030A69D /* docs */,
 				18A8F4BE278DBF270030A69D /* ak.h */,
 				18A8F4C3278DBF270030A69D /* convert.cpp */,
 				18A8F4BF278DBF270030A69D /* convert.h */,
