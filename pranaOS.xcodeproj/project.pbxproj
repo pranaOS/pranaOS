@@ -227,7 +227,9 @@
 		18FDA9F0278C7AA3002319F1 /* kernel */ = {
 			isa = PBXGroup;
 			children = (
-				18FDA9FD278C7B08002319F1 /* src */,
+				18A8F4DA278DBFBC0030A69D /* linker.ld */,
+				18FDAA01278C7B24002319F1 /* system */,
+				18FDA9FE278C7B12002319F1 /* boot */,
 			);
 			path = kernel;
 			sourceTree = "<group>";
@@ -238,16 +240,6 @@
 				18A8F4DE278DBFE20030A69D /* lock.h */,
 			);
 			path = tasking;
-			sourceTree = "<group>";
-		};
-		18FDA9FD278C7B08002319F1 /* src */ = {
-			isa = PBXGroup;
-			children = (
-				18A8F4DA278DBFBC0030A69D /* linker.ld */,
-				18FDAA01278C7B24002319F1 /* system */,
-				18FDA9FE278C7B12002319F1 /* boot */,
-			);
-			path = src;
 			sourceTree = "<group>";
 		};
 		18FDA9FE278C7B12002319F1 /* boot */ = {
