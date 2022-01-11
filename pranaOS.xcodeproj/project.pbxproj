@@ -146,14 +146,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		18A8F528278DC4C60030A69D /* components */ = {
-			isa = PBXGroup;
-			children = (
-				18A8F529278DC4F00030A69D /* component.h */,
-			);
-			path = components;
-			sourceTree = "<group>";
-		};
 		18A8F530278DC8DC0030A69D /* core */ = {
 			isa = PBXGroup;
 			children = (
@@ -248,14 +240,6 @@
 			path = kernel;
 			sourceTree = "<group>";
 		};
-		18FDA9FA278C7AE7002319F1 /* tasking */ = {
-			isa = PBXGroup;
-			children = (
-				18A8F4DE278DBFE20030A69D /* lock.h */,
-			);
-			path = tasking;
-			sourceTree = "<group>";
-		};
 		18FDA9FE278C7B12002319F1 /* boot */ = {
 			isa = PBXGroup;
 			children = (
@@ -267,11 +251,11 @@
 		18FDAA01278C7B24002319F1 /* system */ = {
 			isa = PBXGroup;
 			children = (
-				18A8F528278DC4C60030A69D /* components */,
+				18A8F4DE278DBFE20030A69D /* lock.h */,
+				18A8F529278DC4F00030A69D /* component.h */,
 				18A8F4DD278DBFD10030A69D /* console.h */,
 				18A8F4DB278DBFD10030A69D /* log.h */,
 				18A8F4DC278DBFD10030A69D /* serialport.h */,
-				18FDA9FA278C7AE7002319F1 /* tasking */,
 				18A8F527278DC2B80030A69D /* interrupthandler.h */,
 				18A8F4D6278DBFAB0030A69D /* console.cpp */,
 				18A8F52A278DC6A70030A69D /* interrupthandler.cpp */,
