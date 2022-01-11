@@ -30,6 +30,7 @@
 		18A8F515278DC0EC0030A69D /* accessors.m in Sources */ = {isa = PBXBuildFile; fileRef = 18A8F510278DC0EC0030A69D /* accessors.m */; };
 		18A8F516278DC0EC0030A69D /* Protocol.m in Sources */ = {isa = PBXBuildFile; fileRef = 18A8F512278DC0EC0030A69D /* Protocol.m */; };
 		18A8F517278DC0EC0030A69D /* NXConstStr.m in Sources */ = {isa = PBXBuildFile; fileRef = 18A8F513278DC0EC0030A69D /* NXConstStr.m */; };
+		18A8F52B278DC6A70030A69D /* interrupthandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 18A8F52A278DC6A70030A69D /* interrupthandler.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -127,9 +128,8 @@
 		18A8F524278DC1300030A69D /* while.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = while.js; sourceTree = "<group>"; };
 		18A8F527278DC2B80030A69D /* interrupthandler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = interrupthandler.h; sourceTree = "<group>"; };
 		18A8F529278DC4F00030A69D /* component.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = component.h; sourceTree = "<group>"; };
+		18A8F52A278DC6A70030A69D /* interrupthandler.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = interrupthandler.cpp; sourceTree = "<group>"; };
 		18FDA98F278C78AB002319F1 /* pranaOS */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = pranaOS; sourceTree = BUILT_PRODUCTS_DIR; };
-		18FDA9F3278C7AC8002319F1 /* cpu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = cpu.h; path = ../../../../kernel/include/core/cpu.h; sourceTree = "<group>"; };
-		18FDA9F4278C7AC8002319F1 /* port.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = port.h; path = ../../../../kernel/include/core/port.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -228,40 +228,8 @@
 			isa = PBXGroup;
 			children = (
 				18FDA9FD278C7B08002319F1 /* src */,
-				18FDA9F1278C7ABC002319F1 /* include */,
 			);
 			path = kernel;
-			sourceTree = "<group>";
-		};
-		18FDA9F1278C7ABC002319F1 /* include */ = {
-			isa = PBXGroup;
-			children = (
-				18FDA9F5278C7ACE002319F1 /* system */,
-				18FDA9F2278C7AC0002319F1 /* core */,
-			);
-			path = include;
-			sourceTree = "<group>";
-		};
-		18FDA9F2278C7AC0002319F1 /* core */ = {
-			isa = PBXGroup;
-			children = (
-				18FDA9F3278C7AC8002319F1 /* cpu.h */,
-				18FDA9F4278C7AC8002319F1 /* port.h */,
-			);
-			path = core;
-			sourceTree = "<group>";
-		};
-		18FDA9F5278C7ACE002319F1 /* system */ = {
-			isa = PBXGroup;
-			children = (
-				18A8F528278DC4C60030A69D /* components */,
-				18A8F4DD278DBFD10030A69D /* console.h */,
-				18A8F4DB278DBFD10030A69D /* log.h */,
-				18A8F4DC278DBFD10030A69D /* serialport.h */,
-				18FDA9FA278C7AE7002319F1 /* tasking */,
-				18A8F527278DC2B80030A69D /* interrupthandler.h */,
-			);
-			path = system;
 			sourceTree = "<group>";
 		};
 		18FDA9FA278C7AE7002319F1 /* tasking */ = {
@@ -293,7 +261,14 @@
 		18FDAA01278C7B24002319F1 /* system */ = {
 			isa = PBXGroup;
 			children = (
+				18A8F528278DC4C60030A69D /* components */,
+				18A8F4DD278DBFD10030A69D /* console.h */,
+				18A8F4DB278DBFD10030A69D /* log.h */,
+				18A8F4DC278DBFD10030A69D /* serialport.h */,
+				18FDA9FA278C7AE7002319F1 /* tasking */,
+				18A8F527278DC2B80030A69D /* interrupthandler.h */,
 				18A8F4D6278DBFAB0030A69D /* console.cpp */,
+				18A8F52A278DC6A70030A69D /* interrupthandler.cpp */,
 			);
 			path = system;
 			sourceTree = "<group>";
@@ -523,6 +498,7 @@
 				18A8F4E8278DC03D0030A69D /* Makefile in Sources */,
 				18A8F516278DC0EC0030A69D /* Protocol.m in Sources */,
 				18A8F50C278DC0C80030A69D /* functions.m in Sources */,
+				18A8F52B278DC6A70030A69D /* interrupthandler.cpp in Sources */,
 				18A8F509278DC0C80030A69D /* define.m in Sources */,
 				18A8F4EA278DC05A0030A69D /* ipc.cpp in Sources */,
 				18A8F4E4278DC00E0030A69D /* Makefile in Sources */,
