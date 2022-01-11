@@ -129,8 +129,8 @@
 		18A8F527278DC2B80030A69D /* interrupthandler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = interrupthandler.h; sourceTree = "<group>"; };
 		18A8F529278DC4F00030A69D /* component.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = component.h; sourceTree = "<group>"; };
 		18A8F52A278DC6A70030A69D /* interrupthandler.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = interrupthandler.cpp; sourceTree = "<group>"; };
-		18A8F533278DC8F20030A69D /* cpu.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = cpu.h; path = ../../../../.Trash/core/cpu.h; sourceTree = "<group>"; };
-		18A8F534278DC8F20030A69D /* port.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = port.h; path = ../../../../.Trash/core/port.h; sourceTree = "<group>"; };
+		18A8F537278DC9410030A69D /* port.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = port.h; sourceTree = "<group>"; };
+		18A8F538278DC9410030A69D /* cpu.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cpu.h; sourceTree = "<group>"; };
 		18FDA98F278C78AB002319F1 /* pranaOS */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = pranaOS; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -156,8 +156,8 @@
 		18A8F530278DC8DC0030A69D /* core */ = {
 			isa = PBXGroup;
 			children = (
-				18A8F533278DC8F20030A69D /* cpu.h */,
-				18A8F534278DC8F20030A69D /* port.h */,
+				18A8F538278DC9410030A69D /* cpu.h */,
+				18A8F537278DC9410030A69D /* port.h */,
 			);
 			path = core;
 			sourceTree = "<group>";
