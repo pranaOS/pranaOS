@@ -9,7 +9,7 @@
 
 #include <ak/types.h>
 #include <ak/convert.h>
-#include <ak/memoryoperations.h>
+#include <ak/memoperator.h>
 #include <system/console.h>
 #include <multiboot/multiboot.h>
 
