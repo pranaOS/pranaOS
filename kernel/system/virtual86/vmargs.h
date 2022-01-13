@@ -5,8 +5,19 @@
 //  Created by Apple on 13/01/22.
 //
 
-#ifndef vmargs_h
-#define vmargs_h
+#pragma once
 
+#include <ak/types.h>
 
-#endif /* vmargs_h */
+namespace pranaOS {
+    namespace system {
+        struct vmArgs {
+            ak::uint16_t AX;
+            ak::uint16_t BX;
+            ak::uint16_t CX;
+            ak::uint16_t DX;
+            ak::uint16_t DI;
+            
+        } __attribute__((packed));
+    }
+}
