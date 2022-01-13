@@ -7,12 +7,12 @@ using namespace pranaOS::ak;
 namespace Kernel {
     namespace core {
         struct gdtEntry {
-            ak::uint16_t limit_low;           
-            ak::uint16_t base_low;            
-            ak::uint8_t  base_middle;         
+            ak::uint16_t limitLow;           
+            ak::uint16_t baseLow;            
+            ak::uint8_t  baseMiddle;         
             ak::uint8_t  access;              
             ak::uint8_t  granularity;
-            ak::uint8_t  base_high;           
+            ak::uint8_t  baseHigh;           
         } __attribute__((packed));
 
         struct gdtPointer {
@@ -22,9 +22,9 @@ namespace Kernel {
 
         class globalDescriptorTable {        
         public:
-            static void SetDescriptor(int number, ak::uint32_t base, ak::uint32_t limit, ak::uint8_t access, ak::uint8_t gran);
-            static gdtEntry* GetDescriptor(int number);
-            static void Init();
+            static void setDescriptor(int number, ak::uint32_t base, ak::uint32_t limit, ak::uint8_t access, ak::uint8_t gran);
+            static gdtEntry* getDescriptor(int number);
+            static void init();
         };
     }
 }
