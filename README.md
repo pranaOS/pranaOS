@@ -9,6 +9,8 @@
 
 [![linuxCI](https://github.com/pranaOS/pranaOS/actions/workflows/linux.yml/badge.svg?branch=master)](https://github.com/pranaOS/pranaOS/actions/workflows/linux.yml)
 
+[![codeql-analysis](https://github.com/pranaOS/pranaOS/actions/workflows/codeql-analysis.yml/badge.svg?branch=master)](https://github.com/pranaOS/pranaOS/actions/workflows/codeql-analysis.yml)
+
 # Features:
 ## Kernel:
 - x86 kernel
