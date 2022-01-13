@@ -134,6 +134,7 @@
 		18A8F53A278DC9B80030A69D /* docs */ = {isa = PBXFileReference; lastKnownFileType = folder; path = docs; sourceTree = "<group>"; };
 		18B593FC27903DC400DA802C /* vmargs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = vmargs.h; sourceTree = "<group>"; };
 		18B593FE27903F2100DA802C /* multiboot.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = multiboot.h; sourceTree = "<group>"; };
+		18B593FF27903F8700DA802C /* memory.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = memory.h; sourceTree = "<group>"; };
 		18FDA98F278C78AB002319F1 /* pranaOS */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = pranaOS; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -153,6 +154,7 @@
 			children = (
 				18A8F538278DC9410030A69D /* cpu.h */,
 				18A8F537278DC9410030A69D /* port.h */,
+				18B593FF27903F8700DA802C /* memory.h */,
 			);
 			path = core;
 			sourceTree = "<group>";
