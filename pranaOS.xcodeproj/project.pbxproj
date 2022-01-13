@@ -31,6 +31,7 @@
 		18A8F516278DC0EC0030A69D /* Protocol.m in Sources */ = {isa = PBXBuildFile; fileRef = 18A8F512278DC0EC0030A69D /* Protocol.m */; };
 		18A8F517278DC0EC0030A69D /* NXConstStr.m in Sources */ = {isa = PBXBuildFile; fileRef = 18A8F513278DC0EC0030A69D /* NXConstStr.m */; };
 		18A8F52B278DC6A70030A69D /* interrupthandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 18A8F52A278DC6A70030A69D /* interrupthandler.cpp */; };
+		18B594022790415C00DA802C /* cpu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 18B594012790415C00DA802C /* cpu.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -135,6 +136,7 @@
 		18B593FC27903DC400DA802C /* vmargs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = vmargs.h; sourceTree = "<group>"; };
 		18B593FE27903F2100DA802C /* multiboot.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = multiboot.h; sourceTree = "<group>"; };
 		18B593FF27903F8700DA802C /* memory.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = memory.h; sourceTree = "<group>"; };
+		18B594012790415C00DA802C /* cpu.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = cpu.cpp; sourceTree = "<group>"; };
 		18FDA98F278C78AB002319F1 /* pranaOS */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = pranaOS; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -155,6 +157,7 @@
 				18A8F538278DC9410030A69D /* cpu.h */,
 				18A8F537278DC9410030A69D /* port.h */,
 				18B593FF27903F8700DA802C /* memory.h */,
+				18B594012790415C00DA802C /* cpu.cpp */,
 			);
 			path = core;
 			sourceTree = "<group>";
@@ -505,6 +508,7 @@
 				18A8F50E278DC0C80030A69D /* hello.m in Sources */,
 				18A8F517278DC0EC0030A69D /* NXConstStr.m in Sources */,
 				18A8F508278DC0C80030A69D /* do.m in Sources */,
+				18B594022790415C00DA802C /* cpu.cpp in Sources */,
 				18A8F4D9278DBFB30030A69D /* loader.s in Sources */,
 				18A8F4C6278DBF280030A69D /* string.cpp in Sources */,
 				18A8F4E8278DC03D0030A69D /* Makefile in Sources */,
