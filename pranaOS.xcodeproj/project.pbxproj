@@ -132,6 +132,8 @@
 		18A8F537278DC9410030A69D /* port.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = port.h; sourceTree = "<group>"; };
 		18A8F538278DC9410030A69D /* cpu.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cpu.h; sourceTree = "<group>"; };
 		18A8F53A278DC9B80030A69D /* docs */ = {isa = PBXFileReference; lastKnownFileType = folder; path = docs; sourceTree = "<group>"; };
+		18B593FC27903DC400DA802C /* vmargs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = vmargs.h; sourceTree = "<group>"; };
+		18B593FE27903F2100DA802C /* multiboot.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = multiboot.h; sourceTree = "<group>"; };
 		18FDA98F278C78AB002319F1 /* pranaOS */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = pranaOS; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -153,6 +155,22 @@
 				18A8F537278DC9410030A69D /* port.h */,
 			);
 			path = core;
+			sourceTree = "<group>";
+		};
+		18B593FB27903DAC00DA802C /* virtual86 */ = {
+			isa = PBXGroup;
+			children = (
+				18B593FC27903DC400DA802C /* vmargs.h */,
+			);
+			path = virtual86;
+			sourceTree = "<group>";
+		};
+		18B593FD27903F1100DA802C /* multiboot */ = {
+			isa = PBXGroup;
+			children = (
+				18B593FE27903F2100DA802C /* multiboot.h */,
+			);
+			path = multiboot;
 			sourceTree = "<group>";
 		};
 		18FDA986278C78AB002319F1 = {
@@ -232,6 +250,7 @@
 		18FDA9F0278C7AA3002319F1 /* kernel */ = {
 			isa = PBXGroup;
 			children = (
+				18B593FD27903F1100DA802C /* multiboot */,
 				18A8F530278DC8DC0030A69D /* core */,
 				18A8F4DA278DBFBC0030A69D /* linker.ld */,
 				18FDAA01278C7B24002319F1 /* system */,
@@ -251,6 +270,7 @@
 		18FDAA01278C7B24002319F1 /* system */ = {
 			isa = PBXGroup;
 			children = (
+				18B593FB27903DAC00DA802C /* virtual86 */,
 				18A8F4DE278DBFE20030A69D /* lock.h */,
 				18A8F529278DC4F00030A69D /* component.h */,
 				18A8F4DD278DBFD10030A69D /* console.h */,
