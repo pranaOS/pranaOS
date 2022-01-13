@@ -2,13 +2,13 @@
 
 #include <ak/types.h>
 
-namespace Core {
+namespace Kernel {
         #define EDX_SSE2 (1 << 26) 
         #define EDX_FXSR (1 << 24) 
 
-        class CPU {
+        class Cpu {
         public:
-            static void PrintVendor();
-            static void EnableFeatures();
+            static void printVendor();
+            static void enableFeatures();
         };        
 }
