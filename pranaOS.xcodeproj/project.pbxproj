@@ -49,6 +49,7 @@
 /* Begin PBXFileReference section */
 		184F91422791476C001D59EC /* disk.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = disk.h; sourceTree = "<group>"; };
 		184F914327914785001D59EC /* diskcontroller.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = diskcontroller.h; sourceTree = "<group>"; };
+		184F91442791635A001D59EC /* diskmanager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = diskmanager.h; sourceTree = "<group>"; };
 		18A8F4B8278DBF270030A69D /* list.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = list.h; sourceTree = "<group>"; };
 		18A8F4B9278DBF270030A69D /* random.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = random.cpp; sourceTree = "<group>"; };
 		18A8F4BA278DBF270030A69D /* string.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = string.cpp; sourceTree = "<group>"; };
@@ -160,6 +161,7 @@
 			children = (
 				184F91422791476C001D59EC /* disk.h */,
 				184F914327914785001D59EC /* diskcontroller.h */,
+				184F91442791635A001D59EC /* diskmanager.h */,
 			);
 			path = disks;
 			sourceTree = "<group>";
