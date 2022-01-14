@@ -40,8 +40,6 @@
 - [twitter](https://twitter.com/os_prana)
 - [discord](https://discord.gg/XmpBTmy9Bz)
 
-- pranaOS is licensed under GPL-3.0
-
 ## Contribtuions
 - pranaOS is an open-source project you can contribute to it :)
 - check out the [CONTRIBUTING](CONTRIBUTING.md) docs
