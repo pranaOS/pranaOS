@@ -50,6 +50,7 @@
 		184F91422791476C001D59EC /* disk.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = disk.h; sourceTree = "<group>"; };
 		184F914327914785001D59EC /* diskcontroller.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = diskcontroller.h; sourceTree = "<group>"; };
 		184F91442791635A001D59EC /* diskmanager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = diskmanager.h; sourceTree = "<group>"; };
+		184F914727916EBF001D59EC /* api_test.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = api_test.h; sourceTree = "<group>"; };
 		18A8F4B8278DBF270030A69D /* list.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = list.h; sourceTree = "<group>"; };
 		18A8F4B9278DBF270030A69D /* random.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = random.cpp; sourceTree = "<group>"; };
 		18A8F4BA278DBF270030A69D /* string.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = string.cpp; sourceTree = "<group>"; };
@@ -164,6 +165,22 @@
 				184F91442791635A001D59EC /* diskmanager.h */,
 			);
 			path = disks;
+			sourceTree = "<group>";
+		};
+		184F914527916E95001D59EC /* libs */ = {
+			isa = PBXGroup;
+			children = (
+				184F914627916E9E001D59EC /* libc */,
+			);
+			path = libs;
+			sourceTree = "<group>";
+		};
+		184F914627916E9E001D59EC /* libc */ = {
+			isa = PBXGroup;
+			children = (
+				184F914727916EBF001D59EC /* api_test.h */,
+			);
+			path = libc;
 			sourceTree = "<group>";
 		};
 		18A8F530278DC8DC0030A69D /* core */ = {
@@ -316,6 +333,7 @@
 		18FDAA05278C7B81002319F1 /* tests */ = {
 			isa = PBXGroup;
 			children = (
+				184F914527916E95001D59EC /* libs */,
 				18A8F4E6278DC0270030A69D /* checkversion.js */,
 				18A8F4E5278DC0270030A69D /* dirtest.js */,
 			);
