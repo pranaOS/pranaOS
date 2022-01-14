@@ -38,5 +38,20 @@ namespace Kernel {
             ak::uint8_t  reserved2;
             ak::uint8_t  checksum;
         } __attribute__((packed));
+
+        class Disk;
+        
+        class diskManager {
+        public:
+            List<Disk*> allDisks;
+
+            diskManager();
+
+            void addDisk(Disk* disk);
+
+            void removeDisk(Disk* disk);
+            void readSector(ak::uint16_t drive, ak::uint32_t lba, ak::uint8_t* buf);
+
+        };
     }
 }
