@@ -5,8 +5,10 @@
 //  Created by Apple on 14/01/22.
 //
 
-#ifndef diskcontroller_h
-#define diskcontroller_h
+#pragma once
 
-
-#endif /* diskcontroller_h */
+#include <ak/types.h>
+#include <ak/convert.h>
+#include <ak/memoperator.h>
+#include <system/disks/disk.h>
+#include <system/disks/diskmanager.h>
