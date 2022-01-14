@@ -4,7 +4,7 @@
 #include <list.h>
 #include <memoperator.h>
 
-namespace String {
+namespace pranaOS {
     namespace ak {
         #define isalpha(c) (((unsigned)c|32)-'a' < 26)
 
