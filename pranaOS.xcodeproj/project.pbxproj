@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		184F914927916EFE001D59EC /* api_test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 184F914827916EFE001D59EC /* api_test.cpp */; };
+		184F914D279172EC001D59EC /* myClass.m in Sources */ = {isa = PBXBuildFile; fileRef = 184F914C279172EC001D59EC /* myClass.m */; };
 		18A8F4C5278DBF270030A69D /* random.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 18A8F4B9278DBF270030A69D /* random.cpp */; };
 		18A8F4C6278DBF280030A69D /* string.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 18A8F4BA278DBF270030A69D /* string.cpp */; };
 		18A8F4C7278DBF280030A69D /* print.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 18A8F4C2278DBF270030A69D /* print.cpp */; };
@@ -52,6 +53,7 @@
 		184F914327914785001D59EC /* diskcontroller.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = diskcontroller.h; sourceTree = "<group>"; };
 		184F91442791635A001D59EC /* diskmanager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = diskmanager.h; sourceTree = "<group>"; };
 		184F914827916EFE001D59EC /* api_test.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = api_test.cpp; sourceTree = "<group>"; };
+		184F914C279172EC001D59EC /* myClass.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = myClass.m; sourceTree = "<group>"; };
 		18A8F4B8278DBF270030A69D /* list.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = list.h; sourceTree = "<group>"; };
 		18A8F4B9278DBF270030A69D /* random.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = random.cpp; sourceTree = "<group>"; };
 		18A8F4BA278DBF270030A69D /* string.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = string.cpp; sourceTree = "<group>"; };
@@ -171,6 +173,7 @@
 		184F914527916E95001D59EC /* libs */ = {
 			isa = PBXGroup;
 			children = (
+				184F914B279172B1001D59EC /* libobjc */,
 				184F914627916E9E001D59EC /* libc */,
 			);
 			path = libs;
@@ -182,6 +185,14 @@
 				184F914827916EFE001D59EC /* api_test.cpp */,
 			);
 			path = libc;
+			sourceTree = "<group>";
+		};
+		184F914B279172B1001D59EC /* libobjc */ = {
+			isa = PBXGroup;
+			children = (
+				184F914C279172EC001D59EC /* myClass.m */,
+			);
+			path = libobjc;
 			sourceTree = "<group>";
 		};
 		18A8F530278DC8DC0030A69D /* core */ = {
@@ -544,6 +555,7 @@
 			files = (
 				18A8F50E278DC0C80030A69D /* hello.m in Sources */,
 				18A8F517278DC0EC0030A69D /* NXConstStr.m in Sources */,
+				184F914D279172EC001D59EC /* myClass.m in Sources */,
 				184F914927916EFE001D59EC /* api_test.cpp in Sources */,
 				18A8F508278DC0C80030A69D /* do.m in Sources */,
 				18B594022790415C00DA802C /* cpu.cpp in Sources */,
