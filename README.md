@@ -70,6 +70,11 @@
 ## NOTE I HAVE ADDED THE LICENSE OF THE SOURCE CODE THAT I TOOK FROM OTHER PROJECTS
 
 ## License:
+
+<a href="https://opensource.org/licenses/gpl-license">
+  <img align="right" height="96" alt="GPL License" src="imgs/gpl.png" />
+</a>
+
 - pranaOS is licensed under [GPL-3.0](https://github.com/pranaOS/pranaOS/blob/master/LICENSE)
 
 - you can use the code in your project if you need! :)
