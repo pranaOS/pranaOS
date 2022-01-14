@@ -2,7 +2,7 @@
 //  disk.h
 //  pranaOS
 //
-//  Created by Apple on 14/01/22.
+//  Created by Krisna Pranav on 14/01/22.
 //
 
 #pragma once
