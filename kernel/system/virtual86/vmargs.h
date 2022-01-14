@@ -2,7 +2,7 @@
 //  vmargs.h
 //  pranaOS
 //
-//  Created by Apple on 13/01/22.
+//  Created by Krisna Pranav on 13/01/22.
 //
 
 #pragma once
