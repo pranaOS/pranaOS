@@ -63,6 +63,11 @@
 - thanks for those who [stared](https://github.com/pranaOS/pranaOS/stargazers) ⭐ this project
 - special thanks for those who is [contributing](https://github.com/pranaOS/pranaOS/graphs/contributors) to this project
 
+- [NukeWilliams](https://github.com/NukeWilliams) who continously contributed to this project and added usefull things
+- [OliviaCE](https://github.com/OliviaCE) OlivaCE helped a lot in kernel
+- [evilbat831](https://github.com/evilbat831) henry is a all rounder!
+- [biggboy021](https://github.com/biggboy021) Chester is working in libraries
+
 ## Other projects:
 - some code i took from other project
 - [libobjc](https://github.com/pranaOS/pranaOS/tree/master/libs/libobjc) took from official gcc-mirror [LICENSE](https://github.com/pranaOS/pranaOS/blob/master/libs/libobjc/COPYING)
