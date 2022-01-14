@@ -2,7 +2,7 @@
 //  component.h
 //  pranaOS
 //
-//  Created by Apple on 11/01/22.
+//  Created by Krisna Pranav on 11/01/22.
 //
 
 #pragma once
