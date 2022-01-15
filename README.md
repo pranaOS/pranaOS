@@ -13,8 +13,9 @@
 
 # Features:
 ## Kernel:
-- x86 kernel
-- filesystem
+- x86 Kernel
+- Filesystem
+- PS2 Keyboard + USB Keyboard
 
 ## Libraries:
 - runtime support for: libc, libcpp, libobjc, libjs
