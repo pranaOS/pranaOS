@@ -18,7 +18,7 @@ namespace Kernel {
         public:
             keyboardManager();
 
-            void handleKeyChange(Keyboard* src, uint32_t key, int pressed);
+            void handleKeyChange(Keyboard* src, uint32_t key, bool pressed);
         }
     }
 }
