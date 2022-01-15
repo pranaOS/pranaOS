@@ -24,11 +24,11 @@ namespace Kernel {
             USB
         };
 
-        class keyboard {
+        class Keyboard {
         public:
-            keyboardType type;
+            KeyboardType type;
             internalKeyboardStatus status;
-            
+
         public:
             Keyboard(keyboardType type);
 
