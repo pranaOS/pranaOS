@@ -6,6 +6,7 @@
 
 namespace Kernel {
     namespace system {
+
         class FIFOStream : public Stream {
         public:
             FIFOStream(int capacity = 100);
@@ -13,7 +14,8 @@ namespace Kernel {
 
             char read();
             void write(char byte);
-            
+            int available();
+
         private:
             char* buffer;
             char* buffer_end;
