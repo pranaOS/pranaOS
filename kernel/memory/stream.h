@@ -7,13 +7,11 @@ namespace Kernel {
         class Stream {
         public:
             Stream();
-
             virtual ~Stream();
 
             virtual char read();
-            virtual char overwrite();
             virtual void write(char byte);
-            virtual char available();
+            virtual int available();
         };
     }
 }
