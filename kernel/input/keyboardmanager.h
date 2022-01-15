@@ -1,17 +1,16 @@
 #pragma once
 
-#include <system/input/keyboard.h>
+#include "keyboard.h"
 #include <ak/list.h>
+#include <memory/fifostream.h>
 
 namespace Kernel {
     namespace system {
-        class keyboardManager {
+        class keyboardManager : public FIFOStream {
         public:
             List<Keyboard*> keyboards;
+            KeyboardStatus sharedStatus;
 
-            keyboardStatus sharedStatus;
-
-        
         private:
             uint8_t convertToPS2(uint32_t key);
 
@@ -19,6 +18,6 @@ namespace Kernel {
             keyboardManager();
 
             void handleKeyChange(Keyboard* src, uint32_t key, bool pressed);
-        }
+        };
     }
 }
