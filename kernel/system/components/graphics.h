@@ -10,13 +10,15 @@ namespace Kernel {
             ak::uint32_t height;
             ak::uint8_t bpp;
             ak::uint32_t framebufferPhys;
-            char* identifer = 0;
+            char* identifier = 0;
 
             graphicsDevice(char* name);
             virtual ~graphicsDevice();
             virtual bool selectBestVideoMode();
-
+            
+            ak::uint32_t getBufferSize();
+            
             static graphicsDevice* getBestDevice();
-        }
+        };
     }
 }
