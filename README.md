@@ -58,7 +58,7 @@
 - [macOS](https://github.com/apple/darwin-xnu)
 
 ## pranaOS project structure
-- pranaOS [project structure](https://github.com/pranaOS/pranaOS/blob/master/imgs/pranaOS%20Project%20Structure.pdf) in a clean pdf
+- pranaOS [project structure](https://github.com/pranaOS/pranaOS/blob/master/imgs/pranaOSProjectStructure.pdf) in a clean pdf
 
 ## Special mentions:
 - thanks for those who [stared](https://github.com/pranaOS/pranaOS/stargazers) ⭐ this project
