@@ -1,5 +1,4 @@
 #include "console.h"
-#include <ak/string.h>
 
 using namespace Kernel;
 using namespace Kernel::ak;
