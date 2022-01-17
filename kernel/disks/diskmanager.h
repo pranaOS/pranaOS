@@ -13,7 +13,7 @@
 #include <ak/memoperator.h>
 #include <ak/list.h>
 #include <system/console.h>
-#include <system/disks/disk.h>
+#include "disk.h"
 
 namespace Kernel {
     namespace system {

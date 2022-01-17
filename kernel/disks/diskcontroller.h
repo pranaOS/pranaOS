@@ -10,8 +10,8 @@
 #include <ak/types.h>
 #include <ak/convert.h>
 #include <ak/memoperator.h>
-#include <system/disks/disk.h>
-#include <system/disks/diskmanager.h>
+#include "disk.h"
+#include "diskmanager.h"
 
 namespace Kernel {
     namespace system {
