@@ -1,4 +1,10 @@
-#include <random.h>
+/*
+ * Copyright (c) 2021-2022, Krisna Pranav
+ *
+ * SPDX-License-Identifier: GPL-3.0 License
+*/
+
+#include "random.h"
 
 using namespace pranaOS::ak;
 
