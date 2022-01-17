@@ -2,7 +2,7 @@
 
 #include "gdtentry.h"
 #include <ak/types.h>
-#include <ak/memoryoperations.h>
+#include <ak/memoperator.h>
 
 namespace Kernel {
 
