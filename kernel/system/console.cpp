@@ -1,4 +1,5 @@
 #include "console.h"
+#include <ak/string.h>
 
 using namespace Kernel;
 using namespace Kernel::ak;
@@ -32,7 +33,7 @@ void bootConsole::init(bool enableSerial) {
     if(enableSerial)
     {
         serialPort::init(COMPort::COM1);
-        bootConsole::writeLine("Start of serial log for CactusOS");
+        bootConsole::writeLine("Start of serial log for pranaOS");
     }
 }
 
