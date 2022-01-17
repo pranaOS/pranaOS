@@ -1,9 +1,16 @@
+/*
+ * Copyright (c) 2021-2022, Krisna Pranav
+ *
+ * SPDX-License-Identifier: GPL-3.0 License
+*/
+
+
 #include <convert.h>
 #include <string.h>
 
 using namespace pranaOS::ak;
 
-int isSpace(char c) {
+int space(char c) {
     return c == ' ' || c == '\t' || c == '\n' || c == '\v' || c == '\f' || c == '\r';
 }
 
@@ -106,7 +113,7 @@ int Convert::stringToInt(char* string) {
     unsigned int digit;
     int sign;
 
-    while (isSpace(*string)) {
+    while (space(*string)) {
         string += 1;
     }
 
