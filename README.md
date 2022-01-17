@@ -71,7 +71,7 @@
 
 - [NukeWilliams](https://github.com/NukeWilliams) who continously contributed to this project and added usefull things
 - [OliviaCE](https://github.com/OliviaCE) OlivaCE helped a lot in kernel
-- [evilbat831](https://github.com/evilbat831) henry is a all rounder!
+- [evilbat831](https://github.com/evilbat831) Henry worked in libraries, kernel
 - [biggboy021](https://github.com/biggboy021) Chester is working in libraries
 
 ## Other projects:
