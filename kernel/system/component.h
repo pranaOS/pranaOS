@@ -1,9 +1,8 @@
-//
-//  component.h
-//  pranaOS
-//
-//  Created by Krisna Pranav on 11/01/22.
-//
+/*
+ * Copyright (c) 2022, Krisna Pranav
+ *
+ * SPDX-License-Identifier: GPL-3.0 License
+*/
 
 #pragma once
 
