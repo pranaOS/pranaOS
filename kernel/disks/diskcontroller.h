@@ -1,10 +1,3 @@
-//
-//  diskcontroller.h
-//  pranaOS
-//
-//  Created by Krisna Pranav on 14/01/22.
-//
-
 #pragma once
 
 #include <ak/types.h>
@@ -14,14 +7,12 @@
 #include "diskmanager.h"
 
 namespace Kernel {
-    namespace system {
-        class diskController {
-        public:
-            diskController();
+    class diskController {
+    public:
+        diskController();
 
-            char readSector(ak::uint16_t drive, ak::uint32_t lba, ak::uint8_t* buf);
-            char writeSector();
-            bool ejectDrive(ak::uint8_t drive);
-        };
-    }
+        char readSector(ak::uint16_t drive, ak::uint32_t lba, ak::uint8_t* buf);
+        char writeSector();
+        bool ejectDrive(ak::uint8_t drive);
+    };
 }
