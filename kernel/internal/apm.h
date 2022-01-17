@@ -1,7 +1,7 @@
 #pragma once
 
 #include "systemcomponent.h"
-#include <common/types.h>
+#include <ak/types.h>
 
 namespace Kernel {
     namespace system {
@@ -51,7 +51,7 @@ namespace Kernel {
             APMController();
 
             void checkAndHandleEvents();
-            void setPowerState(common::uint16_t device, common::uint8_t state);
+            void setPowerState(ak::uint16_t device, ak::uint8_t state);
             void disableResumeTimer();
             void disableRingIndicator();
         };
