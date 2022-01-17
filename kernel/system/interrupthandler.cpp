@@ -20,8 +20,6 @@ uint32_t interruptHandler::handleInterrupt(uint32_t esp) {
     return esp;
 }
 
-
-
 List<interruptHandler*>* interruptManager::interruptCallbacks[256];
 void interruptManager::initialize() {
     for(int i = 0; i < 256; i++)
