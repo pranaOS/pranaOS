@@ -94,7 +94,7 @@ namespace Kernel {
 
         struct {
             common::uint16_t CS;
-            common::uint16_t hCS;
+            common::uint16_t HCS;
         };
 
         union {
