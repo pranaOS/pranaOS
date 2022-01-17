@@ -34,6 +34,10 @@
 - ```make clean``` remove the iso and remove the builded files 
 - ```make qemu``` build iso and run it
 
+## Todo:
+- pranaOS installer to install pranaOS in a local hard drive
+- usb support
+
 ## Have Any Issues??:
 - contact our [discord](https://discord.gg/XmpBTmy9Bz)
 
