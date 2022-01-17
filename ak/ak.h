@@ -6,4 +6,4 @@
 #include <string.h>
 #include <types.h>
 
-using namespace pranaOS::ak;
+using namespace ak;

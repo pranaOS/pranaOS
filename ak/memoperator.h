@@ -2,8 +2,7 @@
 
 #include "types.h"
 
-namespace pranaOS {
-    namespace ak {
+namespace ak {
         #define phys2virt(x) ((x) + 3_GB)
         #define virt2phys(x) ((x) - 3_GB)
 
@@ -14,5 +13,4 @@ namespace pranaOS {
             static void* memset(void* bufptr, char value, uint32_t size);
             static void* memcpy(void* dstptr, const void* srcptr, uint32_t size);
         };
-    }
 }

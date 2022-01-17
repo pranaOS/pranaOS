@@ -1,6 +1,6 @@
 #include "memoperator.h"
 
-using namespace pranaOS::ak;
+using namespace ak;
 
 void* memOperator::memmove(void* dstptr, const void* srcptr, uint32_t size) {
     unsigned char* dst = (unsigned char*) dstptr;
