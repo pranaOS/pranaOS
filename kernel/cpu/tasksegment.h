@@ -6,7 +6,7 @@
 
 namespace Kernel {
 
-    struct tssEntry {
+    struct taskSegmentEntry {
         ak::uint32_t prevTss;
         ak::uint32_t esp0;
         ak::uint32_t ss0;
@@ -36,11 +36,11 @@ namespace Kernel {
         ak::uint16_t iomap;
     };
 
-        class TSS {
+        class taskSegment {
         public:
             static void install(ak::uint32_t idx, ak::uint32_t kernelSS, ak::uint32_t kernelESP);
             static void setStack(ak::uint32_t kernelSS, ak::uint32_t kernelESP);
-            static tssEntry* getCurrent();
+            static taskSegmentEntry* getCurrent();
         };
     }
 }
