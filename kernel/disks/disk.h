@@ -39,5 +39,3 @@ namespace Kernel {
         };
     }
 }
-
-#endif
