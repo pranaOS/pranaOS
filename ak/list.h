@@ -1,47 +1,42 @@
 #pragma once
 
-#include <system/tasking/lock.h>
+#include <tasking/lock.h>
 
-namespace pranaOS {
-    namespace ak
-    {
-        template <typename T>
-        struct ListNode
-        {
-            ListNode(const T &e) : data(e), next(0), prev(0)
-            {}
+namespace ak {
+    template <typename T>
+    struct ListNode {
+        ListNode(const T &e) : data(e), next(0), prev(0)
+        {}
 
-            T data;
-            ListNode<T>* next;
-            ListNode<T>* prev;
-        };
+        T data;
+        ListNode<T>* next;
+        ListNode<T>* prev;
+    };
 
+    template <typename T>
+    class List {
+    public:
+        List() : head_(0), tail_(0), size_(0)
+        {}
 
-        template <typename T>
-        class List
-        {
-        public:
-            List() : head_(0), tail_(0), size_(0)
-            {}
+        ~List() {
+            this->clear();
+        }
 
-            ~List()
-            {
-                this->clear();
-            }
+        int size() {
+            return size_;
+        }
 
-            int size() {
-                return size_;
-            }
-            void push_back(const T &e);
-            void push_front(const T &e);
-            void clear();
+        void push_back(const T &e);
+        void push_front(const T &e);
+        void clear();
 
-            T getat(int index);
-            T operator[](int index);
-            int indexof(const T &e);
+        T getat(int index);
+        T operator[](int index);
+        int indexof(const T &e);
 
-            void remove(int index);
-            void remove(const T &e);
+        void remove(int index);
+        void remove(const T &e);
 
         private:
             ListNode<T>* head_;
@@ -95,11 +90,10 @@ namespace pranaOS {
     }
 }
 
-using namespace pranaOS::ak;
+using namespace ak;
 
 template <typename T>
-ListNode<T>* List<T>::insertInternal(const T& e, ListNode<T>* pos)
-[
+ListNode<T>* List<T>::insertInternal(const T& e, ListNode<T>* pos) {
     this->lock.lock();
     ListNode<T>* List<T>::insertInternal(const T &e, ListNode<T>* pos)
     size_++;
@@ -116,4 +110,4 @@ ListNode<T>* List<T>::insertInternal(const T& e, ListNode<T>* pos)
 
     this->lock.unlock();
     return n;
-]
+}
