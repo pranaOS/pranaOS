@@ -9,18 +9,16 @@
 
 #include <ak/types.h>
 
-namespace pranaOS {
-    namespace system {
-        class component {
-        public:
-            component(char* name = 0, char* description = 0);
+namespace Kernel {
+    class component {
+    public:
+        component(char* name = 0, char* description = 0);
 
-            char* getComponentName();
-            char* getComponentDescription();
+        char* getComponentName();
+        char* getComponentDescription();
             
-        private:
-            char* name;
-            char* description;
-        };
-    }
+    private:
+        char* name;
+        char* description;
+    };
 }
