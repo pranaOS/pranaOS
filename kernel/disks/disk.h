@@ -16,7 +16,6 @@ namespace Kernel {
 
     class disk {
     public:
-
         diskController* controller;
         ak::uint32_t controllerIndex;
         char* identifier = 0;
