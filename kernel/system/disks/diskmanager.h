@@ -12,7 +12,7 @@
 #include <ak/string.h>
 #include <ak/memoperator.h>
 #include <ak/list.h>
-#include <system/bootconsole.h>
+#include <system/console.h>
 #include <system/disks/disk.h>
 
 namespace Kernel {
