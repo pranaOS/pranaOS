@@ -2,7 +2,7 @@
 
 using namespace pranaOS::ak;
 
-void* MemOperator::memmove(void* dstptr, const void* srcptr, uint32_t size) {
+void* memOperator::memmove(void* dstptr, const void* srcptr, uint32_t size) {
     unsigned char* dst = (unsigned char*) dstptr;
 	const unsigned char* src = (const unsigned char*) srcptr;
     
@@ -17,7 +17,7 @@ void* MemOperator::memmove(void* dstptr, const void* srcptr, uint32_t size) {
 	return dstptr;
 }
 
-int MemOperator::memcmp(const void* aptr, const void* bptr, uint32_t size) {
+int memOperator::memcmp(const void* aptr, const void* bptr, uint32_t size) {
     const unsigned char* a = (const unsigned char*) aptr;
 	const unsigned char* b = (const unsigned char*) bptr;
 
@@ -31,7 +31,7 @@ int MemOperator::memcmp(const void* aptr, const void* bptr, uint32_t size) {
 	return 0;
 }
 
-void* MemOperator::memset(void* bufptr, char value, uint32_t size) {
+void* memOperator::memset(void* bufptr, char value, uint32_t size) {
     unsigned char* buf = (unsigned char*) bufptr;
     
 	for (uint32_t i = 0; i < size; i++)
@@ -40,7 +40,7 @@ void* MemOperator::memset(void* bufptr, char value, uint32_t size) {
 	return bufptr;
 }
 
-void* MemOperator::memcpy(void* dstptr, const void* srcptr, uint32_t size) {
+void* memOperator::memcpy(void* dstptr, const void* srcptr, uint32_t size) {
     unsigned char* dst = (unsigned char*) dstptr;
 	const unsigned char* src = (const unsigned char*) srcptr;
 

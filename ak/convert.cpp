@@ -67,7 +67,7 @@ char* Convert::intToHexString(uint8_t w) {
     uint32_t hexSize = sizeof(uint8_t) << 1;
     char* rc = new char[hexSize + 1]; 
 
-    MemOperator::memset(rc, 0, hexSize + 1);
+    memOperator::memset(rc, 0, hexSize + 1);
 
     for (uint32_t i=0, j=(hexSize-1)*4 ; i<hexSize; ++i,j-=4)
         rc[i] = digits[(w>>j) & 0x0f];

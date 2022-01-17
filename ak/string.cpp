@@ -61,7 +61,7 @@ List<char*> String::split(const char* str, char d) {
             int itemLen = i - pos;
             if(itemLen > 0) {
                 char* part = new char[itemLen + 1];
-                MemOperator::memcpy(part, str + pos, itemLen);
+                memOperator::memcpy(part, str + pos, itemLen);
                 part[itemLen] = '\0';
                 result.push_back(part);
             }
@@ -74,7 +74,7 @@ List<char*> String::split(const char* str, char d) {
         int lastLen = len - pos;
         if(lastLen > 0) {
             char* part = new char[lastLen + 1];
-            MemOperator::memcpy(part, str + pos, lastLen);
+            memOperator::memcpy(part, str + pos, lastLen);
             part[lastLen] = '\0';
             result.push_back(part);
         }
