@@ -66,8 +66,8 @@
 - pranaOS [project structure](https://github.com/pranaOS/pranaOS/blob/master/imgs/pranaOSProjectStructure.pdf) in a clean pdf
 
 ## Special mentions:
-- thanks for those who [stared](https://github.com/pranaOS/pranaOS/stargazers) ⭐ this project
-- special thanks for those who is [contributing](https://github.com/pranaOS/pranaOS/graphs/contributors) to this project
+- thanks for those who [stared](https://github.com/pranaOS/pranaOS/stargazers) ⭐ this project and gave a motivation :)
+- special thanks for those who has [contributed](https://github.com/pranaOS/pranaOS/graphs/contributors) and still contributing to this project 
 
 - [NukeWilliams](https://github.com/NukeWilliams) who continously contributed to this project and added usefull things
 - [OliviaCE](https://github.com/OliviaCE) OlivaCE helped a lot in kernel
