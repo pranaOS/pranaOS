@@ -2,7 +2,6 @@
 
 using namespace Kernel;
 using namespace Kernel::ak;
-using namespace Kernel::system;
 
 int bootConsole::xoffset = 0;
 int bootConsole::yoffset = 0;
