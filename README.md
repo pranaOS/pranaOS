@@ -78,7 +78,7 @@
 
 ## Other projects:
 - some code i took from other project
-- [libobjc](https://github.com/pranaOS/pranaOS/tree/master/libs/libobjc) took from official gcc-mirror [LICENSE](https://github.com/pranaOS/pranaOS/blob/master/libs/libobjc/COPYING)
+- [libobjc](https://github.com/pranaOS/pranaOS/tree/master/userland/libraries/libobjc) took from official gcc-mirror [LICENSE](https://github.com/pranaOS/pranaOS/blob/master/libs/libobjc/COPYING)
 
 ## NOTE I HAVE ADDED THE LICENSE OF THE SOURCE CODE THAT I TOOK FROM OTHER PROJECTS
 
