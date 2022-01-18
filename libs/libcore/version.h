@@ -2,7 +2,7 @@
 
 #include <ak/string.h>
 
-using namespace pranaOS;
+using namespace ak;
 
 namespace Core {
     const char pranaOSVersion[] = "pranaOS 1.0";
