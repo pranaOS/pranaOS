@@ -1,4 +1,4 @@
-#include <core/gdtentry.h>
+#include <cpu/gdtentry.h>
 
 using namespace Kernel;
 using namespace Kernel::ak;
