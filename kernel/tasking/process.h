@@ -11,5 +11,42 @@
 #include <memory/stream.h>
 
 namespace Kernel {
+    class symbolDebugger;
 
+    enum processState {
+        Active
+    };
+
+    #define PROC_USER_HEAP_SIZE 1_MB
+
+    struct thread;
+
+    struct process {
+        int id;
+        int syscallID;
+        bool isUserspace;
+        char args;
+        processState state;
+        List<Thread*> Threads;
+        ak::uint32_t pageDirPhys;
+
+        struct executable {
+            ak::uint32_t memBase;
+            ak::uint32_t memSize;
+        } executable_t;
+
+        struct heap {
+            ak::uint32_t heapStart;
+            ak::uint32_t heapEnd;
+        } heap_t;
+
+        List<IPC::IPCMessage> ipcMessages;
+
+        Stream* stdInput;
+        Stream* stdOutput;
+
+        char fileName[32];
+
+        symbolDebugger* symDebugger = 0;
+    };
 }
