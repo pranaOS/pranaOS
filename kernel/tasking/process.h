@@ -59,9 +59,6 @@ namespace Kernel {
     };
 
     class processHelper {
-      private:
-        processHelper();
-        
       public:
         static List<Process*> Processes;
         static Process* create(char* fileName, char* arguments = 0, bool isKernel = false);
@@ -69,5 +66,8 @@ namespace Kernel {
         static void removeProcess(Process* proc);
         static void updateHeap(Process* proc, ak::uint32_t newEndAddr);
         static Process* processById(int id);
+
+      private:
+        processHelper();
     };
 }
