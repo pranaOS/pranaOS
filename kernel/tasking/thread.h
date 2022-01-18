@@ -32,7 +32,7 @@ namespace Kernel {
 
     struct process;
 
-    struct thread {
+    struct Thread {
         Process* parent;
         ak::uint8_t* stack;
         ak::uint8_t userStack;
@@ -43,5 +43,12 @@ namespace Kernel {
 
         ak::uint32_t timeDelta;
         ak::uint8_t FPUBuffer;
+    };
+
+    class threadHelper {
+      public:
+        static void removeThread(Thread* thread);
+      private:
+        threadHelper();
     };
 }
