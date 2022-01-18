@@ -1,5 +1,5 @@
 //
-// Created by Apple on 18/01/22.
+// Created by Krisna Pranav on 18/01/22.
 //
 
 #pragma once
@@ -13,19 +13,26 @@
 namespace Kernel {
     class symbolDebugger;
 
+    /**
+     * processState to printout the process is [New, Active, Inactive, Terminated]
+     */
     enum processState {
-        Active
+        New,
+        Active,
+        InActive,
+        Terminated
     };
 
-    #define PROC_USER_HEAP_SIZE 1_MB
+    #define PROC_USER_HEAP_SIZE 1_MB 
 
-    struct thread;
+    struct Thread;
 
-    struct process {
+    struct Process {
         int id;
         int syscallID;
         bool isUserspace;
-        char args;
+        char* args;
+
         processState state;
         List<Thread*> Threads;
         ak::uint32_t pageDirPhys;
@@ -34,11 +41,12 @@ namespace Kernel {
             ak::uint32_t memBase;
             ak::uint32_t memSize;
         } executable_t;
-
+            
         struct heap {
             ak::uint32_t heapStart;
             ak::uint32_t heapEnd;
         } heap_t;
+
 
         List<IPC::IPCMessage> ipcMessages;
 
@@ -51,15 +59,15 @@ namespace Kernel {
     };
 
     class processHelper {
+      private:
+        processHelper();
+        
       public:
-        static List<Process*> Processes
-
-        static Process* create(char* fileName, char* args = 0, bool isKernel = false);
+        static List<Process*> Processes;
+        static Process* create(char* fileName, char* arguments = 0, bool isKernel = false);
         static Process* createKernelProcess();
         static void removeProcess(Process* proc);
         static void updateHeap(Process* proc, ak::uint32_t newEndAddr);
         static Process* processById(int id);
-
-      private:
     };
 }
