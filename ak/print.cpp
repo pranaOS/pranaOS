@@ -1,6 +1,6 @@
 #include "print.h"
 
-using namespace pranaOS;
+using namespace ak;
 using namespace pranaOS::system;
 using namespace pranaOS::ak;
 using namespace pranaOS::core;
