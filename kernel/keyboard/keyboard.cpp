@@ -1,18 +1,21 @@
 #include "keyboard.h"
+#include <kernel/system/log.h>
+#include <ak/memoperator.h>
 
 // TODO: call the main entrypoint and call those functions in this.
 
+using namespace ak;
 using namespace Kernel;
 using namespace Kernel::ak;
 using namespace Kernel::system;
 
 Keyboard::Keyboard(keyboardType type) {
     this->type = type;
-    MemOperations::memset(&this->status, 0, sizeof(this->status));
+    memOperator::memset(&this->status, 0, sizeof(this->status));
 }
 
 void Keyboard::updateLEDS() {
-    Log(Error "func called directly %s:%d", __FILE__, __LINE__);
+    Log(Error, "func called directly %s:%d", __FILE__, __LINE__);
 }
 
 bool Keyboard::containsKey(uint8_t key, uint8_t* packet, int* pos) {
