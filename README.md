@@ -42,10 +42,10 @@
 - contact our [discord](https://discord.gg/XmpBTmy9Bz)
 
 ## Social Media:
-- [twitter](https://twitter.com/os_prana)
-- [instagram](https://www.instagram.com/officialpranaos/)
-- [youtube](https://www.youtube.com/channel/UCHBR5EYG9MDJ-yws4zN6xXQ)
-- [discord](https://discord.gg/XmpBTmy9Bz)
+- [Twitter](https://twitter.com/os_prana)
+- [Instagram](https://www.instagram.com/officialpranaos/)
+- [Youtube](https://www.youtube.com/channel/UCHBR5EYG9MDJ-yws4zN6xXQ)
+- [Discord](https://discord.gg/XmpBTmy9Bz)
 
 ## Contribtuions
 - pranaOS is an open-source project you can contribute to it :)
