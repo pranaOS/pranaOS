@@ -3,7 +3,7 @@
 #include <stddef.h>
 #include <heap.h>
 
-using namespace pranaOSHeap;
+using namespace Heap;
  
 void *operator new(size_t size) {
     return userHeap::malloc(size);

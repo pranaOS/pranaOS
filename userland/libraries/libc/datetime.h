@@ -1,6 +1,6 @@
 #pragma once
 
-namespace pranaOSTime {
+namespace Time {
 
     class dateTime {
     public:
