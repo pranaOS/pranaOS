@@ -1,7 +1,7 @@
 #pragma once
 
 #include <ak/types.h>
-#include <core/port.h>
+#include <cpu/port.h>
 
 namespace Kernel {
     enum COMPort
