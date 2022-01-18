@@ -2,7 +2,7 @@
 
 #include <ak/types.h>
 
-using namespace pranaOS::ak;
+using namespace ak;
 
 namespace Kernel {
     struct gdtEntry {
