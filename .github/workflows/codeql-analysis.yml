@@ -51,4 +51,4 @@ jobs:
         brew install clang-format llvm gcc@11
     
     - name: checkformat
-      run: find ./kernel/ ./libs/ ./ak
+      run: find ./kernel/ ./userland/libraries/ ./ak ./userland/applications

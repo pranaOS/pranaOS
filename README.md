@@ -76,12 +76,6 @@
 - [evilbat831](https://github.com/evilbat831) Henry worked in libraries, kernel
 - [biggboy021](https://github.com/biggboy021) Chester is working in libraries
 
-## Other projects:
-- some code i took from other project
-- [libobjc](https://github.com/pranaOS/pranaOS/tree/master/userland/libraries/libobjc) took from official gcc-mirror [LICENSE](https://github.com/pranaOS/pranaOS/blob/master/libs/libobjc/COPYING)
-
-## NOTE I HAVE ADDED THE LICENSE OF THE SOURCE CODE THAT I TOOK FROM OTHER PROJECTS
-
 ## License:
 
 <a href="https://opensource.org/licenses/gpl-license">
