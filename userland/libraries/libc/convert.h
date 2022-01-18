@@ -2,8 +2,8 @@
 
 #include "types.h"
 
-namespace pranaOSConvert {
-    class Convert {
+namespace Convert {
+    class converter {
     public:
         static char* intToString(int i);
 
