@@ -43,6 +43,7 @@
 
 ## Social Media:
 - [twitter](https://twitter.com/os_prana)
+- [instagram](https://www.instagram.com/officialpranaos/)
 - [discord](https://discord.gg/XmpBTmy9Bz)
 
 ## Contribtuions
