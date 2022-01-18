@@ -6,8 +6,6 @@
 
 using namespace ak;
 using namespace Kernel;
-using namespace Kernel::ak;
-using namespace Kernel::system;
 
 Keyboard::Keyboard(keyboardType type) {
     this->type = type;
@@ -15,7 +13,7 @@ Keyboard::Keyboard(keyboardType type) {
 }
 
 void Keyboard::updateLEDS() {
-    Log(Error, "func called directly %s:%d", __FILE__, __LINE__);
+    sendLog(Error, "func called directly %s:%d", __FILE__, __LINE__);
 }
 
 bool Keyboard::containsKey(uint8_t key, uint8_t* packet, int* pos) {
