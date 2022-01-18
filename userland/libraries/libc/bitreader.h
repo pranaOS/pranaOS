@@ -2,8 +2,8 @@
 
 #include <types.h>
 
-namespace pranaOSBitreader {
-    class BitReader {
+namespace BitReader {
+    class bitReader {
     public:
         BitReader(uint8_t* data) {
             this->dataPtr = data;
