@@ -25,9 +25,9 @@
 - simple terminal and some apps
 
 # Requirements:
-```i686-elf-gcc``` i686 compiler to compile this project
-```make``` 
-```nasm``` nasm to build the asm file
+- ```i686-elf-gcc``` i686 compiler to compile this project
+- ```make``` 
+- ```nasm``` nasm to build the asm file
 
 # Building:
 - ```make pranaOS``` to build iso
