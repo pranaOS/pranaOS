@@ -2,7 +2,7 @@
 
 #include <types.h>
 
-namespace pranaOSApi {
+namespace Api {
 
     class API {
     public:
