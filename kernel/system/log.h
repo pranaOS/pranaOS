@@ -8,8 +8,7 @@ namespace Kernel {
 
         #define LOG_SHOW_MS 1
 
-        enum LogLevel
-        {
+        enum LogLevel {
             Info,
             Warning,
             Error
