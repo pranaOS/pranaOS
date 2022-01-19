@@ -4,7 +4,7 @@
 
 #pragma once
 
-namespace Kernel {
+namespace Kernel::Driver {
     class driver {
       public:
         driver(char* name = 0, char* description = 0);
