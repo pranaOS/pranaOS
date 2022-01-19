@@ -5,13 +5,13 @@
 namespace Kernel {
 
     enum HID_USAGE {
-        POINSTER = 1,
+        POINTER = 1, 
         MOUSE,
-        POINTER_X = 0x30,
-        POINTER_Y,
+        POINTER_X = 0x30, 
+        POINTER_Y, 
         POINTER_WHEEL = 0x38,
-        NOTHING = 0xFF   
-    }
+        NOTHING = 0xFF
+    };
 
     enum HID_PAGE_USAGE {
         GEN_DESKTOP = 1,
@@ -67,26 +67,63 @@ namespace Kernel {
         ak::uint16_t usage;
     };
 
-    struct HID_DATA {
-        ak::uint32_t value;
-        struct HID_PATH path;
-
-        ak::uint8_t report_id;
-        int report_count;
-        int offset;
-        int size;
-
-        ak::uint8_t type;
-        ak::uint8_t attribute;
-        
-        int log_min;
-        int log_max;
-        int phy_min;
-        int phy_max;
+    struct HID_PATH {
+        int    size;                      
+        struct HID_NODE node[PATH_SIZE]; 
     };
 
-    class hidParser {
-      private:
-        hidParser();
+    struct HID_DATA {
+        ak::uint32_t value;     
+        struct HID_PATH path;       
+            
+        ak::uint8_t  report_id; 
+        int    report_count;        
+        int    offset;              
+        int    size;                
+                                        
+        ak::uint8_t  type;      
+        ak::uint8_t  attribute; 
+                                        
+        ak::uint8_t unit;       
+        ak::uint8_t unit_exp;   
+            
+        int    log_min;             
+        int    log_max;             
+        int    phy_min;             
+        int    phy_max;             
+    };
+
+
+    class HIDParser {
+    public:
+        const ak::uint8_t *report_desc;              
+        int    report_desc_size;             
+        int    pos;                          
+        ak::uint8_t  item;                         
+        ak::uint32_t value;                        
+            
+        struct HID_DATA data;                  
+            
+        int    offset_table[MAX_REPORT][3];  
+        int    report_count;                 
+        int    count;                        
+            
+        ak::uint16_t u_page;                     
+        struct HID_NODE usage_table[USAGE_TAB_SIZE]; 
+        int    usage_size;                   
+        int    usage_min;
+        int    usage_max;
+            
+        int    cnt_object;                   
+        int    cnt_report;                   
+
+    public:
+        bool parse(struct HID_DATA* data);
+        void reset();
+        bool findObject(struct HID_DATA* data);
+        int* getReportOffset(const ak::uint8_t report_id, const ak::uint8_t report_type);
+
+    private:
+        HIDParser();
     };
 }
