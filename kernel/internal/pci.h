@@ -30,4 +30,24 @@ namespace Kernel {
 
         ak::uint32_t portBase;
     } __attribute__((packed));
+
+    enum baseAddressRegister {
+        MemoryMapping = 0,
+        InputOutput = 1
+    };
+
+    struct baseAddressRegister {
+        bool prefetchable;
+        baseAddressRegister type;
+        ak::uint32_t size;
+        ak::uint32_t address;
+    };
+
+    class PCIController : public systemComponent {
+      public:
+        PCIController();
+        List<pciDevice*> deviceList;
+
+        void populateDeviceList();
+    };
 }
