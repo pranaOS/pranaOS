@@ -13,7 +13,7 @@ namespace Kernel::Driver {
     class driverManager {
       public:
         driverManager();
-        void addDriver(Kernel::Driver::driver* drv);
+        void addDriver(driver* drv);
 
       private:
         List<Driver*> driverList;
