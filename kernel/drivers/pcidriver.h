@@ -7,7 +7,7 @@
 #include "manager.h"
 #include <internal/pci.h>
 
-namespace Kernel::Driver {
+namespace Kernel {
     struct pciDriverEntry {
         ak::uint16_t vendorID;
         ak::uint16_t deviceID;
