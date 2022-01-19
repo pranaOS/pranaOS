@@ -13,5 +13,8 @@ namespace Kernel::Driver {
         char* driverString;
     } __attribute__((packed));
 
-    
+    class pciDriver {
+      public:
+        static void assignDriversPCI(pci, driverManager* drivermanager);
+    };
 }
