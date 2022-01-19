@@ -36,7 +36,7 @@ namespace Kernel {
         video(PCIDevice* pciDev);
         bool initialize();
         bool selectBestVideoMode();
-        
+
     private:
         pciDevice* pcidevice;
         void writeRegister(ak::uint32_t reg, ak::uint32_t value);
