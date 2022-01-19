@@ -4,4 +4,4 @@
 
 #include "driver.h"
 
-using namespace Kernel::Driver;
+using namespace Kernel;
