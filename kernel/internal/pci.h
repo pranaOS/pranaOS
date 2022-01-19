@@ -39,7 +39,7 @@ namespace Kernel {
         ak::uint64_t address;
     };
 
-    class PCIController : public systemComponent {
+    class pciController : public systemComponent {
       public:
         ak::uint32_t read(ak::uint16_t bus, ak::uint16_t device, ak::uint16_t function, ak::uint32_t registeroffset);
         void write(ak::uint16_t bus, ak::uint16_t device, ak::uint16_t function, ak::uint32_t registeroffset, ak::uint32_t value);
@@ -47,7 +47,7 @@ namespace Kernel {
 
       public:
         List<pciDevice*> deviceList;
-        PCIController();
+        pciController();
         void populateDeviceList();
     
       private:
