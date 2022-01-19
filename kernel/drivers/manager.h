@@ -15,6 +15,8 @@ namespace Kernel::Driver {
         driverManager();
         void addDriver(driver* drv);
 
+        void activate();
+        
       private:
         List<Driver*> driverList;
     };
