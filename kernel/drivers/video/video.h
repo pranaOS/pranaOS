@@ -30,4 +30,16 @@ namespace Kernel::Driver {
     #define SVGA_REG_FB_WIDTH 2
     #define SVGA_REG_FB_HEIGHT 3
     #define SVGA_REG_FB_BITSPERPIXEL 7
+
+    class video : public Driver, public graphicsDevice {
+      public:
+        VMWARESVGAII(pciDevice* pciDev);
+
+        bool initialize();
+      private:
+        pciDevice* pcidevice;
+
+        void writeRegister(ak::uint32_t reg, ak::uint32_t value);
+        ak::uint32_t readRegister(ak::uin32_t reg);
+    };
 }
