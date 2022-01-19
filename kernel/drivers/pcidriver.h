@@ -5,6 +5,7 @@
 #pragma once
 
 #include "manager.h"
+#include <internal/pci.h>
 
 namespace Kernel::Driver {
     struct pciDriverEntry {
@@ -15,6 +16,6 @@ namespace Kernel::Driver {
 
     class pciDriver {
       public:
-        static void assignDriversPCI(pci, driverManager* drivermanager);
+        static assignPCIDriver(pciController* pci, driverManager* driverManager);
     };
 }
