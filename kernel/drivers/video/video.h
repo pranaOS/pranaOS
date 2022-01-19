@@ -33,7 +33,7 @@ namespace Kernel::Driver {
 
     class video : public Driver, public graphicsDevice {
       public:
-        VMWARESVGAII(pciDevice* pciDev);
+        video(pciDevice* pciDev);
 
         bool initialize();
       private:
