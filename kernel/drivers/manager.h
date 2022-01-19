@@ -9,7 +9,7 @@
 #include <system/console.h>
 #include "driver.h"
 
-namespace Kernel::Driver {
+namespace Kernel {
     class driverManager {
       public:
         driverManager();
