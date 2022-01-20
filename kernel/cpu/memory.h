@@ -10,7 +10,7 @@
 #include <ak/types.h>
 #include <ak/convert.h>
 #include <ak/memoperator.h>
-#include <system/console.h>
+#include <kernel/console.h>
 #include <multiboot/multiboot.h>
 
 namespace Kernel {
