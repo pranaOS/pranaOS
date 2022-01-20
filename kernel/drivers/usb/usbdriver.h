@@ -1,5 +1,4 @@
-#ifndef KERNEL_DRIVER_USB
-#define KERNEL_DRIVER_USB
+#pragma once
 
 #include <kernel/drivers/driver.h>
 
@@ -26,5 +25,3 @@ namespace Kernel {
         virtual bool handleInterruptPacket(interruptTransfer_t* transfer);
     }
 }
-
-#endif

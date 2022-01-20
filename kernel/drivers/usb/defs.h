@@ -1,5 +1,4 @@
-#ifndef KERNEL_DRIVER_USB
-#define KERNEL_DRIVER_USB
+#pragma once
 
 #include <ak/types.h>
 
@@ -151,6 +150,3 @@ namespace Kernel {
     };
 
 }
-
-
-#endif
