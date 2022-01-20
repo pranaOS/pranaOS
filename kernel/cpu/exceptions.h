@@ -2,7 +2,7 @@
 
 #include <ak/types.h>
 #include <ak/convert.h>
-#include <system/console.h>
+#include <kernel/console.h>
 #include "idt.h"
 
 namespace Kernel {
