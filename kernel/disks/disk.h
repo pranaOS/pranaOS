@@ -14,7 +14,7 @@ namespace Kernel {
         cdROM
     };
 
-    class disk {
+    class Disk {
     public:
         diskController* controller;
         ak::uint32_t controllerIndex;
@@ -24,7 +24,7 @@ namespace Kernel {
         ak::uint32_t numBlocks;
         ak::uint32_t blockSize;
 
-        disk(ak::uint32_t controllerIndex, diskController* controller, diskType type, ak::uint64_t size, ak::uint32_t blocks, ak::uint32_t blocksize);
+        Disk(ak::uint32_t controllerIndex, diskController* controller, diskType type, ak::uint64_t size, ak::uint32_t blocks, ak::uint32_t blocksize);
             
         virtual char readSector(ak::uint32_t lba, ak::uint8_t* buf);
         virtual char writeSector(ak::uint32_t lba, ak::uint8_t* buf);
