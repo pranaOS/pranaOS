@@ -1,6 +1,6 @@
 #pragma once
 
-namespace IPC {
+namespace LibC {
 
     enum IPCMessageType : int
     {
