@@ -1,7 +1,7 @@
 #pragma once
 
 #include <ak/types.h>
-#include <system/serialport.h>
+#include <kernel/serialport.h>
 #include <stdarg.h>
 
 namespace Kernel {
