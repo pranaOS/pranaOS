@@ -2,8 +2,8 @@
 
 #include <cpu/port.h>
 #include <ak/list.h>
-#include <system/console.h>
-#include <system/init.h>
+#include <kernel/console.h>
+#include <kernel/init.h>
 #include "systemcomponent.h"
 
 namespace Kernel {
