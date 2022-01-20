@@ -2,8 +2,8 @@
 
 #include <types.h>
 
-namespace pranaOSRandom {
-    class Random {
+namespace LibC {
+    class random {
     public:
         static int next(uint32_t max = 32767);
         static int next(uint32_t min, uint32_t max);             

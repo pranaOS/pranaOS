@@ -4,7 +4,7 @@
 #include <list.h>
 #include <shared.h>
 
-namespace pranaOSVfs {
+namespace LibC {
     int readFile(char* filename, uint8_t* buffer, uint32_t offset = 0, uint32_t len = -1);
     int writeFile(char* filename, uint8_t* buffer, uint32_t len, bool create = true);
 

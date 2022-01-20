@@ -2,7 +2,7 @@
 
 #include <types.h>
 
-namespace pranaOSVector {
+namespace LibC {
 
     template<typename T>
     class Vector {

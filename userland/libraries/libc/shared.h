@@ -1,6 +1,6 @@
 #pragma once 
 
-namespace pranaOSShared {
+namespace LibC {
 
     #define VFS_NAME_LENGTH 255
 

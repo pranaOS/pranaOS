@@ -6,7 +6,7 @@
  * 
  */
 
-namespace Syscall {
+namespace LibC {
     #define SYSCALL_RET_SUCCES 1
     #define SYSCALL_RET_ERROR 0
     #define PROC_ARG_LEN_MAX 100

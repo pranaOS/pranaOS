@@ -2,8 +2,8 @@
 
 #include <stdint.h>
 
-namespace Stdio {
-    class Std {
+namespace LibC {
+    class Stio {
       public:
         int putchar(int);
         int puts(const char *);

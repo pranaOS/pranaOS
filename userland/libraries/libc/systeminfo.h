@@ -6,7 +6,7 @@
 #include <types.h>
 #endif
 
-namespace pranaOSsystemInfo {
+namespace LibC {
 
     #define SYSTEM_INFO_ADDR 0xBFFEE000
 

@@ -1,6 +1,6 @@
 #pragma once
 
-namespace pranaOSTypes {
+namespace LibC {
 
     #define STATIC_ASSERT(condition) typedef char p__LINE__[ (condition) ? 1 : -1];
 
