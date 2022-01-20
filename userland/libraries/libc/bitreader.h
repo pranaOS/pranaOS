@@ -2,7 +2,7 @@
 
 #include <types.h>
 
-namespace BitReader {
+namespace LibC {
     class bitReader {
     public:
         BitReader(uint8_t* data) {
