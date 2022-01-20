@@ -2,7 +2,7 @@
 
 #include "types.h"
 
-namespace Convert {
+namespace LibC {
     class converter {
     public:
         static char* intToString(int i);
