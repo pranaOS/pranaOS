@@ -6,7 +6,7 @@
 //
 
 #include "cpu.h"
-#include <system/console.h>
+#include <kernel/console.h>
 
 using namespace Kernel;
 
