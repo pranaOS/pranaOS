@@ -5,7 +5,7 @@
 #include <ak/string.h>
 #include <ak/memoperator.h>
 #include <ak/list.h>
-#include <system/console.h>
+#include <kernel/console.h>
 #include "disk.h"
 
 namespace Kernel {
