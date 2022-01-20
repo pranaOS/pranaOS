@@ -3,8 +3,8 @@
 #include <ak/convert.h>
 #include <ak/memoperator.h>
 #include <ak/types.h>
-#include <system/console.h>
-#include <system/interrupthandler.h>
+#include <kernel/console.h>
+#include <kernel/interrupthandler.h>
 #include "port.h"
 #include "register.h"
 #include "exceptions.h"
