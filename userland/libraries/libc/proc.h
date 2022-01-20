@@ -6,7 +6,7 @@
 #include <list.h>
 #include <shared.h>
 
-namespace pranaOSProc {
+namespace LibC {
 
     #define DECLARE_LOCK(name) volatile int name ## Locked
     #define LOCK(name) \
