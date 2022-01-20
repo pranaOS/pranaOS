@@ -2,7 +2,7 @@
 
 #include <types.h>
 
-namespace pranaOSMath {
+namespace LibC {
     // reference: https://www.geeksforgeeks.org/pi-in-c-with-examples/
     #define MATH_PI 3.14159265358979323846
 
