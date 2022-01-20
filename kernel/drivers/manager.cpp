@@ -12,7 +12,7 @@ driverManager::driverManager() {
 }
 
 void driverManager::addDriver(driver* drv) {
-
+    this->driverList.push_back(drv);
 }
 
 void driverManager::activate() {
