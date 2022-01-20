@@ -58,18 +58,18 @@ namespace Kernel {
         ak::uint16_t string[127];
     } __attribute__((packed));
 
-        struct INTERFACE_ASSOSIATION_DESC {
-            ak::uint8_t  len;             
-            ak::uint8_t  type;            
-            ak::uint8_t  interface_num;   
-            ak::uint8_t  count;           
-            ak::uint8_t  _class;          
-            ak::uint8_t  subclass;        
-            ak::uint8_t  protocol;        
-            ak::uint8_t  function_indx;   
-        } __attribute__((packed));
+    struct INTERFACE_ASSOSIATION_DESC {
+        ak::uint8_t  len;             
+        ak::uint8_t  type;            
+        ak::uint8_t  interface_num;   
+        ak::uint8_t  count;           
+        ak::uint8_t  _class;          
+        ak::uint8_t  subclass;        
+        ak::uint8_t  protocol;        
+        ak::uint8_t  function_indx;   
+    } __attribute__((packed));
 
-        struct INTERFACE_DESC {
+    struct INTERFACE_DESC {
             ak::uint8_t  len;
             ak::uint8_t  type;
             ak::uint8_t  interface_num;
@@ -79,40 +79,40 @@ namespace Kernel {
             ak::uint8_t  interface_sub_class;
             ak::uint8_t  interface_protocol;
             ak::uint8_t  interface_indx;
-        } __attribute__((packed));
+    } __attribute__((packed));
 
-        struct ENDPOINT_DESC {
-            ak::uint8_t  len;
-            ak::uint8_t  type;
-            ak::uint8_t  end_point;        
-            ak::uint8_t  bm_attrbs;        
-            ak::uint16_t max_packet_size;  
-            ak::uint8_t  interval;
-        } __attribute__((packed));
+    struct ENDPOINT_DESC {
+        ak::uint8_t  len;
+        ak::uint8_t  type;
+        ak::uint8_t  end_point;        
+        ak::uint8_t  bm_attrbs;        
+        ak::uint16_t max_packet_size;  
+        ak::uint8_t  interval;
+    } __attribute__((packed));
 
-        struct IF_HID_DESC {
-            ak::uint8_t  len;
-            ak::uint8_t  type;
-            ak::uint16_t release;
-            ak::uint8_t  countryCode;
-            ak::uint8_t  numDescriptors;
-        } __attribute__((packed));
+    struct IF_HID_DESC {
+        ak::uint8_t  len;
+        ak::uint8_t  type;
+        ak::uint16_t release;
+        ak::uint8_t  countryCode;
+        ak::uint8_t  numDescriptors;
+    } __attribute__((packed));
 
-        #define DEV_TO_HOST     0x80
-        #define HOST_TO_DEV     0x00
-        #define REQ_TYPE_STNDRD 0x00
-        #define REQ_TYPE_CLASS  0x20
-        #define REQ_TYPE_VENDOR 0x40
-        #define REQ_TYPE_RESV   0x60
-        #define RECPT_DEVICE    0x00
-        #define RECPT_INTERFACE 0x01
-        #define RECPT_ENDPOINT  0x02
-        #define RECPT_OTHER     0x03
-        #define STDRD_GET_REQUEST   (DEV_TO_HOST | REQ_TYPE_STNDRD | RECPT_DEVICE)
-        #define STDRD_SET_REQUEST   (HOST_TO_DEV | REQ_TYPE_STNDRD | RECPT_DEVICE)
-        #define STDRD_SET_INTERFACE (HOST_TO_DEV | REQ_TYPE_STNDRD | RECPT_INTERFACE)
+    #define DEV_TO_HOST     0x80
+    #define HOST_TO_DEV     0x00
+    #define REQ_TYPE_STNDRD 0x00
+    #define REQ_TYPE_CLASS  0x20
+    #define REQ_TYPE_VENDOR 0x40
+    #define REQ_TYPE_RESV   0x60
+    #define RECPT_DEVICE    0x00
+    #define RECPT_INTERFACE 0x01
+    #define RECPT_ENDPOINT  0x02
+    #define RECPT_OTHER     0x03
+    #define STDRD_GET_REQUEST   (DEV_TO_HOST | REQ_TYPE_STNDRD | RECPT_DEVICE)
+    #define STDRD_SET_REQUEST   (HOST_TO_DEV | REQ_TYPE_STNDRD | RECPT_DEVICE)
+    #define STDRD_SET_INTERFACE (HOST_TO_DEV | REQ_TYPE_STNDRD | RECPT_INTERFACE)
 
-    enum DeviceRequest { 
+    enum deviceRequest { 
         GET_STATUS=0, 
         CLEAR_FEATURE, 
         SET_FEATURE=3, 
@@ -128,7 +128,7 @@ namespace Kernel {
         BULK_ONLY_RESET
     };
 
-    enum DescriptorTypes { 
+    enum descriptorTypes { 
         DEVICE=1, 
         CONFIG, 
         STRING, 
