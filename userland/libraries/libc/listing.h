@@ -1,6 +1,6 @@
 #pragma once
 
-namespace pranaOSListing {
+namespace LibC {
     /* directory listing */
     #define DIRECTORY_LISTING 0
 
