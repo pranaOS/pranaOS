@@ -4,6 +4,6 @@
 
 using namespace ak;
 
-namespace Core {
+namespace Core::version {
     const char pranaOSVersion[] = "pranaOS 1.0";
 }
