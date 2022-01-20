@@ -1,7 +1,7 @@
 #pragma once
 
 #include "systemcomponent.h"
-#include <system/console.h>
+#include <kernel/console.h>
 #include <ak/string.h>
 #include <ak/list.h>
 
