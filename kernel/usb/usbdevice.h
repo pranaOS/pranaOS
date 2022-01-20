@@ -3,3 +3,5 @@
 //
 
 #pragma once
+
+#include "usbcontroller.h"
