@@ -1,7 +1,11 @@
 #include "datetime.h"
 #include "syscall.h"
+#include "types.h"
+#include "convert.h"
+#include "string.h"
+#include "log.h"
 
-using namespace Datetime;
+using namespace LibC;
 
 datetime dateTime::current()
 {
@@ -11,4 +15,11 @@ datetime dateTime::current()
 }
 
 char* dateTime::toString() {
+    static char resultBuffer[60];
+    memset(resultBuffer, 0, 60);
+
+    char* resultPointer = resultBuffer;
+    memcpy(resultPointer);
+
+    return resultBuffer;
 }
