@@ -22,7 +22,13 @@ namespace Kernel {
         virtualFileSystem(Disk* disk, ak::uint32_t start, ak::uint32_t size, char* name = 0);
         virtual ~virtualFileSystem();
 
-        
+        virtual int readFile(const char* filename, uint8_t* buffer, uint32_t offset = 0, uint32_t len = -1);
+        virtual int writeFile(const char* filename, uint8_t* buffer, uint32_t len, bool create = true);
+        virtual int createFile(const char* path);
+        virtual int createDirectory(const char* path);
+
+        virtual bool fileExists(const char* filename);
+        virtual bool directoryExists(const char* filename);
 
         virtual bool initialize();
 
