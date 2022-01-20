@@ -22,7 +22,15 @@ namespace Kernel {
     class usbEndpoint {
       public:
         ak::uint8_t endpointNumber = 0;
-        
+        endpointDirection dir = endpointDirection::Out;
+        endPointType type = endPointType::Control;
+        ak::uint16_t maxPacketSize = 0;
+
+      public:
+        usbEndpoint(struct ENDPOINT_DESC* src);
+        bool toogle();
+        void setToggle(bool v);
+
       private:
         bool currentState = false;
     };
