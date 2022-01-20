@@ -12,7 +12,7 @@ namespace Kernel {
         bool initialize();
 
       private:
-        char* name;
-        char description;
+        char driverName;
+        char driverDescription;
     };
 }
