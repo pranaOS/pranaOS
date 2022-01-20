@@ -2,7 +2,7 @@
 
 #include <types.h>
 
-namespace Heap {
+namespace LibC {
     uint32_t pageRoundUp(uint32_t address);
     uint32_t pageRoundDown(uint32_t address);
 
