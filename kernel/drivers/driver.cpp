@@ -16,3 +16,12 @@ driver::Driver(char* name, char* description) {
 char* driver::getDriverName() {
     return this->driverName;
 }
+
+char* driver::getDriverDescription() {
+    return this->driverDescription;
+}
+
+bool driver::initialize() {
+    sendLog(Error, "driver function error please report about this problem %s%d", __FILE__, __LINE__);
+    return false;
+}
