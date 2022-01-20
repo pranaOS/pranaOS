@@ -6,7 +6,7 @@
 
 #include <drivers/driver.h>
 #include <internal/pci.h>
-#include <system/interrupthandler.h>
+#include <kernel/interrupthandler.h>
 #include <internal/graphics.h>
 
 namespace Kernel {
