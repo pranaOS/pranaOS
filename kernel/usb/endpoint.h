@@ -8,31 +8,32 @@
 
 namespace Kernel {
     enum endpointDirection : int {
-        Out,
-        In
-    };
+      Out,
+      In
+    };  
 
-    enum endPointType : int {
-        Control,
-        Isochronous,
-        Bulk,
-        Interrupt
+
+    enum endpointType : int {
+      Control,
+      Isochronous,
+      Bulk,
+      Interrupt
     };
 
     class usbEndpoint {
       public:
-        ak::uint8_t endpointNumber = 0;
+        ak::uint8_t endpointNumber = 0; 
         endpointDirection dir = endpointDirection::Out;
-        endPointType type = endPointType::Control;
-        ak::uint16_t maxPacketSize = 0;
+        endpointType type = endpointType::Control;
+        ak::uint16_t maxPacketSize = 0; 
+        ak::uint8_t interval = 0; 
 
       public:
         usbEndpoint(struct ENDPOINT_DESC* src);
-        bool toogle();
+        bool toggle();
         void setToggle(bool v);
 
       private:
-        bool currentState = false;
+        bool toggleState = false;
     };
-
 }
