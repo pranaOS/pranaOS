@@ -2,9 +2,9 @@
 
 #include <types.h>
 
-namespace Api {
+namespace LibC {
 
-    class API {
+    class api {
     public:
         static void initialize();
 
