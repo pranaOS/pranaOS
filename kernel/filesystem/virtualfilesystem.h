@@ -15,7 +15,7 @@ namespace Kernel {
   #define PATH_SEPERATOR_S "\\" 
 
   class virtualFileSystem {
-    friend class virtualFileSystemManager
+    friend class virtualFileSystemManager;
     public:
       Disk* disk;
 
