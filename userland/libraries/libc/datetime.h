@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Time {
+namespace LibC {
 
     class dateTime {
     public:
