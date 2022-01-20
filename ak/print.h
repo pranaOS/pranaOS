@@ -2,7 +2,7 @@
 
 #include <types.h>
 #include <convert.h>
-#include <system/console.h>
+#include <kernel/console.h>
 
 namespace ak {
     class Print {
