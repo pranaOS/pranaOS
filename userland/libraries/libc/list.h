@@ -1,6 +1,6 @@
 #pragma once
 
-namespace pranaOSList {
+namespace LibC {
 
     template <typename T>
     struct listNode {
