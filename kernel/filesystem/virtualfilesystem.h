@@ -12,4 +12,24 @@
 namespace Kernel {
     #define PATH_SEPERATOR_C '\\'
     #define PATH_SEPERATOR_S "\\"
+
+    class virtualFileSystem {
+        friend class virtualFileSystemManager;
+      public:
+        Disk* disk;
+
+      public:
+        virtualFileSystem(Disk* disk, ak::uint32_t start, ak::uint32_t size, char* name = 0);
+        virtual ~virtualFileSystem();
+
+        
+
+        virtual bool initialize();
+
+      protected:
+        ak::uint32_t startLBA;
+        ak::uint32_t sizeInSecotrs;
+
+        char* name = "Unknown";
+    };
 }
