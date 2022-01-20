@@ -1,27 +1,21 @@
 #pragma once
 
 #include <kernel/drivers/driver.h>
+#include <kernel/usb/usbdevice.h>
 
 namespace Kernel {
-    
-    typedef struct interruptTransfer {
-        uint8_t* bufferPointer;
-        uint32_t bufferPhys;
-        int bufferLen;
-
-        void* td;
-        int numTd;
-        void* qh;
-        int endPoint;
-    } interruptTransfer_t;
+    typedef struct interruptTransfer interruptTransfer_t;
 
     class usbDriver : public Kernel::driver {
-    public:
+      public:
+        usbDevice* device;
+      public:
+        usbDriver(usbDevice* dev, char* driverName);
         virtual ~usbDriver();
 
         virtual void initialize();
-        void deInitialize();
+        virtual void deInitialize();
 
         virtual bool handleInterruptPacket(interruptTransfer_t* transfer);
-    }
+    };
 }
