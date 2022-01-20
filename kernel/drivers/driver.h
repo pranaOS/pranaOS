@@ -8,7 +8,9 @@ namespace Kernel {
     class driver {
       public:
         driver(char* name = 0, char* description = 0);
-        char getDriverName();
+        char* getDriverName();
+        char* getDriverDescription();
+
         bool initialize();
 
       private:
