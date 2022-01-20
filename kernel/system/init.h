@@ -3,7 +3,7 @@
 #include <ak/string.h>
 #include <ak/types.h>
 #include <multiboot/multiboot.h>
-#include <system/console.h>
+#include <kernel/console.h>
 
 namespace Kernel {
     struct init {
