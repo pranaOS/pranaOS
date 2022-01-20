@@ -6,7 +6,7 @@
 
 #include <ak/types.h>
 #include <ak/list.h>
-#include <system/console.h>
+#include <kernel/console.h>
 #include "driver.h"
 
 namespace Kernel {
