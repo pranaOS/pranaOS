@@ -3,3 +3,8 @@
 //
 
 #pragma once
+
+#include <kernel/drivers/driver.h>
+#include <kernel/internal/pci.h>
+#include <kernel/system/interrupthandler.h>
+#include "device.h"
