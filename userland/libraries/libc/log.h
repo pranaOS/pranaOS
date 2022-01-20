@@ -1,6 +1,6 @@
 #pragma once
 
-namespace pranaOSLog {
+namespace LibC {
 
     enum logLevel {
         None,
