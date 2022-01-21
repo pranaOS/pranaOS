@@ -21,4 +21,8 @@ namespace pranaOSInstaller {
     #define KEY_ENTRY 0x1C
     #define KEY_ARROW_UP 0x48
     #define KEY_ARROW_DOWN 0x50
+    #define KEY_LEFT_ARROW 0x33
+    #define KEY_RIGHT_ARROW 0x34
+    #define KEY_MINUS 0x0C
+    #define KEY_PLUS 0x0D
 }
