@@ -9,7 +9,7 @@
 
 namespace Kernel {
 
-  #define CURRENT_YEAR 2020
+    #define CURRENT_YEAR 1000
 
   class RTC : public systemComponent {
     private:
