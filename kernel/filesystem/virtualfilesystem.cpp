@@ -42,3 +42,15 @@ bool Kernel::virtualFileSystem::directoryExists(const char* filename) {
 
     return false;
 }
+
+int Kernel::virtualFileSystem::createFile(const char* path) {
+    Log(Error, "virtual filesystem failed %s:%d", __FILE__, __LINE__);
+    return -1;
+}
+
+int Kernel::virtualFileSystem::createDirectory(const char* path) {
+    Log(Error, "virtaul filesystem failed %s:%d", __FILE__, __LINE__);
+
+    return -1;
+}
+
