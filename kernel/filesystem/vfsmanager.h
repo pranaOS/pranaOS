@@ -2,29 +2,29 @@
 // Created by KrisnaPranav on 20/01/22.
 //
 
-#pragma once
+#pragma once 
 
 #include "virtualfilesystem.h"
 
 namespace Kernel {
     class vfsManager {
     public:
-        List<virtualFileSystem>* Filesystem;
+        List<virtualFileSystem*>* Filesystems;
+
     public:
+        vfsManager();
+
         int bootPartitionID = -1;
 
-        vfsManager();
-        virtual ~vfsManager();
-
-        void mount(virtualFileSystem* vfs);
-        void unmount(virtualFileSystem* vfs);
+        void mount(VirtualFileSystem* vfs);
+        void unmount(VirtualFileSystem* vfs);
         void unmountByDisk(Disk* disk);
 
-        int extractDiskNumber(const char* path, ak::uint8_t* idSizeReturn);
+        int extractDiskNumber(const char* path, common::uint8_t* idSizeReturn);
         bool searchBootPartition();
 
         int readFile(const char* filename, uint8_t* buffer, uint32_t offset = 0, uint32_t len = -1);
-        int writeFile(const char* filename, uint8_t* buffer, uint32_t len, bool create);
+        int writeFile(const char* filename, uint8_t* buffer, uint32_t len, bool create = true);
         int createFile(const char* path);
         int createDirectory(const char* path);
 
@@ -33,5 +33,6 @@ namespace Kernel {
         bool ejectDrive(const char* path);
 
         uint32_t fileSize(const char* filename);
+        List<Kernel::vfsEntry>* directoryList(const char* path);
     };
 }
