@@ -85,6 +85,12 @@ namespace Kernel {
         ak::uint32_t offsetInSector;        
     } __attribute__((packed));
 
+    enum fatType {
+        FAT12,
+        FAT16,
+        FAT32,
+    };
+
     #define CLUSTER_END_32  0x0FFFFFF8
     #define CLUSTER_BAD_32  0x0FFFFFF7
     #define CLUSTER_FREE_32 0x00000000
@@ -97,9 +103,20 @@ namespace Kernel {
     #define CLUSTER_BAD_12  0xFF7
     #define CLUSTER_FREE_12 0x000
 
-    enum fatType {
-        FAT12,
-        FAT16,
-        FAT32,
-    };
+    #define CLUSTER_END     (this->fatType == FAT12 ? CLUSTER_END_12 : (this->fatType == FAT16 ? CLUSTER_END_16 : CLUSTER_END_32))
+    #define CLUSTER_FREE    (this->fatType == FAT12 ? CLUSTER_FREE_12 : (this->fatType == FAT16 ? CLUSTER_FREE_16 : CLUSTER_FREE_32))
+    #define CLUSTER_BAD     (this->fatType == FAT12 ? CLUSTER_BAD_12 : (this->fatType == FAT16 ? CLUSTER_BAD_16 : CLUSTER_BAD_32))
+
+    #define ATTR_READ_ONLY  0x01
+    #define ATTR_HIDDEN 	0x02
+    #define ATTR_SYSTEM     0x04
+    #define ATTR_VOLUME_ID  0x08
+    #define ATTR_DIRECTORY	0x10
+    #define ATTR_ARCHIVE    0x20
+    #define ATTR_LONG_NAME 	(ATTR_READ_ONLY | ATTR_HIDDEN | ATTR_SYSTEM | ATTR_VOLUME_ID)
+
+    #define ENTRY_END       0x00
+    #define ENTRY_UNUSED    0xE5
+    #define LFN_ENTRY_END   0x40
+
 }
