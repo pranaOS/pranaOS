@@ -16,8 +16,8 @@ namespace Kernel {
 
         int bootPartitionID = -1;
 
-        void mount(VirtualFileSystem* vfs);
-        void unmount(VirtualFileSystem* vfs);
+        void mount(virtualFileSystem* vfs);
+        void unmount(virtualFileSystem* vfs);
         void unmountByDisk(Disk* disk);
 
         int extractDiskNumber(const char* path, ak::uint8_t* idSizeReturn);
@@ -30,6 +30,8 @@ namespace Kernel {
 
         bool fileExists(const char* filename);
         bool directoryExists(const char* filename);
+        bool removeFile(const char* filename);
+        bool removeDirectory(const char* filename);
         bool ejectDrive(const char* path);
 
         uint32_t fileSize(const char* filename);
