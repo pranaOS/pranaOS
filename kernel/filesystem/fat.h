@@ -119,4 +119,33 @@ namespace Kernel {
     #define ENTRY_UNUSED    0xE5
     #define LFN_ENTRY_END   0x40
 
+    #define GET_CLUSTER(e) (e.LowFirstCluster | (e.HighFirstCluster << (16)))
+
+    class fat : public Kernel::virtualFileSystem {
+      private:
+        fatType fattype;
+        char* fatTypeString = 0;
+
+        uint8_t* readBuffer = 0;
+        uint8_t sectorsPerCluster = 0;
+
+        uint16_t bytesPerSector = 0;
+
+        uint32_t rootDirSectors = 0;
+        uint32_t clusterSize = 0;
+        uint32_t firstDataSector = 0;
+        uint32_t firstFatSector = 0;
+        uint32_t rootDirCluster = 0;
+        uint32_t totalClusters = 0;
+
+        fat32Info fsInfo;
+      public:
+        fat(Disk* disk, ak::uint32_t start, ak::uint32_t size);
+        ~fat();
+
+        bool initialize();
+
+        int readFile(const char* filename, uint8_t* buffer, uint32_t offset = 0, uint32_t len = -1);
+    };
+
 }
