@@ -84,5 +84,22 @@ namespace Kernel {
         ak::uint32_t sector;                
         ak::uint32_t offsetInSector;        
     } __attribute__((packed));
-    
+
+    #define CLUSTER_END_32  0x0FFFFFF8
+    #define CLUSTER_BAD_32  0x0FFFFFF7
+    #define CLUSTER_FREE_32 0x00000000
+
+    #define CLUSTER_END_16  0xFFF8
+    #define CLUSTER_BAD_16  0xFFF7
+    #define CLUSTER_FREE_16 0x0000
+
+    #define CLUSTER_END_12  0xFF8
+    #define CLUSTER_BAD_12  0xFF7
+    #define CLUSTER_FREE_12 0x000
+
+    enum fatType {
+        FAT12,
+        FAT16,
+        FAT32,
+    };
 }
