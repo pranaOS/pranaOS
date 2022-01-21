@@ -30,3 +30,15 @@ int Kernel::virtualFileSystem::readFile(const char* filename, int* buffer, int o
 int Kernel::virtualFileSystem::writeFile(const char* filename, int* buffer, int len, bool create) {
     Log(Error, "virtual filesystem failed %s%d", __FILE__, __LINE__);
 }
+
+bool Kernel::virtualFileSystem::fileExists(const char* filename) {
+    Log(Error, "virtual filesystem failed %s:%d", __FILE__, __LINE__);
+
+    return false;
+}
+
+bool Kernel::virtualFileSystem::directoryExists(const char* filename) {
+    Log(Error, "virtual filesystem failed %s:%d", __FILE__, __LINE__);
+
+    return false;
+}
