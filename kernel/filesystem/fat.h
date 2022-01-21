@@ -8,7 +8,7 @@
 
 namespace Kernel {
 
-    struct Fat32 {
+    struct fat32 {
         ak::uint8_t     bootCode[3];
         ak::uint8_t     oemId[8];
         ak::uint16_t    bytesPerSector;
@@ -40,7 +40,7 @@ namespace Kernel {
         ak::uint16_t    bootSignature;
     } __attribute__((packed));
 
-    struct Fat32Info {
+    struct fat32Info {
         ak::uint32_t    signature1;
         ak::uint8_t     reserved1[480];
         ak::uint32_t    signature2;
@@ -51,7 +51,7 @@ namespace Kernel {
     } __attribute__((packed));
 
     
-    struct DirectoryEntry {
+    struct directoryEntry {
         ak::uint8_t     fileName[11];       
         ak::uint8_t     attributes;         
         ak::uint8_t     reserved;           
@@ -67,18 +67,22 @@ namespace Kernel {
     } __attribute__((packed));
 
     struct lfnEntry {
-        common::uint8_t entryIndex;             
-        common::uint8_t namePart1[10];          
-        common::uint8_t Attributes;             
-        common::uint8_t reserved_1;             
-        common::uint8_t checksum;               
-        common::uint8_t namePart2[12];          
-        common::uint16_t reserved_2;            
-        common::uint8_t namePart3[4];           
+        ak::uint8_t entryIndex;             
+        ak::uint8_t namePart1[10];          
+        ak::uint8_t Attributes;             
+        ak::uint8_t reserved_1;             
+        ak::uint8_t checksum;               
+        ak::uint8_t namePart2[12];          
+        ak::uint16_t reserved_2;            
+        ak::uint8_t namePart3[4];           
     } __attribute__((packed));
 
+
     struct fatEntryInfo {
-        char* filename;
-    };
+        directoryEntry entry;                   
+        char* filename;                         
+        ak::uint32_t sector;                
+        ak::uint32_t offsetInSector;        
+    } __attribute__((packed));
     
 }
