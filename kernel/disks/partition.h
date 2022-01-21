@@ -39,7 +39,7 @@ namespace Kernel {
     class partitionManager {
       public:
         static void detectFileSystem(Disk* disk);
-        
+
       private:
         static void assignVFS(partitionTableEntry partition, Disk* disk);
     };
