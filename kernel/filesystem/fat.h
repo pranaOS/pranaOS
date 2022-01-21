@@ -67,8 +67,15 @@ namespace Kernel {
     } __attribute__((packed));
 
     struct lfnEntry {
-
-    };
+        common::uint8_t entryIndex;             
+        common::uint8_t namePart1[10];          
+        common::uint8_t Attributes;             
+        common::uint8_t reserved_1;             
+        common::uint8_t checksum;               
+        common::uint8_t namePart2[12];          
+        common::uint16_t reserved_2;            
+        common::uint8_t namePart3[4];           
+    } __attribute__((packed));
 
     struct fatEntryInfo {
         char* filename;
