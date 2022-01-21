@@ -25,7 +25,13 @@ namespace Kernel {
 
         int readFile(const char* filename, uint8_t* buffer, uint32_t offset = 0, uint32_t len = -1);
         int writeFile(const char* filename, uint8_t* buffer, uint32_t len, bool create);
+        int createFile(const char* path);
+        int createDirectory(const char* path);
+
         bool fileExists(const char* filename);
         bool directoryExists(const char* filename);
+        bool ejectDrive(const char* path);
+
+        uint32_t fileSize(const char* filename);
     };
 }
