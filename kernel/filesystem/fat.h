@@ -50,15 +50,28 @@ namespace Kernel {
         ak::uint32_t    signature3;
     } __attribute__((packed));
 
-    struct directoryEntry {
-
-    };
+    
+    struct DirectoryEntry {
+        ak::uint8_t     fileName[11];       
+        ak::uint8_t     attributes;         
+        ak::uint8_t     reserved;           
+        ak::uint8_t     creationTimeTenth;  
+        ak::uint16_t    creationTime;       
+        ak::uint16_t    creationDate;       
+        ak::uint16_t    accessDate;         
+        ak::uint16_t    highFirstCluster;   
+        ak::uint16_t    modifyTime;         
+        ak::uint16_t    modifyDate;         
+        ak::uint16_t    lowFirstCluster;    
+        ak::uint32_t    fileSize;          
+    } __attribute__((packed));
 
     struct lfnEntry {
 
     };
 
     struct fatEntryInfo {
-
+        char* filename;
     };
+    
 }
