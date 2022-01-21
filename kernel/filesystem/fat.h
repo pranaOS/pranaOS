@@ -40,9 +40,15 @@ namespace Kernel {
         ak::uint16_t    bootSignature;
     } __attribute__((packed));
 
-    struct Fat32_Info {
-
-    };
+    struct Fat32Info {
+        ak::uint32_t    signature1;
+        ak::uint8_t     reserved1[480];
+        ak::uint32_t    signature2;
+        ak::uint32_t    lastFreeCluster;
+        ak::uint32_t    startSearchCluster;
+        ak::uint8_t     reserved2[12];
+        ak::uint32_t    signature3;
+    } __attribute__((packed));
 
     struct directoryEntry {
 
