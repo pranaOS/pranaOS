@@ -54,3 +54,7 @@ int Kernel::virtualFileSystem::createDirectory(const char* path) {
     return -1;
 }
 
+uint32_t Kernel::virtualFileSystem::getFileSize(const char* filename) {
+    Log(Error, "virtual filesystem failed %s:%d", __FILE__, __LINE__);
+    return -1;
+}
