@@ -146,6 +146,15 @@ namespace Kernel {
         bool initialize();
 
         int readFile(const char* filename, uint8_t* buffer, uint32_t offset = 0, uint32_t len = -1);
+        int writeFile(const char* filename, uint8_t* buffer, uint32_t len, bool create = true);
+        int createFile(const char* path);
+        int createDirectory(const char* paht);
+
+        bool fileExists(const char* filename);
+        bool directoryExists(const char* filename);
+
+        uint32_t getFileSize(const char* filename);
+        List<LibC::vfsEntry>* directoryList(const char* path);
     };
 
 }
