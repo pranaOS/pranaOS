@@ -41,4 +41,10 @@ namespace Kernel {
     #define VBE_DISPI_NOCLEARMEM            0x80
 
     #define VBE_DISPI_LFB_PHYSICAL_ADDRESS  0xE0000000
+
+    class bochs : public system::graphicsDevice, public systemComponent {
+      public:
+        bochs();
+        static bool available();
+    };
 }
