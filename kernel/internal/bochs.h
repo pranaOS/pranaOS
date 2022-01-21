@@ -48,5 +48,10 @@ namespace Kernel {
       bochs();
       static bool isAvailable();
       bool selectBestVideoMode();
+
+    private:
+      bochs::~bochs()
+      {
+      }
   };
 }
