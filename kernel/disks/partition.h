@@ -8,7 +8,8 @@
 #include <kernel/filesystem/vfsmanager.h>
 
 namespace Kernel {
-    struct PartitionTableEntry {
+
+    struct partitionTableEntry {
         ak::uint8_t bootable;
 
         ak::uint8_t startHead;
@@ -26,6 +27,12 @@ namespace Kernel {
     } __attribute__((packed));
 
     struct masterBootRecord {
-
+        ak::uint8_t bootloader[440];
+        ak::uint32_t signature;
+        ak::uint16_t unused;
+            
+        partitionTableEntry primaryPartitions[4];
+            
+        ak::uint16_t magicnumber;
     } __attribute__((packed));
 }
