@@ -34,6 +34,17 @@ namespace Kernel {
         DMA1_MASK_REG = 0xde
     };
 
+    enum DMA0CHANNELIO {
+        DMA0_CHAN0_ADDR_REG = 0,
+        DMA0_CHAN0_COUNT_REG = 1,
+        DMA0_CHAN1_ADDR_REG = 2,
+        DMA0_CHAN1_COUNT_REG = 3,
+        DMA0_CHAN2_ADDR_REG = 4,
+        DMA0_CHAN2_COUNT_REG = 5,
+        DMA0_CHAN3_ADDR_REG = 6,
+        DMA0_CHAN3_COUNT_REG = 7,
+    };
+
     /**
      * @breif: dmaController[set channel address, counter]
      */
