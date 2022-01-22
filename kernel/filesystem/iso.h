@@ -50,14 +50,36 @@ namespace Kernel {
         char id                             [ISODCL (  2,     6)];
         ak::uint8_t version;
         char reserved1                      [ISODCL (  8,     8)];
-        char system_id                      [ISODCL (  9,    40)]; 
+        char system_id                      [ISODCL (  9,    40)];
         char volume_id                      [ISODCL ( 41,    72)];
         char reserved2                      [ISODCL ( 73,    80)];
-        ak::uint64_t volume_space_size;
+        ak::uint64_t volumeSpaceSize;
         char reserved3                      [ISODCL ( 89,   120)];
-        ak::uint32_t volume_set_size;
-        ak::uint32_t volume_sequence_number;
-    };
+        ak::uint32_t volumeSetSize;
+        ak::uint32_t volumeSequenceNumber;
+        ak::uint32_t logicalBlockSize;
+        ak::uint64_t pathTableSize;
+        ak::uint32_t type1PathTable;
+        ak::uint32_t optType1PathTable;
+        ak::uint32_t typeMPathTable;
+        ak::uint32_t opt_type_m_path_table;
+        directoryRecord rootDirectoryRecord;
+        char volumeSetId                  [ISODCL (191,   318)];
+        char publisherId                   [ISODCL (319,   446)];
+        char preparerId                    [ISODCL (447,   574)];
+        char applicationId                 [ISODCL (575,   702)];
+        char copyrightFileId              [ISODCL (703,   739)];
+        char abstractFileId               [ISODCL (740,   776)];
+        char bibliographicFileId          [ISODCL (777,   813)];
+        timeFormat creationDate         ;
+        timeFormat modificationDate     ;
+        timeFormat expirationDate       ;
+        timeFormat effectiveDate        ;
+        char fileStructureVersion         [ISODCL (882,   882)];
+        char reserved4                      [ISODCL (883,   883)];
+        ak::uint8_t applicationData    [ISODCL (884,  1395)];
+        char reserved5                      [ISODCL (1396,  2048)];
+    } __attribute__((packed));
 
     #define ISO_START_SECTOR 0x10
     #define CDROM_SECTOR_SIZE 2048
