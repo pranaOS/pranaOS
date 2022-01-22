@@ -26,5 +26,12 @@ namespace Kernel {
     class physicalMemoryManager {
       public:
         static void initialize(ak::uint32_t size, ak::uint32_t bitmap);
+
+        static void setRegionFree(ak::uint32_t base, ak::uint32_t size);
+        static void setRegionUsed(ak::uint32_t base, ak::uint32_t size);
+        static parseMemoryMap(const multiboot_info_t* mbi);
+
+        static void* allocateBlock();
+        static void freeBlock(void* ptr);
     };
 }
