@@ -24,5 +24,15 @@ namespace Kernel {
     } __attribute__((packed));
 
     class kernelHeap {
+      public:
+        static void initialize(ak::uint32_t start, ak::uint32_t end);
+        static void* malloc(ak::uint32_t size, ak::uint32_t physReturn = 0);
+        static void free(void* ptr);
+
+        static void* allignedMalloc(ak::uint32_t size, ak::uint32_t align, ak::uint32_t physReturn = 0);
+        static void allignedFree(void* ptr);
+
+        static bool checkForErrors();
+        static ak::uint32_t usedMemory();
     };
 }
