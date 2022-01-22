@@ -7,16 +7,15 @@ Stream::Stream() {}
 Stream::~Stream() {}
 
 char Stream::read() {
-    Log(Error, "stream function called");
+    sendLog(Error, "stream function error"
     return 0;
 }
 
 void Stream::write(char byte) {
-    Log(Error, "stream function called");
+    sendLog(Error, "stream function error");
 }
 
-int Stream::available()
-{
-    Log(Error, "stream function called");
+int Stream::available() {
+    sendLog(Error, "stream function error"
     return 0;
 }
