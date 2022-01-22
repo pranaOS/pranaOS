@@ -45,6 +45,17 @@ namespace Kernel {
         DMA0_CHAN3_COUNT_REG = 7,
     };
 
+    enum DMA1CHANNELIO {
+        DMA1_CHAN4_ADDR_REG = 0xc0,
+        DMA1_CHAN4_COUNT_REG = 0xc2,
+        DMA1_CHAN5_ADDR_REG = 0xc4,
+        DMA1_CHAN5_COUNT_REG = 0xc6,
+        DMA1_CHAN6_ADDR_REG = 0xc8,
+        DMA1_CHAN6_COUNT_REG = 0xca,
+        DMA1_CHAN7_ADDR_REG = 0xcc,
+        DMA1_CHAN7_COUNT_REG = 0xce,
+    };
+
     /**
      * @breif: dmaController[set channel address, counter]
      */
