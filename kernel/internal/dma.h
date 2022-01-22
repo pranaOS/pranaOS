@@ -22,6 +22,18 @@ namespace Kernel {
         DMA0_MASK_REG = 0x0f
     };
 
+    enum DMA1IO {
+        DMA1_STATUS_REG = 0xd0,
+        DMA1_COMMAND_REG = 0xd0,
+        DMA1_REQUEST_REG = 0xd2,
+        DMA1_CHANMASK_REG = 0xd4,
+        DMA1_MODE_REG = 0xd6,
+        DMA1_CLEARBYTE_FLIPFLOP_REG = 0xd8,
+        DMA1_INTER_REG = 0xda,
+        DMA1_UNMASK_ALL_REG = 0xdc,
+        DMA1_MASK_REG = 0xde
+    };
+
     /**
      * @breif: dmaController[]
      */
