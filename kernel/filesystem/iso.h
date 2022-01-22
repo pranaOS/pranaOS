@@ -24,4 +24,21 @@ namespace Kernel {
         ak::uint8_t nameLength;
         char name[222];
     } __attribute__((packed));
+
+    struct timeFormat {
+        char year[4];
+        char month[2];
+        char day[2];
+        char hour[2];
+        char minute[2];
+        char second[2];
+        cahr hundrdSecond[2];
+        ak::int8_t timeZon;
+    } __attribute__((packed));
+
+    struct volumeDescriptor {
+        ak::uint8_t type;
+        char identifier[5];
+        char data[2];
+    };
 }
