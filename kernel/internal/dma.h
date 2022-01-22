@@ -56,6 +56,35 @@ namespace Kernel {
         DMA1_CHAN7_COUNT_REG = 0xce,
     };
 
+    enum DMA0PAGEREG {
+        DMA_PAGE_EXTRA0 = 0x80,
+        DMA_PAGE_CHAN2_ADDRBYTE2 = 0x81,
+        DMA_PAGE_CHAN3_ADDRBYTE2 = 0x82,
+        DMA_PAGE_CHAN1_ADDRBYTE2 = 0x83,
+        DMA_PAGE_EXTRA1 = 0x84,
+        DMA_PAGE_EXTRA2 = 0x85,
+        DMA_PAGE_EXTRA3 = 0x86,
+        DMA_PAGE_CHAN6_ADDRBYTE2 = 0x87,
+        DMA_PAGE_CHAN7_ADDRBYTE2 = 0x88,
+        DMA_PAGE_CHAN5_ADDRBYTE2 = 0x89,
+        DMA_PAGE_EXTRA4 = 0x8c,
+        DMA_PAGE_EXTRA5 = 0x8d,
+        DMA_PAGE_EXTRA6 = 0x8e,
+        DMA_PAGE_DRAM_REFRESH = 0x8f
+    };
+
+    enum DMACMDREGMASK {
+
+        DMA_CMD_MASK_MEMTOMEM = 1,
+        DMA_CMD_MASK_CHAN0ADDRHOLD = 2,
+        DMA_CMD_MASK_ENABLE = 4,
+        DMA_CMD_MASK_TIMING = 8,
+        DMA_CMD_MASK_PRIORITY = 0x10,
+        DMA_CMD_MASK_WRITESEL = 0x20,
+        DMA_CMD_MASK_DREQ = 0x40,
+        DMA_CMD_MASK_DACK = 0x80
+    };
+
     /**
      * @breif: dmaController[set channel address, counter]
      */
