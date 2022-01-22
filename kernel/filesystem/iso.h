@@ -96,4 +96,19 @@ namespace Kernel {
         isoFile = 0,
         isoDirectory = 1
     };
+
+    class isoFS : public virtualFileSystem {
+      public:
+        iso(Disk* disk, ak::uint32_t start, ak::uint32_t size);
+        bool initialize();
+        int readFile(const char* filename, uint8_t* buffer, uint32_t offset = 0, uint32_t len = -1);
+        int writeFile(const char* filename, uint8_t* buffer, uint32_t len, bool create = true);
+      private:
+        directoryRecord* rootDirectory;
+        directoryRecord* searchInDirectory(directoryRecord* searchIn, const char* name);
+        directoryRecord* getEntry(const char* path);
+        isoEntryType getEntryType(directoryRecord* entry);
+
+        char* getRecordName(directoryRecord* record);
+    };
 }
