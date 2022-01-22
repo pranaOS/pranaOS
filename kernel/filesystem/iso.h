@@ -100,7 +100,6 @@ namespace Kernel {
     class isoFS : public virtualFileSystem {
       public:
         iso(Disk* disk, ak::uint32_t start, ak::uint32_t size);
-        bool initialize();
         int readFile(const char* filename, uint8_t* buffer, uint32_t offset = 0, uint32_t len = -1);
         int writeFile(const char* filename, uint8_t* buffer, uint32_t len, bool create = true);
 
@@ -112,6 +111,8 @@ namespace Kernel {
 
         uint32_t getFileSize(const char* filename);
         List<LibC::vfsEntry>* directoryList(const char* path);
+
+        bool initialize();
       private:
         directoryRecord* rootDirectory;
         directoryRecord* searchInDirectory(directoryRecord* searchIn, const char* name);
