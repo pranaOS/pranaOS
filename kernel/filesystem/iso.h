@@ -39,6 +39,14 @@ namespace Kernel {
     struct volumeDescriptor {
         ak::uint8_t type;
         char identifier[5];
-        char data[2];
+        ak::uint8_t version;
+        char data[2041];
+    };
+
+    #define ISODCL(from, to) (to - from + 1)
+
+    struct primaryVolumeDescriptor {
+        ak::uint8_t type;
+        char id;
     };
 }
