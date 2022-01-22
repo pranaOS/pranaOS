@@ -107,7 +107,9 @@ namespace Kernel {
       public:
         dmaController();
 
-        void setChannelAddress(ak::uint8_t channel, ak::uint8_t low, ak::uint8_t high);
-        void setChannelCounter(ak::uint8_t channel, ak::uint8_t low, ak::uint8_t high);
+        void setChannelAddress(common::uint8_t channel, common::uint8_t low, common::uint8_t high);
+        void setChannelCounter(common::uint8_t channel, common::uint8_t low, common::uint8_t high);
+        void setExternalPageRegister(common::uint8_t reg, common::uint8_t val);
+        void setChannelMode(common::uint8_t channel, common::uint8_t mode);
     };
 }
