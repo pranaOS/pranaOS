@@ -17,7 +17,7 @@ namespace Kernel {
         XHCI
     };
 
-    class USBDriver;
+    class usbDriver;
     typedef struct interruptTransfer {
         uint8_t* bufferPointer;
         uint32_t bufferPhys;
