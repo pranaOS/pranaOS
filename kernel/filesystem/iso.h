@@ -47,8 +47,20 @@ namespace Kernel {
 
     struct primaryVolumeDescriptor {
         ak::uint8_t type;
-        char id;
+        char id                             [ISODCL (  2,     6)];
+        ak::uint8_t version;
+        char reserved1                      [ISODCL (  8,     8)];
+        char system_id                      [ISODCL (  9,    40)]; 
+        char volume_id                      [ISODCL ( 41,    72)];
+        char reserved2                      [ISODCL ( 73,    80)];
+        ak::uint64_t volume_space_size;
+        char reserved3                      [ISODCL ( 89,   120)];
+        ak::uint32_t volume_set_size;
+        ak::uint32_t volume_sequence_number;
     };
+
+    #define ISO_START_SECTOR 0x10
+    #define CDROM_SECTOR_SIZE 2048
 
     enum volumeDescriptorType {
         bootRecord = 0,
