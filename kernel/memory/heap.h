@@ -34,5 +34,15 @@ namespace Kernel {
 
         static bool checkForErrors();
         static ak::uint32_t usedMemory();
+
+      private:
+        static ak::uint32_t startAddress;
+        static ak::uint32_t endAddress;
+
+        static memoryHeader* firstHeader;
+        static void* internalAllocate(ak::uint32_t size);
+        static memoryHeader* firstFree(ak::uint32_t size);
+
+        static mutexLock heapMutex;
     };
 }
