@@ -37,11 +37,11 @@ namespace Kernel {
         static allocateBlocks(ak::uint32_t size);
         static freeBlocks(void* ptr, ak::uint32_t size);
 
-        static ak::uint32_t AmountOfMemory();
-        static ak::uint32_t UsedBlocks();
-        static ak::uint32_t FreeBlocks();
-        static ak::uint32_t TotalBlocks();
-        static ak::uint32_t GetBitmapSize();
+        static ak::uint32_t amountOfMemory();
+        static ak::uint32_t usedBlocks();
+        static ak::uint32_t freeBlocks();
+        static ak::uint32_t totalBlocks();
+        static ak::uint32_t getBitmapSize();
     };
 
     ak::uint32_t pageRoundUp(ak::uint32_t address);
