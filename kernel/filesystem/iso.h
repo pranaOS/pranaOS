@@ -23,5 +23,5 @@ namespace Kernel {
         ak::uint8_t volSeqNumberBe;
         ak::uint8_t nameLength;
         char name[222];
-    };
+    } __attribute__((packed));
 }
