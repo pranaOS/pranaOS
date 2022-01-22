@@ -5,7 +5,7 @@
 #pragma once
 
 #include <kernel/drivers/driver.h>
-#include <kernel/components/pci.h>
+#include <kernel/internal/pci.h>
 #include <system/interrupthandler.h>
 #include "usbdevice.h"
 
