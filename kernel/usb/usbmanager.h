@@ -8,6 +8,9 @@
 #include "usbdevice.h"
 
 namespace Kernel {
+    /**
+     * @brief: usb manager[add controller, remove controller, add device, remove device, setup all, assign all drivers, usb poll]
+     */
     class usbManager {
       public:
         List<usbController*> controllerList;
@@ -20,5 +23,14 @@ namespace Kernel {
         void removeController(usbController* c);
         void addDevice(usbDevice* c);
         void removeDevice(usbController* controller, uint8_t port);
+        void setupAll();
+        void assignAllDrivers();
+        void usbPoll();
+
+        bool initialize();
+
+      private:
+        usbManager();
+        ~usbManager();
     };
 }
