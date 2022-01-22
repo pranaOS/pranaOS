@@ -49,4 +49,17 @@ namespace Kernel {
         ak::uint8_t type;
         char id;
     };
+
+    enum volumeDescriptorType {
+        bootRecord = 0,
+        pvDescriptor = 1,
+        supplementaryVolumeDescriptor = 2,
+        volumePartitionDescriptor = 3,
+        volumeDescriptorSetTerminator = 255
+    };
+
+    enum isoEntryType {
+        isoFile = 0,
+        isoDirectory = 1
+    };
 }
