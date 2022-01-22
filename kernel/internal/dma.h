@@ -35,9 +35,13 @@ namespace Kernel {
     };
 
     /**
-     * @breif: dmaController[]
+     * @breif: dmaController[set channel address, counter]
      */
     class dmaController : public systemComponent {
       public:
+        dmaController();
+
+        void setChannelAddress(ak::uint8_t channel, ak::uint8_t low, ak::uint8_t high);
+        void setChannelCounter(ak::uint8_t channel, ak::uint8_t low, ak::uint8_t high);
     };
 }
