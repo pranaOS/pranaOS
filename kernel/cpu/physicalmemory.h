@@ -43,7 +43,10 @@ namespace Kernel {
         static ak::uint32_t totalBlocks();
         static ak::uint32_t getBitmapSize();
       private:
-        physicalMemoryManager();
+        static ak::uint32_t memorySize;
+        static ak::uint32_t usedBlocks;
+        static ak::uint32_t maximumBlocks;
+        static ak::uint32_t memoryArray;
     };
 
     ak::uint32_t pageRoundUp(ak::uint32_t address);
