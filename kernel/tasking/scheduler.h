@@ -23,11 +23,19 @@ namespace Kernel {
         void initialThreadUserJump(Thread* thread);
         void block(Thread* thread, blockedState reason = blockedState::Unkown);
         void unblock(Thread* thread, bool forceSwitch = false);
-        
+
         Thread* currentThread();
         Process* currentProcess();
 
       private:
+        ak::uint32_t frequency = 0;
+        ak::uint32_t tickCount = 0;
+
+        List<Thread*> threadLists;
+        Thread* currentThread = 0;
+
+        Thread* getNextThread();
+        void processSleepingThreads();
         bool switchForced = false;
     };
 }
