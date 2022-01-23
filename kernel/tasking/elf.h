@@ -31,7 +31,16 @@ namespace Kernel {
     } __attribute__((packed));
 
     struct elfSectionHeader {
-
-    };
+        ak::uint32_t shname;
+        ak::uint32_t shtype;
+        ak::uint32_t shflags;
+        ak::uint32_t shaddr;
+        ak::uint32_t shoffset;
+        ak::uint32_t shsize;
+        ak::uint32_t shlink;
+        ak::uint32_t shinfo;
+        ak::uint32_t shaddralign;
+        ak::uint32_t shentsize;
+    } __attribute__((packed));
 
 }
