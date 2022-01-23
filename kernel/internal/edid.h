@@ -7,16 +7,49 @@
 #include "systemcomponent.h"
 
 namespace Kernel {
+    
     struct edidInfoBlock {
         ak::uint8_t header[8];
-        ak::uint16_t manufacturerId;
+        ak::uint16_t manufacturerOd;
         ak::uint16_t productId;
         ak::uint32_t serialNumber;
-        ak::uint8_t weekOfManufacture
+        ak::uint8_t weekOfManufacture;
         ak::uint8_t yearOfManufacture;
         ak::uint8_t version;
         ak::uint8_t revision;
-    };
+        ak::uint8_t videoInputDefinition;
+        ak::uint8_t maxHorizontalImageSize;
+        ak::uint8_t maxVerticalImageSize;
+        ak::uint8_t displayGamma;
+        ak::uint8_t featureSupport;
+        ak::uint8_t redGreenLo;
+        ak::uint8_t blueWhiteLo;
+        ak::uint8_t redxhi;
+        ak::uint8_t redyhi;
+        ak::uint8_t greenxhi;
+        ak::uint8_t greenyhi;
+        ak::uint8_t bluexhi;
+        ak::uint8_t blueyhi;
+        ak::uint8_t whitexhi;
+        ak::uint8_t whiteyhi;
+
+        ak::uint8_t establishedTimings1;
+        ak::uint8_t establishedtimings2;
+        ak::uint8_t manufacturerReservedTimings;
+
+        ak::uint16_t standardTimings[8];
+
+        struct detailTmings{
+            ak::uint16_t flag; 
+            ak::uint8_t flag2;
+            ak::uint8_t dataType;
+            ak::uint8_t flag3;
+            ak::uint8_t descriptorData[13];
+        } detailtmings_t [4];
+
+        ak::uint8_t extensionFlag;
+        ak::uint8_t checksum;
+    } __attribute__((packed));
 
     #define EDID_SUCCESS_CODE 0x004F
 
