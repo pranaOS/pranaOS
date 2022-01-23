@@ -17,7 +17,6 @@ namespace Kernel {
         virtual ak::uint32_t handleInterrupt(ak::uint32_t esp);
     };
 
-
     class interruptManager {
     public:
         static void initialize();
