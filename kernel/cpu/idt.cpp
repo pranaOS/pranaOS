@@ -88,3 +88,19 @@ void interruptDescriptorTable::install() {
 
     asm volatile("lidt %0" : : "m" (idtPointer));
 }
+
+void interruptDescriptorTable::enableInterrupts() {
+    asm volatile ("sti");
+}
+
+void interruptDescriptorTable::disableInterrupts() {
+    asm volatile ("cli");
+}
+
+bool interruptDescriptorTable::areEnabled() {
+    unsigned long flags;
+    asm volatile ( "pushf\n\t"
+                 "pop %0"
+                 : "=g"(flags) );
+    return flags & (1 << 9);
+}
