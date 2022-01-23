@@ -42,11 +42,24 @@ namespace Kernel {
         static ak::uint32_t freeBlocks();
         static ak::uint32_t totalBlocks();
         static ak::uint32_t getBitmapSize();
+
       private:
         static ak::uint32_t memorySize;
         static ak::uint32_t usedBlocks;
         static ak::uint32_t maximumBlocks;
         static ak::uint32_t memoryArray;
+
+        static inline void setBit(ak::uint32_t bit) {
+            memoryArray[bit / 32] |= (1 << (bit % 32));
+        }
+
+        static inline void unsetBit(ak::uint32_t bit) {
+            memoryArray[bit / 32] &= ~ (1 << (bit % 32));
+        }
+
+        static inline bool testBit(ak::uint32_t bit) {
+            return memoryArray[bit / 32] &  (1 << (bit % 32));
+        }
     };
 
     ak::uint32_t pageRoundUp(ak::uint32_t address);
