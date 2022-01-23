@@ -7,7 +7,7 @@
 namespace Kernel {
     extern "C" void* bootPageDirectory;
 
-    enum PAGEENTRYESIZE {
+    enum PAGE_ENTRY_SIZE {
         FOUR_KB = 0,
         FOUR_MB = 1
     };
@@ -18,7 +18,7 @@ namespace Kernel {
     #define USER_STACK (USER_STACK_TOP - USER_STACK_SIZE)
 
     #define PAGE_SIZE 4_KB
-    #define KERNEL_PTNUM 768
+    #define KERNEL_PTNUM 768 
     #define PAGE_TABLE_ADDRESS 0xFFC00000
     #define PAGE_DIRECTORY_ADDRESS 0xFFFFF000
     #define PAGE_OFFSET_BITS 12
@@ -26,25 +26,64 @@ namespace Kernel {
     #define PAGETBL_INDEX(addr) ((((uint32_t)addr) >> 12) & 0x3ff)
     #define PAGEFRAME_INDEX(addr) (((uint32_t)addr) & 0xfff)
 
-    /* todo */
     struct pageDirectoryEntry {
-        ak::uint32_t present;
-    };
+        ak::uint32_t present        : 1;    
+        ak::uint32_t readWrite      : 1;    
+        ak::uint32_t isUser         : 1;    
+        ak::uint32_t writeThrough   : 1;    
+        ak::uint32_t canCache       : 1;    
+        ak::uint32_t accessed       : 1;    
+        ak::uint32_t reserved       : 1;    
+        ak::uint32_t pageSize       : 1;    
+        ak::uint32_t ignored        : 1;
+        ak::uint32_t unused         : 3;    
+        ak::uint32_t frame          : 20;   
+    } __attribute__((packed));
 
     struct pageTableEntry {
-    };
+        ak::uint32_t present        : 1;    
+        ak::uint32_t readWrite      : 1;    
+        ak::uint32_t isUser         : 1;    
+        ak::uint32_t writeThrough   : 1;    
+        ak::uint32_t canCache       : 1;    
+        ak::uint32_t accessed       : 1;    
+        ak::uint32_t dirty          : 1;    
+        ak::uint32_t reserved       : 1;
+        ak::uint32_t global         : 1;    
+        ak::uint32_t unused         : 3;    
+        ak::uint32_t frame          : 20;   
+    } __attribute__((packed));
 
     struct pageTable {
-    };
+        pageTableEntry entries[1024];
+    } __attribute__((packed));
 
     struct pageDirectory {
-    };
+        PageDirectoryEntry entries[1024];
+    } __attribute__((packed));
 
     static inline void invlpg(void* addr) {
         asm volatile("invlpg (%0)" ::"r" (addr) : "memory");
     }
 
     class virtualMemoryManager {
-        
+    public:      
+        static void reloadCR3();  
+        static void initialize();
+        static void allocatePage(pageTableEntry* page, bool kernel, bool writeable);
+        static void freePage(pageTableEntry* page);
+
+        static pageTableEntry* getPageForAddress(ak::uint32_t virtualAddress, bool shouldCreate, bool readWrite = true, bool userPages = false);    
+        static void* getPageTableAddress(ak::uint16_t pageTableNumber);
+            
+        static void* virtualToPhysical(void* virtAddress);
+            
+        static void mapVirtualToPhysical(void* physAddress, void* virtAddress, bool kernel = true, bool writeable = true);
+        static void mapVirtualToPhysical(void* physAddress, void* virtAddress, ak::uint32_t size, bool kernel = true, bool writeable = true);
+            
+        static void switchPageDirectory(ak::uint32_t physAddr);
+        static ak::uint32_t getPageDirectoryAddress();
+    private:
+        virtualMemoryManager();
     };
 }
