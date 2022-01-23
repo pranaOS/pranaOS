@@ -1,7 +1,7 @@
 #pragma once
 
 #include <kernel/drivers/driver.h>
-#include <system/interrupthandler.h>
+#include <kernel/interrupthandler.h>
 
 namespace Kernel {
     struct mousePacket {

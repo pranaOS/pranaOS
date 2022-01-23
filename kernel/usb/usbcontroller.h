@@ -6,7 +6,7 @@
 
 #include <kernel/drivers/driver.h>
 #include <kernel/internal/pci.h>
-#include <system/interrupthandler.h>
+#include <kernel/interrupthandler.h>
 #include "usbdevice.h"
 
 namespace Kernel {
