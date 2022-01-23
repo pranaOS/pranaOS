@@ -17,17 +17,17 @@ namespace Kernel {
         unsigned char eident[16];
         ak::uint16_t etype;
         ak::uint16_t emachine;
-        ak::uint32_t eversion;
-        ak::uint32_t entry;
-        ak::uint32_t ephoff;
-        ak::uint32_t eshoff;
-        ak::uint32_t eflags;
         ak::uint16_t ehsize;
         ak::uint16_t ephentsize;
         ak::uint16_t ephnum;
         ak::uint16_t eshentsize;
         ak::uint16_t eshnum;
         ak::uint16_t eshstrndx;
+        ak::uint32_t eversion;
+        ak::uint32_t entry;
+        ak::uint32_t ephoff;
+        ak::uint32_t eshoff;
+        ak::uint32_t eflags;
     } __attribute__((packed));
 
     struct elfSectionHeader {
