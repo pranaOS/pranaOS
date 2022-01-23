@@ -16,6 +16,17 @@ namespace Kernel {
         scheduler();
         bool enabled = true;
 
+        ak::uint32_t handleInterrupts(ak::uint32_t esp);
+
+        void addThread(Thread* thread, bool forceSwitch = false);
+        void forceSwitch();
+        void initialThreadUserJump(Thread* thread);
+        void block(Thread* thread, blockedState reason = blockedState::Unkown);
+        void unblock(Thread* thread, bool forceSwitch = false);
+        
+        Thread* currentThread();
+        Process* currentProcess();
+
       private:
         bool switchForced = false;
     };
