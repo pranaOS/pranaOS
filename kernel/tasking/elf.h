@@ -43,4 +43,15 @@ namespace Kernel {
         ak::uint32_t shentsize;
     } __attribute__((packed));
 
+    struct elfProgramHeader {
+        ak::uint32_t ptype;
+        ak::uint32_t poffset;
+        ak::uint32_t pvaddr;
+        ak::uint32_t ppaddr;
+        ak::uint32_t pfilesz;
+        ak::uint32_t pmemsz;
+        ak::uint32_t pflags;
+        ak::uint32_t palign;
+    } __attribute__((packed));
+
 }
