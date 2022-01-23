@@ -9,13 +9,13 @@
 
 namespace Kernel {
     struct ipcReceiveDescriptor {
-        Process* recevingProcess;
-        Thread* recevingThread;
+        Process* receivingProcess;
+        Thread* receivingThread;
         int receiveFromPID;
         int receiveType;
     };
 
     class ipcManager {
-        
+
     };
 }
