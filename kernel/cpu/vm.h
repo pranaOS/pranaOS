@@ -59,7 +59,7 @@ namespace Kernel {
     } __attribute__((packed));
 
     struct pageDirectory {
-        PageDirectoryEntry entries[1024];
+        pageDirectoryEntry entries[1024];
     } __attribute__((packed));
 
     static inline void invlpg(void* addr) {
