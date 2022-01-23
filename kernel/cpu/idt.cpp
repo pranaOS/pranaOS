@@ -4,6 +4,7 @@
 
 #include "idt.h"
 #include <ak/memoperator.h>
+#include <kernel/interrupthandler.h>
 
 using namespace Kernel;
 
@@ -87,6 +88,28 @@ void interruptDescriptorTable::install() {
     outportb(0xA1, 0x00);
 
     asm volatile("lidt %0" : : "m" (idtPointer));
+}
+
+uint32_t interruptDescriptorTable::handleInterrupt(CPUState* state) {
+    uint8_t interrupt = state->interruptNumber;
+
+    if(interrupt == 0xD && (state->EFLAGS & (1 << 17))) {
+        state = (CPUState*)interruptManager::handleInterrupt(interrupt, (uint32_t)state);
+    }
+    else if(interrupt < IDT_INTERRUPT_OFFSET) {
+        state = (CPUState*)exceptions::handleException(interrupt, (uint32_t)state);
+    }
+    else {
+        state = (CPUState*)interruptManager::handleInterrupt(interrupt, (uint32_t)state);
+    }
+
+    if(IDT_INTERRUPT_OFFSET <= interrupt && interrupt < IDT_INTERRUPT_OFFSET+16) {
+        outportb(0x20, 0x20);
+        if(IDT_INTERRUPT_OFFSET + 8 <= interrupt)
+            outportb(0xA0, 0x20);
+    }
+
+    return (uint32_t)state;
 }
 
 void interruptDescriptorTable::enableInterrupts() {
