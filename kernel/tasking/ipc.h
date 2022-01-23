@@ -16,6 +16,9 @@ namespace Kernel {
     };
 
     class ipcManager {
-
+      public:
+        static void initialize();
+        static void handleSend(Kernel::CPUState* state, Process* proc);
+        static void handleReceive(Kernel::CPUState* state, Process* proc);
     };
 }
