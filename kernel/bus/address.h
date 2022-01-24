@@ -7,8 +7,4 @@ namespace Kernel {
         Address() = default;
         Address(const Address& address) = default;
     };
-
-    class address {
-
-    };
 }
