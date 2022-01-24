@@ -34,3 +34,19 @@ void vfsManager::unmountByDisk(Disk* disk) {
         if (vfs->disk == disk)
             unmount(vfs);
 }
+
+bool vfsManager::searchBootPartition() {
+    List<Disk*> possibleDisks;
+    char* pathString = "####:\\disk\\pranaOS.bin";
+
+}
+
+
+uint32_t vfsManager::fileSize(const char* filename) {
+    uint8_t idSize = 0;
+    int disk = ExtractDiskNumber(filename, &idSize);
+    if(disk != -1 && Filesystems->size() > disk)
+        return Filesystems->GetAt(disk)->GetFileSize(filename + idSize + 2);
+    else
+        return -1;
+}
