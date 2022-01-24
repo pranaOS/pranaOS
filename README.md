@@ -1,5 +1,5 @@
 # pranaOS
-- A unix operating system built using C++
+- A unix operating system built using C++ gives support to x86
 
 [![forthebadge](https://forthebadge.com/images/badges/built-by-developers.svg)](https://forthebadge.com)
 [![forthebadge](https://forthebadge.com/images/badges/made-with-c-plus-plus.svg)](https://forthebadge.com)
