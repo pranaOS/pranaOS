@@ -1,9 +1,9 @@
 #include "datetime.h"
-#include "syscall.h"
-#include "types.h"
-#include "convert.h"
+#include "../syscall.h"
+#include "../types.h"
+#include "../convert.h"
 #include "string.h"
-#include "log.h"
+#include "../log.h"
 
 using namespace LibC;
 

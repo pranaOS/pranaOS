@@ -1,7 +1,7 @@
 #pragma once
 
 #include <types.h>
-#include <list.h>
+#include "list/list.h"
 #include <shared.h>
 
 namespace LibC {
