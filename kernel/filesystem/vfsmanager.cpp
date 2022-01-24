@@ -51,13 +51,33 @@ uint32_t vfsManager::fileSize(const char* filename) {
         return -1;
 }
 
+int vfsManager::readFile(const char* path, uint8_t* buffer, uint32_t offset, uint32_t len) {
+    uint8_t idSize = 0;
+    int disk = ExtractDiskNumber(path, &idSize);
+
+    if(disk != -1 && Filesystems->size() > disk)
+        return Filesystems->GetAt(disk)->ReadFile(path + idSize + 2, buffer, offset, len);
+    else
+        return -1;
+}
+
+int vfsManager::writeFile(const char* path, uint8_t* buffer, uint32_t len, bool create) {
+    uint8_t idSize = 0;
+    int disk = ExtractDiskNumber(path, &idSize);
+
+    if(disk != -1 && Filesystems->size() > disk)
+        return Filesystems->GetAt(disk)->WriteFile(path + idSize + 2, buffer, len, create);
+    else
+        return -1;
+}
+
 
 bool vfsManager::directoryExists(const char* path) {
     uint8_t idSize = 0;
     int disk = ExtractDiskNumber(path, &idSize);
 
     if(disk != -1 && Filesystems->size() > disk) {
-        if(String::strlen(path) == idSize + 2) 
+        if(String::strlen(path) == idSize + 2)
             return true;
         else
             return Filesystems->GetAt(disk)->DirectoryExists(path + idSize + 2);
