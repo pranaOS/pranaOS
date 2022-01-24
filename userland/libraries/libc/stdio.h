@@ -17,8 +17,10 @@ extern FILE* stderr;
 int putchar(int);
 int puts(const char*);
 int printf(const char* format, ...);
+int sprintf(char* str, const char* format, ...);
 
 
+/* use these libraries when kernel mode enabled */
 #ifndef __KERNEL__
 FILE* fopen(const char* path, const char* mode);
 int fclose(FILE* stream);
