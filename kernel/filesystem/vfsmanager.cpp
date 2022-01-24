@@ -51,6 +51,45 @@ uint32_t vfsManager::fileSize(const char* filename) {
         return -1;
 }
 
+
+bool vfsManager::directoryExists(const char* path) {
+    uint8_t idSize = 0;
+    int disk = ExtractDiskNumber(path, &idSize);
+
+    if(disk != -1 && Filesystems->size() > disk) {
+        if(String::strlen(path) == idSize + 2) 
+            return true;
+        else
+            return Filesystems->GetAt(disk)->DirectoryExists(path + idSize + 2);
+    }
+    else
+        return false;
+}
+
+bool vfsManager::fileExists(const char* path) {
+    uint8_t idSize = 0;
+    int disk = ExtractDiskNumber(path, &idSize);
+
+    if(disk != -1 && Filesystems->size() > disk)
+        return Filesystems->GetAt(disk)->FileExists(path + idSize + 2);
+    else
+        return false;
+}
+
+int vfsManager::createFile(const char* path) {
+    uint8_t idSize = 0;
+    int disk = ExtractDiskNumber(path, &idSize);
+
+    if(disk != -1 && Filesystems->size() > disk) {
+        if(String::strlen(path) == idSize + 2) //Only disk part, like 0:\ ofcourse this is a directory as well
+            return true;
+        else
+            return Filesystems->GetAt(disk)->CreateFile(path + idSize + 2);
+    }
+    else
+        return -1;
+}
+
 int vfsManager::createDirectory(const char* path) {
     uint8_t idSize = 0;
     int disk = ExtractDiskNumber(path, &idSize);
