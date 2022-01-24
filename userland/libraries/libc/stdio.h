@@ -22,4 +22,9 @@ int printf(const char* format, ...);
 #ifndef __KERNEL__
 FILE* fopen(const char* path, const char* mode);
 int fclose(FILE* stream);
+int fread(void* ptr, size_t size, size_t memb, FILE* stream);
+int fgetc(FILE* stream);
+int fwrite(const void* ptr, size_t size, size_t memb, FILE* stream);
+int fputc(int c, FILE* stream);
+int fprintf(FILE* stream, const char* format, ...);
 #endif
