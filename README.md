@@ -14,11 +14,9 @@
 
 [![codeql-analysis](https://github.com/pranaOS/pranaOS/actions/workflows/codeql-analysis.yml/badge.svg?branch=master)](https://github.com/pranaOS/pranaOS/actions/workflows/codeql-analysis.yml)
 
-## Features:
-## Kernel:
-- x86 Kernel
-- Filesystem
-- PS2 Keyboard + USB Keyboard
+## Kernel Features:
+- x86 kernel
+- ext2 filesystem
 
 ## Libraries:
 - runtime support for: libc, libcpp, libobjc, libjs
