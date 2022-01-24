@@ -17,6 +17,7 @@
 ## Kernel Features:
 - x86 kernel
 - ext2 filesystem
+- ps2 mouse and keyboard
 
 ## Libraries:
 - runtime support for: libc, libcpp, libobjc, libjs
