@@ -4,4 +4,12 @@
 
 #pragma once
 
-void busInstall(void);
+namespace Kernel {
+    class Bus {
+      public:
+        void busInstall(void);
+
+      private:
+        Bus();
+    };
+}
