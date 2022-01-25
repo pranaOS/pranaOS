@@ -38,7 +38,8 @@
 
 ## Todo:
 - pranaOS installer to install pranaOS in a local hard drive
-- usb support
+- port doom
+- add custom ports
 
 ## Have Any Issues??:
 - contact our [discord](https://discord.gg/XmpBTmy9Bz)
