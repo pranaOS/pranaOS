@@ -32,6 +32,10 @@
 #define SYS_MEMORY 25
 #define SYS_LOG 26
 
+/**
+ * @brief get system info using universal api
+ *
+ */
 typedef struct sys_info {
     uint32_t kernelHeapUsage;
     uint32_t ramUsage;
@@ -41,6 +45,11 @@ typedef struct sys_info {
     char kernelLog;
 } sys_info_t;
 
+/**
+ * @brief get system buffer using universal api
+ */
 typedef struct sys_buf {
+    uint8_t* buf;
 
+    uint32_t size;
 } sys_buf_t;
