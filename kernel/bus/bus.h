@@ -2,7 +2,8 @@
 // Created by KrisnaPranav on 24/01/22.
 //
 
-#pragma once
+#ifndef BUS_KERNEL_HEADER
+#define BUS_KERNEL_HEADER
 
 #include "address.h"
 
@@ -19,3 +20,5 @@ namespace Kernel {
         Bus();
     };
 }
+
+#endif 
