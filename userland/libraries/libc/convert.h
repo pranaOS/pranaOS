@@ -7,9 +7,9 @@ namespace LibC {
     public:
         static char* intToString(int i);
 
-        static char* intToHexString(pranaOSTypes::uint8_t w);
-        static char* intToHexString(pranaOSTypes::uint16_t w);
-        static char* intToHexString(pranaOSTypes::uint32_t w);
+        static char* intToHexString(LibC::uint8_t w);
+        static char* intToHexString(LibC::uint16_t w);
+        static char* intToHexString(LibC::uint32_t w);
 
         static int stringToInt(char* string);
     };
