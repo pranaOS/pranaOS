@@ -36,4 +36,12 @@ typedef struct dir_entry {
     uint32_t inode;
 
     char name[];
-} dir_entry_t ;
+} dir_entry_t;
+
+typedef struct stat {
+    uint32_t stDev;
+    uint32_t stIno;
+    uint32_t stMode;
+    uint32_t stNlink;
+    uint32_t stSize;
+} stat_t;
