@@ -42,7 +42,8 @@ typedef struct sys_info {
     uint32_t ramTotal;
 
     float uptime;
-    char kernelLog;
+    char* kernelLog;
+    char* getKernelLog;
 } sys_info_t;
 
 /**
@@ -50,6 +51,5 @@ typedef struct sys_info {
  */
 typedef struct sys_buf {
     uint8_t* buf;
-
     uint32_t size;
 } sys_buf_t;
