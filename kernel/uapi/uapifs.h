@@ -23,21 +23,27 @@
 
 #define DENT_INVALID 0
 #define DENT_FILE 1
-#Define DENT_DIRECTORY 2
+#define DENT_DIRECTORY 2
 
 #define FS_STDOUT 1
 
+/**
+ * @brief directory entry
+ * 
+ */
 typedef struct dir_entry {
     uint8_t nameLenLow;
     uint8_t type;
-
     uint16_t entrySize;
-
     uint32_t inode;
 
     char name[];
 } dir_entry_t;
 
+/**
+ * @brief get stats 
+ * 
+ */
 typedef struct stat {
     uint32_t stDev;
     uint32_t stIno;
