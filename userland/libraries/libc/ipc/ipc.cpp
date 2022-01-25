@@ -1,5 +1,5 @@
-#include <ipc.h>
-#include <proc.h>
+#include "ipc.h"
+#include "../proc.h"
 #include <string.h>
 
 using namespace IPC;
