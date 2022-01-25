@@ -40,3 +40,7 @@ typedef struct sys_info {
     float uptime;
     char kernelLog;
 } sys_info_t;
+
+typedef struct sys_buf {
+
+} sys_buf_t;
