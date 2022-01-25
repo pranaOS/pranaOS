@@ -5,8 +5,8 @@
 //  Created by Krisna Pranav on 14/01/22.
 //
 
-#include <api.h>
-#include <log.h>
+#include <libraries/libc/api.h>
+#include <libraries/libc/log.h>
 
 using namespace pranaOSApi;
 using namespace pranaOSLog;
