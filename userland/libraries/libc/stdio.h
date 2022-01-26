@@ -20,8 +20,11 @@ int printf(const char* format, ...);
 int sprintf(char* str, const char* format, ...);
 
 
-/* use these libraries when kernel mode enabled */
-#ifndef __KERNEL__
+/**
+ * @brief use these functions when pranaOS kernel mode enabled
+ * 
+ */
+#ifndef __pranaOS__
 FILE* fopen(const char* path, const char* mode);
 int fclose(FILE* stream);
 int fread(void* ptr, size_t size, size_t memb, FILE* stream);
