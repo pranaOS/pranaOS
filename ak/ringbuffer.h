@@ -19,5 +19,5 @@ namespace ak {
     size_t ringbufferWrite(ringbuffer_t* ref, size_t n, uint8_t* buffer);
     size_t ringbufferRead(ringbuffer_t* ref, size_t n, uint8_t* buffer);
 
-       
+    void ringbufferFree(ringbuffer_t* ref);   
 }
