@@ -7,7 +7,7 @@
 
 void aligned_alloc(size_t alignment, size_t size);
 
-#ifndef _pranaOS_
+#ifndef __KERNEL__
 void* kamalloc(size_t size, size_t align);
 uint32_t memory_usage();
 
