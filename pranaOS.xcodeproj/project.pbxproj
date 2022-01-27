@@ -14,6 +14,8 @@
 		187D102627A2636300FC64ED /* memoperator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 187D101B27A2636200FC64ED /* memoperator.cpp */; };
 		187D102727A2636300FC64ED /* random.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 187D101E27A2636300FC64ED /* random.cpp */; };
 		187D102927A2637200FC64ED /* ak.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 187D102827A2637200FC64ED /* ak.cpp */; };
+		187D102E27A2642D00FC64ED /* defines.asm in Sources */ = {isa = PBXBuildFile; fileRef = 187D102B27A2642D00FC64ED /* defines.asm */; };
+		187D102F27A2642D00FC64ED /* Makefile in Sources */ = {isa = PBXBuildFile; fileRef = 187D102C27A2642D00FC64ED /* Makefile */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -34,7 +36,6 @@
 		187D0FEA27A262B500FC64ED /* kernel */ = {isa = PBXFileReference; lastKnownFileType = folder; path = kernel; sourceTree = "<group>"; };
 		187D0FEB27A262B600FC64ED /* userland */ = {isa = PBXFileReference; lastKnownFileType = folder; path = userland; sourceTree = "<group>"; };
 		187D0FEC27A262B600FC64ED /* config */ = {isa = PBXFileReference; lastKnownFileType = folder; path = config; sourceTree = "<group>"; };
-		187D0FED27A262B600FC64ED /* bootloader */ = {isa = PBXFileReference; lastKnownFileType = folder; path = bootloader; sourceTree = "<group>"; };
 		187D0FEF27A262B600FC64ED /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
 		187D0FF027A262B600FC64ED /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		187D0FF127A262B600FC64ED /* pranaOSinstaller */ = {isa = PBXFileReference; lastKnownFileType = folder; path = pranaOSinstaller; sourceTree = "<group>"; };
@@ -63,6 +64,9 @@
 		187D102127A2636300FC64ED /* memoperator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = memoperator.h; path = ../../../.Trash/memoperator.h; sourceTree = "<group>"; };
 		187D102227A2636300FC64ED /* utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = utils.h; path = ../../../.Trash/utils.h; sourceTree = "<group>"; };
 		187D102827A2637200FC64ED /* ak.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ak.cpp; sourceTree = "<group>"; };
+		187D102B27A2642D00FC64ED /* defines.asm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.asm.asm; name = defines.asm; path = ../../../Desktop/bootloader/defines.asm; sourceTree = "<group>"; };
+		187D102C27A2642D00FC64ED /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; name = Makefile; path = ../../../Desktop/bootloader/Makefile; sourceTree = "<group>"; };
+		187D102D27A2642D00FC64ED /* smaller.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = smaller.sh; path = ../../../Desktop/bootloader/smaller.sh; sourceTree = "<group>"; };
 		18FDA98F278C78AB002319F1 /* pranaOS */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = pranaOS; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -100,9 +104,20 @@
 			path = ak;
 			sourceTree = "<group>";
 		};
+		187D102A27A2642400FC64ED /* bootloader */ = {
+			isa = PBXGroup;
+			children = (
+				187D102B27A2642D00FC64ED /* defines.asm */,
+				187D102C27A2642D00FC64ED /* Makefile */,
+				187D102D27A2642D00FC64ED /* smaller.sh */,
+			);
+			path = bootloader;
+			sourceTree = "<group>";
+		};
 		18FDA986278C78AB002319F1 = {
 			isa = PBXGroup;
 			children = (
+				187D102A27A2642400FC64ED /* bootloader */,
 				187D101227A2634100FC64ED /* ak */,
 				187D0FF927A262D600FC64ED /* .clang-format */,
 				187D0FF727A262D600FC64ED /* .github */,
@@ -112,7 +127,6 @@
 				187D0FF627A262D600FC64ED /* CONTRIBUTING.md */,
 				187D0FF527A262D600FC64ED /* LICENSE */,
 				187D0FFB27A262D600FC64ED /* README.md */,
-				187D0FED27A262B600FC64ED /* bootloader */,
 				187D0FEC27A262B600FC64ED /* config */,
 				187D0FF227A262B600FC64ED /* grub.cfg */,
 				187D0FEA27A262B500FC64ED /* kernel */,
@@ -191,6 +205,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				187D102F27A2642D00FC64ED /* Makefile in Sources */,
+				187D102E27A2642D00FC64ED /* defines.asm in Sources */,
 				187D102627A2636300FC64ED /* memoperator.cpp in Sources */,
 				187D102427A2636300FC64ED /* string.cpp in Sources */,
 				187D102727A2636300FC64ED /* random.cpp in Sources */,
