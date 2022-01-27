@@ -15,8 +15,10 @@ namespace LibC {
          * @param b 
          * @return float 
          */
+
         float fmaxf(float a, float b);
         float fminf(float a, float b);
+        float clamp(float val, float min, float max);
         
         
         /**
@@ -26,9 +28,15 @@ namespace LibC {
          * @param b 
          * @return double 
          */
+        
         double fmax(double a, double b);
         double fmin(double a, double b);
-        
+        double fabs(double x);
+        double ceil(double x);
+        double exp(double x);
+        double log(double y);
+        double pow(double x, double y);
+
 
         /**
          * @brief integers
