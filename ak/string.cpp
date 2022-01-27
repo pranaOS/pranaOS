@@ -1,7 +1,12 @@
+/*
+ * Copyright (c) 2020 - 2022, the pranaOS Developers & Krisna Pranav
+ *
+ * SPDX-License-Identifier: GPL-3.0 License
+ */
+
 #include "string.h"
 
-using namespace pranaOS;
-using namespace pranaOS::ak;
+using namespace ak;
 
 int String::strlen(const char* str) {
     uint32_t len = 0;
