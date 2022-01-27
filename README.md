@@ -37,9 +37,7 @@
 - ```make qemu``` build iso and run it
 
 ## Todo:
-- pranaOS installer to install pranaOS in a local hard drive
-- port doom
-- add custom ports
+- check out the [todo's](https://github.com/pranaOS/pranaOS/projects/6)
 
 ## Have Any Issues??:
 - contact our [discord](https://discord.gg/XmpBTmy9Bz)
@@ -51,6 +49,7 @@
 - [Discord](https://discord.gg/XmpBTmy9Bz)
 
 ## Contribtuions
+- Intersted in this project??
 - pranaOS is an open-source project you can contribute to it :)
 - check out the [CONTRIBUTING](CONTRIBUTING.md) docs
 
