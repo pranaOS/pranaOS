@@ -8,12 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		187D0FF327A262B600FC64ED /* Makefile in Sources */ = {isa = PBXBuildFile; fileRef = 187D0FEF27A262B600FC64ED /* Makefile */; };
-		187D102327A2636300FC64ED /* print.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 187D101327A2636200FC64ED /* print.cpp */; };
-		187D102427A2636300FC64ED /* string.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 187D101427A2636200FC64ED /* string.cpp */; };
-		187D102527A2636300FC64ED /* convert.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 187D101627A2636200FC64ED /* convert.cpp */; };
-		187D102627A2636300FC64ED /* memoperator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 187D101B27A2636200FC64ED /* memoperator.cpp */; };
-		187D102727A2636300FC64ED /* random.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 187D101E27A2636300FC64ED /* random.cpp */; };
-		187D102927A2637200FC64ED /* ak.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 187D102827A2637200FC64ED /* ak.cpp */; };
 		187D102E27A2642D00FC64ED /* defines.asm in Sources */ = {isa = PBXBuildFile; fileRef = 187D102B27A2642D00FC64ED /* defines.asm */; };
 		187D102F27A2642D00FC64ED /* Makefile in Sources */ = {isa = PBXBuildFile; fileRef = 187D102C27A2642D00FC64ED /* Makefile */; };
 /* End PBXBuildFile section */
@@ -48,22 +42,6 @@
 		187D0FF927A262D600FC64ED /* .clang-format */ = {isa = PBXFileReference; lastKnownFileType = text; path = ".clang-format"; sourceTree = "<group>"; };
 		187D0FFA27A262D600FC64ED /* AUTHORS */ = {isa = PBXFileReference; lastKnownFileType = text; path = AUTHORS; sourceTree = "<group>"; };
 		187D0FFB27A262D600FC64ED /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		187D101327A2636200FC64ED /* print.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = print.cpp; path = ../../../.Trash/print.cpp; sourceTree = "<group>"; };
-		187D101427A2636200FC64ED /* string.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = string.cpp; path = ../../../.Trash/string.cpp; sourceTree = "<group>"; };
-		187D101527A2636200FC64ED /* string.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = string.h; path = ../../../.Trash/string.h; sourceTree = "<group>"; };
-		187D101627A2636200FC64ED /* convert.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = convert.cpp; path = ../../../.Trash/convert.cpp; sourceTree = "<group>"; };
-		187D101727A2636200FC64ED /* random.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = random.h; path = ../../../.Trash/random.h; sourceTree = "<group>"; };
-		187D101927A2636200FC64ED /* convert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = convert.h; path = ../../../.Trash/convert.h; sourceTree = "<group>"; };
-		187D101A27A2636200FC64ED /* ringbuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ringbuffer.h; path = ../../../.Trash/ringbuffer.h; sourceTree = "<group>"; };
-		187D101B27A2636200FC64ED /* memoperator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = memoperator.cpp; path = ../../../.Trash/memoperator.cpp; sourceTree = "<group>"; };
-		187D101C27A2636200FC64ED /* print.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = print.h; path = ../../../.Trash/print.h; sourceTree = "<group>"; };
-		187D101D27A2636300FC64ED /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../../../.Trash/README.md; sourceTree = "<group>"; };
-		187D101E27A2636300FC64ED /* random.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = random.cpp; path = ../../../.Trash/random.cpp; sourceTree = "<group>"; };
-		187D101F27A2636300FC64ED /* list.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = list.h; path = ../../../.Trash/list.h; sourceTree = "<group>"; };
-		187D102027A2636300FC64ED /* types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = types.h; path = ../../../.Trash/types.h; sourceTree = "<group>"; };
-		187D102127A2636300FC64ED /* memoperator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = memoperator.h; path = ../../../.Trash/memoperator.h; sourceTree = "<group>"; };
-		187D102227A2636300FC64ED /* utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = utils.h; path = ../../../.Trash/utils.h; sourceTree = "<group>"; };
-		187D102827A2637200FC64ED /* ak.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ak.cpp; sourceTree = "<group>"; };
 		187D102B27A2642D00FC64ED /* defines.asm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.asm.asm; name = defines.asm; path = ../../../Desktop/bootloader/defines.asm; sourceTree = "<group>"; };
 		187D102C27A2642D00FC64ED /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; name = Makefile; path = ../../../Desktop/bootloader/Makefile; sourceTree = "<group>"; };
 		187D102D27A2642D00FC64ED /* smaller.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = smaller.sh; path = ../../../Desktop/bootloader/smaller.sh; sourceTree = "<group>"; };
@@ -81,29 +59,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		187D101227A2634100FC64ED /* ak */ = {
-			isa = PBXGroup;
-			children = (
-				187D101627A2636200FC64ED /* convert.cpp */,
-				187D101927A2636200FC64ED /* convert.h */,
-				187D101F27A2636300FC64ED /* list.h */,
-				187D101B27A2636200FC64ED /* memoperator.cpp */,
-				187D102127A2636300FC64ED /* memoperator.h */,
-				187D101327A2636200FC64ED /* print.cpp */,
-				187D101C27A2636200FC64ED /* print.h */,
-				187D101E27A2636300FC64ED /* random.cpp */,
-				187D101727A2636200FC64ED /* random.h */,
-				187D101D27A2636300FC64ED /* README.md */,
-				187D101A27A2636200FC64ED /* ringbuffer.h */,
-				187D101427A2636200FC64ED /* string.cpp */,
-				187D101527A2636200FC64ED /* string.h */,
-				187D102027A2636300FC64ED /* types.h */,
-				187D102227A2636300FC64ED /* utils.h */,
-				187D102827A2637200FC64ED /* ak.cpp */,
-			);
-			path = ak;
-			sourceTree = "<group>";
-		};
 		187D102A27A2642400FC64ED /* bootloader */ = {
 			isa = PBXGroup;
 			children = (
@@ -114,11 +69,18 @@
 			path = bootloader;
 			sourceTree = "<group>";
 		};
+		187D104527A264AA00FC64ED /* New Group */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = "New Group";
+			sourceTree = "<group>";
+		};
 		18FDA986278C78AB002319F1 = {
 			isa = PBXGroup;
 			children = (
+				187D104527A264AA00FC64ED /* New Group */,
 				187D102A27A2642400FC64ED /* bootloader */,
-				187D101227A2634100FC64ED /* ak */,
 				187D0FF927A262D600FC64ED /* .clang-format */,
 				187D0FF727A262D600FC64ED /* .github */,
 				187D0FF827A262D600FC64ED /* .gitignore */,
@@ -207,13 +169,7 @@
 			files = (
 				187D102F27A2642D00FC64ED /* Makefile in Sources */,
 				187D102E27A2642D00FC64ED /* defines.asm in Sources */,
-				187D102627A2636300FC64ED /* memoperator.cpp in Sources */,
-				187D102427A2636300FC64ED /* string.cpp in Sources */,
-				187D102727A2636300FC64ED /* random.cpp in Sources */,
-				187D102527A2636300FC64ED /* convert.cpp in Sources */,
-				187D102927A2637200FC64ED /* ak.cpp in Sources */,
 				187D0FF327A262B600FC64ED /* Makefile in Sources */,
-				187D102327A2636300FC64ED /* print.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
