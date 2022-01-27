@@ -31,6 +31,7 @@ void abort();
 char* itoa(int value, char* str, int base);
 int atoi(const char* s);
 int abs(int n);
+int rand();
 
 long int strtol(const char* nptr, char** endptr, int base);
 double strtod(const char* nptr, char** endptr);
