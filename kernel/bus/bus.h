@@ -1,6 +1,8 @@
-//
-// Created by KrisnaPranav on 24/01/22.
-//
+/*
+ * Copyright (c) 2021 - 2022, the pranaOS Developers & Krisna Pranav
+ *
+ * SPDX-License-Identifier: GPL-3.0 License
+ */
 
 #ifndef BUS_KERNEL_HEADER
 #define BUS_KERNEL_HEADER
