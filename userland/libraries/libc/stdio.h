@@ -28,7 +28,7 @@ int vsnprintf(char* str, size_t size, const char* format, va_list ap);
  * @brief use these functions when pranaOS kernel mode enabled
  * 
  */
-#ifndef _pranaOS_
+#ifndef __KERNEL__
 FILE* fopen(const char* path, const char* mode);
 int fclose(FILE* stream);
 int fread(void* ptr, size_t size, size_t nmemb, FILE* stream);
