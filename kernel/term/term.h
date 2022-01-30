@@ -42,5 +42,17 @@ namespace Kernel {
         void term_scrolldown();
         void term_new_line();
         void term_putchar_at(char c, uint32_t x, uint32_t y);
+        void term_putchar(char c);
+        void term_write_string(const uint8_t* data);
+        int term_interpret_ansi(char c);
+
+        uint32_t term_get_row();
+        uint32_t term_get_column();
+        uint8_t term_get_color();
+        uint8_t term_get_fg_color(); // get foreground color signal
+        uint8_t term_get_bg_color(); // get background color signal
+        uint16_t* term_get_buffer(); // get the buffers
+
+        void term_set_row(uint32_t row);
     };
 }
