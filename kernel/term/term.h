@@ -11,7 +11,7 @@
 
 #define TERM_WIDTH 80
 #define TERM_HEIGHT 25
-#define TERM_MEMORY 0xfffff
+#define TERM_MEMORY 0xB8000
 
 typedef enum {
     TERM_COLOR_BLACK,
@@ -21,7 +21,7 @@ typedef enum {
     TERM_COLOR_RED,
     TERM_COLOR_MAGENTA,
     TERM_COLOR_BROWN,
-    TERM_COLOR_LIGHT_GREY,
+    TERM_COLOR_LIGHT_GREY, 
     TERM_COLOR_DARK_GREY,
     TERM_COLOR_LIGHT_BLUE,
     TERM_COLOR_LIGHT_GREEN,
@@ -33,7 +33,6 @@ typedef enum {
 } term_color_t;
 
 namespace Kernel {
-
     class Term {
       public:
         void init_term();
@@ -49,10 +48,22 @@ namespace Kernel {
         uint32_t term_get_row();
         uint32_t term_get_column();
         uint8_t term_get_color();
-        uint8_t term_get_fg_color(); // get foreground color signal
-        uint8_t term_get_bg_color(); // get background color signal
-        uint16_t* term_get_buffer(); // get the buffers
+        uint8_t term_get_fg_color();
+        uint8_t term_get_bg_color();
+        uint16_t* term_get_buffer();
 
         void term_set_row(uint32_t row);
+        void term_set_column(uint32_t column);
+        void term_set_color(uint8_t color);
+        void term_set_fg_color(term_color_t color);
+        void term_set_bg_color(term_color_t color);
+        void term_set_buffer(uint16_t* buffer);
+
+      private:
+        Term();
+
+        void get_fg_color(term_color_t bg);
+        void get_bg_color(term_color_t fg);
     };
 }
+
