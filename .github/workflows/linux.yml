@@ -26,10 +26,10 @@ jobs:
           sudo apt-get update  
           sudo apt install build-essential autopoint bison gperf texi2html texinfo qemu automake-1.15 nasm xorriso qemu-system-i386
       
-      # - name: Build The Toolchain
-      #   run: |
-      #     cd toolchain
-      #     bash build.sh
+      - name: Build The Toolchain
+        run: |
+          cd toolchain
+          bash build.sh
 
   build-18:
     runs-on: ubuntu-18.04
