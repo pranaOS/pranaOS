@@ -1,5 +1,5 @@
-#include "keyboard.h"
-#include <kernel/kernel/log.h>
+#include <keyboard.h>
+#include <kernel/log.h>
 #include <ak/memoperator.h>
 
 // TODO: call the main entrypoint and call those functions in this.
