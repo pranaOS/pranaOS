@@ -31,6 +31,16 @@ size_t strnlen(const char* s, size_t maxlen);
  */
 int strncasecmp(const char* a, const char* b, size_t n);
 int strcasecmp(const char* a, const char* b);
+int strncmp(const char* s1, const char* s2);
+int strncmp(const char* s1, const char* s2, size_t n);
+
+char* strcpy(char* dest, const char* src);
+char* strncpy(char* dest, const char* src, size_t n);
+char* strcat(char* dest, const char* src);
+char* strdup(const char* src);
+char* strchr(const char* c, int d);
+char* strchrnil(const char* c, int d);
+
 
 #ifndef __cplusplus
 }
