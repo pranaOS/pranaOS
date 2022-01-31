@@ -35,7 +35,10 @@ typedef enum {
 namespace Kernel {
     class Term {
       public:
-        void init_term();
+
+        /**
+         * @param bg, fg 
+         */
         void term_change_bg_color(term_color_t bg);
         void term_set_blink(int blink);
         void term_scrolldown();
@@ -45,6 +48,9 @@ namespace Kernel {
         void term_write_string(const uint8_t* data);
         int term_interpret_ansi(char c);
 
+        /**
+         * @return uint32_t 
+         */
         uint32_t term_get_row();
         uint32_t term_get_column();
         uint8_t term_get_color();
@@ -52,6 +58,9 @@ namespace Kernel {
         uint8_t term_get_bg_color();
         uint16_t* term_get_buffer();
 
+        /**
+         * @param row 
+         */
         void term_set_row(uint32_t row);
         void term_set_column(uint32_t column);
         void term_set_color(uint8_t color);
@@ -59,9 +68,22 @@ namespace Kernel {
         void term_set_bg_color(term_color_t color);
         void term_set_buffer(uint16_t* buffer);
 
+        /**
+         * @brief initializing function
+         * 
+         * @return true 
+         * @return false 
+         */
+        bool initialize(); 
+
       private:
         Term();
 
+        /**
+         * @brief Get the fg color object
+         * 
+         * @param bg 
+         */
         void get_fg_color(term_color_t bg);
         void get_bg_color(term_color_t fg);
     };
