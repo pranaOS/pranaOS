@@ -49,5 +49,5 @@ gcc_build() {
 }
 
 # ============ RUNNING THE FUNCTIONS ============
-binutils_fetch && binutils_build
-gcc_fetch && gcc_build
+binutils_install && binutils_build
+gcc_install && gcc_build
