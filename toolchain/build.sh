@@ -66,5 +66,6 @@ setup() {
 }
 
 # ============ RUNNING THE FUNCTIONS ============
+setup
 binutils_install && binutils_build
 gcc_install && gcc_build
