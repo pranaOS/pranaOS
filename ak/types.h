@@ -17,6 +17,16 @@ namespace ak {
     typedef unsigned long long int      uint64_t;
     typedef unsigned long long          uintptr_t;
 
+    typedef unsigned int _kernel_dev_t;
+    typedef _kernel_dev_t dev_t;
+
+    typedef unsigned short umode_t;
+    typedef long long off_t;
+    typedef long off_t;
+    typedef unsigned long long ino_t;
+    typedef unsigned int mode_t;
+    typedef long ssize_t;
+
     constexpr uint64_t divide64(uint64_t n, uint32_t base, uint32_t* r = 0) {
         uint64_t rem = n;
         uint64_t b = base;
@@ -56,7 +66,7 @@ namespace ak {
         return no * 1024;
     }
 
-    constexpr ak::uint32_t operator"" _MB(unsigned long long no {
+    constexpr ak::uint32_t operator"" _MB(unsigned long long no) {
         return no * (1024_KB);
     }
     
