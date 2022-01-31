@@ -4,10 +4,13 @@
 
 #pragma once
 
-namespace pranaOSInstaller {
+#include <kernel/log.h>
+
+namespace Kernel {
     class Installer {
       public:
-        static void setupError();
+        // const char void setupError();
+        const char setupError();
         static void run();
         static void getKey();
         static void showWelcomeMessage();
@@ -16,6 +19,10 @@ namespace pranaOSInstaller {
         static void showInstallScreen();
         static void showSystemCopyScreen();
         static void createFatPartition();
+
+      private:
+        Installer();
+        ~Installer();
     };
 
     #define KEY_ENTER       0x1C
@@ -27,3 +34,5 @@ namespace pranaOSInstaller {
     #define KEY_PLUS        0x0D
     #define KEY_A           0x1E
 }
+
+using Kernel::Installer;
