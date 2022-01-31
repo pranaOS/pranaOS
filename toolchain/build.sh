@@ -48,6 +48,23 @@ gcc_build() {
   cd ..
 }
 
+# ============ SETUP ============
+setup() {
+  rm -rf sysroot
+  rm -rf binutils-2.32
+  rm -rf build-binutils
+  rm -f binutils-2.32.tar.gz
+  rm -rf gcc-9.1.0
+  rm -rf build-gcc
+  rm -f gcc-9.1.0.tar.gz
+
+  mkdir -p sysroot/usr
+  cd sysroot/usr
+  ln -s ../../../libraries/libc include
+  ln -s ../../../libraries/libc lib
+  cd ../..
+}
+
 # ============ RUNNING THE FUNCTIONS ============
 binutils_install && binutils_build
 gcc_install && gcc_build
