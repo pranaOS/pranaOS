@@ -1,13 +1,19 @@
 #pragma once
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <stdarg.h>
+#include <stdbool.h>
+#include <sys/cdefs.h>
 
-#define assert(expr)
-#define STR(x) #x \
-    do { \
-        if (!(expr)) { \
-            printf("Assertion failed: %s, file: %s, line: %d\n", STR(expr), __FILE__, __LINE__);  \
-            abort(); \
-        } \
-    } while (0)    
+enum debug_level {
+    DEBUG_TRACE = 0,
+    DEBUG_INFO = 1,
+    DEBUG_WARNING = 2,
+    DEBUG_ERROR = 3,
+    DEBUG_FATAL = 4,
+};
+
+void __dbg(enum debug_level level, bool prefix, const char *file, int line, const char *func, ...);
+
+#ifndef NDEBUG
+/* TODO */
+#endif 
