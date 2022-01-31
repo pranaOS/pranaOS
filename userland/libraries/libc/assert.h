@@ -16,4 +16,11 @@ void __dbg(enum debug_level level, bool prefix, const char *file, int line, cons
 
 #ifndef NDEBUG
 /* TODO */
+
+#define log(...) ((void)0)
+#define err(...) ((void)0)
+#define dlog(...) ((void)0)
+#define derr(...) ((void)0)
+
+#define assert(expression, ...) ((expression))
 #endif 
