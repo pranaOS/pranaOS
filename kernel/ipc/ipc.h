@@ -5,7 +5,7 @@
 #pragma once
 
 #include <kernel/cpu/register.h>
-#include "process.h"
+#include <kernel/tasking/process.h>
 
 namespace Kernel {
     struct ipcReceiveDescriptor {
