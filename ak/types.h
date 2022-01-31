@@ -35,11 +35,19 @@ namespace ak {
     typedef int idtype_t;
     typedef int id_t;
     typedef long long time_t;
+
     typedef int clockid_t;
     typedef int fops_t;
+
+
     typedef unsigned int fmode_t;
     typedef unsigned int nlink_t;
+    
     typedef int blksize_t;
+    typedef int blkcnt_t;
+    
+    typedef seconds_t;
+    typedef unsigned int sseconds_t;    
 
     constexpr uint64_t divide64(uint64_t n, uint32_t base, uint32_t* r = 0) {
         uint64_t rem = n;
@@ -73,7 +81,6 @@ namespace ak {
                 *r = rem;
             
             return res;
-        }
     }
 
     constexpr ak::uint32_t operator"" _KB(unsigned long long no) {
@@ -87,4 +94,5 @@ namespace ak {
     constexpr ak::uint32_t operator"" _GB(unsigned long long no) {
         return no * (1024_MB);
     }
+
 }
