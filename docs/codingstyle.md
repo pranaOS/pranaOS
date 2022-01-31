@@ -11,6 +11,8 @@ int x = 1;
 #endif
 ```
 
+- you should not use the #ifndef header guard instead you need to use #pragma once
+
 - right
 ```c++
 #pragma once
