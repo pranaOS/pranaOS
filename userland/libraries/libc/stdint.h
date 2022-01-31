@@ -118,5 +118,3 @@ typedef __INTMAX_TYPE__ intmax_t;
 
 #define WINT_MIN (0u)
 #define WINT_MAX (4294967295u)
-
-#endif
