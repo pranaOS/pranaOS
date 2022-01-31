@@ -7,14 +7,13 @@
 #include "print.h"
 
 using namespace ak;
-using namespace Kernel;
 
 void Print::printfHex(uint8_t key) {
     char *foo = "00";
     char *hex = "0123456789ABCDEF";
     foo[0] = hex[(key >> 4) & 0xF];
     foo[1] = hex[key & 0xF];
-    system::BootConsole::write(foo);
+    Kernel::bootConsole::write(foo);
 }
 
 void Print::printfHex16(uint16_t key) {
@@ -31,28 +30,28 @@ void Print::printfHex32(uint32_t key) {
 
 void Print::printbits(uint8_t key) {
     for (unsigned int bit = 0; bit < (sizeof(key)*8); bit++) {
-        bootConsole::write(Convert::intToString(key & 0x01));
+        Kernel::bootConsole::write(Convert::intToString(key & 0x01));
         key = key >> 1;
     }
 }
 
 void Print::printbits(uint16_t key) {
     for (unsigned int bit = 0; bit < (sizeof(key)*8); bit++) {
-        bootConsole::write(Convert::intToString(key & 0x01));
+        Kernel::bootConsole::write(Convert::intToString(key & 0x01));
         key = key >> 1;
     }
 }
 
 void Print::printbits(uint32_t key) {
     for (unsigned int bit = 0; bit < (sizeof(key)*8); bit++) {
-        bootConsole::write(convert::intToString(key & 0x01));
+        Kernel::bootConsole::write(Convert::intToString(key & 0x01));
         key = key >> 1;
     }
 }
 
 void Print::printbits(uint64_t key) {
     for (unsigned int bit = 0; bit < (sizeof(key)*8); bit++) {
-        bootConsole::write(Convert::intToString(key & 0x01));
+        Kernel::bootConsole::write(Convert::intToString(key & 0x01));
         key = key >> 1;
     }
 }
