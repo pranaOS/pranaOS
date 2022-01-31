@@ -25,7 +25,7 @@ gcc_install() {
 # ============ BUILDING ============
 binutils_build() {
   cd binutils-2.32
-  patch -p1 < ../patch/binutils.patch
+  patch -p1 < ../binutils.patch
   cd ld
   automake
   cd ../.. && mkdir build-binutils
@@ -38,7 +38,7 @@ binutils_build() {
 
 gcc_build() {
   cd gcc-9.1.0
-  patch -p1 < ../patch/gcc.patch
+  patch -p1 < ../gcc.patch
   ./contrib/download_prerequisites
   cd .. && mkdir build-gcc
   cd build-gcc
