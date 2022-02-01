@@ -3,16 +3,19 @@
 #define __unused __attribute__((__unused__))
 #define __inline inline __attribute__((always_inline))
 
+#define likely(x) __builtin_expect((x), 1)
+#define unlikely(x) __builtin_expect((x), 0)
+
 #define __BEGIN_DECLS
 #define __END_DECLS
 
-#undef P
+#undef __P
 #undef __PMT
 
 #define __P(args) args
-#define __PMT(args) args
+#define __PMT(args) arg
 
-#define __STRINGINFY(x) x
+#define __STRINGIFY(x) #x
 
 #define PP_ARG_N(                                     \
 	_1, _2, _3, _4, _5, _6, _7, _8, _9, _10,          \
@@ -30,6 +33,6 @@
 		29, 28, 27, 26, 25, 24, 23, 22, 21, 20, \
 		19, 18, 17, 16, 15, 14, 13, 12, 11, 10, \
 		9, 8, 7, 6, 5, 4, 3, 2, 1, 0
-        
+
 #define PP_NARG_(...) PP_ARG_N(__VA_ARGS__)
 #define PP_NARG(...) PP_NARG_(_, ##__VA_ARGS__, PP_RSEQ_N())
