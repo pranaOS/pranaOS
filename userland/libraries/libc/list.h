@@ -164,7 +164,7 @@ static inline void list_replace(struct list_head *old, struct list_head *new) {
  */
 static inline void list_replace_init(struct list_head *old, struct list_head *new) {
 	list_replace(old, new);
-	INIT_LIST_HEAD(old);
+	init_list_head(old);
 }
 
 /**
@@ -190,7 +190,7 @@ static inline void list_swap(struct list_head *entry1, struct list_head *entry2)
  */
 static inline void list_del_init(struct list_head *entry) {
 	__list_del_entry(entry);
-	INIT_LIST_HEAD(entry);
+	init_list_head(entry);
 }
 
 /**
@@ -343,7 +343,7 @@ static inline void list_cut_position(struct list_head *list, struct list_head *h
 		(head->next != entry && head != entry))
 		return;
 	if (entry == head)
-		INIT_LIST_HEAD(list);
+		init_list_head(list);
 	else
 		__list_cut_position(list, head, entry);
 }
@@ -358,7 +358,7 @@ static inline void list_cut_position(struct list_head *list, struct list_head *h
 static inline void list_cut_before(struct list_head *list, struct list_head *head, struct list_head *entry) {
 	if (head->next == entry)
 	{
-		INIT_LIST_HEAD(list);
+		init_list_head(list);
 		return;
 	}
 	list->next = head->next;
@@ -421,7 +421,7 @@ static inline void list_splice_init(struct list_head *list, struct list_head *he
 	if (!list_empty(list))
 	{
 		__list_splice(list, head, head->next);
-		INIT_LIST_HEAD(list);
+		init_list_head(list);
 	}
 }
 
@@ -435,7 +435,7 @@ static inline void list_splice_tail_init(struct list_head *list, struct list_hea
 	if (!list_empty(list))
 	{
 		__list_splice(list, head->prev, head);
-		INIT_LIST_HEAD(list);
+		init_list_head(list);
 	}
 }
 
