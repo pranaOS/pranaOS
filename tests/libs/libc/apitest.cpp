@@ -5,12 +5,11 @@
 //  Created by Krisna Pranav on 14/01/22.
 //
 
-#include <libraries/libc/api.h>
-#include <libraries/libc/log.h>
+#include <api.h>
+#include <log.h>
 
-using namespace pranaOSApi;
-using namespace pranaOSLog;
+using namespace LibC;
 
-void API::initialize() {
-    log(Info, "YEEEEE api test succeded");
+void api::initialize() {
+    log(Info, "YEEEE api test succeded");
 }
