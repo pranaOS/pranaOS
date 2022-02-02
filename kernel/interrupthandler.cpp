@@ -1,26 +1,42 @@
-//
-//  interrupthandler.cpp
-//  pranaOS
-//
-//  Created by Krisna Pranav on 11/01/22.
-//
+/*
+ * Copyright (c) 2021 - 2022, the pranaOS Developers & Krisna Pranav
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+ */
 
-#include "interrupthandler.h"
+#include <interrupthandler.h>
 
-using namespace pranaOS;
-using namespace pranaOS::ak;
-using namespace pranaOS::system;
+using namespace Kernel;
 
-
+/**
+ * @brief Construct a new interrupt Handler::interrupt Handler object
+ * 
+ * @param interruptNumber 
+ */
 interruptHandler::interruptHandler(ak::uint8_t interruptNumber) {
     interruptManager::addHandler(this, interruptNumber);
 }
 
-uint32_t interruptHandler::handleInterrupt(uint32_t esp) {
+/**
+ * @brief handleInterrupt 
+ * 
+ * @param esp 
+ * @return ak::uint32_t 
+ */
+ak::uint32_t interruptHandler::handleInterrupt(ak::uint32_t esp) {
     return esp;
 }
 
-List<interruptHandler*>* interruptManager::interruptCallbacks[256];
+/**
+ * @brief Interruptmanager
+ * 
+ */
+ak::List<interruptHandler*>* interruptManager::interruptCallbacks[256];
+
+/**
+ * @brief initialize function
+ * 
+ */
 void interruptManager::initialize() {
     for(int i = 0; i < 256; i++)
     {
@@ -28,7 +44,14 @@ void interruptManager::initialize() {
     }
 }
 
-uint32_t interruptManager::handleInterrupt(uint8_t num, uint32_t esp) {
+/**
+ * @brief handle interrupts
+ * 
+ * @param num 
+ * @param esp 
+ * @return ak::uint32_t 
+ */
+ak::uint32_t interruptManager::handleInterrupt(ak::uint8_t num, ak::uint32_t esp) {
     if(interruptCallbacks[num] == 0)
         return esp;
     
@@ -44,14 +67,26 @@ uint32_t interruptManager::handleInterrupt(uint8_t num, uint32_t esp) {
     return esp;
 }
 
-void interruptManager::addHandler(interruptHandler* handler, uint8_t interrupt) {
+/**
+ * @brief add handler
+ * 
+ * @param handler 
+ * @param interrupt 
+ */
+void interruptManager::addHandler(interruptHandler* handler, ak::uint8_t interrupt) {
     if(interruptCallbacks[interrupt] == 0)
-        interruptCallbacks[interrupt] = new List<interruptHandler*>();
+        interruptCallbacks[interrupt] = new ak::List<interruptHandler*>();
     
     interruptCallbacks[interrupt]->push_back(handler);
 }
 
-void interruptManager::removeHandler(interruptHandler* handler, uint8_t interrupt) {
+/**
+ * @brief remove handler
+ * 
+ * @param handler 
+ * @param interrupt 
+ */
+void interruptManager::removeHandler(interruptHandler* handler, ak::uint8_t interrupt) {
     interruptCallbacks[interrupt]->Remove(handler);
     if(interruptCallbacks[interrupt]->size() == 0) {
         delete interruptCallbacks[interrupt];
