@@ -1,8 +1,10 @@
-#include <libc/datetime.h>
-#include <libc/syscall.h>
+// #include <libc/datetime.h>
+// #include <libc/syscall.h>
 
-using namespace Time;
-using namespace Syscall;
+#include <datetime.h>
+#include <syscall.h>
+
+using namespace LibC;
 
 Time dateTime::current() {
     Time result;
