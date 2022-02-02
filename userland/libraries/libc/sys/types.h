@@ -3,20 +3,16 @@
 #include <sys/cdefs.h>
 
 namespace LibC {
+
     typedef unsigned int dev_t;
     typedef unsigned short umode_t;
-
     typedef long long loff_t;
     typedef long off_t;
     typedef unsigned long long ino_t;
     typedef unsigned int mode_t;
-    typedef unsigned long ssize_t;
+    typedef long ssize_t;
     typedef unsigned long sector_t;
 
-    /**
-     * @brief pid, tid, uid, gid, sid
-     * 
-     */
     typedef int pid_t;
     typedef int tid_t;
     typedef int uid_t;
@@ -24,23 +20,36 @@ namespace LibC {
     typedef int sid_t;
 
     typedef unsigned int sigset_t;
+
     typedef int idtype_t;
     typedef int id_t;
+    typedef long long time_t;
     typedef int clockid_t;
     typedef long long clock_t;
+    
     typedef int fpos_t;
     typedef unsigned int nlink_t;
     typedef int blksize_t;
     typedef int blkcnt_t;
-    typedef unsigned int uint;
-    typedef int seconds_t;
+    typedef unsigned int u_int;
+    typedef int suseconds_t;
     typedef unsigned int useconds_t;
 
-    typedef unsigned char u_char;
-    typedef unsigned short u_short;
-    typedef unsigned int u_int;
-    typedef unsigned long u_long;
+    typedef unsigned char a_char;
+    typedef unsigned short b_short;
+    typedef unsigned int c_int;
+    typedef unsigned long d_long;
+
+    typedef unsigned int rlim_t;
+
+    typedef unsigned int __socklen_t;
+    typedef int __locale_t;
+    typedef __WINT_TYPE__ __wint_t;
+    typedef long __fsword_t;
+    typedef unsigned long fsblkcnt_t;
+    typedef unsigned long fsfilcnt_t;
 
     #define _need_size_t
     #include <stddef.h>
+
 }
