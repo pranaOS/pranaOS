@@ -40,4 +40,7 @@ namespace LibC {
     typedef unsigned short u_short;
     typedef unsigned int u_int;
     typedef unsigned long u_long;
+
+    #define _need_size_t
+    #include <stddef.h>
 }
