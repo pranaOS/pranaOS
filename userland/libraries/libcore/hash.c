@@ -41,7 +41,7 @@ static size_t hashmap_table_size(size_t num_entries) {
 
     table_size = hashmap_table_min_size(num_entries);
 
-    min_size = hashmap_init();
+    min_size = hashmap_init;
 
     while(min_size < table_size) {
         min_size <<= 1;
