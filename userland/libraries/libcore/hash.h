@@ -39,6 +39,15 @@ struct hashmap {
 int hashmap_init(struct hashmap *map, size_t (*hash_func)(const void *), int (*key_compare_func)(const void *, const void *), size_t initial_size);
 
 /**
+ * @brief hashmap compare uint32
+ * 
+ * @param s1
+ * @param s2
+ * @return
+ */
+int hashmap_compare_uint32(const void *s1, const void *s2);
+
+/**
  * @brief hashmap destroy
  * 
  * @param map 
@@ -51,3 +60,49 @@ void hashmap_destroy(struct hashmap *map);
  * @param map 
  */
 void hashmap_clear(struct hashmap *map);
+
+/**
+ * @brief hashmap size
+ *
+ * @param map
+ * @return
+ */
+size_t hashmap_size(const struct hashmap *map);
+
+/**
+ * @breif hashmap has string
+ *
+ * @param key
+ * @return
+ */
+size_t hashmap_hash_string(const void *key);
+
+/**
+ * @brief hashmap hash uint32
+ *
+ * @param key
+ * @return
+ */
+size_t hashmap_hash_uint32_t(const void *key);
+
+/**
+ * @breif hashmap iterator
+ *
+ * @param map
+ * @return
+ */
+struct hashmap_iter *hashmap_iter(const struct hashmap *map);
+
+#ifndef HASHMAP_METER
+
+/**
+ * @brief hash map load factor
+ *
+ * @param map
+ * @return
+ */
+double hashmap_load_factor(const struct hashmap *map);
+
+double hashmap_collisions_mean(const struct hashmap *map);
+
+#endif
