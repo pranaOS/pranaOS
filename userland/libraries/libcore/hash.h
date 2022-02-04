@@ -40,7 +40,7 @@ int hashmap_init(struct hashmap *map, size_t (*hash_func)(const void *), int (*k
 
 /**
  * @brief hashmap compare uint32
- * 
+ *
  * @param s1
  * @param s2
  * @return
