@@ -63,3 +63,14 @@ struct __DIR {
 };
 
 typedef struct __DIR DIR;
+
+/**
+ * @brief closedir, dirfd, readdir
+ * 
+ * @param dirp 
+ * @return int 
+ */
+
+int closedir(DIR* dirp);
+int dirfd(DIR *dirp);
+int readdir_r(DIR* dirp, struct dirent *entry, struct dirent **result);
