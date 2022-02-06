@@ -71,11 +71,39 @@ typedef struct __DIR DIR;
  * @return int 
  */
 
-int closedir(DIR* dirp);
+int closedir(DIR *dirp);
 int dirfd(DIR *dirp);
-int readdir_r(DIR* dirp, struct dirent *entry, struct dirent **result);
+int readdir_r(DIR *dirp, struct dirent *entry, struct dirent **result);
+
+/**
+ * @brief tell dir 
+ * 
+ * @param dirp 
+ * @return long int 
+ */
 long int telldir(DIR *dirp);
 
-
+/**
+ * @brief open dir, fopendir
+ * 
+ * @param name 
+ * @return DIR* 
+ */
 DIR *opendir(const char *name);
 DIR *fdopendir(int fd);
+
+/**
+ * @brief readdir 
+ * 
+ * @param dirp 
+ * @return struct dirent* 
+ */
+struct dirent *readdir(DIR *dirp);
+
+/**
+ * @brief rewindir, seekdir
+ * 
+ * @param dirp 
+ */
+void rewinddir(DIR *dirp);
+void seekdir(DIR *dirp, long int loc);
