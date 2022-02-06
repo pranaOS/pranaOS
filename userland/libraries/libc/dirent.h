@@ -74,3 +74,8 @@ typedef struct __DIR DIR;
 int closedir(DIR* dirp);
 int dirfd(DIR *dirp);
 int readdir_r(DIR* dirp, struct dirent *entry, struct dirent **result);
+long int telldir(DIR *dirp);
+
+
+DIR *opendir(const char *name);
+DIR *fdopendir(int fd);
