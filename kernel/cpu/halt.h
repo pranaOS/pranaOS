@@ -200,3 +200,9 @@ void cpuid(int code, uint32_t *a, uint32_t *d);
  * @return const char* 
  */
 const char *get_cpu_vender();
+
+/**
+ * @brief halt init function
+ * 
+ */
+void halt_init();
