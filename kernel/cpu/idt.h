@@ -7,7 +7,8 @@
 #include <kernel/interrupthandler.h>
 #include "port.h"
 #include "register.h"
-#include "exceptions.h"
+#include <exception.h>
+
 
 namespace Kernel {
     #define IDT_ENTRY_SIZE 256
