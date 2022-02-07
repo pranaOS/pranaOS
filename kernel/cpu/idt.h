@@ -7,7 +7,7 @@
 #include <kernel/interrupthandler.h>
 #include "port.h"
 #include "register.h"
-#include <exception.h>
+#include <exceptions.h>
 
 
 namespace Kernel {
