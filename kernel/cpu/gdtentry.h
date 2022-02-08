@@ -96,3 +96,24 @@ struct __attribute__((packed)) gdt_descriptor {
 
 	uint8_t base;
 };
+
+/**
+ * @brief gdtr
+ * 
+ */
+struct __attribute__((packed)) gdtr {
+    uint16_t limit;
+    uint32_t base;
+};
+
+/**
+ * @brief gdt init class
+ * 
+ */
+void gdt_init();
+
+/**
+ * @brief gdt set descriptor
+ * 
+ */
+void gdt_set_descriptor();
