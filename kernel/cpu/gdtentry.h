@@ -115,5 +115,10 @@ void gdt_init();
 /**
  * @brief gdt set descriptor
  * 
+ * @param i 
+ * @param base 
+ * @param limit 
+ * @param access 
+ * @param grand 
  */
-void gdt_set_descriptor();
+void gdt_set_descriptor(uint32_t i, uint64_t base, uint64_t limit, uint8_t access, uint8_t grand);
