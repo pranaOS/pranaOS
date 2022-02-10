@@ -49,7 +49,14 @@ namespace LibC {
     typedef unsigned long fsblkcnt_t;
     typedef unsigned long fsfilcnt_t;
 
-    #define _need_size_t
+    #ifndef NEED_SIZE_T
     #include <stddef.h>
+    #endif
 
+    /**
+     * @brief kernel block
+     */
+
+    typedef unsigned int __kernel_dev_t;
+    typedef __kernel_dev_t dev_t;
 }
