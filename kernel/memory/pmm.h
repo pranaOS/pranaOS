@@ -6,7 +6,6 @@
 
 #pragma once
 
-
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -20,7 +19,7 @@
 #define PMM_FRAMES_PER_BYTE 8
 
 /**
- * @brief pmm frames size
+ * @brief pmm frame size 
  * 
  */
 #define PMM_FRAME_SIZE 4096
@@ -57,10 +56,30 @@ void pmm_init(struct multiboot_tag_basic_meminfo *, struct multiboot_tag_mmap *)
 void *pmm_alloc_block();
 
 /**
- * @brief pmm aloc blocks
+ * @brief pmm alloc blocks
  * 
  * @param num 
  * @return void* 
  */
 void *pmm_alloc_blocks(size_t num);
+
+/**
+ * @brief pmm free block
+ * 
+ * @param block 
+ */
+void pmm_free_block(void *block);
+
+/**
+ * @brief pmm mark used addr
+ * 
+ * @param paddr 
+ */
+void pmm_mark_used_addr(uint32_t paddr);
+
+/**
+ * @brief Get the total frames object
+ * 
+ * @return uint32_t 
+ */
 uint32_t get_total_frames();
