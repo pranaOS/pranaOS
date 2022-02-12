@@ -666,6 +666,14 @@ int sprintf(char *buf, const char *fmt, ...)
 	return i;
 }
 
+/**
+ * @brief vsscanf
+ * 
+ * @param buf 
+ * @param fmt 
+ * @param args 
+ * @return int 
+ */
 int vsscanf(const char *buf, const char *fmt, va_list args)
 {
 	const char *str = buf;
@@ -882,6 +890,14 @@ int vsscanf(const char *buf, const char *fmt, va_list args)
 	return num;
 }
 
+/**
+ * @brief sscanf
+ * 
+ * @param buf 
+ * @param fmt 
+ * @param ... 
+ * @return int 
+ */
 int sscanf(const char *buf, const char *fmt, ...)
 {
 	va_list args;
