@@ -133,3 +133,14 @@ unsigned long long simple_strtoull(const char *cp, char **endp, unsigned int bas
 		*endp = (char *)cp;
 	return result;
 }
+
+int sscanf(const char *buf, const char *fmt, ...) {
+    va_list args;
+    int i;
+
+    va_start(args, fmt);
+    i = vsscanf(buf, fmt, args);
+    va_end(args);
+
+    return i;
+}
