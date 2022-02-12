@@ -83,3 +83,38 @@ unsigned long simple_strtoul(const char *cp, char **endp, unsigned int base) {
 		*endp = (char *)cp;
 	return result;
 }
+
+/**
+ * @brief simple strtol
+ * 
+ * @param cp 
+ * @param endp 
+ * @param base 
+ * @return long 
+ */
+long simple_strtol(const char *cp, char **endp, unsigned int base) {
+    if (cp == '-') 
+        return -simple_strtol(cp + 1, endp, base);
+    
+    return simple_strtoul(cp, endp, base);
+}
+
+/**
+ * @brief simple strtoull
+ * 
+ * @param cp 
+ * @param endp 
+ * @param base 
+ * @return unsigned long long 
+ */
+unsigned long long simple_strtoull(const char *cp, char **endp, unsigned int base) {
+    unsigned long long result = 0, value;
+
+    if (!base) {
+        base = 10;
+
+        if (*cp == '0') {
+
+        }
+    }
+}
