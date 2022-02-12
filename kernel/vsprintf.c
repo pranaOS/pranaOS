@@ -108,13 +108,28 @@ long simple_strtol(const char *cp, char **endp, unsigned int base) {
  * @return unsigned long long 
  */
 unsigned long long simple_strtoull(const char *cp, char **endp, unsigned int base) {
-    unsigned long long result = 0, value;
+	unsigned long long result = 0, value;
 
-    if (!base) {
-        base = 10;
-
-        if (*cp == '0') {
-
-        }
-    }
+	if (!base) {
+		base = 10;
+		if (*cp == '0') {
+			base = 8;
+			cp++;
+			if ((toupper(*cp) == 'X') && isxdigit(cp[1])) {
+				cp++;
+				base = 16;
+			}
+		}
+	}
+	else if (base == 16) {
+		if (cp[0] == '0' && toupper(cp[1]) == 'X')
+			cp += 2;
+	}
+	while (isxdigit(*cp) && (value = isdigit(*cp) ? *cp - '0' : (islower(*cp) ? toupper(*cp) : *cp) - 'A' + 10) < base) {
+		result = result * base + value;
+		cp++;
+	}
+	if (endp)
+		*endp = (char *)cp;
+	return result;
 }
