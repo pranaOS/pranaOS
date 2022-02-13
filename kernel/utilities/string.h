@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include <stdint.h>
 #include <stddef.h>
+#include <stdint.h>
 #include <ak/cdefs.h>
 #include <ak/types.h>
 
@@ -15,7 +15,7 @@
 #define OPSIZ (sizeof(op_t))
 
 /**
- * @brief iota
+ * @brief itoa
  * 
  * @param i 
  * @param base 
@@ -25,7 +25,7 @@ void itoa(long long i, unsigned base, char *buf);
 void itoa_s(long long i, unsigned base, char *buf);
 
 /**
- * @brief atio
+ * @brief atoi
  * 
  * @param buf 
  * @return int 
@@ -51,14 +51,14 @@ int strcasecmp(const char *s1, const char *s2);
 char *strcat(char *dest, const char *src);
 
 /**
- * @brief strchr, strchrnull
+ * @brief strchr + nul
  * 
  * @param s 
  * @param c_in 
  * @return char* 
  */
 char *strchr(const char *s, int c_in);
-char *strchrnull(const char *s, int c_in);
+char *strchrnul(const char *s, int c_in);
 
 /**
  * @brief strcmp
@@ -79,7 +79,7 @@ int strcmp(const char *p1, const char *p2);
 char *strcpy(char *dest, const char *src);
 
 /**
- * @brief strcpn
+ * @brief strcspn
  * 
  * @param str 
  * @param reject 
@@ -96,6 +96,90 @@ size_t strcspn(const char *str, const char *reject);
 char *strdup(const char *s);
 
 /**
+ * @brief strlen
+ * 
+ * @param str 
+ * @return size_t 
+ */
+size_t strlen(const char *str);
+
+/**
+ * @brief strncasecmp
+ * 
+ * @param s1 
+ * @param s2 
+ * @param n 
+ * @return int 
+ */
+int strncasecmp(const char *s1, const char *s2, int n);
+
+/**
+ * @brief strncat
+ * 
+ * @param s1 
+ * @param s2 
+ * @param n 
+ * @return char* 
+ */
+char *strncat(char *s1, const char *s2, size_t n);
+
+/**
+ * @brief strncmp
+ * 
+ * @param s1 
+ * @param s2 
+ * @param n 
+ * @return int 
+ */
+int strncmp(const char *s1, const char *s2, size_t n);
+
+/**
+ * @brief strncpy
+ * 
+ * @param s1 
+ * @param s2 
+ * @param n 
+ * @return char* 
+ */
+char *strncpy(char *s1, const char *s2, size_t n);
+
+/**
+ * @brief strnlen
+ * 
+ * @param str 
+ * @param maxlen 
+ * @return size_t 
+ */
+size_t strnlen(const char *str, size_t maxlen);
+
+/**
+ * @brief strpbrk
+ * 
+ * @param s 
+ * @param accept 
+ * @return char* 
+ */
+char *strpbrk(const char *s, const char *accept);
+
+/**
+ * @brief strrchr
+ * 
+ * @param s 
+ * @param c 
+ * @return char* 
+ */
+char *strrchr(const char *s, int c);
+
+/**
+ * @brief strsep
+ * 
+ * @param stringp 
+ * @param delim 
+ * @return char* 
+ */
+char *strsep(char **stringp, const char *delim);
+
+/**
  * @brief strim
  * 
  * @param s 
@@ -104,7 +188,7 @@ char *strdup(const char *s);
 char *strim(char *s);
 
 /**
- * @brief strstr
+ * @brief strr str
  * 
  * @param string 
  * @param find 
@@ -123,7 +207,7 @@ char *strrstr(char *string, char *find);
 char *strreplace(char *s, char old, char new);
 
 /**
- * @brief striof
+ * @brief str iof
  * 
  * @param s1 
  * @param s2 
@@ -152,7 +236,7 @@ int32_t strliof(const char *s1, const char *s2);
 int32_t strlsplat(const char *s1, int32_t pos, char **sf, char **sl);
 
 /**
- * @brief skip spaces
+ * @brief skipspaces
  * 
  * @param str 
  * @return char* 
@@ -180,7 +264,7 @@ void *memcpy(void *dest, const void *src, size_t len);
 void *memset(void *dest, char val, size_t len);
 
 /**
- * @brief memcmpy
+ * @brief memcmp
  * 
  * @param vl 
  * @param vr 
@@ -188,3 +272,11 @@ void *memset(void *dest, char val, size_t len);
  * @return int 
  */
 int memcmp(const void *vl, const void *vr, size_t n);
+
+/**
+ * @brief count array of pointer
+ * 
+ * @param arr 
+ * @return int 
+ */
+int count_array_of_pointers(void *arr);
