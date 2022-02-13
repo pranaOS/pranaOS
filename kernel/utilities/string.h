@@ -94,3 +94,97 @@ size_t strcspn(const char *str, const char *reject);
  * @return char* 
  */
 char *strdup(const char *s);
+
+/**
+ * @brief strim
+ * 
+ * @param s 
+ * @return char* 
+ */
+char *strim(char *s);
+
+/**
+ * @brief strstr
+ * 
+ * @param string 
+ * @param find 
+ * @return char* 
+ */
+char *strrstr(char *string, char *find);
+
+/**
+ * @brief str replace
+ * 
+ * @param s 
+ * @param old 
+ * @param new 
+ * @return char* 
+ */
+char *strreplace(char *s, char old, char new);
+
+/**
+ * @brief striof
+ * 
+ * @param s1 
+ * @param s2 
+ * @return int32_t 
+ */
+int32_t striof(const char *s1, const char *s2);
+
+/**
+ * @brief strliof
+ * 
+ * @param s1 
+ * @param s2 
+ * @return int32_t 
+ */
+int32_t strliof(const char *s1, const char *s2);
+
+/**
+ * @brief strlsplat
+ * 
+ * @param s1 
+ * @param pos 
+ * @param sf 
+ * @param sl 
+ * @return int32_t 
+ */
+int32_t strlsplat(const char *s1, int32_t pos, char **sf, char **sl);
+
+/**
+ * @brief skip spaces
+ * 
+ * @param str 
+ * @return char* 
+ */
+char *skip_spaces(const char *str);
+
+/**
+ * @brief memcpy
+ * 
+ * @param dest 
+ * @param src 
+ * @param len 
+ * @return void* 
+ */
+void *memcpy(void *dest, const void *src, size_t len);
+
+/**
+ * @brief memset
+ * 
+ * @param dest 
+ * @param val 
+ * @param len 
+ * @return void* 
+ */
+void *memset(void *dest, char val, size_t len);
+
+/**
+ * @brief memcmpy
+ * 
+ * @param vl 
+ * @param vr 
+ * @param n 
+ * @return int 
+ */
+int memcmp(const void *vl, const void *vr, size_t n);
