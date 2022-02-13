@@ -7,7 +7,7 @@
 #include "thread.h"
 #include <ak/list.h>
 #include <ak/types.h>
-#include <libc/ipc.h>
+#include <libc/ipc/ipc.h>
 #include <memory/stream.h>
 
 namespace Kernel {
