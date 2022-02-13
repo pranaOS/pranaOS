@@ -81,3 +81,36 @@ enum PAGE_PDE_FLAGS {
 	I86_PDE_LV4_GLOBAL = 0x200,	 
 	I86_PDE_FRAME = 0x7FFFF000	 
 };
+
+/**
+ * @brief pd entry
+ * 
+ */
+typedef uint32_t pd_entry;
+
+/**
+ * @brief PAGES PER TABLE + PER DIR
+ * 
+ */
+#define PAGES_PER_TABLE 1024
+#define PAGES_PER_DIR 1024
+
+/**
+ * @brief page
+ * 
+ */
+struct page {
+	uint32_t frame;
+    uint32_t virtual;
+	struct list_head sibling;
+};
+
+/**
+ * @brief pages
+ * 
+ */
+struct pages {
+	uint32_t paddr;
+	uint32_t number_of_frames;
+	uint32_t vaddr;
+};
