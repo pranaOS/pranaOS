@@ -17,7 +17,7 @@
 struct circular_buf_t;
 
 /**
- * @brief circular buf_t
+ * @brief circular buf init 
  * 
  * @param buffer 
  * @param size 
@@ -33,14 +33,40 @@ struct circular_buf_t *circular_buf_init(char *buffer, size_t size);
 void circular_buf_free(struct circular_buf_t *cbuf);
 
 /**
- * @brief circular buf reset
+ * @brief circular buf reset 
  * 
  * @param cbuf 
  */
 void circular_buf_reset(struct circular_buf_t *cbuf);
 
 /**
- * @brief circular buf empty
+ * @brief circular buf put
+ * 
+ * @param cbuf 
+ * @param data 
+ */
+void circular_buf_put(struct circular_buf_t *cbuf, char data);
+
+/**
+ * @brief circular buf put2 
+ * 
+ * @param cbuf 
+ * @param data 
+ * @return int 
+ */
+int circular_buf_put2(struct circular_buf_t *cbuf, char data);
+
+/**
+ * @brief circular buf get
+ * 
+ * @param cbuf 
+ * @param data 
+ * @return int 
+ */
+int circular_buf_get(struct circular_buf_t *cbuf, char *data);
+
+/**
+ * @brief circular buf empty 
  * 
  * @param cbuf 
  * @return true 
@@ -58,7 +84,7 @@ bool circular_buf_empty(struct circular_buf_t *cbuf);
 bool circular_buf_full(struct circular_buf_t *cbuf);
 
 /**
- * @brief circular buf capacity
+ * @brief circular buf capacity 
  * 
  * @param cbuf 
  * @return size_t 
