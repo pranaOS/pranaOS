@@ -10,15 +10,15 @@
 #include <memory/vmm.h>
 
 /**
- * @brief circular buffer t
+ * @brief circular buf
  * 
  */
 struct circular_buf_t {
-    char *buffer;
-    bool full;
-    size_t head;
-    size_t tail;
-    size_t max;
+	char *buffer;
+	size_t head;
+	size_t tail;
+	size_t max;	 
+	bool full;
 };
 
 /**
@@ -26,14 +26,15 @@ struct circular_buf_t {
  * 
  * @param cbuf 
  */
-static void advance_pointer(struct circular_buf_t *cbuf) {
-    if (cbuf->full) {
-        cbuf->tail = (cbuf->tail + 1) % cbuf->max;
-    }
+static void advance_pointer(struct circular_buf_t *cbuf)  {
+	if (cbuf->full)
+	{
+		cbuf->tail = (cbuf->tail + 1) % cbuf->max;
+	}
 
-    cbuf->head = (cbuf->head + 1) % cbuf->max;
+	cbuf->head = (cbuf->head + 1) % cbuf->max;
 
-    cbuf->full = (cbuf->head == cbuf->tail);
+	cbuf->full = (cbuf->head == cbuf->tail);
 }
 
 /**
@@ -42,25 +43,25 @@ static void advance_pointer(struct circular_buf_t *cbuf) {
  * @param cbuf 
  */
 static void retreat_pointer(struct circular_buf_t *cbuf) {
-    cbuf->full = false;
-    cbuf->tail = (cbuf->tail + 1) % cbuf->max;
+	cbuf->full = false;
+	cbuf->tail = (cbuf->tail + 1) % cbuf->max;
 }
 
 /**
- * @brief circular buf init 
+ * @brief circular buf init
  * 
  * @param buffer 
  * @param size 
  * @return struct circular_buf_t* 
  */
 struct circular_buf_t *circular_buf_init(char *buffer, size_t size) {
-    struct circular_buf_t *cbuf = kcalloc(1, sizeof(struct circular_buf_t));
+	struct circular_buf_t *cbuf = kcalloc(1, sizeof(struct circular_buf_t));
 
-    cbuf->buffer = buffer;
-    cbuf->max = size;
-    circular_buf_reset(cbuf);
+	cbuf->buffer = buffer;
+	cbuf->max = size;
+	circular_buf_reset(cbuf);
 
-    return cbuf;
+	return cbuf;
 }
 
 /**
@@ -69,7 +70,7 @@ struct circular_buf_t *circular_buf_init(char *buffer, size_t size) {
  * @param cbuf 
  */
 void circular_buf_free(struct circular_buf_t *cbuf) {
-    kfree(cbuf);
+	kfree(cbuf);
 }
 
 /**
@@ -78,27 +79,113 @@ void circular_buf_free(struct circular_buf_t *cbuf) {
  * @param cbuf 
  */
 void circular_buf_reset(struct circular_buf_t *cbuf) {
-    cbuf->head = 0;
-    cbuf->tail = 0;
-    cbuf->full = false;
+	cbuf->head = 0;
+	cbuf->tail = 0;
+	cbuf->full = false;
 }
 
-size_t circular_buf_capacity(struct circular_buf_t *cbuf) {
-    return cbuf->max;
-}
-
+/**
+ * @brief circular buf size 
+ * 
+ * @param cbuf 
+ * @return size_t 
+ */
 size_t circular_buf_size(struct circular_buf_t *cbuf) {
-    size_t size = cbuf->max;
+	size_t size = cbuf->max;
 
-    if (cbuf->full) {
-        // ..
-    }
+	if (!cbuf->full) {
+		if (cbuf->head >= cbuf->tail) {
+			size = (cbuf->head - cbuf->tail);
+		}
+		else {
+			size = (cbuf->max + cbuf->head - cbuf->tail);
+		}
+	}
 
-    return size;
+	return size;
 }
 
-void circular_buf_put(struct circular_buf_t *cbuf, char data) {
-    cbuf->buffer[cbuf->head] = data;
+/**
+ * @brief circular buf capacity
+ * 
+ * @param cbuf 
+ * @return size_t 
+ */
+size_t circular_buf_capacity(struct circular_buf_t *cbuf) {
+	return cbuf->max;
+}
 
-    advance_pointer(cbuf);
+/**
+ * @brief circular buf put
+ * 
+ * @param cbuf 
+ * @param data 
+ */
+void circular_buf_put(struct circular_buf_t *cbuf, char data) {
+	cbuf->buffer[cbuf->head] = data;
+
+	advance_pointer(cbuf);
+}
+
+/**
+ * @brief circular buf put2
+ * 
+ * @param cbuf 
+ * @param data 
+ * @return int 
+ */
+int circular_buf_put2(struct circular_buf_t *cbuf, char data) {
+	int r = -1;
+
+	if (!circular_buf_full(cbuf))
+	{
+		cbuf->buffer[cbuf->head] = data;
+		advance_pointer(cbuf);
+		r = 0;
+	}
+
+	return r;
+}
+
+/**
+ * @brief circular buf get
+ * 
+ * @param cbuf 
+ * @param data 
+ * @return int 
+ */
+int circular_buf_get(struct circular_buf_t *cbuf, char *data) {
+	int r = -1;
+
+	if (!circular_buf_empty(cbuf))
+	{
+		*data = cbuf->buffer[cbuf->tail];
+		retreat_pointer(cbuf);
+
+		r = 0;
+	}
+
+	return r;
+}
+
+/**
+ * @brief circular buf empty
+ * 
+ * @param cbuf 
+ * @return true 
+ * @return false 
+ */
+bool circular_buf_empty(struct circular_buf_t *cbuf) {
+	return (!cbuf->full && (cbuf->head == cbuf->tail));
+}
+
+/**
+ * @brief circular buf full
+ * 
+ * @param cbuf 
+ * @return true 
+ * @return false 
+ */
+bool circular_buf_full(struct circular_buf_t *cbuf) {
+	return cbuf->full;
 }
