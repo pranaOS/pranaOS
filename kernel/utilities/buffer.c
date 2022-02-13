@@ -35,3 +35,39 @@ static void advance_pointer(struct circular_buf_t *cbuf) {
 
     cbuf->full = (cbuf->head == cbuf->tail);
 }
+
+/**
+ * @brief retreat pointer
+ * 
+ * @param cbuf 
+ */
+static void retreat_pointer(struct circular_buf_t *cbuf) {
+    cbuf->full = false;
+    cbuf->tail = (cbuf->tail + 1) % cbuf->max;
+}
+
+/**
+ * @brief circular buf init 
+ * 
+ * @param buffer 
+ * @param size 
+ * @return struct circular_buf_t* 
+ */
+struct circular_buf_t *circular_buf_init(char *buffer, size_t size) {
+    struct circular_buf_t *cbuf = kcalloc(1, sizeof(struct circular_buf_t));
+
+    cbuf->buffer = buffer;
+    cbuf->max = size;
+    circular_buf_reset(cbuf);
+
+    return cbuf;
+}
+
+/**
+ * @brief circular buf free
+ * 
+ * @param cbuf 
+ */
+void circular_buf_free(struct circular_buf_t *cbuf) {
+    kfree(cbuf);
+}
