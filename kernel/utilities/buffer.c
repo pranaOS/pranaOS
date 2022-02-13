@@ -71,3 +71,34 @@ struct circular_buf_t *circular_buf_init(char *buffer, size_t size) {
 void circular_buf_free(struct circular_buf_t *cbuf) {
     kfree(cbuf);
 }
+
+/**
+ * @brief circular buf reset
+ * 
+ * @param cbuf 
+ */
+void circular_buf_reset(struct circular_buf_t *cbuf) {
+    cbuf->head = 0;
+    cbuf->tail = 0;
+    cbuf->full = false;
+}
+
+size_t circular_buf_capacity(struct circular_buf_t *cbuf) {
+    return cbuf->max;
+}
+
+size_t circular_buf_size(struct circular_buf_t *cbuf) {
+    size_t size = cbuf->max;
+
+    if (cbuf->full) {
+        // ..
+    }
+
+    return size;
+}
+
+void circular_buf_put(struct circular_buf_t *cbuf, char data) {
+    cbuf->buffer[cbuf->head] = data;
+
+    advance_pointer(cbuf);
+}
