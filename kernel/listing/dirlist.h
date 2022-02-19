@@ -22,5 +22,21 @@ namespace Kernel {
          */
         int beginListing(Thread *thread, ak::uint32_t pathPtr) override;
 
-    }
+        /**
+         * @brief Get the Entry object
+         * 
+         * @param thread 
+         * @param entry 
+         * @param bufPtr 
+         * @return int 
+         */
+        int getEntry(Thread* thread, int entry, ak::uint32_t bufPtr) override;
+
+        /**
+         * @brief end listing 
+         * 
+         * @param thread 
+         */
+        void endListing(Thread* thread) override;
+    };
 }
