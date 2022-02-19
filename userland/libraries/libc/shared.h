@@ -15,19 +15,19 @@ namespace LibC {
     };
 
     struct vfsEntry {
-        uint32_t size;  
+        ak::uint32_t size;  
         bool isDir;     
 
         struct {
-            uint8_t sec;
-            uint8_t min;
-            uint8_t hour;
+            ak::uint8_t sec;
+            ak::uint8_t min;
+            ak::uint8_t hour;
         } creationTime; 
 
         struct {
-            uint8_t day;
-            uint8_t month;
-            uint16_t year;
+            ak::uint8_t day;
+            ak::uint8_t month;
+            ak::uint16_t year;
         } creationDate; 
         char name[VFS_NAME_LENGTH]; 
     };
