@@ -55,5 +55,29 @@ namespace Kernel {
         char* socket = "N/A";
         char* manufacturer = "N/A";
         char* version = "N/A";
-    }; 
+    };
+
+    /**
+     * @brief infoManager class
+     */
+    class infoManager {
+      public:
+        static SIBIOS bios;
+        static SISYSTEM system;
+        static SIENCLOSURE enclosure;
+        static SIPROCESSOR processor;
+
+      public:
+        /**
+         * @brief handle system request
+         * 
+         * @param arrayPointer 
+         * @param count 
+         * @param retAddr 
+         * @param getSize 
+         * @return true 
+         * @return false 
+         */
+        static bool handleSysRequest(void* arrayPointer, int count, ak::uint32_t retAddr, bool getSize);
+    };
 }
