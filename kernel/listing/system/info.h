@@ -11,10 +11,10 @@
 namespace Kernel {
 
     /**
-     * @brief si BIOS info
+     * @brief SIBIOS struct 
      * 
      */
-    struct siBIOS 
+    struct SIBIOS
     {
         char* vendor = "N/A";
         char* version = "N/A";
@@ -22,15 +22,38 @@ namespace Kernel {
     };
 
     /**
-     * @brief si system 
+     * @brief SISYSTEM
      * 
      */
-    struct siSystem 
+    struct SISYSTEM
     {
         char* manufacturer = "N/A";
         char* product = "N/A";
         char* version = "N/A";
         char* serial = "N/A";
-        char* family = "N/A";
+        char* family = "N/A";  
     };
+
+    /**
+     * @brief SIENCLOSURE
+     * 
+     */
+    struct SIENCLOSURE
+    {
+        char* manufacturer = "N/A";
+        char* version = "N/A";
+        char* serial = "N/A";
+        char* sku = "N/A";
+    };
+
+    /**
+     * @brief SIPROCESSOR
+     * 
+     */
+    struct SIPROCESSOR
+    {
+        char* socket = "N/A";
+        char* manufacturer = "N/A";
+        char* version = "N/A";
+    }; 
 }
