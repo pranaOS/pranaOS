@@ -60,6 +60,12 @@ namespace Kernel {
          */
         void printMemoryDump(ak::uint32_t address, ak::uint32_t size, bool virtMemory);
 
+        /**
+         * @brief print page tables
+         * 
+         * @param pid 
+         */
+        void printPageTables(int pid = -1);
 
     private:
         ak::List<genericsymbol_t> symbolTable;
