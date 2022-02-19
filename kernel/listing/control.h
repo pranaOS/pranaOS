@@ -29,5 +29,12 @@ namespace Kernel {
          * 
          */
         bool requestBusy = false;
+
+    public:
+        controller();
+
+        virtual int beginListing(Thread *thread, ak::uint32_t arg1 = 0);
+        virtual int getEntry(Thread* thread, int entry, ak::uint32_t bufPtr);
+        virtual void endListing(Thread* thread);
     };
 }
