@@ -33,8 +33,30 @@ namespace Kernel {
     public:
         controller();
 
+        /**
+         * @brief begin listing
+         * 
+         * @param thread 
+         * @param arg1 
+         * @return int 
+         */
         virtual int beginListing(Thread *thread, ak::uint32_t arg1 = 0);
+
+        /**
+         * @brief Get the Entry object
+         * 
+         * @param thread 
+         * @param entry 
+         * @param bufPtr 
+         * @return int 
+         */
         virtual int getEntry(Thread* thread, int entry, ak::uint32_t bufPtr);
+
+        /**
+         * @brief end listing
+         * 
+         * @param thread 
+         */
         virtual void endListing(Thread* thread);
     };
 }
