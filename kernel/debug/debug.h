@@ -31,6 +31,36 @@ namespace Kernel {
          * @param kernel 
          */
         symbolDebugger(char* symFile, bool kernel = false);
+
+        /**
+         * @brief stack trace
+         * 
+         * @param esp 
+         */
+        void stacktrace(CPUState* esp);
+
+        /**
+         * @brief update symboldebugger
+         * 
+         */
+        void update();
+        
+        /**
+         * @brief send update to a host
+         * 
+         */
+        void sendUpdateHost();
+
+        /**
+         * @brief print memory dump
+         * 
+         * @param address 
+         * @param size 
+         * @param virtMemory 
+         */
+        void printMemoryDump(ak::uint32_t address, ak::uint32_t size, bool virtMemory);
+
+
     private:
         ak::List<genericsymbol_t> symbolTable;
         char messageBuffer[200] = {0};
