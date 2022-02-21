@@ -4,9 +4,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#include "poweroff.h
-#include "idt.h"
-#include <kernel/system.h>
+#include <poweroff.h>
 
 using namespace Kernel;
 //using namespace Kernel::core;
