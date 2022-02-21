@@ -20,3 +20,25 @@
 #define I86_IDT_DESC_RING3 0x60	  
 #define I86_IDT_DESC_PRESENT 0x80 
 
+#define DISPATCHER_ISR 0x7F
+
+/**
+ * @brief idt descriptor struct
+ * 
+ */
+struct __attribute__((packed)) idt_descriptor {
+	uint16_t baseLo;
+	uint16_t sel;
+	uint8_t reserved;
+	uint8_t flags;
+	uint16_t baseHi;
+};
+
+/**
+ * @brief idtr
+ * 
+ */
+struct __attribute__((packed)) idtr {
+    uint16_t limit;
+    uint32_t base;  
+};
