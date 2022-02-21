@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include <ak/cdefs.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <ak/cdefs.h>
 
 /**
  * @brief io_wait
