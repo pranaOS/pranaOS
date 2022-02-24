@@ -12,3 +12,9 @@
 /* true and false values */
 #define true 1
 #define false 0 
+
+/**
+ * @brief bool defined status code
+ * 
+ */
+#define __bool_defined 1
