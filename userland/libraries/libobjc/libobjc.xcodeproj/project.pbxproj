@@ -38,6 +38,7 @@
 		18A99A5027C91B6D0077B93F /* while.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = while.m; path = ../../../iso/while.m; sourceTree = "<group>"; };
 		18A99A5127C91B6D0077B93F /* hello.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = hello.m; path = ../../../iso/hello.m; sourceTree = "<group>"; };
 		18A99A5227C91B6D0077B93F /* functions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = functions.m; path = ../../../iso/functions.m; sourceTree = "<group>"; };
+		18A99A5A27C91BB20077B93F /* objc-private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "objc-private.h"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -78,6 +79,7 @@
 			isa = PBXGroup;
 			children = (
 				18A99A4B27C91B590077B93F /* README.md */,
+				18A99A5A27C91BB20077B93F /* objc-private.h */,
 			);
 			path = runtime;
 			sourceTree = "<group>";
