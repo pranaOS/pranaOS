@@ -35,4 +35,13 @@ public:
  */
 typedef int osReturn;
 
+/**
+ * @brief os return signals
+ * 
+ */
+#define osReturnSuccess  0
+#define osReturnTimeout -1
+#define osReturnFailed  -2
+#define osReturnError   -3
+
 #endif /* osruntime_h */
