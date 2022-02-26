@@ -15,3 +15,29 @@ extern "C" {
     void free_(void* data, uint32_t size);
     void panic(const char* fmt, ...);
 }
+
+const char *osReturnStrings[4] = {"Success", "Timeout", "Failure", "Error"};
+
+struct _mhead {
+    size_t mlen;
+    char dat[0] __attribute__((aligned(16)));
+};
+
+void* osRuntime::osMalloc(size_t size) {
+    struct _mhead *mem;
+    size_t memsize = sizeof(*mem) + size;
+    
+    if (size == 0) {
+        return 0;
+    }
+    
+    mem = (struct _mhead *) kalloc_((uint32_t)memsize);
+    if (!mem) {
+        return 0;
+    }
+    
+    mem->mlen = memsize;
+    bzero(mem->dat, size);
+    
+    return mem->dat;
+}
