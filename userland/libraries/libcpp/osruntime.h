@@ -35,6 +35,8 @@ public:
  */
 typedef int osReturn;
 
+extern const char* osReturnStrings[4];
+
 /**
  * @brief os return signals
  * 
