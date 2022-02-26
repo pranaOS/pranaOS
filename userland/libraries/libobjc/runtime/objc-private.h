@@ -57,4 +57,57 @@ union isa_t {
 
 };
 
+struct objc_object {
+public:
+    /**
+     * @brief isa 
+     * 
+     * @return Class 
+     */
+    Class ISA();
+
+    /**
+     * @brief Get the Isa object
+     * 
+     * @return Class 
+     */
+    Class getIsa();
+
+    /**
+     * @brief init isa
+     * 
+     * @param cls 
+     */
+    void initIsa(Class cls);
+
+    /**
+     * @brief int class isa
+     * 
+     * @param cls 
+     */
+    void initClassIsa(Class cls);
+
+    /**
+     * @brief initprotocolisa
+     * 
+     * @param cls 
+     */
+    void initProtocolIsa(Class cls);
+
+    /**
+     * @brief initInstanceISA
+     * 
+     * @param cls 
+     * @param hasCxxDtor 
+     */
+    void initInstanceIsa(Class cls, bool hasCxxDtor);
+
+private:
+    /**
+     * @brief isa 
+     * 
+     */
+    isa_t isa;
+};
+
 #endif /* objc_private_h */
