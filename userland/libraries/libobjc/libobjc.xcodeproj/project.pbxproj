@@ -41,6 +41,7 @@
 		18A99A5227C91B6D0077B93F /* functions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = functions.m; path = ../../../iso/functions.m; sourceTree = "<group>"; };
 		18A99A5A27C91BB20077B93F /* objc-private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "objc-private.h"; sourceTree = "<group>"; };
 		18FE111727CB3F65006B2D39 /* objc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = objc.h; sourceTree = "<group>"; };
+		18FE111827CB463C006B2D39 /* NSObject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NSObject.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -84,6 +85,7 @@
 				18A99A5A27C91BB20077B93F /* objc-private.h */,
 				181DF48027C91D2400C131BE /* runtime.h */,
 				18FE111727CB3F65006B2D39 /* objc.h */,
+				18FE111827CB463C006B2D39 /* NSObject.h */,
 			);
 			path = runtime;
 			sourceTree = "<group>";
