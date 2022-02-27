@@ -16,6 +16,27 @@
 - (Class)class;
 - (instancetype)self;
 
--(BOOL)isKindOfClass:(Class)aClass;
+- (BOOL)isKindOfClass:(Class)aClass;
+- (BOOL)conformsToProtocol:(Protocol *)aProtocol;
 
+- (instancetype)retain;
+- (oneway void)release;
+- (instancetype)autorelease;
+- (NSUInteger)retainCount;
+
+@property (readonly, copy) NSString *description;
+@optional
+@property (readonly, copy) NSString *debugDescription;
+
+@end
+
+@interface NSObject <NSObject>
+@property (readonly) NSUInteger hash;
+@property (readonly) Class superclass;
+@property (readonly, copy) NSString *description;
+-retain;
+-copy;
+-(void)release;
+-autorelease;
+-(void)dealloc;
 @end
