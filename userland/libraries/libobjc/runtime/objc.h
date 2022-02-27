@@ -78,4 +78,14 @@ typedef long NSUInteger;
 #define OBJC_BOOL_IS_BOOL 1
 typedef bool BOOL;
 
+#ifndef __cplusplus
+extern "C" {
+#endif
+    extern void kprintf(const char*, ...);
+    extern void panic(const char*, ...);
+    extern int putchar(int);
+#ifndef __cplusplus
+}
+#endif
+
 #endif /* objc_h */
