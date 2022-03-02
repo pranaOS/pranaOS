@@ -15,15 +15,14 @@ const char * _Nonnull set_getname(SEL _Nonnull sel) {
     return (const char *)(const void*)sel;
 }
 
-BOOL sel_isequal(SEL lhs, SEL rhs) {
-    return lhs == rhs;
-}
-
 static SEL sel_alloc(const char *name, BOOL copy) {
-    //
+    return (SEL)(copy ? strdup(name) : name);
 }
 
 SEL sel_registername(const char *name) {
     return sel_alloc(name, YES);
 }
 
+BOOL sel_isequal(SEL lhs, SEL rhs) {
+    return lhs == rhs;
+}
