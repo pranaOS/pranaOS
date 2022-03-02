@@ -7,7 +7,10 @@
 #include "runtime/objc.h"
 #include <string.h>
 
-const char * _Nonnull set_getname(SEL _Nonnull sel) {
+/**
+    get name[nonnul set]
+ */
+const char * _Nonnull sel_getname(SEL _Nonnull sel) {
     if (!sel) {
         return "<null selector>";
     }
@@ -15,6 +18,9 @@ const char * _Nonnull set_getname(SEL _Nonnull sel) {
     return (const char *)(const void*)sel;
 }
 
+/**
+ * sel allocation[needs: name, signal(YES OR NO)]
+ */
 static SEL sel_alloc(const char *name, BOOL copy) {
     return (SEL)(copy ? strdup(name) : name);
 }
