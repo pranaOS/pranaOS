@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		182905D027CFA53000713789 /* sel.m in Sources */ = {isa = PBXBuildFile; fileRef = 182905CF27CFA53000713789 /* sel.m */; };
 		18A99A5327C91B6D0077B93F /* define.m in Sources */ = {isa = PBXBuildFile; fileRef = 18A99A4C27C91B6D0077B93F /* define.m */; };
 		18A99A5427C91B6D0077B93F /* class.m in Sources */ = {isa = PBXBuildFile; fileRef = 18A99A4D27C91B6D0077B93F /* class.m */; };
 		18A99A5527C91B6D0077B93F /* do.m in Sources */ = {isa = PBXBuildFile; fileRef = 18A99A4E27C91B6D0077B93F /* do.m */; };
@@ -30,6 +31,7 @@
 
 /* Begin PBXFileReference section */
 		181DF48027C91D2400C131BE /* runtime.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = runtime.h; sourceTree = "<group>"; };
+		182905CF27CFA53000713789 /* sel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = sel.m; sourceTree = "<group>"; };
 		18A99A4027C91B110077B93F /* libobjc */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = libobjc; sourceTree = BUILT_PRODUCTS_DIR; };
 		18A99A4B27C91B590077B93F /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		18A99A4C27C91B6D0077B93F /* define.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = define.m; path = ../../../iso/define.m; sourceTree = "<group>"; };
@@ -58,6 +60,7 @@
 		18A99A3727C91B100077B93F = {
 			isa = PBXGroup;
 			children = (
+				182905CF27CFA53000713789 /* sel.m */,
 				18A99A4D27C91B6D0077B93F /* class.m */,
 				18A99A4C27C91B6D0077B93F /* define.m */,
 				18A99A4E27C91B6D0077B93F /* do.m */,
@@ -151,6 +154,7 @@
 				18A99A5427C91B6D0077B93F /* class.m in Sources */,
 				18A99A5527C91B6D0077B93F /* do.m in Sources */,
 				18A99A5727C91B6D0077B93F /* while.m in Sources */,
+				182905D027CFA53000713789 /* sel.m in Sources */,
 				18A99A5927C91B6D0077B93F /* functions.m in Sources */,
 				18A99A5327C91B6D0077B93F /* define.m in Sources */,
 				18A99A5627C91B6D0077B93F /* for.m in Sources */,
