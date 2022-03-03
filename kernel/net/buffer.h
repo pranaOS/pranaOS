@@ -62,4 +62,21 @@ struct sk_buff {
         struct icmp_packet *icmpt;
 
     } t; 
+
+    union {
+        struct ip4_packet *ipnt;
+        struct arp_packet *arpnt;
+        uint8_t *raw;
+    } nt;
+
+    union {
+        struct ethernet_packet *eh;
+        uint8_t *raw;
+    } mac;
+
+    uint8_t *head;
+    uint8_t *data;
+    uint8_t *tail;
+
+    char cb[40];
 };
