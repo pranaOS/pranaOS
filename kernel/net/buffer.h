@@ -44,3 +44,22 @@ struct arp_packet;
  * 
  */
 struct ethernet_packet;
+
+/**
+ * @brief sk buffer
+ * 
+ */
+struct sk_buff {
+    struct sock *sk;
+    struct net_device *dev;
+    struct list_head sibling;
+
+    uint32_t len, true_size;
+
+    union {
+        struct udp_packet *udpht;
+        struct tcp_packet *tcpht;
+        struct icmp_packet *icmpt;
+
+    } t; 
+};
