@@ -77,6 +77,29 @@ struct sk_buff {
     uint8_t *head;
     uint8_t *data;
     uint8_t *tail;
+    uint8_t* end;
 
     char cb[40];
 };
+
+/**
+ * @brief skb reserve
+ * 
+ * @param skb 
+ * @param len 
+ */
+static inline void skb_reserve(struct sk_buff *skb, uint32_t len) {
+    skb->data += len;
+    skb->tail += len;
+}
+
+/**
+ * @brief skb put
+ * 
+ * @param skb 
+ * @param len 
+ */
+static inline void skb_put(struct sk_buff *skb, uint32_t len) {
+    skb->tail += len;
+    skb->len += len;
+}
