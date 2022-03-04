@@ -60,3 +60,25 @@ typedef void (*wait_queue_func)(struct thread *);
 struct wait_queue_head {
     struct list_head list;
 };
+
+/**
+ * @brief wait queue entry
+ * 
+ */
+struct wait_queue_entry {
+    struct thread *thread;
+    wait_queue_func func;
+    struct list_head sibling;
+};
+
+/**
+ * @brief thread[current thread]
+ * 
+ */
+extern volatile struct thread *current_thread;
+
+/**
+ * @brief schedule
+ * 
+ */
+extern void schedule();
