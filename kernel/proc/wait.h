@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include <stdint.h>
 #include <utilities/list.h>
 #include <libc/sys/types.h>
+#include <stdint.h>
 
 #define WNOHANG 0x00000001
 #define WUNTRACED 0x00000002
@@ -39,26 +39,26 @@
  * 
  */
 struct infop {
-    pid_t si_pid;
-    int32_t si_signo;
-    int32_t si_status;
-    int32_t si_code;
+	pid_t si_pid;
+	int32_t si_signo;
+	int32_t si_status;
+	int32_t si_code;
 };
 
 struct thread;
 
 /**
- * @brief wait queue
+ * @brief wait queue func
  * 
  */
 typedef void (*wait_queue_func)(struct thread *);
 
 /**
- * @brief queue head
+ * @brief wait queue head
  * 
  */
 struct wait_queue_head {
-    struct list_head list;
+	struct list_head list;
 };
 
 /**
@@ -66,13 +66,13 @@ struct wait_queue_head {
  * 
  */
 struct wait_queue_entry {
-    struct thread *thread;
-    wait_queue_func func;
-    struct list_head sibling;
+	struct thread *thread;
+	wait_queue_func func;
+	struct list_head sibling;
 };
 
 /**
- * @brief thread[current thread]
+ * @brief current thread
  * 
  */
 extern volatile struct thread *current_thread;
@@ -82,3 +82,63 @@ extern volatile struct thread *current_thread;
  * 
  */
 extern void schedule();
+
+/**
+ * @brief define wait
+ * 
+ */
+#define DEFINE_WAIT(name)            \
+	struct wait_queue_entry name = { \
+		.thread = current_thread,    \
+		.func = poll_wakeup,         \
+	}
+
+/**
+ * @brief wait until
+ * 
+ */
+#define wait_until(cond) ({                            \
+	for (; !(cond);)                                   \
+	{                                                  \
+		update_thread(current_thread, THREAD_WAITING); \
+		schedule();                                    \
+	}                                                  \
+})
+
+/**
+ * @brief wait until with prework
+ * 
+ */
+#define wait_until_with_prework(cond, prework) ({      \
+	for (; !(cond);)                                   \
+	{                                                  \
+		prework;                                       \
+		update_thread(current_thread, THREAD_WAITING); \
+		schedule();                                    \
+	}                                                  \
+})
+
+/**
+ * @brief wait until with setup
+ * 
+ */
+#define wait_until_with_setup(cond, prework, afterwork) ({ \
+	for (; !(cond);)                                       \
+	{                                                      \
+		prework;                                           \
+		update_thread(current_thread, THREAD_WAITING);     \
+		schedule();                                        \
+		afterwork;                                         \
+	}                                                      \
+})
+
+/**
+ * @brief wait event
+ * 
+ */
+#define wait_event(wh, cond) ({                  \
+	DEFINE_WAIT(__wait);                         \
+	list_add_tail(&__wait.sibling, &(wh)->list); \
+	wait_until(cond);                            \
+	list_del(&__wait.sibling);                   \
+})
