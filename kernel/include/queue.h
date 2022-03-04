@@ -6,14 +6,15 @@
 
 #pragma once
 
-#include <ak/list.h>
 #include <stdint.h>
+#include <ak/list.h>
 
 /**
  * @brief queue struct 
  * 
  */
-struct queue {
+struct queue
+{
 	struct list_head *qhead;
 	uint32_t number_of_items;
 };
@@ -27,7 +28,7 @@ struct queue {
 void queue_push(struct queue *q, void *data);
 
 /**
- * @brief queue pop 
+ * @brief queue pop
  * 
  * @param q 
  * @return void* 

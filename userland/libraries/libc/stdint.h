@@ -2,7 +2,7 @@
 
 /**
  * @brief stdint functions 
- * references: https://pubs.opengroup.org/onlinepubs/009696899/basedefs/stdint.h.html, https://sites.uclouvain.be/SystInfo/usr/include/stdint.h.html
+ * references: https://pubs.opengroup.org/onlinepubs/009696899/basedefs/stdint.h.html, https://sites.uclouvain.be/SystInfo/usr/ak/stdint.h.html
  *
  */
 
