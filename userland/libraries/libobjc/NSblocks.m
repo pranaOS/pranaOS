@@ -102,3 +102,19 @@ struct block_layout {
     void (*invoke)(void *, ...);
     struct block_descriptor *descriptor;
 };
+
+struct block_byref {
+    void *isa;
+    struct Block_byref *forwarding;
+    int flags;
+    int size;
+    void (*byref_keep)(struct Block_byref *dst, struct Block_byref *src);
+    void (*byref_destroy)(struct Block_byref *);
+};
+
+struct block_byref_header {
+    void *isa;
+    struct Block_byref *forwarding;
+    int flags;
+    int size;
+};
