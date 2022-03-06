@@ -88,6 +88,9 @@ static int latching_decr_int(int *where) {
     }
 }
 
+/**
+ * @brief block descriptor
+ */
 struct block_descriptor {
     unsigned long int reserved;
     unsigned long int size;
@@ -95,6 +98,9 @@ struct block_descriptor {
     void (*dispose)(void *);
 };
 
+/**
+ * @brief block layout
+ */
 struct block_layout {
     void *isa;
     int flags;
@@ -103,6 +109,9 @@ struct block_layout {
     struct block_descriptor *descriptor;
 };
 
+/**
+ * @brief block byref
+ */
 struct block_byref {
     void *isa;
     struct Block_byref *forwarding;
@@ -112,9 +121,19 @@ struct block_byref {
     void (*byref_destroy)(struct Block_byref *);
 };
 
+/**
+ * @brief block byref header 
+ */
 struct block_byref_header {
     void *isa;
     struct Block_byref *forwarding;
     int flags;
     int size;
 };
+
+/**
+ * @brief block alloc default
+ */
+static void *_block_alloc_default(const unsigned size, const bool initialCountIsOne, const bool isObject) {
+    return malloc(size);
+}
