@@ -40,3 +40,24 @@ static id objc_retainAutoreleaseandReturn(id obj) {
 id objc_retainAutoreleaseReturnvalue(id obj) {
     return objc_retainAutoreleaseandReturn(obj);
 }
+
+/**
+ * @brief objc store
+ */
+void objc_storeStrong(id *location, id obj) {
+    id prev = *location;
+    if (obj == prev) {
+        return;
+    }
+    
+    objc_retain(obj);
+    *location = obj;
+    objc_release(prev);
+}
+
+id objc_alloc(Class cls) {
+    if (!cls) {
+        return Nil;
+    }
+    return [cls alloc];
+}
