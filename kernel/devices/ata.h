@@ -73,6 +73,28 @@ struct ata_device {
 int8_t ata_read(struct ata_device *device, uint32_t lba, uint32_t n_sectors, uint16_t *buffer);
 
 /**
+ * @brief ata write
+ * 
+ * @param device 
+ * @param lba 
+ * @param n_sectors 
+ * @param buffer 
+ * @return int8_t 
+ */
+int8_t ata_write(struct ata_device *device, uint32_t lba, uint32_t n_sectors, uint16_t *buffer);
+
+/**
+ * @brief atapi read 
+ * 
+ * @param device 
+ * @param lba 
+ * @param n_sectors 
+ * @param buffer 
+ * @return int8_t 
+ */
+int8_t atapi_read(struct ata_device *device, uint32_t lba, uint8_t n_sectors, uint16_t *buffer);
+
+/**
  * @brief initialize function
  * 
  * @return uint8_t 
