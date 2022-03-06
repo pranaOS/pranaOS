@@ -32,6 +32,13 @@ struct framebuffer {
 };
 
 /**
+ * @brief Get the framebuffer object
+ * 
+ * @return struct framebuffer* 
+ */
+struct framebuffer *get_framebuffer();
+
+/**
  * @brief framebuffer init 
  * 
  */
