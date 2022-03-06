@@ -8,7 +8,7 @@
 
 #include <stdarg.h>
 #include <stdint.h>
-#include <multiboot/multiboot.h>
+#include <multiboot.h>
 
 /**
  * @brief framebuffer
@@ -30,3 +30,9 @@ struct framebuffer {
      */
     uint8_t bpp;
 };
+
+/**
+ * @brief framebuffer init 
+ * 
+ */
+void framebuffer_init(struct multiboot_tag_framebuffer *);
