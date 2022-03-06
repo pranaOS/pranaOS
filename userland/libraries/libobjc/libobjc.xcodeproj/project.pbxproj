@@ -16,6 +16,7 @@
 		18A99A5727C91B6D0077B93F /* while.m in Sources */ = {isa = PBXBuildFile; fileRef = 18A99A5027C91B6D0077B93F /* while.m */; };
 		18A99A5827C91B6D0077B93F /* hello.m in Sources */ = {isa = PBXBuildFile; fileRef = 18A99A5127C91B6D0077B93F /* hello.m */; };
 		18A99A5927C91B6D0077B93F /* functions.m in Sources */ = {isa = PBXBuildFile; fileRef = 18A99A5227C91B6D0077B93F /* functions.m */; };
+		18AD7B5B27D4CD9E00964B77 /* NSblocks.m in Sources */ = {isa = PBXBuildFile; fileRef = 18AD7B5A27D4CD9E00964B77 /* NSblocks.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -44,6 +45,7 @@
 		18A99A5127C91B6D0077B93F /* hello.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = hello.m; path = ../../../iso/hello.m; sourceTree = "<group>"; };
 		18A99A5227C91B6D0077B93F /* functions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = functions.m; path = ../../../iso/functions.m; sourceTree = "<group>"; };
 		18A99A5A27C91BB20077B93F /* objc-private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "objc-private.h"; sourceTree = "<group>"; };
+		18AD7B5A27D4CD9E00964B77 /* NSblocks.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NSblocks.m; sourceTree = "<group>"; };
 		18FE111727CB3F65006B2D39 /* objc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = objc.h; sourceTree = "<group>"; };
 		18FE111827CB463C006B2D39 /* NSObject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NSObject.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -62,6 +64,7 @@
 		18A99A3727C91B100077B93F = {
 			isa = PBXGroup;
 			children = (
+				18AD7B5A27D4CD9E00964B77 /* NSblocks.m */,
 				1897750F27D49D2900E6C3DE /* runtime.m */,
 				182905CF27CFA53000713789 /* sel.m */,
 				18A99A4D27C91B6D0077B93F /* class.m */,
@@ -157,6 +160,7 @@
 				18A99A5427C91B6D0077B93F /* class.m in Sources */,
 				18A99A5527C91B6D0077B93F /* do.m in Sources */,
 				1897751027D49D2900E6C3DE /* runtime.m in Sources */,
+				18AD7B5B27D4CD9E00964B77 /* NSblocks.m in Sources */,
 				18A99A5727C91B6D0077B93F /* while.m in Sources */,
 				182905D027CFA53000713789 /* sel.m in Sources */,
 				18A99A5927C91B6D0077B93F /* functions.m in Sources */,
