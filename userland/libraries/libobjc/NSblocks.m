@@ -87,3 +87,18 @@ static int latching_decr_int(int *where) {
         }
     }
 }
+
+struct block_descriptor {
+    unsigned long int reserved;
+    unsigned long int size;
+    void (*copy)(void *dst, void *src);
+    void (*dispose)(void *);
+};
+
+struct block_layout {
+    void *isa;
+    int flags;
+    int reserved;
+    void (*invoke)(void *, ...);
+    struct block_descriptor *descriptor;
+};
