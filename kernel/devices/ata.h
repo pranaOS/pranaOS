@@ -94,6 +94,8 @@ int8_t ata_write(struct ata_device *device, uint32_t lba, uint32_t n_sectors, ui
  */
 int8_t atapi_read(struct ata_device *device, uint32_t lba, uint8_t n_sectors, uint16_t *buffer);
 
+struct ata_device *get_ata_device(char *dev_name);
+
 /**
  * @brief initialize function
  * 
