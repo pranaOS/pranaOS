@@ -12,3 +12,8 @@
 void objc_release(id);
 
 id objc_autorelease(id);
+id objc_retain(id);
+
+id objc_retain_autorelease(id obj) {
+    return objc_autorelease(objc_retain(obj));
+}
