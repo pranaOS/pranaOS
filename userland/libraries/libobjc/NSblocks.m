@@ -122,7 +122,7 @@ struct block_byref {
 };
 
 /**
- * @brief block byref header 
+ * @brief block byref header
  */
 struct block_byref_header {
     void *isa;
@@ -136,4 +136,51 @@ struct block_byref_header {
  */
 static void *_block_alloc_default(const unsigned size, const bool initialCountIsOne, const bool isObject) {
     return malloc(size);
+}
+
+/**
+ * @brief block assign default
+ */
+static void _block_assign_default(void *value, void **destptr) {
+    *destptr = value;
+}
+
+/**
+ * @brief block set has refcount default
+ */
+static void _block_setHasRefcount_default(const void *ptr, const bool hasRefcount) {
+    
+}
+
+/**
+ * @brief block do nothing
+ */
+__unused static void _block_do_nothing(const void *aBlock) { }
+
+/**
+ * @brief block retain object default
+ */
+static void _block_retain_object_default(const void *ptr) {
+    if (!ptr) return;
+}
+
+/**
+ * @brief block reelase object default
+ */
+static void _block_release_object_default(const void *ptr) {
+    if (!ptr) return;
+}
+
+/**
+ * @brief block assign weak default
+ */
+static void _block_assign_weak_default(const void *ptr, void *dest) {
+    *(long *)dest = (long)ptr;
+}
+
+/**
+ * @brief block memmove default
+ */
+static void _block_memmove_default(void *dst, void *src, unsigned long size) {
+    memmove(dst, src, (size_t)size);
 }
