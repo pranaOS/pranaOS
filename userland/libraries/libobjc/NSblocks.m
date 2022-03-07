@@ -194,3 +194,26 @@ static void (*_block_retain_object)(const void *ptr) = _block_retain_object_defa
 static void (*_block_release_object)(const void *ptr) = _block_release_object_default;
 static void (*_block_assign_weak)(const void *dest, void *ptr) = _block_assign_weak_default;
 static void (*_block_memmove)(void *dest, void *src, unsigned long size) = _block_memmove_default;
+
+void _block_release(const void *arg) {
+    struct block_layout *ablock = (struct block_layout *)arg;
+    int32_t newCount;
+    if (!ablock) return;
+    newCount = latching_decr_int(&ablock->flags) & BLOCK_REFCOUNT_MASK;
+    if (newCount > 0) return;
+
+    if (ablock->flags & BLOCK_IS_GC) {
+        _block_setHasRefcount(ablock, false);
+    }
+    else if (ablock->flags & BLOCK_NEEDS_FREE) {
+        if (ablock->flags & BLOCK_HAS_COPY_DISPOSE)(*ablock->descriptor->dispose)(ablock);
+        _block_deallocator(ablock);
+    }
+    else if (ablock->flags & BLOCK_IS_GLOBAL) {
+        ;
+    }
+    else {
+        printf("Block_release called upon a stack Block: %p, ignored\n", ablock);
+    }
+}
+
