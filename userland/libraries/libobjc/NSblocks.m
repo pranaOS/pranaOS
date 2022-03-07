@@ -184,3 +184,13 @@ static void _block_assign_weak_default(const void *ptr, void *dest) {
 static void _block_memmove_default(void *dst, void *src, unsigned long size) {
     memmove(dst, src, (size_t)size);
 }
+
+
+static void *(*_block_allocator)(const unsigned long, const bool isOne, const bool isObject) = _block_alloc_default;
+static void (*_block_deallocator)(const void *) = (void (*)(const void *))free;
+static void (*_block_assign)(void *value, void **destptr) = _block_assign_default;
+static void (*_block_setHasRefcount)(const void *ptr, const bool hasRefcount) = _block_setHasRefcount_default;
+static void (*_block_retain_object)(const void *ptr) = _block_retain_object_default;
+static void (*_block_release_object)(const void *ptr) = _block_release_object_default;
+static void (*_block_assign_weak)(const void *dest, void *ptr) = _block_assign_weak_default;
+static void (*_block_memmove)(void *dest, void *src, unsigned long size) = _block_memmove_default;
