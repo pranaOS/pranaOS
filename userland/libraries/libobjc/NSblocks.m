@@ -217,3 +217,70 @@ void _block_release(const void *arg) {
     }
 }
 
+static void _block_destroy(const void *arg) {
+    struct block_layout *ablock;
+    if (!arg) return;
+    ablock = (struct block_layout *)arg;
+    if (ablock->flags & BLOCK_IS_GC) {
+        return;
+    }
+    _block_release(ablock);
+}
+
+unsigned long int _block_size(void *arg) {
+    return ((struct block_layout *)arg)->descriptor->size;
+}
+
+static void *_block_copy_internal(const void *arg, const int flags) {
+    struct block_layout *ablock;
+    const bool wantsOne = ((1 << 16) & flags) == (1 << 16);
+    
+    if (!arg) return NULL;
+    
+    ablock = (struct block_layout *)arg;
+    if (ablock->flags & BLOCK_NEEDS_FREE) {
+        latching_incr_int(&ablock->flags);
+        return ablock;
+    } else if (ablock->flags & BLOCK_IS_GC) {
+        if (wantsOne && ((latching_incr_int(&ablock->flags) & BLOCK_REFCOUNT_MASK) == 1)) {
+            _block_setHasRefcount(ablock, true);
+        }
+        return ablock;
+    } else if (ablock->flags & BLOCK_IS_GLOBAL) {
+        return ablock;
+    }
+    
+    if (!isGC) {
+        struct Block_layout *result = malloc(ablock->descriptor->size);
+        if (!result) return (void *)0;
+        memmove(result, ablock, ablock->descriptor->size);
+        result->flags &= ~(BLOCK_REFCOUNT_MASK);
+        result->flags |= BLOCK_NEEDS_FREE | 1;
+        result->isa = _NSConcreteMallocBlock;
+        if (result->flags & BLOCK_HAS_COPY_DISPOSE) {
+            (*ablock->descriptor->copy)(result, ablock);
+        }
+        return result;
+    } else {
+        unsigned long int flags = ablock->flags;
+        bool hasCTOR = (flags & BLOCK_HAS_CTOR) != 0;
+        struct Block_layout *result = _Block_allocator(ablock->descriptor->size, wantsOne, hasCTOR);
+        if (!result) return (void *)0;
+        memmove(result, ablock, ablock->descriptor->size);
+        flags &= ~(BLOCK_NEEDS_FREE|BLOCK_REFCOUNT_MASK);
+        if (wantsOne)
+            flags |= BLOCK_IS_GC | 1;
+        else
+            flags |= BLOCK_IS_GC;
+        result->flags = (int)flags;
+        if (flags & BLOCK_HAS_COPY_DISPOSE) {
+            (*aBlock->descriptor->copy)(result, aBlock); 
+        }
+        if (hasCTOR) {
+            result->isa = _NSConcreteFinalizingBlock;
+        } else {
+            result->isa = _NSConcreteAutoBlock;
+        }
+        return result;
+    }
+}
