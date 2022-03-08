@@ -31,3 +31,33 @@ static uint8_t number_of_actived_devices = 0;
  * 
  */
 static volatile bool ata_irq_called;
+
+/**
+ * @brief ata 400 delays
+ * 
+ * @param device 
+ */
+static void ata_400_delays(struct ata_device *device) {
+	inportb(device->io_base + 7);
+	inportb(device->io_base + 7);
+	inportb(device->io_base + 7);
+	inportb(device->io_base + 7);
+}
+
+/**
+ * @brief ata polling
+ * 
+ * @param device 
+ * @return uint8_t 
+ */
+static uint8_t ata_polling(struct ata_device *device) {
+	uint8_t status;
+
+	while (true) {
+		status = inportb(device->io_base + 7);
+		if (!(status & ATA_SREG_BSY) || (status & ATA_SREG_DRQ))
+			return ATA_POLLING_SUCCESS;
+		if ((status & ATA_SREG_ERR) || (status & ATA_SREG_DF))
+			return ATA_POLLING_ERR;
+	}
+}
