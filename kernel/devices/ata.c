@@ -9,7 +9,7 @@
 #include <errno/error.h>
 #include <memory/vmm.h>
 #include <debug/debug.h>
-#include <include/string.h>
+#include <utils/string.h>
 #include "ata.h"
 
 #define MAX_ATA_DEVICE 4
