@@ -25,4 +25,39 @@
 
 struct poll_table {
     struct list_head list;
-};  
+};
+
+struct poll_entry {
+    struct vfs_file *file;
+    struct wait_queue_entry wait;
+    struct list_head sibling;
+};
+
+struct pollfd {
+    int32_t fd;
+    int16_t events;
+    int16_t revents;
+};
+
+/**
+ * @brief poll_t
+ *
+ * @param fds
+ * @param nfds
+ * @return
+ */
+int poll_t(struct pollfd *fds, uint32_t nfds);
+
+/**
+ *
+ * @param file
+ * @param wu
+ * @param ept
+ */
+void poll_wait(struct vfs_file *file, struct wait_queue_entry *wu, struct poll_table *ept);
+
+/**
+ * @brief poll wakeup
+ * @param t
+ */
+void poll_wakeup(struct thread *t);
