@@ -61,3 +61,9 @@ static uint8_t ata_polling(struct ata_device *device) {
 			return ATA_POLLING_ERR;
 	}
 }
+
+uint8_t ata_init() {
+    log("ATA: Initalizing");
+
+    return 0;
+}
