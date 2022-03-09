@@ -1,6 +1,8 @@
-//
-// Created by KrisnaPranav on 09/03/22.
-//
+/*
+ * Copyright (c) 2021 - 2022, the pranaOS Developers & Krisna Pranav
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+ */
 
 #ifndef PRANAOS_SEMAPHORE_H
 #define PRANAOS_SEMAPHORE_H
