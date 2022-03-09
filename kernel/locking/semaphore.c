@@ -19,6 +19,7 @@ struct semaphore_waiter {
  * @param sem
  */
 void acquire_semaphore(struct semaphore *sem) {
+    disable_interrupts();
     s_lock(&sem->lock);
     if (sem->count > 0) {
         sem->count--;
@@ -32,4 +33,22 @@ void acquire_semaphore(struct semaphore *sem) {
 
         s_unlock(&sem->lock);
     }
+}
+
+void release_semaphore(struct semaphore *sem) {
+    disable_interrupts();
+    s_lock(&sem->lock);
+    if (list_empty(&sem->wait_list)) {
+        if (sem->count < sem->capacity)
+            sem->count++;
+    }
+
+    else {
+        struct semaphore_waiter *waiter = list_first_entry(&sem->wait_list, struct semaphore_waiter, sibling);
+
+        list_del(&waiter->sibling);
+    }
+
+    s_unlock(&sem->lock);
+    enable_interrupts();
 }
