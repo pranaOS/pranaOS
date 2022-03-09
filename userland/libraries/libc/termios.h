@@ -200,3 +200,32 @@ struct termios {
 #define CIBAUD 002003600000	 
 #define CMSPAR 010000000000	 
 #define CRTSCTS 020000000000 
+
+#define ISIG 0000001
+#define ICANON 0000002
+#define XCASE 0000004
+#define ECHO 0000010
+#define ECHOE 0000020
+#define ECHOK 0000040
+#define ECHONL 0000100
+#define NOFLSH 0000200
+#define TOSTOP 0000400
+#define ECHOCTL 0001000
+#define ECHOPRT 0002000
+#define ECHOKE 0004000
+#define FLUSHO 0010000
+#define PENDIN 0040000
+#define IEXTEN 0100000
+
+#define TCOOFF 0
+#define TCOON 1
+#define TCIOFF 2
+#define TCION 3
+
+#define TCIFLUSH 0
+#define TCOFLUSH 1
+#define TCIOFLUSH 2
+
+#define TCSANOW 0
+#define TCSADRAIN 1
+#define TCSAFLUSH 2
