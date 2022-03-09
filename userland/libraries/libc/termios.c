@@ -56,3 +56,8 @@ speed_t getispeed(const struct termios *termios_p) {
 	assert_not_reached();
 	__builtin_unreachable();
 }
+
+speed_t getospeed(const struct termios *termios_p) {
+	assert_not_reached();
+	__builtin_unreachable();
+}
