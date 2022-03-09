@@ -40,4 +40,28 @@ struct semaphore {
 #define DEFINE_SEMAPHORE(name) \
 	struct semaphore name = __SEMAPHORE_INITIALIZER(name, 1)
 
+
+/***
+ * @brief sema init
+ *
+ * @param sem
+ * @param val
+ */
+static inline void sema_init(struct semaphore *sem, int val) {
+    *sem = (struct semaphore)__SEMAPHORE_INITIALIZER(*sem, val);
+}
+
+/**
+ * @brief acquire semaphore
+ * @param sem
+ */
+void acquire_semaphore(struct semaphore *sem);
+
+/**
+ * @brief release semaphore
+ * 
+ * @param sem
+ */
+void release_semaphore(struct semaphore *sem);
+
 #endif
