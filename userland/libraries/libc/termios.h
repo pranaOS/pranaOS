@@ -229,3 +229,56 @@ struct termios {
 #define TCSANOW 0
 #define TCSADRAIN 1
 #define TCSAFLUSH 2
+
+/**
+ * @brief tc set attr
+ * 
+ * @param fd 
+ * @param opts 
+ * @param tp 
+ * @return int 
+ */
+int tcsetattr(int fd, int opts, const struct termios *tp);
+
+/**
+ * @brief tc flow
+ * 
+ * @param fd 
+ * @param action 
+ * @return int 
+ */
+int tcflow(int fd, int action);
+
+/**
+ * @brief getispeed
+ * 
+ * @param termios_p 
+ * @return speed_t 
+ */
+speed_t getispeed(const struct termios *termios_p);
+
+/**
+ * @brief getospeed
+ * 
+ * @param termios_p 
+ * @return speed_t 
+ */
+speed_t getospeed(const struct termios *termios_p);
+
+/**
+ * @brief setispeed
+ * 
+ * @param termios_p 
+ * @param speed 
+ * @return int 
+ */
+int setispeed(struct termios *termios_p, speed_t speed);
+
+/**
+ * @brief setospeed
+ * 
+ * @param termios_p 
+ * @param speed 
+ * @return int 
+ */
+int setospeed(struct termios *termios_p, speed_t speed);
