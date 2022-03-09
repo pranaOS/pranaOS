@@ -75,3 +75,45 @@ extern unsigned int __invalid_size_argument_for_IOC;
 #define TCSETS 0x540e
 #define TCSETSW 0x540f
 #define TCSETSF 0x5410
+
+#define TIOCEXCL 0x740d							  
+#define TIOCNXCL 0x740e							  
+#define TIOCOUTQ 0x7472							  
+#define TIOCSTI 0x5472							  
+#define TIOCMGET 0x741d							  
+#define TIOCMBIS 0x741b							  
+#define TIOCMBIC 0x741c							  
+#define TIOCMSET 0x741a							  
+#define TIOCPKT 0x5470							  
+#define TIOCPKT_DATA 0x00						  
+#define TIOCPKT_FLUSHREAD 0x01					  
+#define TIOCPKT_FLUSHWRITE 0x02					  
+#define TIOCPKT_STOP 0x04						  
+#define TIOCPKT_START 0x08						  
+#define TIOCPKT_NOSTOP 0x10						  
+#define TIOCPKT_DOSTOP 0x20						  
+#define TIOCPKT_IOCTL 0x40						  
+#define TIOCSWINSZ _IOW('t', 103, struct winsize) 
+#define TIOCGWINSZ _IOR('t', 104, struct winsize) 
+#define TIOCNOTTY 0x5471						  
+#define TIOCSETD 0x7401
+#define TIOCGETD 0x7400
+
+#define FIOCLEX 0x6601
+#define FIONCLEX 0x6602
+#define FIOASYNC 0x667d
+#define FIONBIO 0x667e
+#define FIOQSIZE 0x667f
+
+#define TIOCGLTC 0x7474				  
+#define TIOCSLTC 0x7475				  
+#define TIOCSPGRP _IOW('t', 118, int) 
+#define TIOCGPGRP _IOR('t', 119, int) 
+#define TIOCCONS _IOW('t', 120, int)  
+
+#define FIONREAD 0x467f
+#define TIOCINQ FIONREAD
+
+#define TIOCGETP 0x7408
+#define TIOCSETP 0x7409
+#define TIOCSETN 0x740a 
