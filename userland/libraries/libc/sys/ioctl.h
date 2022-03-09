@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#pragma once 
+#pragma once
 
 #define _IOC_NRBITS 8
 #define _IOC_TYPEBITS 8
@@ -63,7 +63,7 @@ extern unsigned int __invalid_size_argument_for_IOC;
 #define IOCSIZE_SHIFT (_IOC_SIZESHIFT)
 
 #define TCGETA 0x5401
-#define TCSETA 0x5402 
+#define TCSETA 0x5402  
 #define TCSETAW 0x5403
 #define TCSETAF 0x5404
 
@@ -76,20 +76,20 @@ extern unsigned int __invalid_size_argument_for_IOC;
 #define TCSETSW 0x540f
 #define TCSETSF 0x5410
 
-#define TIOCEXCL 0x740d							  
-#define TIOCNXCL 0x740e							  
-#define TIOCOUTQ 0x7472							  
-#define TIOCSTI 0x5472							  
-#define TIOCMGET 0x741d							  
-#define TIOCMBIS 0x741b							  
-#define TIOCMBIC 0x741c							  
-#define TIOCMSET 0x741a							  
-#define TIOCPKT 0x5470							  
-#define TIOCPKT_DATA 0x00						  
-#define TIOCPKT_FLUSHREAD 0x01					  
-#define TIOCPKT_FLUSHWRITE 0x02					  
-#define TIOCPKT_STOP 0x04						  
-#define TIOCPKT_START 0x08						  
+#define TIOCEXCL 0x740d							 
+#define TIOCNXCL 0x740e							 
+#define TIOCOUTQ 0x7472							 
+#define TIOCSTI 0x5472							 
+#define TIOCMGET 0x741d							 
+#define TIOCMBIS 0x741b							 
+#define TIOCMBIC 0x741c							 
+#define TIOCMSET 0x741a							 
+#define TIOCPKT 0x5470							 
+#define TIOCPKT_DATA 0x00						 
+#define TIOCPKT_FLUSHREAD 0x01					 
+#define TIOCPKT_FLUSHWRITE 0x02					 
+#define TIOCPKT_STOP 0x04						 
+#define TIOCPKT_START 0x08						 
 #define TIOCPKT_NOSTOP 0x10						  
 #define TIOCPKT_DOSTOP 0x20						  
 #define TIOCPKT_IOCTL 0x40						  
@@ -117,3 +117,32 @@ extern unsigned int __invalid_size_argument_for_IOC;
 #define TIOCGETP 0x7408
 #define TIOCSETP 0x7409
 #define TIOCSETN 0x740a 
+
+#define TIOCSCTTY 0x5480 
+#define TIOCGSOFTCAR 0x5481
+#define TIOCSSOFTCAR 0x5482
+#define TIOCLINUX 0x5483
+#define TIOCGSERIAL 0x5484
+#define TIOCSSERIAL 0x5485
+#define TCSBRKP 0x5486 
+#define TIOCSERCONFIG 0x5488
+#define TIOCSERGWILD 0x5489
+#define TIOCSERSWILD 0x548a
+#define TIOCGLCKTRMIOS 0x548b
+#define TIOCSLCKTRMIOS 0x548c
+#define TIOCSERGSTRUCT 0x548d  
+#define TIOCSERGETLSR 0x548e   
+#define TIOCSERGETMULTI 0x548f 
+#define TIOCSERSETMULTI 0x5490 
+#define TIOCMIWAIT 0x5491	   
+#define TIOCGICOUNT 0x5492	   
+
+/**
+ * @brief ioctl
+ * 
+ * @param fd 
+ * @param cmd 
+ * @param ... 
+ * @return int 
+ */
+int ioctl(int fd, unsigned int cmd, ...);
