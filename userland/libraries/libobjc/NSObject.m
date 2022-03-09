@@ -93,4 +93,16 @@ extern NSUInteger _objc_rootRetainCount(id a);
     return NO;
 }
 
+
++ (oneway void) release {
+}
+
++ (id)init {
+    return _objc_rootInit(self);
+}
+
++ (id)autoRelease {
+    return self;
+}
+
 @end
