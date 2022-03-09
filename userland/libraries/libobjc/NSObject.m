@@ -75,4 +75,22 @@ extern NSUInteger _objc_rootRetainCount(id a);
     return object_getClass((id)self) == aClass;
 }
 
+- (BOOL) isKindOfClass:(Class)aClass {
+    for (Class tcls = [self class]; tcls;) {
+        if (tcls == aClass) {
+            return YES;
+        }
+    }
+    
+    return NO;
+}
+
++ (BOOL) instanceRespondToSelector:(SEL)aSelector {
+    if (!aSelector) {
+        return NO;
+    }
+    
+    return NO;
+}
+
 @end
