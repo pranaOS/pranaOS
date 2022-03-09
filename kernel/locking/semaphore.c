@@ -13,6 +13,10 @@ struct semaphore_waiter {
     struct thread *task;
 };
 
+struct current_thread {
+    struct thread *current_task;
+};
+
 /**
  * @brief acquire semaphore
  * 
