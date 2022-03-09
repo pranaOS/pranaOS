@@ -36,4 +36,41 @@ static inline unsigned short xchg_8(void *ptr, unsigned char x) {
 #define SPINLOCK_UNLOCKED 0
 #define SPINLOCK_LOCK 1
 
+typedef unsigned char spinlock_t;
+
+/**
+ * @brief spin locking
+ *
+ * @param lock
+ */
+static inline void s_lock(spinlock_t *lock) {
+    while (1) {
+        if (!xchg_8(lock, SPINLOCK_LOCK))
+            return;
+
+        while (*lock)
+            cpu_relax();
+    }
+}
+
+/**
+ * @brief spin unlock
+ *
+ * @param lock
+ */
+static inline void s_unlock(spinlock_t *lock) {
+    barrier();
+    *lock = 0;
+}
+
+/**
+ * @brief spin trylock
+ * @param lock
+ *
+ * @return xchg_8
+ */
+static inline int s_trylock(spinlock_t *lock) {
+    return xchg_8(lock, SPINLOCK_LOCK);
+}
+
 #endif
