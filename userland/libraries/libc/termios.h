@@ -72,6 +72,15 @@ typedef unsigned int speed_t;
  * @brief cflags_t
  * 
  */
-typedef unsigned int cflag_t;
+typedef unsigned int tcflag_t;
 
 #define NCCS 19
+
+struct termios {
+    tcflag_t cflag;
+    tcflag_t c_oflag;
+	tcflag_t c_cflag;
+	tcflag_t c_lflag;
+	cc_t c_line;
+	cc_t c_ccc[NCCS];
+};
