@@ -43,4 +43,10 @@ typedef uint16_t mask_t;
 #endif
 typedef uintptr_t cache_key_t;
 
+static inline void* memdup(const void *mem, size_t len) {
+    void *dup = malloc(len);
+    memcpy(dup, mem, len);
+    return dup;
+}
+
 #endif /* runtime_private_h */
