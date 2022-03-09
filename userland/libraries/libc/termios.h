@@ -43,3 +43,35 @@ struct ltchars {
 	char lt_werasc;
 	char lt_lnextc;
 };
+
+/**
+ * @brief winsize
+ * 
+ */
+
+struct winsize {
+    unsigned short row;
+    unsigned short col;
+    unsigned short xpixel;
+    unsigned short ypixel;
+};
+
+/**
+ * @brief cc_t
+ * 
+ */
+typedef unsigned char cc_t;
+
+/**
+ * @brief speed_t
+ * 
+ */
+typedef unsigned int speed_t;
+
+/**
+ * @brief cflags_t
+ * 
+ */
+typedef unsigned int cflag_t;
+
+#define NCCS 19
