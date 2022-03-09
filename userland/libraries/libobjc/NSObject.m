@@ -93,6 +93,10 @@ extern NSUInteger _objc_rootRetainCount(id a);
     return NO;
 }
 
+- (BOOL) conformsToProtocol:(Protocol *)aProtocol {
+    if (!aProtocol) return NO;
+    return NO;
+}
 
 + (oneway void) release {
 }
