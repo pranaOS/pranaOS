@@ -56,3 +56,15 @@ static inline delement_t* list_append(list_t* list, void* data) {
     
     return newElement;
 }
+
+/**
+ * @brief osObject class
+ */
+class osObject {
+public:
+    virtual ~osObject();
+    
+protected:
+    virtual void release();
+    virtual osObject* alloc();
+};
