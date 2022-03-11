@@ -5,8 +5,25 @@
 //  Created by KrisnaPranav on 11/03/22.
 //
 
-#ifndef osobject_h
-#define osobject_h
+#pragma once
 
+#include "osruntime.h"
 
-#endif /* osobject_h */
+typedef struct delement delement_t;
+
+/**
+ * @brief delement
+ */
+struct delement {
+    void* data;
+    delement_t* prev;
+    delement_t* next;
+};
+
+/**
+ * @brief list_t
+ */
+typedef struct {
+    delement_t* head;
+    delement_t* tail;
+} list_t;
