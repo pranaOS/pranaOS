@@ -12,9 +12,3 @@ jobs:
     steps:
     - uses: actions/checkout@master
     - uses: gaurav-nelson/github-action-markdown-link-check@v1
-
-  markdown:
-    runs-on: ubuntu-18.04
-    steps:
-    - uses: actions/checkout@master
-    - uses: gaurav-nelson/github-action-markdown-link-check@v1
