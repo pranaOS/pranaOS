@@ -25,7 +25,7 @@
 
 /* Begin PBXFileReference section */
 		180FFA0027DB88B700B090AF /* osobject.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = osobject.cpp; sourceTree = "<group>"; };
-		180FFA0127DB88B700B090AF /* osobject.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = osobject.hpp; sourceTree = "<group>"; };
+		180FFA0327DB88E800B090AF /* osobject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = osobject.h; sourceTree = "<group>"; };
 		1833FF4327CA5F2D00C57DEF /* libcpp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = libcpp; sourceTree = BUILT_PRODUCTS_DIR; };
 		1833FF4D27CA5F7200C57DEF /* osruntime.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = osruntime.cpp; sourceTree = "<group>"; };
 		1833FF5027CA5F9400C57DEF /* osruntime.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = osruntime.h; sourceTree = "<group>"; };
@@ -45,8 +45,8 @@
 		1833FF3A27CA5F2C00C57DEF = {
 			isa = PBXGroup;
 			children = (
+				180FFA0327DB88E800B090AF /* osobject.h */,
 				180FFA0027DB88B700B090AF /* osobject.cpp */,
-				180FFA0127DB88B700B090AF /* osobject.hpp */,
 				1833FF5027CA5F9400C57DEF /* osruntime.h */,
 				1833FF4D27CA5F7200C57DEF /* osruntime.cpp */,
 				1833FF4427CA5F2D00C57DEF /* Products */,
