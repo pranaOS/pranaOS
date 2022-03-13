@@ -108,7 +108,7 @@ typedef void (*__sighandler_t)(int);
 
 struct thread;
 
-struct sigaction {
+struct sigalaction {
     __sighandler_t sa_handler;
     uint32_t flags;
     sigset_t mask;
@@ -130,7 +130,7 @@ static inline int valid_signal(unsigned long sig) {
  * @param set 
  * @param _sig 
  */
-static inline void sigaddset(sigset_t *set, int _sig) {
+static inline void sigaladdset(sigset_t *set, int _sig) {
 	__asm__ __volatile__("btsl %1,%0"
 						 : "=m"(*set)
 						 : "Ir"(_sig - 1)
@@ -143,9 +143,80 @@ static inline void sigaddset(sigset_t *set, int _sig) {
  * @param set 
  * @param _sig 
  */
-static inline void sigdelset(sigset_t *set, int _sig) {
+static inline void sigaldelset(sigset_t *set, int _sig) {
 	__asm__ __volatile__("btrl %1,%0"
 						 : "=m"(*set)
 						 : "Ir"(_sig - 1)
 						 : "cc");
+}
+
+/**
+ * @brief signal is member
+ * 
+ * @param set 
+ * @param _sig 
+ * @return int 
+ */
+static inline int sigalismember(sigset_t *set, int _sig) {
+	unsigned long sig = _sig - 1;
+	return 1 & (*set >> sig);
+}
+
+/**
+ * @brief signal empty set
+ * 
+ * @param set 
+ */
+static inline void sigalemptyset(sigset_t *set) {
+	memset(set, 0, sizeof(sigset_t));
+}
+
+/**
+ * @brief signal add set mask
+ * 
+ * @param set 
+ * @param mask 
+ */
+static inline void sigaladdsetmask(sigset_t *set, unsigned long mask) {
+	*set |= mask;
+}
+
+/**
+ * @brief signal delete set mask
+ * 
+ * @param set 
+ * @param mask 
+ */
+static inline void sigaldelsetmask(sigset_t *set, unsigned long mask) {
+	*set &= ~mask;
+}
+
+/**
+ * @brief signal test set mask
+ * 
+ * @param set 
+ * @param mask 
+ * @return int 
+ */
+static inline int sigaltestsetmask(sigset_t *set, unsigned long mask) {
+	return (*set & mask) != 0;
+}
+
+/**
+ * @brief signal init set
+ * 
+ * @param set 
+ * @param mask 
+ */
+static inline void siginitset(sigset_t *set, unsigned long mask) {
+	*set = mask;
+}
+
+/**
+ * @brief signal fill set
+ * 
+ * @param set 
+ */
+static inline void sigalfillset(sigset_t *set) {
+	*set = -1;
 }
