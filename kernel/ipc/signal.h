@@ -105,3 +105,47 @@ typedef void (*__sighandler_t)(int);
 #define sig_fatal(p, signr)                                              \
 	(!siginmask(signr, SIG_KERNEL_IGNORE_MASK | SIG_KERNEL_STOP_MASK) && \
 	 (p)->sighand[(signr)-1].sa_handler == SIG_DFL)
+
+struct thread;
+
+struct sigaction {
+    __sighandler_t sa_handler;
+    uint32_t flags;
+    sigset_t mask;
+};
+
+/**
+ * @brief valid signal
+ * 
+ * @param sig 
+ * @return int 
+ */
+static inline int valid_signal(unsigned long sig) {
+    return sig <= NSIG ? 1 : 0;
+}
+
+/**
+ * @brief signal add set
+ * 
+ * @param set 
+ * @param _sig 
+ */
+static inline void sigaddset(sigset_t *set, int _sig) {
+	__asm__ __volatile__("btsl %1,%0"
+						 : "=m"(*set)
+						 : "Ir"(_sig - 1)
+						 : "cc");
+}
+
+/**
+ * @brief sigdelset
+ * 
+ * @param set 
+ * @param _sig 
+ */
+static inline void sigdelset(sigset_t *set, int _sig) {
+	__asm__ __volatile__("btrl %1,%0"
+						 : "=m"(*set)
+						 : "Ir"(_sig - 1)
+						 : "cc");
+}
