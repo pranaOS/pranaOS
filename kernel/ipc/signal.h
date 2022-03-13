@@ -220,3 +220,74 @@ static inline void siginitset(sigset_t *set, unsigned long mask) {
 static inline void sigalfillset(sigset_t *set) {
 	*set = -1;
 }
+
+/**
+ * @brief do signal proc mask
+ * 
+ * @param how 
+ * @param set 
+ * @param oldset 
+ * @return int 
+ */
+int do_signalprocmask(int how, const sigset_t *set, sigset_t *oldset);
+
+/**
+ * @brief do signal action
+ * 
+ * @param signum 
+ * @param action 
+ * @param old_action 
+ * @return int 
+ */
+int do_signalaction(int signum, const struct sigaction *action, struct sigaction *old_action);
+
+/**
+ * @brief do signal suspend
+ * 
+ * @param set 
+ * @return int 
+ */
+int do_signalsuspend(const sigset_t *set);
+
+/**
+ * @brief do kill
+ * 
+ * @param pid 
+ * @param signum 
+ * @return int 
+ */
+int do_kill(pid_t pid, int32_t signum);
+
+/**
+ * @brief signal ignored
+ * 
+ * @param th 
+ * @param sig 
+ * @return true 
+ * @return false 
+ */
+bool sigal_ignored(struct thread *th, int sig);
+
+/**
+ * @brief signal handler
+ * 
+ * @param regs 
+ */
+void signal_handler(struct interrupt_registers *regs);
+
+/**
+ * @brief handle signal
+ * 
+ * @param regs 
+ * @param restored_sig 
+ */
+void handle_signal(struct interrupt_registers *regs, sigset_t restored_sig);
+
+/**
+ * @brief signalreturn
+ * 
+ * @param regs 
+ */
+void signalreturn(struct interrupt_registers *regs);
+
+void signalinit();
