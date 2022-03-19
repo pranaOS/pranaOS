@@ -16,6 +16,13 @@ static uint16_t *unicode;
 static char *psf_start;
 
 /**
+ * @brief putchar
+ * @returns nothing
+ */
+void putchar(uint32_t c, uint32_t cx, uint32_t cy, uint32_t fg, uint32_t bg, char *fb, uint32_t scanline) {
+}
+
+/**
  * @brief psf init 
  * 
  * @param buff 
