@@ -27,3 +27,24 @@ struct address_space {
     struct list_head page;
     uint32_t npages;  
 };
+
+struct dirent {
+    ino_t d_ino;
+    off_t d_off;
+    unsigned short d_reclen;
+    unsigned short d_type;
+    char d_name[];
+};
+
+struct kstat {
+    dev_t st_dev;		  
+	ino_t st_ino;		  
+	mode_t st_mode;		  
+	nlink_t st_nlink;	  
+	uid_t st_uid;		  
+	gid_t st_gid;		  
+	dev_t st_rdev;		  
+	off_t st_size;		  
+	blksize_t st_blksize; 
+	blkcnt_t st_blocks;	  
+};
