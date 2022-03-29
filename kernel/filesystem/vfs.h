@@ -106,5 +106,27 @@ struct iattr {
 
 struct vfs_file_system_type {
     const char *name;
-    
+    struct vfs_mount *(*mount)(struct vfs_file_system_type *, char *, char *);
+    void (*unmount)(struct vfs_superblock *);
+    struct vfs_file_system_type *next;
 };
+
+struct vfs_mount {
+    struct vfs_dentry *mnt_root;
+};
+
+struct vfs_dentry {
+    struct vfs_inode *d_inode;
+    struct vfs_dentry *d_parent;
+    char *d_name;
+    struct vfs_superblock *d_sb;
+    struct list_head d_subdirs;
+    struct list_head d_sibling;
+};
+
+struct nameidata {
+    struct vfs_dentry *dentry;
+    struct vfs_mount *mnt;  
+};
+
+struct vfs_inode *init_inode();
