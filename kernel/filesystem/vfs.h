@@ -91,3 +91,20 @@ struct kstat {
 #define ATTR_ATTR_FLAG 1024
 #define ATTR_KILL_SUID 2048
 #define ATTR_KILL_SGID 4096
+
+struct iattr {
+    unsigned int ia_valid;
+    umode_t ia_mode;
+    uid_t ia_uid;
+    gid_t ia_gid;
+    loff_t ia_size;
+    struct timespec ia_atime;
+    struct timespec ia_mtime;
+    struct timespec ia_ctime;
+    unsigned int ia_attr_flags;
+};
+
+struct vfs_file_system_type {
+    const char *name;
+    
+};
