@@ -6,7 +6,6 @@
 
 #pragma once
 
-namespace ak {
     typedef char                        int8_t;
     typedef unsigned char               uint8_t;
     typedef short                       int16_t;
@@ -94,5 +93,3 @@ namespace ak {
     constexpr ak::uint32_t operator"" _GB(unsigned long long no) {
         return no * (1024_MB);
     }
-
-}
