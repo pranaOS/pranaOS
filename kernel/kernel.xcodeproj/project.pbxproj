@@ -44,7 +44,6 @@
 		18098AE327E6168800E8DB57 /* log.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = log.h; sourceTree = "<group>"; };
 		18098AE427E6168800E8DB57 /* linker.ld */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = linker.ld; sourceTree = "<group>"; };
 		18098AE527E6168800E8DB57 /* devices */ = {isa = PBXFileReference; lastKnownFileType = folder; path = devices; sourceTree = "<group>"; };
-		18098AE627E6168800E8DB57 /* kernel */ = {isa = PBXFileReference; lastKnownFileType = folder; path = kernel; sourceTree = "<group>"; };
 		18098AE727E6168800E8DB57 /* kernel.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = kernel.c; sourceTree = "<group>"; };
 		18098AE827E6168800E8DB57 /* null */ = {isa = PBXFileReference; lastKnownFileType = folder; path = null; sourceTree = "<group>"; };
 		18098AE927E6168800E8DB57 /* tasking */ = {isa = PBXFileReference; lastKnownFileType = folder; path = tasking; sourceTree = "<group>"; };
@@ -110,7 +109,6 @@
 				18098AD727E6168700E8DB57 /* interrupthandler.h */,
 				18098AF127E6168900E8DB57 /* interruptservice.h */,
 				18098ADA27E6168700E8DB57 /* ipc */,
-				18098AE627E6168800E8DB57 /* kernel */,
 				18098AE727E6168800E8DB57 /* kernel.c */,
 				18098ADF27E6168800E8DB57 /* kernel.h */,
 				18098AEC27E6168800E8DB57 /* keyboard */,
