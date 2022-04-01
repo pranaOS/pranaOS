@@ -7,19 +7,27 @@
 
 #include "osobject.h"
 
-namespace OsObject {
-    class object {
-    public:
-        /**
-         * @brief list append
-         */
-        void listappend(list_t* list, delement_t* elem) {
-            elem->next = 0;
-            list_t headnew;
-        }
-        
-    protected:
-        ~object();
-        object();
-    };
+/**
+ * @brief: allocations
+ */
+osObject* osObject::alloc() {
+    osObject* newobj = new osObject;
+    if (!newobj) {
+        newobj->release();
+        return 0;
+    }
+    
+    return newobj;
+}
+
+osObject::~osObject() {
+}
+
+
+/**
+ * @brief: release
+ */
+void osObject::release() {
+    osObject* rls = new osObject;
+    delete rls;
 }
