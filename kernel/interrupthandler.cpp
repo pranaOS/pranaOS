@@ -51,7 +51,7 @@ void interruptManager::initialize() {
  * @param esp 
  * @return ak::uint32_t 
  */
-ak::uint32_t interruptManager::handleInterrupt(ak::uint8_t num, ak::uint32_t esp) {
+uint32_t interruptManager::handleInterrupt(ak::uint8_t num, ak::uint32_t esp) {
     if(interruptCallbacks[num] == 0)
         return esp;
     
