@@ -29,3 +29,16 @@ static Class remapClass(Class cls);
 #   define TAG_SLOT_SHIFT 0
 #   define TAG_PAYLOAD_LSHIFT 0
 #   define TAG_PAYLOAD_RSHIFT 4
+
+static inline uintptr_t addc(uintptr_t lhs, uintptr_t rhs, uintptr_t carryin, uintptr_t *carryout) {
+    return __builtin_addcl(lhs, rhs, carryin, (unsigned long *)carryout);
+}
+
+
+static inline uintptr_t subc(uintptr_t lhs, uintptr_t rhs, uintptr_t carryin, uintptr_t *carryout) {
+    return __builtin_subcl(lhs, rhs, carryin, (unsigned long *)carryout);
+}
+
+static inline uintptr_t loadExclusive(uintptr_t *src) {
+    return *src;
+}
