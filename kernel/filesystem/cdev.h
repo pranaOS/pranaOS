@@ -47,3 +47,45 @@ struct cdevices {
 		.dev = MKDEV(_major, _baseminor),                         \
 		.f_ops = _ops,                                            \
 	}
+
+
+/**
+ * @brief alloc chardev
+ * 
+ * @param name 
+ * @param major 
+ * @param minor 
+ * @param minorct 
+ * @param ops 
+ * @return struct cdevices* 
+ */
+struct cdevices *alloc_chardev(const char *name, uint32_t major, uint32_t minor, int32_t minorct, struct vfs_file_operations *ops);
+
+/**
+ * @brief register chardev
+ * 
+ * @param cdev 
+ * @return int 
+ */
+int register_chardev(struct cdevices *cdev);
+
+/**
+ * @brief unregister chardev
+ * 
+ * @param dev 
+ * @return int 
+ */
+int unregister_chardev(dev_t dev);
+
+/**
+ * @brief dev_char_fops
+ * 
+ */
+extern struct vfs_file_operations def_char_fops;
+
+/**
+ * 
+ * @brief char dev init
+ * 
+ */
+void chardev_init();
