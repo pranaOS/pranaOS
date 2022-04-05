@@ -33,3 +33,17 @@ struct cdevices {
     struct list_head sibling;
     struct vfs_file_operations *f_ops;
 };
+
+/**
+ * @brief declare chardev
+ * 
+ */
+#define DECLARE_CHARDEV(_name, _major, _baseminor, _minorct, _ops) \
+	{                                                             \
+		.name = _name,                                            \
+		.major = _major,                                          \
+		.baseminor = _baseminor,                                  \
+		.minorct = _minorct,                                      \
+		.dev = MKDEV(_major, _baseminor),                         \
+		.f_ops = _ops,                                            \
+	}
