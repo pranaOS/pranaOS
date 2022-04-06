@@ -14,16 +14,22 @@ JOBCOUNT=$(nproc)
 # ============ INSTALLING DEPENDENCIES ============
 binutils_install() {
   wget "https://ftp.gnu.org/gnu/binutils/binutils-2.32.tar.gz"
+  echo "Binutils unziping....."
+  sleep 2
   tar -xzvf binutils-2.32.tar.gz
 }
 
 gcc_install() {
   wget "https://ftp.gnu.org/gnu/gcc/gcc-9.1.0/gcc-9.1.0.tar.gz"
+  echo "Gcc unziping....."
+  sleep 2
   tar -xzvf gcc-9.1.0.tar.gz
 }
 
 # ============ BUILDING ============
 binutils_build() {
+  echo "Building binutils"
+  sleep 2 
   cd binutils-2.32
   patch -p1 < ../binutils.patch
   cd ld
@@ -37,6 +43,8 @@ binutils_build() {
 }
 
 gcc_build() {
+  echo "Building GCC"
+  
   cd gcc-9.1.0
   patch -p1 < ../gcc.patch
   ./contrib/download_prerequisites
