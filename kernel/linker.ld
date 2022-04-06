@@ -1,43 +1,51 @@
-OUTPUT_FORMAT(elf32-i386)
-OUTPUT_ARCH(i386:i386)
-
-ENTRY(_entrypoint)
+ENTRY(_start)
 
 SECTIONS
 {
-  . = 0xC0100000;
-
-  _kernel_base = .;
-
-	.text ALIGN(4K) : AT(ADDR(.text)-0xC0000000)
+	kernel_boot = 0x00100000;
+	kernel_higher_half = 0xc0000000;
+	
+	. = 0xC0100000;
+	kernel_start = .;
+ 
+	.text ALIGN(4096) : AT(ADDR(.text) - kernel_higher_half)
 	{
+		kernel_text_start = .;
 		*(.multiboot)
-		*(.text*)
-  }
-
-  .rodata ALIGN (4K) : AT(ADDR(.rodata)-0xC0000000)
+		*(.text .text.*)
+		kernel_text_end = .;
+	}
+ 
+	.rodata ALIGN(4096) : AT(ADDR(.rodata) - kernel_higher_half)
 	{
-		*(.rodata)
-  }
+		*(.rodata .rodata.*)
+	}
+ 
 
-  .bss ALIGN(4K) : AT(ADDR(.bss)-0xC0000000)
-  {
-    *(.COMMON)
-    *(.bss)
-    *(.bootstrap_stack)
-  }
+	.data ALIGN(4096) : AT(ADDR(.data) - kernel_higher_half)
+	{
+		kernel_data_start = .;
+		*(.data .data.*)
+		*(.symbols)
+		kernel_data_end = .;
+	}
+ 
+	.bss ALIGN(4096) : AT(ADDR(.bss) - kernel_higher_half)
+	{
+		*(COMMON)
+		*(.bss .bss.*)
+		*(.stack)
+	}
+ 
+ 	.eh_frame ALIGN(4096) : AT(ADDR(.eh_frame) - kernel_higher_half)
+	{
+		*(.eh_frame)
+	}
 
-  .data ALIGN(4K) : AT(ADDR(.data)-0xC0000000)
-  {
-    start_ctors = .;
-    KEEP(*( .init_array ));
-    KEEP(*(SORT_BY_INIT_PRIORITY( .init_array.* )));
-    end_ctors = .;
+	kernel_end = .;
 
-    *(.data*)
-  }
-
-  /DISCARD/ : { *(.fini_array*) *(.comment) }
-
-  _kernel_end = .;
+	/DISCARD/ :
+	{
+		*(.comment)
+	}
 }
