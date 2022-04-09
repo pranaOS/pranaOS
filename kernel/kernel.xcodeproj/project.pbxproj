@@ -12,6 +12,7 @@
 		18098B0827E6168A00E8DB57 /* vsprintf.c in Sources */ = {isa = PBXBuildFile; fileRef = 18098AE127E6168800E8DB57 /* vsprintf.c */; };
 		18098B0927E6168A00E8DB57 /* kernel.c in Sources */ = {isa = PBXBuildFile; fileRef = 18098AE727E6168800E8DB57 /* kernel.c */; };
 		18098B0A27E6168A00E8DB57 /* console.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 18098AF227E6168900E8DB57 /* console.cpp */; };
+		182F64312801BB9100A2472A /* read_write.c in Sources */ = {isa = PBXBuildFile; fileRef = 182F64302801BB9100A2472A /* read_write.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -62,7 +63,6 @@
 		18098AF627E6168900E8DB57 /* serialport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = serialport.h; sourceTree = "<group>"; };
 		18098AF727E6168900E8DB57 /* setjmp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = setjmp.h; sourceTree = "<group>"; };
 		18098AF827E6168900E8DB57 /* listing */ = {isa = PBXFileReference; lastKnownFileType = folder; path = listing; sourceTree = "<group>"; };
-		18098AF927E6168900E8DB57 /* filesystem */ = {isa = PBXFileReference; lastKnownFileType = folder; path = filesystem; sourceTree = "<group>"; };
 		18098AFA27E6168900E8DB57 /* spinlock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = spinlock.h; sourceTree = "<group>"; };
 		18098AFB27E6168900E8DB57 /* syscall */ = {isa = PBXFileReference; lastKnownFileType = folder; path = syscall; sourceTree = "<group>"; };
 		18098AFC27E6168900E8DB57 /* system */ = {isa = PBXFileReference; lastKnownFileType = folder; path = system; sourceTree = "<group>"; };
@@ -75,6 +75,19 @@
 		18098B0327E6168A00E8DB57 /* disks */ = {isa = PBXFileReference; lastKnownFileType = folder; path = disks; sourceTree = "<group>"; };
 		18098B0427E6168A00E8DB57 /* installer */ = {isa = PBXFileReference; lastKnownFileType = folder; path = installer; sourceTree = "<group>"; };
 		18098B0527E6168A00E8DB57 /* timer */ = {isa = PBXFileReference; lastKnownFileType = folder; path = timer; sourceTree = "<group>"; };
+		182F64232801BB6600A2472A /* poll.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = poll.h; sourceTree = "<group>"; };
+		182F64242801BB6600A2472A /* virtualfilesystem.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = virtualfilesystem.cpp; sourceTree = "<group>"; };
+		182F64252801BB6600A2472A /* vfsmanager.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = vfsmanager.cpp; sourceTree = "<group>"; };
+		182F64262801BB6600A2472A /* vfsmanager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = vfsmanager.h; sourceTree = "<group>"; };
+		182F64272801BB6700A2472A /* ext2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ext2.h; sourceTree = "<group>"; };
+		182F64282801BB6700A2472A /* buffer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = buffer.h; sourceTree = "<group>"; };
+		182F64292801BB6700A2472A /* virtualfilesystem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = virtualfilesystem.h; sourceTree = "<group>"; };
+		182F642A2801BB6700A2472A /* iso.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = iso.h; sourceTree = "<group>"; };
+		182F642B2801BB6700A2472A /* cdev.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cdev.h; sourceTree = "<group>"; };
+		182F642C2801BB6700A2472A /* vfs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = vfs.h; sourceTree = "<group>"; };
+		182F642D2801BB6700A2472A /* fat.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = fat.h; sourceTree = "<group>"; };
+		182F642F2801BB6800A2472A /* buffer.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = buffer.c; sourceTree = "<group>"; };
+		182F64302801BB9100A2472A /* read_write.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = read_write.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -91,6 +104,7 @@
 		18098AC327E6165A00E8DB57 = {
 			isa = PBXGroup;
 			children = (
+				182F64222801BB5900A2472A /* filesystem */,
 				18098AE227E6168800E8DB57 /* boot */,
 				18098AED27E6168800E8DB57 /* bus */,
 				18098AEE27E6168800E8DB57 /* component.h */,
@@ -101,7 +115,6 @@
 				18098AE527E6168800E8DB57 /* devices */,
 				18098B0327E6168A00E8DB57 /* disks */,
 				18098AFF27E6168900E8DB57 /* drivers */,
-				18098AF927E6168900E8DB57 /* filesystem */,
 				18098AF027E6168900E8DB57 /* init.h */,
 				18098B0427E6168A00E8DB57 /* installer */,
 				18098AEB27E6168800E8DB57 /* internal */,
@@ -148,6 +161,26 @@
 				18098ACC27E6165A00E8DB57 /* kernel */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		182F64222801BB5900A2472A /* filesystem */ = {
+			isa = PBXGroup;
+			children = (
+				182F642F2801BB6800A2472A /* buffer.c */,
+				182F64282801BB6700A2472A /* buffer.h */,
+				182F642B2801BB6700A2472A /* cdev.h */,
+				182F64272801BB6700A2472A /* ext2.h */,
+				182F642D2801BB6700A2472A /* fat.h */,
+				182F642A2801BB6700A2472A /* iso.h */,
+				182F64232801BB6600A2472A /* poll.h */,
+				182F642C2801BB6700A2472A /* vfs.h */,
+				182F64252801BB6600A2472A /* vfsmanager.cpp */,
+				182F64262801BB6600A2472A /* vfsmanager.h */,
+				182F64242801BB6600A2472A /* virtualfilesystem.cpp */,
+				182F64292801BB6700A2472A /* virtualfilesystem.h */,
+				182F64302801BB9100A2472A /* read_write.c */,
+			);
+			path = filesystem;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -210,6 +243,7 @@
 				18098B0827E6168A00E8DB57 /* vsprintf.c in Sources */,
 				18098B0A27E6168A00E8DB57 /* console.cpp in Sources */,
 				18098B0727E6168A00E8DB57 /* interrupthandler.cpp in Sources */,
+				182F64312801BB9100A2472A /* read_write.c in Sources */,
 				18098B0927E6168A00E8DB57 /* kernel.c in Sources */,
 				18098B0627E6168A00E8DB57 /* timer.cpp in Sources */,
 			);
