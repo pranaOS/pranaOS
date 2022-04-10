@@ -72,3 +72,25 @@ static inline void
 plist_head_init(struct plist_head *head) {
     INIT_LIST_HEAD(&head->node_list);
 }
+
+static inline int
+plist_head_empty(const struct plist_head *head) {
+    return list_empty(&head->node_list);
+}
+
+static inline int
+plist_node_empty(const struct plist_node *node) {
+    return list_empty(&node->node_list);
+}
+
+#define plist_first_entry(head, type, member) \
+	container_of(plist_first(head), type, member)
+
+#define plist_last_entry(head, type, member) \
+	container_of(plist_last(head), type, member)
+
+#define plist_next(pos) \
+	list_next_entry(pos, node_list)
+
+#define plist_prev(pos) \
+	list_prev_entry(pos, node_list)
