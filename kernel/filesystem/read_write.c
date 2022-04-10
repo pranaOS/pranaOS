@@ -5,8 +5,8 @@
 //  Created by KrisnaPranav on 09/04/22.
 //
 
-#include <libkernel/errno.h>
-#include <libkernel/fcntl.h>
+#include <errno/error.h>
+#include <libc/fcntl.h>
 #include <memory/vmm.h>
 #include <proc/task.h>
 #include <libkernel/string.h>
@@ -32,4 +32,8 @@ ssize_t vfs_fread(int32_t fd, char *buf, size_t count) {
         return file->f_op->read(file, buf, count, file->f_pos);
     
     return -EINVAL;
+}
+
+ssize_t vfs_fwrite(int32_t fd, const char *buf, size_t count) {
+
 }
