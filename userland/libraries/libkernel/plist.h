@@ -18,6 +18,12 @@ struct plist_head {
     struct list_head node_list;
 };
 
+struct plist_node {
+    int prio;
+    struct list_head prio_list;
+    struct list_head node_list;
+};
+
 #define PLIST_HEAD_INIT(head)                         \
 	{                                                 \
 		.node_list = LIST_HEAD_INIT((head).node_list) \
@@ -32,3 +38,37 @@ struct plist_head {
 		.prio_list = LIST_HEAD_INIT((node).prio_list), \
 		.node_list = LIST_HEAD_INIT((node).node_list), \
 	}
+
+static inline void
+plist_node_init(struct plist_node *node, int prio) {
+    node->prio = prio;
+    INIT_LIST_HEAD(&node->prio_list);
+    INIT_LIST_HEAD(&node->node_list);
+}
+
+extern void plist_ad(struct plist_node *node, struct plist_head *head);
+extern void plist_delete(struct plist_node *node, struct plist_head *head);
+extern void plist_requeue(struct plist_node *node, struct plist_head *head);
+
+#define plist_for_each(pos, head) \
+	list_for_each_entry(pos, &(head)->node_list, node_list)
+
+#define plist_for_each_continue(pos, head) \
+	list_for_each_entry_continue(pos, &(head)->node_list, node_list)
+
+#define plist_for_each_safe(pos, n, head) \
+	list_for_each_entry_safe(pos, n, &(head)->node_list, node_list)
+
+#define plist_for_each_entry(pos, head, mem) \
+	list_for_each_entry(pos, &(head)->node_list, mem.node_list)
+
+#define plist_for_each_entry_continue(pos, head, m) \
+	list_for_each_entry_continue(pos, &(head)->node_list, m.node_list)
+
+#define plist_for_each_entry_safe(pos, n, head, m) \
+	list_for_each_entry_safe(pos, n, &(head)->node_list, m.node_list)
+
+static inline void 
+plist_head_init(struct plist_head *head) {
+    INIT_LIST_HEAD(&head->node_list);
+}
