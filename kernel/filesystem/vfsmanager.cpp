@@ -11,7 +11,7 @@ using namespace Kernel;
 using namespace ak;
 
 vfsManager::vfsManager() {
-    this->Filesystems = new List<virtualFileSystem*>();
+    this->Filesystems = new ak::List<virtualFileSystem*>();
 }
 
 int vfsManager::extractDiskNumber(const char* path, uint8_t* idSizeReturn) {
