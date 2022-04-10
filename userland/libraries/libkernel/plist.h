@@ -94,3 +94,13 @@ plist_node_empty(const struct plist_node *node) {
 
 #define plist_prev(pos) \
 	list_prev_entry(pos, node_list)
+
+static inline struct
+plist_node *plist_first(const struct plist_head *head) {
+    return list_empty(head->node_list.next, struct plist_node, node_list);
+}
+
+static inline struct
+plist_node *plist_last(const struct plist_head *head) {
+    return list_entry(head->node_list.prev, struct plist_node, node_list);
+}
