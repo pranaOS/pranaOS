@@ -60,3 +60,31 @@ static int
 random_release(struct vfs_inode *inode, struct vfs_file *filp) {
     return 0;
 }
+
+static loff_t random_llseek(struct vfs_file *file, loff_t ppos, int whence) {
+    return ppos;
+}
+
+static ssize_t
+random_read(struct vfs_file *file, char *buf, size_t count, loff_t ppos) {
+    *(uint32_t *)buf = rand();
+    return count;
+}
+
+static ssize_t random_write(struct vfs_file *file, const char *buf, size_t count, loff_t ppos) {
+    return count;
+}
+
+static struct vfs_file_operations random_fops = { 
+    .llseek = random_llseek,
+    .read = random_read,
+    .write = random_write,
+    .open = random_open,
+    .release = random_release,
+};
+
+static struct 
+char_device cdev_null = (struct char_device)DECLARE_CHARDEV("null", MEMORY_MAJOR, NULL_DEVICE, 1, &null_fops);
+
+static struct 
+char_device cdev_random = (struct char_device)DECLARE_CHARDEV("random", MEMORY_MAJOR, RANDOM_DEVICE, 1, &random_fops);
