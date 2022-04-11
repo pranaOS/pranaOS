@@ -37,7 +37,9 @@ static volatile bool ata_irq_called;
  * 
  * @param device 
  */
-static void ata_400_delays(struct ata_device *device) {
+static void 
+
+ata_400_delays(struct ata_device *device) {
 	inportb(device->io_base + 7);
 	inportb(device->io_base + 7);
 	inportb(device->io_base + 7);
@@ -50,7 +52,8 @@ static void ata_400_delays(struct ata_device *device) {
  * @param device 
  * @return uint8_t 
  */
-static uint8_t ata_polling(struct ata_device *device) {
+static uint8_t 
+ata_polling(struct ata_device *device) {
 	uint8_t status;
 
 	while (true) {
@@ -62,7 +65,8 @@ static uint8_t ata_polling(struct ata_device *device) {
 	}
 }
 
-uint8_t ata_init() {
+uint8_t 
+ata_init() {
     log("ATA: Initalizing");
 
     return 0;
