@@ -88,3 +88,13 @@ char_device cdev_null = (struct char_device)DECLARE_CHARDEV("null", MEMORY_MAJOR
 
 static struct 
 char_device cdev_random = (struct char_device)DECLARE_CHARDEV("random", MEMORY_MAJOR, RANDOM_DEVICE, 1, &random_fops);
+
+void
+chardev_memory_init() {
+    log("Devfs: Mount null");
+    register_chardev(&cdev_null);
+    vfs_mknod("/dev/null", S_IFCHR, cdev_null.dev);
+    log("Devfs: Mount random");
+    register_chardev(&cdev_random);
+    vfs_mknod("/dev/random", S_IFCHR, cdev_random.dev);
+}
