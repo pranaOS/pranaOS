@@ -8,7 +8,7 @@
 #include <proc/elf.h>
 #include <stdint.h>
 #include <timer/timer.h>
-#include <libcore/hashmap.h>
+#include <libcore/hash.h>
 #include <libkernel/plist.h>
 
 #define SWAPPER_PID 0
