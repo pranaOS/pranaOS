@@ -3,7 +3,7 @@
 //
 
 #include "virtualfilesystem.h"
-#include <kernel/system/log.h>
+#include <kernel/log.h>
 
 using namespace Kernel::ak;
 using namespace Kernel;
