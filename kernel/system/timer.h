@@ -25,5 +25,39 @@ struct timer_list {
 #define from_timer(var, callback_timer, timer_fieldname) \
 	container_of(callback_timer, typeof(*var), timer_fieldname)
 
+/**
+ * @brief add timer
+ * 
+ * @param timer 
+ */
 void add_timer(struct timer_list *timer);
-void del_timer(struct timer_list *timer);
+
+/**
+ * @brief delete timer
+ * 
+ * @param timer 
+ */
+void delete_timer(struct timer_list *timer);
+
+/**
+ * @brief mod timer
+ * 
+ * @param timer 
+ * @param expires 
+ */
+void mod_timer(struct timer_list *timer, uint64_t expires);
+
+/**
+ * @brief is actived timer
+ * 
+ * @param timer 
+ * @return true 
+ * @return false 
+ */
+bool is_actived_timer(struct timer_list *timer);
+
+/**
+ * @brief timer init 
+ * 
+ */
+void timer_init();
