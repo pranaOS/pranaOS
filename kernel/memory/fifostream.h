@@ -5,7 +5,6 @@
 #include "stream.h"
 
 namespace Kernel {
-    namespace system {
 
         class FIFOStream : public Stream {
         public:
@@ -24,5 +23,4 @@ namespace Kernel {
             char* head;
             char* tail;
         };
-    }
 }
