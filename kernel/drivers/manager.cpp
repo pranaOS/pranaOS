@@ -4,7 +4,7 @@
 
 #include "manager.h"
 #include "driver.h"
-#include <kernel/system/log.h>
+#include <kernel/log.h>
 
 using namespace Kernel;
 
@@ -18,9 +18,9 @@ void driverManager::addDriver(driver* drv) {
 
 void driverManager::activate() {
     for(int i = 0; i < driverList.size(); i++) {
-        Log(Info, "Initializing Driver... %s", driverList[i]->getDriverName());
+        sendLog(Info, "Initializing Driver... %s", driverList[i]->getDriverName());
 
         if(driverList[i]->initialize() == false)
-            Log(Error, "Initializing driver failed: %s", driverList[i]->getDriverName());
+            sendLog(Error, "Initializing driver failed: %s", driverList[i]->getDriverName());
     }
 }
