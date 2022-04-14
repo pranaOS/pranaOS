@@ -10,10 +10,10 @@
 #include "list.h"
 #include "memoperator.h"
 
-namespace ak {
+namespace String {
     #define isalpha(c) (((unsigned)c|32)-'a' < 26)
 
-    class String {
+    class string {
     public:
         static int strlen(const char* str);
         static bool strcmp(const char* strA, const char* strB);
