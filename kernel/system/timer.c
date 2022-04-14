@@ -45,3 +45,26 @@ void add_timer(struct timer_list *timer) {
     else
         list_add_tail(&timer->sibling, &list_of_timer);
 }
+
+void delete_timer(struct timer_list *timer) {
+    list_del(&timer->sibling);
+}
+
+void mod_timer(struct timer_list *timer, uint64_t expires) {
+    delete_timer(timer);
+    timer->expires = expires;
+    add_timer(timer);
+}
+
+static int32_t timer_schedule_handler(struct interrupt_registers *regs) {
+	struct timer_list *iter, *next;
+	uint64_t cms = get_milliseconds(NULL);
+	list_for_each_entry_safe(iter, next, &list_of_timer, sibling)
+	{
+		assert_timer_valid(iter);
+		if (iter->expires <= cms)
+			iter->function(iter);
+	}
+
+	return IRQ_HANDLER_CONTINUE;
+}
