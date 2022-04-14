@@ -43,3 +43,31 @@ void FIFOStream::write(char item) {
 
     this->count++;
 }
+
+/**
+ * @brief fifostream read object
+ * 
+ * @return char 
+ */
+char FIFOStream::read() {
+    char result = 0;
+    if (this->count == 0)
+        return result;
+    
+    memcpy((void*)&result, (void*)this->tail, sizeof(char));
+    this->tail = (char*)(this->tail + sizeof(char));
+    if (this->tail == this->buffer_end)
+        this->tail = this->buffer;
+    
+    this->count--;
+    return result;
+}
+
+/**
+ * @brief available object
+ * 
+ * @return int 
+ */
+int FIFOStream::available() {
+    return this->count;
+}
