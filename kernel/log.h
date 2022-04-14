@@ -13,5 +13,5 @@ namespace Kernel {
     };
 
     void sendLog(logLevel level, const char* __restrict__ format, ...);
-    void Print(const char* data, ak::uint32_t length);
+    void Print(const char* data, uint32_t length);
 }
