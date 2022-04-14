@@ -68,3 +68,9 @@ static int32_t timer_schedule_handler(struct interrupt_registers *regs) {
 
 	return IRQ_HANDLER_CONTINUE;
 }
+
+
+void timer_init() {
+	INIT_LIST_HEAD(&list_of_timer);
+	register_interrupt_handler(IRQ8, timer_schedule_handler);
+}
