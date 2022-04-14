@@ -3,12 +3,11 @@
 //
 
 #include "driver.h"
-#include <kernel/system/log.h>
+#include <kernel/log.h>
 
 using namespace Kernel;
-using namespace Kernel::driver;
 
-driver::Driver(char* name, char* description) {
+driver::driver(char* name, char* description) {
     this->driverName = name;
     this->driverDescription = description;
 }
