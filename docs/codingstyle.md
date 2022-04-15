@@ -1,23 +1,23 @@
 # CodingStyle:
 
 ## headers:
-- wrong
-```c++
-#ifndef NAMEOFTHEHEADER
-#define NAMEOFTHEHEADER
-
-int x = 1;
-
-#endif
-```
-
-- you should not use the #ifndef header guard instead you need to use #pragma once
-
-- right
-```c++
+- creating a header for a .cpp:
+```cpp 
 #pragma once
 
-int x = 1;
+namespace somenamespace {
+    // your code goes here...
+}
+```
+
+- creating headers for .c:
+```c
+#ifndef FOLDER_FILENAME_H
+#define FOLDER_FILENAME_H
+
+// your code goes here..
+
+#endif
 ```
 
 ## Including a universal header:
