@@ -39,7 +39,7 @@ namespace Kernel {
 
     private:
         pciDevice* pcidevice;
-        void writeRegister(ak::uint32_t reg, ak::uint32_t value);
-        ak::uint32_t readRegister(ak::uint32_t reg);
+        void writeRegister(uint32_t reg, uint32_t value);
+        uint32_t readRegister(uint32_t reg);
   };
 }

@@ -9,7 +9,7 @@
 using namespace Kernel;
 using namespace String;
 
-virtualFileSystem::virtualFileSystem(Disk* disk, uint32_t start, ak::uint32_t size, char* name) {
+virtualFileSystem::virtualFileSystem(Disk* disk, uint32_t start, uint32_t size, char* name) {
     this->disk = disk;
     this->sizeInSectors = size;
     this->startLBA = start;

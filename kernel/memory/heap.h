@@ -15,9 +15,9 @@ namespace Kernel {
     #endif
 
     struct memoryHeader {
-        ak::uint32_t magic;
-        ak::uint32_t allocated;
-        ak::uint32_t size;
+        uint32_t magic;
+        uint32_t allocated;
+        uint32_t size;
 
         memoryHeader* next;
         memoryHeader* prev;
@@ -25,23 +25,23 @@ namespace Kernel {
 
     class kernelHeap {
       public:
-        static void initialize(ak::uint32_t start, ak::uint32_t end);
-        static void* malloc(ak::uint32_t size, ak::uint32_t physReturn = 0);
+        static void initialize(uint32_t start, uint32_t end);
+        static void* malloc(uint32_t size, uint32_t physReturn = 0);
         static void free(void* ptr);
 
-        static void* allignedMalloc(ak::uint32_t size, ak::uint32_t align, ak::uint32_t physReturn = 0);
+        static void* allignedMalloc(uint32_t size, uint32_t align, uint32_t physReturn = 0);
         static void allignedFree(void* ptr);
 
         static bool checkForErrors();
-        static ak::uint32_t usedMemory();
+        static uint32_t usedMemory();
 
       private:
-        static ak::uint32_t startAddress;
-        static ak::uint32_t endAddress;
+        static uint32_t startAddress;
+        static uint32_t endAddress;
 
         static memoryHeader* firstHeader;
-        static void* internalAllocate(ak::uint32_t size);
-        static memoryHeader* firstFree(ak::uint32_t size);
+        static void* internalAllocate(uint32_t size);
+        static memoryHeader* firstFree(uint32_t size);
 
         static mutexLock heapMutex;
     };

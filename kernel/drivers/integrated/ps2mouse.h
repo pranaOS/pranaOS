@@ -23,10 +23,10 @@ namespace Kernel {
     public:
         ps2MouseDriver();
         bool initialize();
-        ak::uint32_t handleInterrupt(ak::uint32_t esp);
+        uint32_t handleInterrupt(uint32_t esp);
 
         bool enableScrollWheel();
-        bool setSampleRate(ak::uint8_t value);
+        bool setSampleRate(uint8_t value);
         void processPacket();
 
     private:
@@ -34,8 +34,8 @@ namespace Kernel {
         #define MOUSE_COMMAND 0x64
         #define MOUSE_ACK 0xFA
 
-        ak::uint8_t mouseID = 0;
-        ak::uint8_t mouseCycle = 0;
+        uint8_t mouseID = 0;
+        uint8_t mouseCycle = 0;
         signed char* packetBuffer;
 
         bool ready = false;

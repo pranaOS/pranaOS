@@ -78,6 +78,6 @@ namespace Kernel {
          * @return true 
          * @return false 
          */
-        static bool handleSysRequest(void* arrayPointer, int count, ak::uint32_t retAddr, bool getSize);
+        static bool handleSysRequest(void* arrayPointer, int count, uint32_t retAddr, bool getSize);
     };
 }

@@ -37,16 +37,16 @@ namespace Kernel {
 
         processState state;
         List<Thread*> Threads;
-        ak::uint32_t pageDirPhys;
+        uint32_t pageDirPhys;
 
         struct executable {
-            ak::uint32_t memBase;
-            ak::uint32_t memSize;
+            uint32_t memBase;
+            uint32_t memSize;
         } executable_t;
             
         struct heap {
-            ak::uint32_t heapStart;
-            ak::uint32_t heapEnd;
+            uint32_t heapStart;
+            uint32_t heapEnd;
         } heap_t;
 
 
@@ -66,7 +66,7 @@ namespace Kernel {
         static Process* create(char* fileName, char* arguments = 0, bool isKernel = false);
         static Process* createKernelProcess();
         static void removeProcess(Process* proc);
-        static void updateHeap(Process* proc, ak::uint32_t newEndAddr);
+        static void updateHeap(Process* proc, uint32_t newEndAddr);
         static Process* processById(int id);
 
       private:

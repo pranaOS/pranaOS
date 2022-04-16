@@ -16,85 +16,85 @@ namespace Kernel {
     #define HID_REQUEST_SET_PROTOCOL 0x0B
 
     struct DEVICE_DESC {
-        ak::uint8_t  len;
-        ak::uint8_t  type;
-        ak::uint16_t usb_ver;
-        ak::uint8_t  _class;
-        ak::uint8_t  subclass;
-        ak::uint8_t  protocol;
-        ak::uint8_t  max_packet_size;
-        ak::uint16_t vendorid;
-        ak::uint16_t productid;
-        ak::uint16_t device_rel;
-        ak::uint8_t  manuf_indx;   
-        ak::uint8_t  prod_indx;    
-        ak::uint8_t  serial_indx;  
-        ak::uint8_t  configs;      
+        uint8_t  len;
+        uint8_t  type;
+        uint16_t usb_ver;
+        uint8_t  _class;
+        uint8_t  subclass;
+        uint8_t  protocol;
+        uint8_t  max_packet_size;
+        uint16_t vendorid;
+        uint16_t productid;
+        uint16_t device_rel;
+        uint8_t  manuf_indx;   
+        uint8_t  prod_indx;    
+        uint8_t  serial_indx;  
+        uint8_t  configs;      
     } __attribute__((packed));
 
     struct REQUEST_PACKET {
-        ak::uint8_t  request_type;
-        ak::uint8_t  request;
-        ak::uint16_t value;
-        ak::uint16_t index;
-        ak::uint16_t length;
+        uint8_t  request_type;
+        uint8_t  request;
+        uint16_t value;
+        uint16_t index;
+        uint16_t length;
     } __attribute__((packed));
 
     struct CONFIG_DESC {
-        ak::uint8_t  len;
-        ak::uint8_t  type;
-        ak::uint16_t tot_len;
-        ak::uint8_t  num_interfaces;
-        ak::uint8_t  config_val;
-        ak::uint8_t  config_indx;
-        ak::uint8_t  bm_attrbs;
-        ak::uint8_t  max_power;
+        uint8_t  len;
+        uint8_t  type;
+        uint16_t tot_len;
+        uint8_t  num_interfaces;
+        uint8_t  config_val;
+        uint8_t  config_indx;
+        uint8_t  bm_attrbs;
+        uint8_t  max_power;
     } __attribute__((packed));
 
     struct STRING_DESC {
-        ak::uint8_t  len;         
-        ak::uint8_t  type;
-        ak::uint16_t string[127];
+        uint8_t  len;         
+        uint8_t  type;
+        uint16_t string[127];
     } __attribute__((packed));
 
     struct INTERFACE_ASSOSIATION_DESC {
-        ak::uint8_t  len;             
-        ak::uint8_t  type;            
-        ak::uint8_t  interface_num;   
-        ak::uint8_t  count;           
-        ak::uint8_t  _class;          
-        ak::uint8_t  subclass;        
-        ak::uint8_t  protocol;        
-        ak::uint8_t  function_indx;   
+        uint8_t  len;             
+        uint8_t  type;            
+        uint8_t  interface_num;   
+        uint8_t  count;           
+        uint8_t  _class;          
+        uint8_t  subclass;        
+        uint8_t  protocol;        
+        uint8_t  function_indx;   
     } __attribute__((packed));
 
     struct INTERFACE_DESC {
-            ak::uint8_t  len;
-            ak::uint8_t  type;
-            ak::uint8_t  interface_num;
-            ak::uint8_t  alt_setting;
-            ak::uint8_t  num_endpoints;
-            ak::uint8_t  interface_class;
-            ak::uint8_t  interface_sub_class;
-            ak::uint8_t  interface_protocol;
-            ak::uint8_t  interface_indx;
+            uint8_t  len;
+            uint8_t  type;
+            uint8_t  interface_num;
+            uint8_t  alt_setting;
+            uint8_t  num_endpoints;
+            uint8_t  interface_class;
+            uint8_t  interface_sub_class;
+            uint8_t  interface_protocol;
+            uint8_t  interface_indx;
     } __attribute__((packed));
 
     struct ENDPOINT_DESC {
-        ak::uint8_t  len;
-        ak::uint8_t  type;
-        ak::uint8_t  end_point;        
-        ak::uint8_t  bm_attrbs;        
-        ak::uint16_t max_packet_size;  
-        ak::uint8_t  interval;
+        uint8_t  len;
+        uint8_t  type;
+        uint8_t  end_point;        
+        uint8_t  bm_attrbs;        
+        uint16_t max_packet_size;  
+        uint8_t  interval;
     } __attribute__((packed));
 
     struct IF_HID_DESC {
-        ak::uint8_t  len;
-        ak::uint8_t  type;
-        ak::uint16_t release;
-        ak::uint8_t  countryCode;
-        ak::uint8_t  numDescriptors;
+        uint8_t  len;
+        uint8_t  type;
+        uint16_t release;
+        uint8_t  countryCode;
+        uint8_t  numDescriptors;
     } __attribute__((packed));
 
     #define DEV_TO_HOST     0x80

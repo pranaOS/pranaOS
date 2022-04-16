@@ -20,7 +20,7 @@ namespace Kernel {
         void unmount(virtualFileSystem* vfs);
         void unmountByDisk(Disk* disk);
 
-        int extractDiskNumber(const char* path, ak::uint8_t* idSizeReturn);
+        int extractDiskNumber(const char* path, uint8_t* idSizeReturn);
         bool searchBootPartition();
 
         int readFile(const char* filename, uint8_t* buffer, uint32_t offset = 0, uint32_t len = -1);

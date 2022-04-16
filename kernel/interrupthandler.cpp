@@ -13,7 +13,7 @@ using namespace Kernel;
  * 
  * @param interruptNumber 
  */
-interruptHandler::interruptHandler(ak::uint8_t interruptNumber) {
+interruptHandler::interruptHandler(uint8_t interruptNumber) {
     interruptManager::addHandler(this, interruptNumber);
 }
 
@@ -21,9 +21,9 @@ interruptHandler::interruptHandler(ak::uint8_t interruptNumber) {
  * @brief handleInterrupt 
  * 
  * @param esp 
- * @return ak::uint32_t 
+ * @return uint32_t 
  */
-ak::uint32_t interruptHandler::handleInterrupt(ak::uint32_t esp) {
+uint32_t interruptHandler::handleInterrupt(uint32_t esp) {
     return esp;
 }
 
@@ -31,7 +31,7 @@ ak::uint32_t interruptHandler::handleInterrupt(ak::uint32_t esp) {
  * @brief Interruptmanager
  * 
  */
-ak::List<interruptHandler*>* interruptManager::interruptCallbacks[256];
+List<interruptHandler*>* interruptManager::interruptCallbacks[256];
 
 /**
  * @brief initialize function
@@ -49,9 +49,9 @@ void interruptManager::initialize() {
  * 
  * @param num 
  * @param esp 
- * @return ak::uint32_t 
+ * @return uint32_t 
  */
-uint32_t interruptManager::handleInterrupt(ak::uint8_t num, ak::uint32_t esp) {
+uint32_t interruptManager::handleInterrupt(uint8_t num, uint32_t esp) {
     if(interruptCallbacks[num] == 0)
         return esp;
     
@@ -73,9 +73,9 @@ uint32_t interruptManager::handleInterrupt(ak::uint8_t num, ak::uint32_t esp) {
  * @param handler 
  * @param interrupt 
  */
-void interruptManager::addHandler(interruptHandler* handler, ak::uint8_t interrupt) {
+void interruptManager::addHandler(interruptHandler* handler, uint8_t interrupt) {
     if(interruptCallbacks[interrupt] == 0)
-        interruptCallbacks[interrupt] = new ak::List<interruptHandler*>();
+        interruptCallbacks[interrupt] = new List<interruptHandler*>();
     
     interruptCallbacks[interrupt]->push_back(handler);
 }
@@ -86,7 +86,7 @@ void interruptManager::addHandler(interruptHandler* handler, ak::uint8_t interru
  * @param handler 
  * @param interrupt 
  */
-void interruptManager::removeHandler(interruptHandler* handler, ak::uint8_t interrupt) {
+void interruptManager::removeHandler(interruptHandler* handler, uint8_t interrupt) {
     interruptCallbacks[interrupt]->Remove(handler);
     if(interruptCallbacks[interrupt]->size() == 0) {
         delete interruptCallbacks[interrupt];

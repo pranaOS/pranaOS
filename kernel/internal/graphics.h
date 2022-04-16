@@ -5,17 +5,17 @@
 namespace Kernel {
     class graphicsDevice {
     public:
-        ak::uint32_t width;
-        ak::uint32_t height;
-        ak::uint8_t bpp;
-        ak::uint32_t framebufferPhys;
+        uint32_t width;
+        uint32_t height;
+        uint8_t bpp;
+        uint32_t framebufferPhys;
         char* identifier = 0;
 
         graphicsDevice(char* name);
         virtual ~graphicsDevice();
         virtual bool selectBestVideoMode();
             
-        ak::uint32_t getBufferSize();
+        uint32_t getBufferSize();
             
         static graphicsDevice* getBestDevice();
     

@@ -9,8 +9,8 @@
 
 namespace Kernel {
     struct pciDriverEntry {
-        ak::uint16_t vendorID;
-        ak::uint16_t deviceID;
+        uint16_t vendorID;
+        uint16_t deviceID;
         char* driverString;
     } __attribute__((packed));
 

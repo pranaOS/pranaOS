@@ -11,6 +11,6 @@ namespace Kernel {
       public:
         syscallHandler();
 
-        ak::uint32_t handleInterrupt(ak::uint32_t esp);
+        uint32_t handleInterrupt(uint32_t esp);
     };
 }

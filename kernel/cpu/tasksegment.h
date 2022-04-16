@@ -7,39 +7,39 @@
 namespace Kernel {
 
     struct taskSegmentEntry {
-        ak::uint32_t prevTss;
-        ak::uint32_t esp0;
-        ak::uint32_t ss0;
-        ak::uint32_t esp1;
-        ak::uint32_t ss1;
-        ak::uint32_t esp2;
-        ak::uint32_t ss2;
-        ak::uint32_t cr3;
-        ak::uint32_t eip;
-        ak::uint32_t eflags;
-        ak::uint32_t eax;
-        ak::uint32_t ecx;
-        ak::uint32_t edx;
-        ak::uint32_t ebx;
-        ak::uint32_t esp;
-        ak::uint32_t ebp;
-        ak::uint32_t esi;
-        ak::uint32_t edi;
-        ak::uint32_t es;
-        ak::uint32_t cs;
-        ak::uint32_t ss;
-        ak::uint32_t ds;
-        ak::uint32_t fs;
-        ak::uint32_t gs;
-        ak::uint32_t ldt;
-        ak::uint16_t trap;
-        ak::uint16_t iomap;
+        uint32_t prevTss;
+        uint32_t esp0;
+        uint32_t ss0;
+        uint32_t esp1;
+        uint32_t ss1;
+        uint32_t esp2;
+        uint32_t ss2;
+        uint32_t cr3;
+        uint32_t eip;
+        uint32_t eflags;
+        uint32_t eax;
+        uint32_t ecx;
+        uint32_t edx;
+        uint32_t ebx;
+        uint32_t esp;
+        uint32_t ebp;
+        uint32_t esi;
+        uint32_t edi;
+        uint32_t es;
+        uint32_t cs;
+        uint32_t ss;
+        uint32_t ds;
+        uint32_t fs;
+        uint32_t gs;
+        uint32_t ldt;
+        uint16_t trap;
+        uint16_t iomap;
     };
 
         class taskSegment {
         public:
-            static void install(ak::uint32_t idx, ak::uint32_t kernelSS, ak::uint32_t kernelESP);
-            static void setStack(ak::uint32_t kernelSS, ak::uint32_t kernelESP);
+            static void install(uint32_t idx, uint32_t kernelSS, uint32_t kernelESP);
+            static void setStack(uint32_t kernelSS, uint32_t kernelESP);
             static taskSegmentEntry* getCurrent();
         };
     }

@@ -17,17 +17,17 @@ namespace Kernel {
     class Disk {
     public:
         diskController* controller;
-        ak::uint32_t controllerIndex;
+        uint32_t controllerIndex;
         char* identifier = 0;
         diskType type;
-        ak::uint64_t size;
-        ak::uint32_t numBlocks;
-        ak::uint32_t blockSize;
+        uint64_t size;
+        uint32_t numBlocks;
+        uint32_t blockSize;
 
-        Disk(ak::uint32_t controllerIndex, diskController* controller, diskType type, ak::uint64_t size, ak::uint32_t blocks, ak::uint32_t blocksize);
+        Disk(uint32_t controllerIndex, diskController* controller, diskType type, uint64_t size, uint32_t blocks, uint32_t blocksize);
             
-        virtual char readSector(ak::uint32_t lba, ak::uint8_t* buf);
-        virtual char writeSector(ak::uint32_t lba, ak::uint8_t* buf);
+        virtual char readSector(uint32_t lba, uint8_t* buf);
+        virtual char writeSector(uint32_t lba, uint8_t* buf);
     };
     
 }

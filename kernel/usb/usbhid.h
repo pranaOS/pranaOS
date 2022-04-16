@@ -63,8 +63,8 @@ namespace Kernel {
     #define ATTR_NVOL_VOL         0x80
 
     struct HID_NODE {
-        ak::uint16_t u_page;
-        ak::uint16_t usage;
+        uint16_t u_page;
+        uint16_t usage;
     };
 
     struct HID_PATH {
@@ -73,19 +73,19 @@ namespace Kernel {
     };
 
     struct HID_DATA {
-        ak::uint32_t value;     
+        uint32_t value;     
         struct HID_PATH path;       
             
-        ak::uint8_t  report_id; 
+        uint8_t  report_id; 
         int    report_count;        
         int    offset;              
         int    size;                
                                         
-        ak::uint8_t  type;      
-        ak::uint8_t  attribute; 
+        uint8_t  type;      
+        uint8_t  attribute; 
                                         
-        ak::uint8_t unit;       
-        ak::uint8_t unit_exp;   
+        uint8_t unit;       
+        uint8_t unit_exp;   
             
         int    log_min;             
         int    log_max;             
@@ -96,11 +96,11 @@ namespace Kernel {
 
     class HIDParser {
     public:
-        const ak::uint8_t *report_desc;              
+        const uint8_t *report_desc;              
         int    report_desc_size;             
         int    pos;                          
-        ak::uint8_t  item;                         
-        ak::uint32_t value;                        
+        uint8_t  item;                         
+        uint32_t value;                        
             
         struct HID_DATA data;                  
             
@@ -108,7 +108,7 @@ namespace Kernel {
         int    report_count;                 
         int    count;                        
             
-        ak::uint16_t u_page;                     
+        uint16_t u_page;                     
         struct HID_NODE usage_table[USAGE_TAB_SIZE]; 
         int    usage_size;                   
         int    usage_min;
@@ -121,7 +121,7 @@ namespace Kernel {
         bool parse(struct HID_DATA* data);
         void reset();
         bool findObject(struct HID_DATA* data);
-        int* getReportOffset(const ak::uint8_t report_id, const ak::uint8_t report_type);
+        int* getReportOffset(const uint8_t report_id, const uint8_t report_type);
 
     private:
         HIDParser();

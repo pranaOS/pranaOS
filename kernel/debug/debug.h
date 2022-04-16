@@ -13,13 +13,13 @@
 namespace Kernel {
     typedef struct {
         char* name;
-        ak::uint32_t address;
+        uint32_t address;
         char type;
     } genericsymbol_t;
 
     typedef struct stackframe {
         struct stackframe* next;
-        ak::uint32_t addr;
+        uint32_t addr;
     } stackframe_t;
 
     class symbolDebugger {
@@ -58,7 +58,7 @@ namespace Kernel {
          * @param size 
          * @param virtMemory 
          */
-        void printMemoryDump(ak::uint32_t address, ak::uint32_t size, bool virtMemory);
+        void printMemoryDump(uint32_t address, uint32_t size, bool virtMemory);
 
         /**
          * @brief print page tables
@@ -68,9 +68,9 @@ namespace Kernel {
         void printPageTables(int pid = -1);
 
     private:
-        ak::List<genericsymbol_t> symbolTable;
+        List<genericsymbol_t> symbolTable;
         char messageBuffer[200] = {0};
-        ak::uint32_t pageAccessAddress = 0;
+        uint32_t pageAccessAddress = 0;
 
         bool isKernel = false;
         int serialIndex = 0;
@@ -82,7 +82,7 @@ namespace Kernel {
          * @param offset 
          * @return const char* 
          */
-        const char* findSymbol(ak::uint32_t address, ak::uint32_t* offset);
+        const char* findSymbol(uint32_t address, uint32_t* offset);
 
         /**
          * @brief handle debug command
@@ -99,6 +99,6 @@ namespace Kernel {
          * @param pdIndex 
          * @param ptIndex 
          */
-        void printPageItem(void* item, bool table, ak::uint16_t pdIndex, ak::uint16_t ptIndex);
+        void printPageItem(void* item, bool table, uint16_t pdIndex, uint16_t ptIndex);
     };
 }

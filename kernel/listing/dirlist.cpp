@@ -9,7 +9,7 @@
 using namespace Kernel;
 using namespace LibC;
 
-ak::List<vfsEntry>* currentDirList = 0;
+List<vfsEntry>* currentDirList = 0;
 
 /**
  * @brief Construct a new dir List::dir List object
@@ -25,7 +25,7 @@ dirList::dirList()
  * @param pathPtr 
  * @return int 
  */
-int dirList::beginListing(Thread* thread, ak::uint32_t pathPtr) {
+int dirList::beginListing(Thread* thread, uint32_t pathPtr) {
     char* path = (char*)pathPtr;
     if(requestBusy) {
         waitingQueue.push_back(thread);
@@ -45,7 +45,7 @@ int dirList::beginListing(Thread* thread, ak::uint32_t pathPtr) {
  * @param bufPtr 
  * @return int 
  */
-int dirList::getEntry(Thread* thread, int entry, ak::uint32_t bufPtr) {
+int dirList::getEntry(Thread* thread, int entry, uint32_t bufPtr) {
     char* buf = (char*)bufPtr;
 
     if (currentReqThread != thread) {

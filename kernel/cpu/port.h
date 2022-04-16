@@ -110,17 +110,17 @@ namespace Kernel {
      * @param addr 
      * @param val 
      */
-    inline static void writeMemReg(const ak::uint32_t addr, const ak::uint32_t val) {
-        *(volatile ak::uint32_t*)addr = val;
+    inline static void writeMemReg(const uint32_t addr, const uint32_t val) {
+        *(volatile uint32_t*)addr = val;
     }
 
     /**
      * @brief read memry register object
      * 
      * @param addr 
-     * @return ak::uint32_t 
+     * @return uint32_t 
      */
-    inline static ak::uint32_t readMemReg(const ak::uint32_t addr) {
-        return *(volatile ak::uint32_t*)addr;
+    inline static uint32_t readMemReg(const uint32_t addr) {
+        return *(volatile uint32_t*)addr;
     }
 }

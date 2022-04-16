@@ -21,5 +21,5 @@ void reboot::rebootsignal() {
  * 
  */
 void reboot::initialize() {
-    ak::uint32_t init = -1;
+    uint32_t init = -1;
 }

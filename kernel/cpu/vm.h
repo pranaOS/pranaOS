@@ -27,31 +27,31 @@ namespace Kernel {
     #define PAGEFRAME_INDEX(addr) (((uint32_t)addr) & 0xfff)
 
     struct pageDirectoryEntry {
-        ak::uint32_t present        : 1;    
-        ak::uint32_t readWrite      : 1;    
-        ak::uint32_t isUser         : 1;    
-        ak::uint32_t writeThrough   : 1;    
-        ak::uint32_t canCache       : 1;    
-        ak::uint32_t accessed       : 1;    
-        ak::uint32_t reserved       : 1;    
-        ak::uint32_t pageSize       : 1;    
-        ak::uint32_t ignored        : 1;
-        ak::uint32_t unused         : 3;    
-        ak::uint32_t frame          : 20;   
+        uint32_t present        : 1;    
+        uint32_t readWrite      : 1;    
+        uint32_t isUser         : 1;    
+        uint32_t writeThrough   : 1;    
+        uint32_t canCache       : 1;    
+        uint32_t accessed       : 1;    
+        uint32_t reserved       : 1;    
+        uint32_t pageSize       : 1;    
+        uint32_t ignored        : 1;
+        uint32_t unused         : 3;    
+        uint32_t frame          : 20;   
     } __attribute__((packed));
 
     struct pageTableEntry {
-        ak::uint32_t present        : 1;    
-        ak::uint32_t readWrite      : 1;    
-        ak::uint32_t isUser         : 1;    
-        ak::uint32_t writeThrough   : 1;    
-        ak::uint32_t canCache       : 1;    
-        ak::uint32_t accessed       : 1;    
-        ak::uint32_t dirty          : 1;    
-        ak::uint32_t reserved       : 1;
-        ak::uint32_t global         : 1;    
-        ak::uint32_t unused         : 3;    
-        ak::uint32_t frame          : 20;   
+        uint32_t present        : 1;    
+        uint32_t readWrite      : 1;    
+        uint32_t isUser         : 1;    
+        uint32_t writeThrough   : 1;    
+        uint32_t canCache       : 1;    
+        uint32_t accessed       : 1;    
+        uint32_t dirty          : 1;    
+        uint32_t reserved       : 1;
+        uint32_t global         : 1;    
+        uint32_t unused         : 3;    
+        uint32_t frame          : 20;   
     } __attribute__((packed));
 
     struct pageTable {
@@ -73,16 +73,16 @@ namespace Kernel {
         static void allocatePage(pageTableEntry* page, bool kernel, bool writeable);
         static void freePage(pageTableEntry* page);
 
-        static pageTableEntry* getPageForAddress(ak::uint32_t virtualAddress, bool shouldCreate, bool readWrite = true, bool userPages = false);    
-        static void* getPageTableAddress(ak::uint16_t pageTableNumber);
+        static pageTableEntry* getPageForAddress(uint32_t virtualAddress, bool shouldCreate, bool readWrite = true, bool userPages = false);    
+        static void* getPageTableAddress(uint16_t pageTableNumber);
             
         static void* virtualToPhysical(void* virtAddress);
             
         static void mapVirtualToPhysical(void* physAddress, void* virtAddress, bool kernel = true, bool writeable = true);
-        static void mapVirtualToPhysical(void* physAddress, void* virtAddress, ak::uint32_t size, bool kernel = true, bool writeable = true);
+        static void mapVirtualToPhysical(void* physAddress, void* virtAddress, uint32_t size, bool kernel = true, bool writeable = true);
             
-        static void switchPageDirectory(ak::uint32_t physAddr);
-        static ak::uint32_t getPageDirectoryAddress();
+        static void switchPageDirectory(uint32_t physAddr);
+        static uint32_t getPageDirectoryAddress();
     private:
         virtualMemoryManager();
     };

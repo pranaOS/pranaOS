@@ -31,7 +31,7 @@ namespace Kernel {
          * @param intNumber 
          * @param regs 
          */
-        void callInterrupt(uint8_t intNumber, VM86Args* regs);
+        void callInterrupt(uint8_t intNumber, vm86Args* regs);
 
         /**
          * @brief executeCode

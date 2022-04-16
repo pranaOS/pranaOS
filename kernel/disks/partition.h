@@ -10,30 +10,30 @@
 namespace Kernel {
 
     struct partitionTableEntry {
-        ak::uint8_t bootable;
+        uint8_t bootable;
 
-        ak::uint8_t startHead;
-        ak::uint8_t startSector : 6;
-        ak::uint16_t startCylinder : 10;
+        uint8_t startHead;
+        uint8_t startSector : 6;
+        uint16_t startCylinder : 10;
 
-        ak::uint8_t partitionId;
+        uint8_t partitionId;
 
-        ak::uint8_t endHead;
-        ak::uint8_t endSector : 6;
-        ak::uint16_t endCylinder : 10;
+        uint8_t endHead;
+        uint8_t endSector : 6;
+        uint16_t endCylinder : 10;
 
-        ak::uint32_t startLba;
-        ak::uint32_t length;
+        uint32_t startLba;
+        uint32_t length;
     } __attribute__((packed));
 
     struct masterBootRecord {
-        ak::uint8_t bootloader[440];
-        ak::uint32_t signature;
-        ak::uint16_t unused;
+        uint8_t bootloader[440];
+        uint32_t signature;
+        uint16_t unused;
             
         partitionTableEntry primaryPartitions[4];
             
-        ak::uint16_t magicnumber;
+        uint16_t magicnumber;
     } __attribute__((packed));
 
     class partitionManager {

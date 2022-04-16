@@ -10,21 +10,21 @@
 
 namespace Kernel {
     struct biosDriveParameters {
-        ak::uint8_t  interfacePath[8];
-        ak::uint8_t  devicePath[8];
-        ak::uint8_t  reserved2;
-        ak::uint8_t  checksum;
-        ak::uint8_t  devPathLen;
-        ak::uint8_t  reserved1[3];
-        ak::uint16_t bufLen;
-        ak::uint16_t bytesPerSector;
-        ak::uint16_t infoFlags;
-        ak::uint16_t signature;
-        ak::uint32_t cilinders;
-        ak::uint32_t heads;
-        ak::uint32_t sectorsPerTrack;
-        ak::uint32_t eddParameters;
-        ak::uint64_t totalSectors;
+        uint8_t  interfacePath[8];
+        uint8_t  devicePath[8];
+        uint8_t  reserved2;
+        uint8_t  checksum;
+        uint8_t  devPathLen;
+        uint8_t  reserved1[3];
+        uint16_t bufLen;
+        uint16_t bytesPerSector;
+        uint16_t infoFlags;
+        uint16_t signature;
+        uint32_t cilinders;
+        uint32_t heads;
+        uint32_t sectorsPerTrack;
+        uint32_t eddParameters;
+        uint64_t totalSectors;
         char             hostBusName[4];
         char             interfaceName[8];
     } __attribute__((packed));
@@ -39,9 +39,9 @@ namespace Kernel {
         void addDisk(Disk* disk);
         void removeDisk(Disk* disk);
 
-        char readSector(ak::uint16_t drive, ak::uint32_t lba, ak::uint8_t* buf);
-        char writeSector(ak::uint16_t drive, ak::uint32_t lba, ak::uint8_t* buf);
+        char readSector(uint16_t drive, uint32_t lba, uint8_t* buf);
+        char writeSector(uint16_t drive, uint32_t lba, uint8_t* buf);
 
-        biosDriveParameters* getDriveInfoBios(ak::uint8_t drive);
+        biosDriveParameters* getDriveInfoBios(uint8_t drive);
     };
 }

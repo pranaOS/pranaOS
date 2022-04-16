@@ -16,7 +16,7 @@ namespace Kernel {
         scheduler();
         bool enabled = true;
 
-        ak::uint32_t handleInterrupts(ak::uint32_t esp);
+        uint32_t handleInterrupts(uint32_t esp);
 
         void addThread(Thread* thread, bool forceSwitch = false);
         void forceSwitch();
@@ -28,8 +28,8 @@ namespace Kernel {
         Process* currentProcess();
 
       private:
-        ak::uint32_t frequency = 0;
-        ak::uint32_t tickCount = 0;
+        uint32_t frequency = 0;
+        uint32_t tickCount = 0;
 
         List<Thread*> threadLists;
         Thread* currentThread = 0;

@@ -34,20 +34,20 @@ namespace Kernel {
 
     struct Thread {
         Process* parent;
-        ak::uint8_t* stack;
-        ak::uint8_t* userStack;
-        ak::uint32_t userStackSize;
+        uint8_t* stack;
+        uint8_t* userStack;
+        uint32_t userStackSize;
         threadState state;
         blockedState blockedstate;
         Kernel::CPUState* regsPtr;
             
-        ak::uint32_t timeDelta;
-        ak::uint8_t* FPUBuffer;
+        uint32_t timeDelta;
+        uint8_t* FPUBuffer;
     };
 
     class threadHelper {
       public:
-        static thread* createFromFunction(void (*entryPoint)(), bool isKernel = false, ak::uint32_t flags = 0x202, Process* parent = 0);
+        static thread* createFromFunction(void (*entryPoint)(), bool isKernel = false, uint32_t flags = 0x202, Process* parent = 0);
         static void removeThread(Thread* thread);
       private:
         threadHelper();

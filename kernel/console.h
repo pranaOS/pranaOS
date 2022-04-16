@@ -35,8 +35,8 @@ namespace Kernel {
 
     class bootConsole {
     public:
-        static ak::uint8_t foregroundcolor;
-        static ak::uint8_t backgroundcolor;
+        static uint8_t foregroundcolor;
+        static uint8_t backgroundcolor;
 
         static void init(bool enableSerial = false);
 
@@ -50,7 +50,7 @@ namespace Kernel {
         static void setx(int x);
         static void sety(int y);
 
-        static ak::uint16_t* getBuffer();
+        static uint16_t* getBuffer();
         
     private:
         static int xoffset;

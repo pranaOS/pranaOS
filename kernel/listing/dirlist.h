@@ -20,7 +20,7 @@ namespace Kernel {
          * @param pathPtr 
          * @return int 
          */
-        int beginListing(Thread *thread, ak::uint32_t pathPtr) override;
+        int beginListing(Thread *thread, uint32_t pathPtr) override;
 
         /**
          * @brief Get the Entry object
@@ -30,7 +30,7 @@ namespace Kernel {
          * @param bufPtr 
          * @return int 
          */
-        int getEntry(Thread* thread, int entry, ak::uint32_t bufPtr) override;
+        int getEntry(Thread* thread, int entry, uint32_t bufPtr) override;
 
         /**
          * @brief end listing 

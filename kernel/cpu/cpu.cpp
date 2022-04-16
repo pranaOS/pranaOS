@@ -22,7 +22,7 @@ extern "C" void enableSSE();
  * @param ecx 
  * @param edx 
  */
-static inline void cpuid(ak::uint32_t reg, ak::uint32_t *eax,ak:: uint32_t *ebx, ak::uint32_t *ecx, ak::uint32_t *edx) {
+static inline void cpuid(uint32_t reg, uint32_t *eax, uint32_t *ebx, uint32_t *ecx, uint32_t *edx) {
     asm volatile("cpuid"
         : "=a" (*eax), "=b" (*ebx), "=c" (*ecx), "=d" (*edx)
         : "0" (reg));

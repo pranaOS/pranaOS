@@ -105,17 +105,17 @@ namespace Kernel {
      */
     class dmaController : public systemComponent {
       public:
-        void setChannelAddress(ak::uint8_t channel, ak::uint8_t low, ak::uint8_t high);
-        void setChannelCounter(ak::uint8_t channel, ak::uint8_t low, ak::uint8_t high);
-        void setExternalPageRegister(ak::uint8_t reg, ak::uint8_t val);
-        void setChannelMode(ak::uint8_t channel, ak::uint8_t mode);
+        void setChannelAddress(uint8_t channel, uint8_t low, uint8_t high);
+        void setChannelCounter(uint8_t channel, uint8_t low, uint8_t high);
+        void setExternalPageRegister(uint8_t reg, uint8_t val);
+        void setChannelMode(uint8_t channel, uint8_t mode);
 
-        void channelPrepareRead(ak::uint8_t channel);
-        void channelPrepareWrite(ak::uint8_t channel);
+        void channelPrepareRead(uint8_t channel);
+        void channelPrepareWrite(uint8_t channel);
 
-        void maskChannel(ak::uint8_t channel);
+        void maskChannel(uint8_t channel);
 
-        void unmaskChannel(ak::uint8_t channel);
+        void unmaskChannel(uint8_t channel);
 
         void resetFlipFlop(int dma);
         void reset(int dma);

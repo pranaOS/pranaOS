@@ -25,43 +25,43 @@ namespace Kernel {
 
     class physicalMemoryManager {
       public:
-        static void initialize(ak::uint32_t size, ak::uint32_t bitmap);
+        static void initialize(uint32_t size, uint32_t bitmap);
 
-        static void setRegionFree(ak::uint32_t base, ak::uint32_t size);
-        static void setRegionUsed(ak::uint32_t base, ak::uint32_t size);
+        static void setRegionFree(uint32_t base, uint32_t size);
+        static void setRegionUsed(uint32_t base, uint32_t size);
         static parseMemoryMap(const multiboot_info_t* mbi);
 
         static void* allocateBlock();
         static void freeBlock(void* ptr);
 
-        static allocateBlocks(ak::uint32_t size);
-        static freeBlocks(void* ptr, ak::uint32_t size);
+        static allocateBlocks(uint32_t size);
+        static freeBlocks(void* ptr, uint32_t size);
 
-        static ak::uint32_t amountOfMemory();
-        static ak::uint32_t usedBlocks();
-        static ak::uint32_t freeBlocks();
-        static ak::uint32_t totalBlocks();
-        static ak::uint32_t getBitmapSize();
+        static uint32_t amountOfMemory();
+        static uint32_t usedBlocks();
+        static uint32_t freeBlocks();
+        static uint32_t totalBlocks();
+        static uint32_t getBitmapSize();
 
       private:
-        static ak::uint32_t memorySize;
-        static ak::uint32_t usedBlocks;
-        static ak::uint32_t maximumBlocks;
-        static ak::uint32_t memoryArray;
+        static uint32_t memorySize;
+        static uint32_t usedBlocks;
+        static uint32_t maximumBlocks;
+        static uint32_t memoryArray;
 
-        static inline void setBit(ak::uint32_t bit) {
+        static inline void setBit(uint32_t bit) {
             memoryArray[bit / 32] |= (1 << (bit % 32));
         }
 
-        static inline void unsetBit(ak::uint32_t bit) {
+        static inline void unsetBit(uint32_t bit) {
             memoryArray[bit / 32] &= ~ (1 << (bit % 32));
         }
 
-        static inline bool testBit(ak::uint32_t bit) {
+        static inline bool testBit(uint32_t bit) {
             return memoryArray[bit / 32] &  (1 << (bit % 32));
         }
     };
 
-    ak::uint32_t pageRoundUp(ak::uint32_t address);
-    ak::uint32_t pageRoundDown(ak::uint32_t address);
+    uint32_t pageRoundUp(uint32_t address);
+    uint32_t pageRoundDown(uint32_t address);
 }

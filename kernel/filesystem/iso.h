@@ -9,19 +9,19 @@
 
 namespace Kernel {
     struct directoryRecord {
-        ak::uint8_t length;
-        ak::uint8_t  earLength;
-        ak::uint8_t extentLocation;
-        ak::uint8_t extentLocationBe;
-        ak::uint8_t dataLength;
-        ak::uint8_t dataLengthBe;
-        ak::uint8_t datetime[7];
-        ak::uint8_t flags;
-        ak::uint8_t gapSize;
-        ak::uint8_t unitSize;
-        ak::uint8_t volSeqNumber;
-        ak::uint8_t volSeqNumberBe;
-        ak::uint8_t nameLength;
+        uint8_t length;
+        uint8_t  earLength;
+        uint8_t extentLocation;
+        uint8_t extentLocationBe;
+        uint8_t dataLength;
+        uint8_t dataLengthBe;
+        uint8_t datetime[7];
+        uint8_t flags;
+        uint8_t gapSize;
+        uint8_t unitSize;
+        uint8_t volSeqNumber;
+        uint8_t volSeqNumberBe;
+        uint8_t nameLength;
         char name[222];
     } __attribute__((packed));
 
@@ -33,36 +33,36 @@ namespace Kernel {
         char minute[2];
         char second[2];
         cahr hundrdSecond[2];
-        ak::int8_t timeZon;
+        int8_t timeZon;
     } __attribute__((packed));
 
     struct volumeDescriptor {
-        ak::uint8_t type;
+        uint8_t type;
         char identifier[5];
-        ak::uint8_t version;
+        uint8_t version;
         char data[2041];
     };
 
     #define ISODCL(from, to) (to - from + 1)
 
     struct primaryVolumeDescriptor {
-        ak::uint8_t type;
+        uint8_t type;
         char id                             [ISODCL (  2,     6)];
-        ak::uint8_t version;
+        uint8_t version;
         char reserved1                      [ISODCL (  8,     8)];
         char system_id                      [ISODCL (  9,    40)];
         char volume_id                      [ISODCL ( 41,    72)];
         char reserved2                      [ISODCL ( 73,    80)];
-        ak::uint64_t volumeSpaceSize;
+        uint64_t volumeSpaceSize;
         char reserved3                      [ISODCL ( 89,   120)];
-        ak::uint32_t volumeSetSize;
-        ak::uint32_t volumeSequenceNumber;
-        ak::uint32_t logicalBlockSize;
-        ak::uint64_t pathTableSize;
-        ak::uint32_t type1PathTable;
-        ak::uint32_t optType1PathTable;
-        ak::uint32_t typeMPathTable;
-        ak::uint32_t opt_type_m_path_table;
+        uint32_t volumeSetSize;
+        uint32_t volumeSequenceNumber;
+        uint32_t logicalBlockSize;
+        uint64_t pathTableSize;
+        uint32_t type1PathTable;
+        uint32_t optType1PathTable;
+        uint32_t typeMPathTable;
+        uint32_t opt_type_m_path_table;
         directoryRecord rootDirectoryRecord;
         char volumeSetId                  [ISODCL (191,   318)];
         char publisherId                   [ISODCL (319,   446)];
@@ -77,7 +77,7 @@ namespace Kernel {
         timeFormat effectiveDate        ;
         char fileStructureVersion         [ISODCL (882,   882)];
         char reserved4                      [ISODCL (883,   883)];
-        ak::uint8_t applicationData    [ISODCL (884,  1395)];
+        uint8_t applicationData    [ISODCL (884,  1395)];
         char reserved5                      [ISODCL (1396,  2048)];
     } __attribute__((packed));
 
@@ -99,7 +99,7 @@ namespace Kernel {
 
     class isoFS : public virtualFileSystem {
       public:
-        iso(Disk* disk, ak::uint32_t start, ak::uint32_t size);
+        iso(Disk* disk, uint32_t start, uint32_t size);
         int readFile(const char* filename, uint8_t* buffer, uint32_t offset = 0, uint32_t len = -1);
         int writeFile(const char* filename, uint8_t* buffer, uint32_t len, bool create = true);
 

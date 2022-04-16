@@ -20,12 +20,12 @@ namespace Kernel {
       Disk* disk;
 
     protected:
-      ak::uint32_t startLBA;
-      ak::uint32_t sizeInSectors;      
+      uint32_t startLBA;
+      uint32_t sizeInSectors;      
       char* Name = "Unkown";
 
     public:
-      virtualFileSystem(Disk* disk, ak::uint32_t start, ak::uint32_t size, char* name = 0);
+      virtualFileSystem(Disk* disk, uint32_t start, uint32_t size, char* name = 0);
       virtual ~virtualFileSystem();
             
       virtual bool initialize();

@@ -22,11 +22,11 @@ namespace Kernel {
 
     class usbEndpoint {
       public:
-        ak::uint8_t endpointNumber = 0; 
+        uint8_t endpointNumber = 0; 
         endpointDirection dir = endpointDirection::Out;
         endpointType type = endpointType::Control;
-        ak::uint16_t maxPacketSize = 0; 
-        ak::uint8_t interval = 0; 
+        uint16_t maxPacketSize = 0; 
+        uint8_t interval = 0; 
 
       public:
         usbEndpoint(struct ENDPOINT_DESC* src);

@@ -14,15 +14,15 @@ namespace Kernel {
   class RTC : public systemComponent {
     private:
       bool updateInProgress();
-      ak::uint8_t readRegister(int reg);
+      uint8_t readRegister(int reg);
 
     public:
       RTC();
-      ak::uint32_t getSecond();
-      ak::uint32_t getMinute();
-      ak::uint32_t getHour();
-      ak::uint32_t getDay();
-      ak::uint32_t getMonth();
-      ak::uint32_t getYear();
+      uint32_t getSecond();
+      uint32_t getMinute();
+      uint32_t getHour();
+      uint32_t getDay();
+      uint32_t getMonth();
+      uint32_t getYear();
   };  
 }

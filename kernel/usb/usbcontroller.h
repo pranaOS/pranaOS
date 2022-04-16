@@ -19,14 +19,14 @@ namespace Kernel {
 
     class usbDriver;
     typedef struct interruptTransfer {
-        ak::uint8_t* bufferPointer;
-        ak::uint32_t bufferPhys;
+        uint8_t* bufferPointer;
+        uint32_t bufferPhys;
         int bufferLen;
 
         usbDriver* handler;
         int queueIndex;
 
-        ak::uint32_t tdPhys;
+        uint32_t tdPhys;
         void* td;
         int numTd;
 
@@ -58,7 +58,7 @@ namespace Kernel {
 
         bool getStringDescriptor(struct STRING_DESC* stringDesc, usbDevice* device, uint16_t index, uint16_t lang = 0);
             
-        ak::uint8_t* getConfigDescriptor(usbDevice* device);
+        uint8_t* getConfigDescriptor(usbDevice* device);
             
         bool setConfiguration(usbDevice* device, uint8_t config);
 
@@ -67,6 +67,6 @@ namespace Kernel {
         int getMaxLuns(usbDevice* device);
 
     protected:
-        ak::List<interruptTransfer_t*> interrupTransfers;
+        List<interruptTransfer_t*> interrupTransfers;
     };
 }
