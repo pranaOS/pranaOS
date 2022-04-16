@@ -4,7 +4,6 @@
 #include <ak/types.h>
 
 namespace Kernel {
-    namespace system {
         #define APM_SIGNATURE           0x504D 
         #define APM_ALL_DEVICE          ((uint16_t) 0x0001)
         #define APM_DEVICE_DISPLAY      ((uint16_t) 0x0100)
@@ -51,11 +50,8 @@ namespace Kernel {
             APMController();
 
             void checkAndHandleEvents();
-            void setPowerState(ak::uint16_t device, ak::uint8_t state);
+            void setPowerState(uint16_t device, uint8_t state);
             void disableResumeTimer();
             void disableRingIndicator();
         };
-    }
 }
-
-#endif
