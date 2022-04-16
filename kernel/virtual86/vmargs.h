@@ -10,14 +10,12 @@
 #include <ak/types.h>
 
 namespace pranaOS {
-    namespace system {
-        struct vmArgs {
-            ak::uint16_t AX;
-            ak::uint16_t BX;
-            ak::uint16_t CX;
-            ak::uint16_t DX;
-            ak::uint16_t DI;
+    struct VM86Args {
+        uint16_t AX;
+        uint16_t BX;
+        uint16_t CX;
+        uint16_t DX;
+        uint16_t DI;
             
-        } __attribute__((packed));
-    }
+    } __attribute__((packed));
 }
