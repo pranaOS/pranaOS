@@ -75,7 +75,7 @@ uint32_t interruptManager::handleInterrupt(uint8_t num, uint32_t esp) {
  */
 void interruptManager::addHandler(interruptHandler* handler, uint8_t interrupt) {
     if(interruptCallbacks[interrupt] == 0)
-        interruptCallbacks[interrupt] = new List<interruptHandler*>();
+        interruptCallbacks[interrupt] = new list<interruptHandler*>();
     
     interruptCallbacks[interrupt]->push_back(handler);
 }

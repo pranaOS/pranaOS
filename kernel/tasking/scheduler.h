@@ -31,7 +31,7 @@ namespace Kernel {
         uint32_t frequency = 0;
         uint32_t tickCount = 0;
 
-        List<Thread*> threadLists;
+        list<Thread*> threadLists;
         Thread* currentThread = 0;
 
         Thread* getNextThread();
