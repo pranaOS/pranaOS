@@ -82,15 +82,15 @@ namespace LibC {
     };
 }
 
-using namespace pranaOSList;
+using namespace LibC;
 
-template <typename T>
-listNode<T>* List<T>::insertInternal(const T &e, listNode<T>* pos) {
+
+template <typename T> 
+listNode<T>*list<T>::insertInternal(const T &e, listNode<T>* pos) {
     listNode<T> *n = new listNode<T>(e);
     size_++;
 
     n->next = pos;
-
     if(pos) {
         n->prev = pos->prev;
         pos->prev = n;
@@ -105,22 +105,22 @@ listNode<T>* List<T>::insertInternal(const T &e, listNode<T>* pos) {
     else {
         head_ = n;
     }
-
     return n;
 }
 
 template <typename T>
-void List<T>::push_back(const T &e) {
+void list<T>::push_back(const T &e) {
     insertInternal(e, 0);
 }
 
+
 template <typename T>
-void List<T>::push_front(const T &e) {
+void list<T>::push_front(const T &e) {
     insertInternal(e, head_);
 }
 
 template <typename T>
-void List<T>::removeInternal(listNode<T> *pos) {
+void list<T>::removeInternal(listNode<T> *pos) {
 	if(pos) {
 		if(pos->prev)
 			pos->prev->next = pos->next;
@@ -136,7 +136,7 @@ void List<T>::removeInternal(listNode<T> *pos) {
 }
 
 template <typename T>
-void List<T>::remove(int index) {
+void list<T>::remove(int index) {
     listNode<T>* cur = head_;
     for(int i = 0; i < index; ++i)
         cur = cur->next;
@@ -144,14 +144,14 @@ void List<T>::remove(int index) {
 }
 
 template <typename T>
-void List<T>::remove(const T &e) {
+void list<T>::remove(const T &e) {
     for(int i = 0; i < size_; i++)
         if(getAt(i) == e)
             remove(i);
 }
 
 template <typename T>
-void List<T>::Clear() {
+void list<T>::clear() {
     listNode<T>* current( head_ );
 
     while(current)
@@ -166,7 +166,7 @@ void List<T>::Clear() {
 }
 
 template <typename T>
-T List<T>::getAt(int index) {
+T list<T>::getAt(int index) {
     listNode<T>* cur = head_;
     for(int i = 0; i < index; ++i)
         cur = cur->next;
@@ -174,16 +174,16 @@ T List<T>::getAt(int index) {
 }
 
 template <typename T>
-T List<T>::operator[](int index) {
+T list<T>::operator[](int index) {
     return getAt(index);
 }
 
 template <typename T>
-void List<T>::operator+=(const T &e) {
+void list<T>::operator+=(const T &e) {
     push_back(e);
 }
 
 template <typename T>
-void List<T>::operator-=(const T &e) {
+void list<T>::operator-=(const T &e) {
     remove(e);
 }
