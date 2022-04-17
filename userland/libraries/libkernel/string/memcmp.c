@@ -211,3 +211,56 @@ do0:
 		return CMP_LT_OR_GT(x, b3);
 	return 0;
 }
+
+/**
+ * @brief memcmp
+ * 
+ * @param s1 
+ * @param s2 
+ * @param len 
+ * @return int 
+ */
+int memcmp(const void *s1, const void *s2, size_t len) {
+	op_t a0;
+	op_t b0;
+	long int srcp1 = (long int)s1;
+	long int srcp2 = (long int)s2;
+	op_t res;
+
+	if (len >= OP_T_THRES) {
+		while (srcp2 % OPSIZ != 0) {
+			a0 = ((byte *)srcp1)[0];
+			b0 = ((byte *)srcp2)[0];
+			srcp1 += 1;
+			srcp2 += 1;
+			res = a0 - b0;
+			if (res != 0)
+				return res;
+			len -= 1;
+		}
+
+		if (srcp1 % OPSIZ == 0)
+			res = memcmp_common_alignment(srcp1, srcp2, len / OPSIZ);
+		else
+			res = memcmp_not_common_alignment(srcp1, srcp2, len / OPSIZ);
+		if (res != 0)
+			return res;
+
+		srcp1 += len & -OPSIZ;
+		srcp2 += len & -OPSIZ;
+		len %= OPSIZ;
+	}
+
+	while (len != 0) {
+		a0 = ((byte *)srcp1)[0];
+		b0 = ((byte *)srcp2)[0];
+		srcp1 += 1;
+		srcp2 += 1;
+		res = a0 - b0;
+		if (res != 0)
+			return res;
+		len -= 1;
+	}
+
+	return 0;
+}
