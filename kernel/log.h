@@ -15,14 +15,15 @@ namespace Kernel {
 
     /**
      * example: 
-        * sendLog(Info, "SomeInfo");
-        * sendLog(Warning, "WARNING!!");
-        * sendLog(Error, "ERROR!!")
+        * @a sendLog(Info, "SomeInfo");
+        * @b sendLog(Warning, "WARNING!!");
+        * @c sendLog(Error, "ERROR!!")
         * 
      * @brief sendlog level
      * @param level 
      * @param format 
-     * @param ... 
+     * @param ...
+     *  
      */
     void sendLog(logLevel level, const char* __restrict__ format, ...);
 
