@@ -88,6 +88,7 @@
 		182F642D2801BB6700A2472A /* fat.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = fat.h; sourceTree = "<group>"; };
 		182F642F2801BB6800A2472A /* buffer.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = buffer.c; sourceTree = "<group>"; };
 		182F64302801BB9100A2472A /* read_write.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = read_write.c; sourceTree = "<group>"; };
+		1853FCF4282549E800F885B5 /* executable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = executable.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -179,6 +180,7 @@
 				182F64242801BB6600A2472A /* virtualfilesystem.cpp */,
 				182F64292801BB6700A2472A /* virtualfilesystem.h */,
 				182F64302801BB9100A2472A /* read_write.c */,
+				1853FCF4282549E800F885B5 /* executable.h */,
 			);
 			path = filesystem;
 			sourceTree = "<group>";

@@ -4,7 +4,7 @@
 
 #include "virtualfilesystem.h"
 #include <kernel/log.h>
-#include <ak/stringcpp.h>
+#include <ak/string.h>
 
 using namespace Kernel;
 using namespace String;
