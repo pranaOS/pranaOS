@@ -54,4 +54,41 @@ struct sockaddr_in {
 #define PACKET_KERNEL 7	   
 #define PACKET_FASTROUTE 6 
 
+struct sockaddr_ll {
+    uint16_t sll_protocol;
+    uint8_t sll_pkttype;
+    uint8_t sll_addr[6];
+};
+
+#define IFNAMSIZ 16
+
+struct ifmap {
+	unsigned long mem_start;
+	unsigned long mem_end;
+	unsigned short base_addr;
+	unsigned char irq;
+	unsigned char dma;
+	unsigned char port;
+};
+
+struct ifreq {
+	char ifr_name[IFNAMSIZ];
+	union {
+		struct sockaddr ifr_addr;
+		struct sockaddr ifr_dstaddr;
+		struct sockaddr ifr_broadaddr;
+		struct sockaddr ifr_netmask;
+		struct sockaddr ifr_hwaddr;
+		short ifr_flags;
+		int ifr_ifindex;
+		int ifr_metric;
+		int ifr_mtu;
+		struct ifmap ifr_map;
+		char ifr_slave[IFNAMSIZ];
+		char ifr_newname[IFNAMSIZ];
+		char *ifr_data;
+	};
+};
+
+
 #endif 
