@@ -106,5 +106,54 @@ enum socket_type
 	SOCK_RAW = 3,
 };
 
+/**
+ * @brief socket 
+ * 
+ * @param family 
+ * @param type 
+ * @param protocal 
+ * @return int 
+ */
+int socket(int family, enum socket_type type, int protocal);
+
+/**
+ * @brief bind
+ * 
+ * @param sockfd 
+ * @param addr 
+ * @param addrlen 
+ * @return int 
+ */
+int bind(int sockfd, struct sockaddr *addr, unsigned int addrlen);
+
+/**
+ * @brief connect
+ * 
+ * @param sockfd 
+ * @param addr 
+ * @param addrlen 
+ * @return int 
+ */
+int connect(int sockfd, struct sockaddr *addr, unsigned int addrlen);
+
+/**
+ * @brief send
+ * 
+ * @param sockfd 
+ * @param msg 
+ * @param len 
+ * @return int 
+ */
+int send(int sockfd, void *msg, size_t len);
+
+/**
+ * @brief recv
+ * 
+ * @param sockfd 
+ * @param msg 
+ * @param len 
+ * @return int 
+ */
+int recv(int sockfd, void *msg, size_t len);
 
 #endif 
