@@ -18,5 +18,19 @@ typedef __socklen_t socklen_t;
 #define PF_INET AF_INET
 #define PF_PACKET AF_PACKET
 
+#define SHUT_RD 0	
+#define SHUT_WR 1	
+#define SHUT_RDWR 2 
+
+enum
+{
+	IPPROTO_IP = 0,	   
+	IPPROTO_ICMP = 1,  
+	IPPROTO_TCP = 6,   
+	IPPROTO_UDP = 17,  
+	IPPROTO_RAW = 255, 
+	IPPROTO_MAX
+};
+
 
 #endif 
