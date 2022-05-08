@@ -90,5 +90,21 @@ struct ifreq {
 	};
 };
 
+enum socket_state
+{
+	SS_UNCONNECTED = 1,	  
+	SS_CONNECTING = 2,	  
+	SS_CONNECTED = 3,	  
+	SS_DISCONNECTING = 4, 
+	SS_DISCONNECTED = 5,
+};
+
+enum socket_type
+{
+	SOCK_STREAM = 1,
+	SOCK_DGRAM = 2,
+	SOCK_RAW = 3,
+};
+
 
 #endif 
