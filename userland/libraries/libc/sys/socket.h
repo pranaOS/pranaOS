@@ -32,5 +32,26 @@ enum
 	IPPROTO_MAX
 };
 
+typedef unsigned short sa_family_t;
+
+struct sockaddr {
+    sa_family_t sa_family;
+    char sa_data[14];
+};
+
+struct sockaddr_in {
+    uint16_t sin_port;
+    uint32_t sin_addr;
+};
+
+#define PACKET_HOST 0	   
+#define PACKET_BROADCAST 1 
+#define PACKET_MULTICAST 2 
+#define PACKET_OTHERHOST 3 
+#define PACKET_OUTGOING 4  
+#define PACKET_LOOPBACK 5  
+#define PACKET_USER 6	   
+#define PACKET_KERNEL 7	   
+#define PACKET_FASTROUTE 6 
 
 #endif 
