@@ -1,3 +1,4 @@
+#include "elf.h"
 #include <errno/error.h>
 #include <ak/mman.h>
 #include <memory/pmm.h>

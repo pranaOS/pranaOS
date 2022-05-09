@@ -59,3 +59,20 @@ typedef int32_t elf32_sword;
 #define EM_486 6	
 #define EM_860 7	
 #define EM_MIPS 8	
+
+struct elf32_ehdr {
+	unsigned char e_ident[EI_NIDENT];
+	elf32_half e_type;
+	elf32_half e_machine;
+	elf32_word e_version;
+	elf32_addr e_entry; 
+	elf32_off e_phoff;
+	elf32_off e_shoff;
+	elf32_word e_flags;
+	elf32_half e_ehsize;
+	elf32_half e_phentsize;
+	elf32_half e_phnum;
+	elf32_half e_shentsize;
+	elf32_half e_shnum;
+	elf32_half e_shstrndx;
+};
