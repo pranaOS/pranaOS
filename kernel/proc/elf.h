@@ -107,3 +107,47 @@ struct elf32_ehdr {
 #define SHN_ABS 0xfff1
 #define SHN_COMMON 0xfff2
 #define SHN_HIRESERVE 0xffff
+
+struct elf32_shdr {
+	elf32_word sh_name;
+	elf32_word sh_type;
+	elf32_word sh_flags;
+	elf32_addr sh_addr;
+	elf32_off sh_offset;
+	elf32_word sh_size;
+	elf32_word sh_link;
+	elf32_word sh_info;
+	elf32_word sh_addralign;
+	elf32_word sh_entsize;
+};
+
+#define PF_X 0x1
+#define PF_W 0x2
+#define PF_R 0x4
+
+#define PT_NULL 0
+#define PT_LOAD 1
+#define PT_DYNAMIC 2
+#define PT_INTERP 3
+#define PT_NOTE 4
+#define PT_SHLIB 5
+#define PT_PHDR 6
+#define PT_TLS 7		   
+#define PT_LOOS 0x60000000 
+#define PT_HIOS 0x6fffffff 
+#define PT_LOPROC 0x70000000
+#define PT_HIPROC 0x7fffffff
+#define PT_GNU_EH_FRAME 0x6474e550
+
+#define PT_GNU_STACK (PT_LOOS + 0x474e551)
+
+struct elf32_phdr {
+	elf32_word p_type;
+	elf32_off p_offset;
+	elf32_addr p_vaddr;
+	elf32_addr p_paddr;
+	elf32_word p_filesz;
+	elf32_word p_memsz;
+	elf32_word p_flags;
+	elf32_word p_align;
+};
