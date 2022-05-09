@@ -132,4 +132,23 @@ struct pdirectory *vmm_create_address_space(struct pdirectory *dir);
 uint32_t vmm_get_physical_address(uint32_t vaddr, bool is_page);
 struct pdirectory *vmm_fork(struct pdirectory *va_dir);
 
+void *sbrk(size_t n);
+void *kmalloc(size_t n);
+void *kcalloc(size_t n, size_t size);
+void *krealloc(void *ptr, size_t size);
+void kfree(void *ptr);
+void *kalign_heap(size_t size);
+
+struct vm_area_struct *get_unmapped_area(uint32_t addr, uint32_t len);
+int32_t do_mmap(uint32_t addr,
+				size_t len, uint32_t prot,
+				uint32_t flag, int32_t fd, off_t off);
+int do_munmap(struct mm_struct *mm, uint32_t addr, size_t len);
+uint32_t do_brk(uint32_t addr, size_t len);
+
+void kmap(struct page *p);
+void kmaps(struct pages *p);
+void kunmap(struct page *p);
+void kunmaps(struct pages *p);
+
 void vmm_init();

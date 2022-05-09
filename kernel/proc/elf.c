@@ -44,3 +44,75 @@ static int elf_verify(struct elf32_ehdr *elf_header) {
 
 	return NO_ERROR;
 }
+
+struct elf32_layout *elf_load(const char *path) {
+	const char *buf = vfs_read(path);
+	struct elf32_ehdr *elf_header = (struct elf32_ehdr *)buf;
+
+	if (elf_verify(elf_header) != NO_ERROR || elf_header->e_phoff == 0) {
+		log("ELF: %s is not correct format", path);
+		return NULL;
+	}
+
+	log("ELF: Load %s", path);
+	struct mm_struct *mm = current_process->mm;
+	struct elf32_layout *layout = kcalloc(1, sizeof(struct elf32_layout));
+	layout->entry = elf_header->e_entry;
+	for (struct elf32_phdr *ph = (struct elf32_phdr *)(buf + elf_header->e_phoff);
+		 ph && (char *)ph < (buf + elf_header->e_phoff + elf_header->e_phentsize * elf_header->e_phnum);
+		 ++ph)
+	{
+		if (ph->p_type != PT_LOAD)
+			continue;
+
+
+		if ((ph->p_flags & PF_X) != 0 && (ph->p_flags & PF_R) != 0)
+		{
+			do_mmap(ph->p_vaddr, ph->p_memsz, 0, 0, -1, 0);
+			mm->start_code = ph->p_vaddr;
+			mm->end_code = ph->p_vaddr + ph->p_memsz;
+		}
+
+		else if ((ph->p_flags & PF_W) != 0 && (ph->p_flags & PF_R) != 0) {
+			do_mmap(ph->p_vaddr, ph->p_memsz, 0, 0, -1, 0);
+			mm->start_data = ph->p_vaddr;
+			mm->end_data = ph->p_memsz;
+		}
+
+		else
+			do_mmap(ph->p_vaddr, ph->p_memsz, 0, 0, -1, 0);
+
+		memset((char *)ph->p_vaddr, 0, ph->p_memsz);
+		memcpy((char *)ph->p_vaddr, buf + ph->p_offset, ph->p_filesz);
+	}
+
+	uint32_t heap_start = do_mmap(0, UHEAP_SIZE, 0, 0, -1, 0);
+	mm->start_brk = heap_start;
+	mm->brk = heap_start;
+	mm->end_brk = USER_HEAP_TOP;
+
+	uint32_t stack_start = do_mmap(0, STACK_SIZE, 0, 0, -1, 0);
+	layout->stack = stack_start + STACK_SIZE;
+
+	return layout;
+}
+
+/**
+ * @brief elf unload
+ * 
+ */
+void elf_unload() {
+	signalemptyset(&current_process->thread->pending);
+
+	struct vm_area_struct *iter, *next;
+
+	list_for_each_entry_safe(iter, next, &current_process->mm->mmap, vm_sibling) {
+		if (!iter->vm_file && (iter->vm_flags & MAP_SHARED) == 0) {
+			vmm_unmap_range(current_process->pdir, iter->vm_start, iter->vm_end);
+			list_del(&iter->vm_sibling);
+		}
+	}
+
+	memset(current_process->mm, 0, sizeof(struct mm_struct));
+	init_list(&current_process->mm->mmap);
+}
