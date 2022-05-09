@@ -24,7 +24,7 @@
 #define SIGSEGV 11
 #define SIGUSR2 12
 #define SIGPIPE 13
-#define SIGALRM 14
+#define signalRM 14
 #define SIGTERM 15
 #define SIGSTKFLT 16
 #define SIGCHLD 17
@@ -73,7 +73,7 @@ typedef void (*__sighandler_t)(int);
 
 #define SIG_KERNEL_TERMINATE_MASK (                         \
     sigmask(SIGHUP) | sigmask(SIGINT) | sigmask(SIGKILL) | sigmask(SIGUSR1) |       \
-    sigmask(SIGUSR2)) | sigmask(SIGPIPE) | sigmask(SIGALRM) | sigmask(SIGTERM) |    \
+    sigmask(SIGUSR2)) | sigmask(SIGPIPE) | sigmask(signalRM) | sigmask(SIGTERM) |    \
     sigmask(SIGVTALRM) | sigmask(SIGPROF) | sigmask(SIGPOLL) | sigmask(SIGSTKFLT) | \
     sigmask(SIGPWR))
 
@@ -108,7 +108,7 @@ typedef void (*__sighandler_t)(int);
 
 struct thread;
 
-struct sigalaction {
+struct signalaction {
     __sighandler_t sa_handler;
     uint32_t flags;
     sigset_t mask;
@@ -130,7 +130,7 @@ static inline int valid_signal(unsigned long sig) {
  * @param set 
  * @param _sig 
  */
-static inline void sigaladdset(sigset_t *set, int _sig) {
+static inline void signaladdset(sigset_t *set, int _sig) {
 	__asm__ __volatile__("btsl %1,%0"
 						 : "=m"(*set)
 						 : "Ir"(_sig - 1)
@@ -143,7 +143,7 @@ static inline void sigaladdset(sigset_t *set, int _sig) {
  * @param set 
  * @param _sig 
  */
-static inline void sigaldelset(sigset_t *set, int _sig) {
+static inline void signaldelset(sigset_t *set, int _sig) {
 	__asm__ __volatile__("btrl %1,%0"
 						 : "=m"(*set)
 						 : "Ir"(_sig - 1)
@@ -157,7 +157,7 @@ static inline void sigaldelset(sigset_t *set, int _sig) {
  * @param _sig 
  * @return int 
  */
-static inline int sigalismember(sigset_t *set, int _sig) {
+static inline int signalismember(sigset_t *set, int _sig) {
 	unsigned long sig = _sig - 1;
 	return 1 & (*set >> sig);
 }
@@ -167,7 +167,7 @@ static inline int sigalismember(sigset_t *set, int _sig) {
  * 
  * @param set 
  */
-static inline void sigalemptyset(sigset_t *set) {
+static inline void signalemptyset(sigset_t *set) {
 	memset(set, 0, sizeof(sigset_t));
 }
 
@@ -177,7 +177,7 @@ static inline void sigalemptyset(sigset_t *set) {
  * @param set 
  * @param mask 
  */
-static inline void sigaladdsetmask(sigset_t *set, unsigned long mask) {
+static inline void signaladdsetmask(sigset_t *set, unsigned long mask) {
 	*set |= mask;
 }
 
@@ -187,7 +187,7 @@ static inline void sigaladdsetmask(sigset_t *set, unsigned long mask) {
  * @param set 
  * @param mask 
  */
-static inline void sigaldelsetmask(sigset_t *set, unsigned long mask) {
+static inline void signaldelsetmask(sigset_t *set, unsigned long mask) {
 	*set &= ~mask;
 }
 
@@ -198,7 +198,7 @@ static inline void sigaldelsetmask(sigset_t *set, unsigned long mask) {
  * @param mask 
  * @return int 
  */
-static inline int sigaltestsetmask(sigset_t *set, unsigned long mask) {
+static inline int signaltestsetmask(sigset_t *set, unsigned long mask) {
 	return (*set & mask) != 0;
 }
 
@@ -217,7 +217,7 @@ static inline void siginitset(sigset_t *set, unsigned long mask) {
  * 
  * @param set 
  */
-static inline void sigalfillset(sigset_t *set) {
+static inline void signalfillset(sigset_t *set) {
 	*set = -1;
 }
 
@@ -266,7 +266,7 @@ int do_kill(pid_t pid, int32_t signum);
  * @return true 
  * @return false 
  */
-bool sigal_ignored(struct thread *th, int sig);
+bool signal_ignored(struct thread *th, int sig);
 
 /**
  * @brief signal handler
