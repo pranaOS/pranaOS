@@ -151,3 +151,17 @@ struct elf32_phdr {
 	elf32_word p_flags;
 	elf32_word p_align;
 };
+
+struct elf32_layout {
+	uint32_t stack;
+	uint32_t entry;
+};
+
+/**
+ * @brief elf_load
+ * 
+ * @param path 
+ * @return struct elf32_layout* 
+ */
+struct elf32_layout *elf_load(const char *path);
+void elf_unload();
