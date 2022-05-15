@@ -9,4 +9,5 @@ void teardown(void) {
 }
 
 void test_function(void) {
+	char *envval = getenv("name");
 }
