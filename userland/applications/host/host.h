@@ -30,3 +30,33 @@ struct dns_packet {
 	uint16_t ar_count;
 	uint8_t payload[];
 };
+
+/**
+ * @brief dns name
+ * 
+ */
+struct dns_name {
+    uint8_t len;
+    char name[];
+};
+
+/**
+ * @brief dns question spec
+ * 
+ */
+struct dns_question_spec {
+    uint16_t qtype;
+    uint16_t qclass;
+};
+
+/**
+ * @brief dns answer spec
+ * 
+ */
+struct dns_answer_spec {
+	uint16_t atype;
+	uint16_t aclass;
+	uint32_t ttl;
+	uint16_t rd_length;
+	uint8_t rdata[];
+};
