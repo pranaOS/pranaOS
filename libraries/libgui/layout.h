@@ -2,6 +2,7 @@
 #define GUI_LAYOUT_H
 
 #include <libcore/hash.h>
+#include <libgui/event.h>
 #include <list.h>
 #include <poll.h>
 #include <stdint.h>
