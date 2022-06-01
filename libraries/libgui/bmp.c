@@ -1,4 +1,4 @@
-#include <libgui/bmp.h>
+#include "bmp.h"
 
 /**
  * @brief bmp bi bitfields draw
@@ -9,7 +9,7 @@
  * @param px 
  * @param py 
  */
-static void bmp_bi_bitfields_draw(struct graphic *dgraph, struct bmp_header *bmp_header, struct dip_bitmapcoreheader *dip_header, int32_t px, int32_t py) {
+static void bmp_bi_bitfields_draw( struct graphic *dgraph, struct bmp_header *bmp_header, struct dip_bitmapcoreheader *dip_header, int32_t px, int32_t py) {
 	uint32_t row_size = dip_header->image_size_bytes / dip_header->height_px;
 	char *bmp_data = (char *)bmp_header + bmp_header->data_offset;
 	uint8_t bytes_per_pixel = dip_header->bits_per_pixel / 8;
@@ -27,12 +27,26 @@ static void bmp_bi_bitfields_draw(struct graphic *dgraph, struct bmp_header *bmp
 	}
 }
 
+/**
+ * @brief bmp draw
+ * 
+ * @param dgraph 
+ * @param bmph 
+ * @param px 
+ * @param py 
+ */
 void bmp_draw(struct graphic *dgraph, char *bmph, int32_t px, int32_t py) {
-    struct bmp_header *bmp_header = (struct bmp_header *)bmph;
-    switch (dip_header->compression){
-        case BI_RGB:
+	struct bmp_header *bmp_header = (struct bmp_header *)bmph;
+	struct dip_bitmapcoreheader *dip_header = (struct dip_bitmapcoreheader *)(bmph + 0xE);
 
-        default:
-            break;
-    }
-};
+	switch (dip_header->compression)
+	{
+	case BI_RGB:
+	case BI_BITFIELDS:
+		bmp_bi_bitfields_draw(dgraph, bmp_header, dip_header, px, py);
+		break;
+
+	default:
+		break;
+	}
+}
