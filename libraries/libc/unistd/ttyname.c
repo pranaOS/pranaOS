@@ -9,6 +9,7 @@
 
 static char ttyname_buf[TTY_NAME_MAX + 1] = _PATH_DEV;
 
+
 /**
  * @brief ttyname
  * 
