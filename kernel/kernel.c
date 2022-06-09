@@ -14,7 +14,6 @@
 #include "cpu/halt.h"
 #include "cpu/idt.h"
 #include "cpu/rtc.h"
-#include "cpu/tss.h"
 #include "cpu/tasksegment.h"
 #include "devices/ata.h"
 #include "devices/memory/memory.h"
