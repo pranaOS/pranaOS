@@ -1,0 +1,5 @@
+memory: guest=128, host=128
+ata0-master: type=disk, path="pranaos.img", mode=flat
+boot: disk
+log: log/bochs.log
+mouse: enabled=0
