@@ -2,6 +2,10 @@
 // Created by KrisnaPranav on 25/01/22.
 //
 
+#pragma once 
+
+#include <stdint.h>
+
 typedef struct font {
     uint8_t magic[2];
     uint8_t mode;
