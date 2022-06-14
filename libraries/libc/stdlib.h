@@ -1,39 +1,30 @@
-// reference: http://www.jbox.dk/sanos/source/lib/stdlib.c.html
-
 #pragma once
 
-#include <stdint.h>
+#include <cheader.h>
 #include <stddef.h>
 
-void aligned_alloc(size_t alignment, size_t size);
+_Begin_CHeader
 
-#ifndef __KERNEL__
-void* kamalloc(size_t size, size_t align);
-uint32_t memory_usage();
+extern void exit(int status);
+extern char * getenv(const char *name);
 
-#define malloc kmalloc
-#define free kfree
+extern void *malloc(size_t size);
+extern void free(void *ptr);
+extern void *calloc(size_t nmemb, size_t size);
+extern void *realloc(void *ptr, size_t size);
 
-__attribute__((__noreturn__))
-void exit(int status);
-int system(const char* command);
-#endif
+extern void qsort(void *base, size_t nmemb, size_t size, int (*compar)(const void*, const void*));
 
-void* malloc(size_t size);
-void* calloc(size_t nmemb, size_t size);
-void* zalloc(size_t size);
-void* realloc(void* ptr, size_t size);
-void free(void* ptr);
+extern int system(const char * command);
 
-__attribute__((__noreturn__))
-void abort();
+extern int abs(int j);
 
-char* itoa(int value, char* str, int base);
-int atoi(const char* s);
-int abs(int n);
-int rand();
+extern int putenv(char * name);
+extern int setenv(const char *name, const char *value, int overwrite);
+extern int unsetenv(const char * str);
 
-long int strtol(const char* nptr, char** endptr, int base);
-double strtod(const char* nptr, char** endptr);
+extern void abort(void);
 
-void srand(unsigned int seed);
+#define NULL 0
+
+_End_CHeader
