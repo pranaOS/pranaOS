@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#ifndef _LIBC_FILE_H
-#define _LIBC_FILE_H
+#ifndef LIBC_FILE_H
+#define LIBC_FILE_H
 
 #include <ak/list.h>
 

@@ -1,5 +1,5 @@
-#ifndef _LIBC_MNTENT_H
-#define _LIBC_MNTENT_H
+#ifndef LIBC_MNTENT_H
+#define LIBC_MNTENT_H
 
 #include <paths.h>
 

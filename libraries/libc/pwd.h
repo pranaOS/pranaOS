@@ -1,5 +1,5 @@
-#ifndef _LIBC_PWD_H
-#define _LIBC_PWD_H
+#ifndef LIBC_PWD_H
+#define LIBC_PWD_H
 
 #include <stddef.h>
 #include <sys/types.h>
