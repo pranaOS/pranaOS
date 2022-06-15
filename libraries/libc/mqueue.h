@@ -13,17 +13,52 @@ struct mqueue_attr {
     long mqueue_curmsgs;
 };
 
-int 
-mqueue_open(const char *name, int flags, struct mqueue_attr *attr);
 
-int
-mqueue_close(int fd);
+/**
+ * @brief open
+ * 
+ * @param name 
+ * @param flags 
+ * @param attr 
+ * @return int 
+ */
+int mqueue_open(const char *name, int flags, struct mqueue_attr *attr);
 
-int 
-mqueue_unlink(const char *name);
+/**
+ * @brief close
+ * 
+ * @param fd 
+ * @return int 
+ */
+int mqueue_close(int fd);
 
-int 
-mqueue_send(int fd, char *buf, unsigned int priority, unsigned int msize);
 
-int
-mqueue_receive(int fd, char *buf, unsigned int priorty, unsigned int msize);
+/**
+ * @brief unlink
+ * 
+ * @param name 
+ * @return int 
+ */
+int mqueue_unlink(const char *name);
+
+/**
+ * @brief send
+ * 
+ * @param fd 
+ * @param buf 
+ * @param priority 
+ * @param msize 
+ * @return int 
+ */
+int mqueue_send(int fd, char *buf, unsigned int priority, unsigned int msize);
+
+/**
+ * @brief receive
+ * 
+ * @param fd 
+ * @param buf 
+ * @param priorty 
+ * @param msize 
+ * @return int 
+ */
+int mqueue_receive(int fd, char *buf, unsigned int priorty, unsigned int msize);
