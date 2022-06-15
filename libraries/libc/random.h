@@ -8,5 +8,9 @@ namespace LibC {
         static int next(uint32_t max = 32767);
         static int next(uint32_t min, uint32_t max);             
         static void setSeed(uint32_t seed);
+    
+    private:
+        ~random();
+        random::random() {}
     };
 }
