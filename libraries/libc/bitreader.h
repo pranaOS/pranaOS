@@ -1,11 +1,11 @@
 #pragma once
 
-#include <types.h>
+#include <ak/types.h>
 
 namespace LibC {
     class bitReader {
     public:
-        BitReader(uint8_t* data) {
+        bitReader(uint8_t* data) {
             this->dataPtr = data;
             this->pos = 0;
             this->byte = 0;
