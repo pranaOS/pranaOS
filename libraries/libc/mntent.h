@@ -5,7 +5,7 @@
 
 #ifndef __FILE_defined
 #define __FILE_defined
-#include <file.h>
+#include "file.h"
 typedef struct __FILE FILE;
 #endif
 
