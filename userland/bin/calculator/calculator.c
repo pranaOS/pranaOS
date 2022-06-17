@@ -1,5 +1,7 @@
 #include <stdio.h>
 
+void banner();
+
 int main() {
     /**
      * @brief construct some variables
@@ -14,8 +16,10 @@ int main() {
      * @brief get user input
      * 
      */
-    printf("Operators: [+, *, -, /]");
-    printf("\nEnter any one operator: ");
+    // printf("Basic Calculator For pranaOS\n");
+    // printf("Operators: [+, *, -, /]");
+    // printf("\nEnter any one operator: ");
+    banner();
     scanf("%c", &operator);
     printf("Enter values: ");
     scanf("%f%f", &num1, &num2);
@@ -45,4 +49,10 @@ int main() {
     printf("The value: %f", result);
 
     return 0;
+}
+
+void banner() {
+    printf("Basic Calculator For pranaOS\n");
+    printf("Operators: [+, *, -, /]");
+    printf("\nEnter any one operator: ");
 }
