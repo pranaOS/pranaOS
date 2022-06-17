@@ -1,5 +1,0 @@
-#! /bin/bash
-
-echo "Disasseble address $2 from file $1"
-
-gdb -batch -ex "file $1" -ex "disassemble/rs $2"
