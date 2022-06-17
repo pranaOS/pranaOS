@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#pragma once
+#ifndef DEBUG_H
+#define DEBUG_H
 
 #include <ak/types.h>
 #include <ak/list.h>
@@ -102,3 +103,5 @@ namespace Kernel {
         void printPageItem(void* item, bool table, uint16_t pdIndex, uint16_t ptIndex);
     };
 }
+
+#endif 
