@@ -23,6 +23,68 @@ typedef uint64_t size_t;
 typedef uint32_t size_t;
 #endif
 
-inline void* operator new(size_t size) {
+typedef uint32_t uintptr_t;
+
+typedef decltype(nullptr) nullptr_t;
+
+#define unlikely(expr) __builtin_expect(!!(expr), 0)
+#define likely(expr) __builtin_expect(!!(expr), 1)
+
+#define KB 1024
+#define MB (KB * KB)
+
+#define min(a, b) (((a) < (b)) ? (a) : (b))
+#define max(a, b) (((a) > (b)) ? (a) : (b))
+
+extern void* malloc(size_t);
+extern void free(void*);
+
+inline void* operator new(size_t size)
+{
     return malloc(size);
+}
+
+inline void operator delete(void* ptr)
+{
+    return free(ptr);
+}
+
+inline void operator delete(void* ptr, size_t)
+{
+    return free(ptr);
+}
+
+inline void* operator new[](size_t size)
+{
+    return malloc(size);
+}
+
+inline void operator delete[](void* ptr)
+{
+    return free(ptr);
+}
+
+inline void operator delete[](void* ptr, size_t)
+{
+    return free(ptr);
+}
+
+inline void* operator new(size_t, void* ptr)
+{
+    return ptr;
+}
+
+inline void* operator new[](size_t, void* ptr)
+{
+    return ptr;
+}
+
+inline void* operator new(size_t size, std::align_val_t alignment)
+{
+    size_t aln = static_cast<size_t>(alignment);
+    void* ptr = malloc(size + sizeof(void*) + aln);
+    size_t max_addr = (size_t)ptr + sizeof(void*) + aln;
+    void* aligned_ptr = (void*)(max_addr - (max_addr % aln));
+    ((void**)aligned_ptr)[-1] = ptr;
+    return aligned_ptr;
 }
