@@ -27,6 +27,7 @@
 		817A477E286B1F2C00E35224 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		817A4788286B1F5F00E35224 /* Common.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Common.hpp; sourceTree = "<group>"; };
 		817A478A286B204600E35224 /* LibObjc */ = {isa = PBXFileReference; lastKnownFileType = folder; path = LibObjc; sourceTree = "<group>"; };
+		819D5D34286B2528000EA0F9 /* Bitmap.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Bitmap.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -86,6 +87,7 @@
 			isa = PBXGroup;
 			children = (
 				817A4788286B1F5F00E35224 /* Common.hpp */,
+				819D5D34286B2528000EA0F9 /* Bitmap.hpp */,
 			);
 			path = pranaLib;
 			sourceTree = "<group>";
