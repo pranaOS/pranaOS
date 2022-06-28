@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		817A4768286B1E4500E35224 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 817A4767286B1E4500E35224 /* main.cpp */; };
 		817A4771286B1E7800E35224 /* Assert.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 817A476F286B1E7800E35224 /* Assert.cpp */; };
+		81BF80CF286B214800BB3D85 /* Init.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 81BF80CD286B214800BB3D85 /* Init.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -28,6 +29,8 @@
 		817A4767286B1E4500E35224 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		817A476F286B1E7800E35224 /* Assert.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Assert.cpp; sourceTree = "<group>"; };
 		817A4770286B1E7800E35224 /* Assert.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Assert.hpp; sourceTree = "<group>"; };
+		81BF80CD286B214800BB3D85 /* Init.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Init.cpp; sourceTree = "<group>"; };
+		81BF80CE286B214800BB3D85 /* Init.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Init.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -71,6 +74,8 @@
 			children = (
 				817A476F286B1E7800E35224 /* Assert.cpp */,
 				817A4770286B1E7800E35224 /* Assert.hpp */,
+				81BF80CD286B214800BB3D85 /* Init.cpp */,
+				81BF80CE286B214800BB3D85 /* Init.hpp */,
 			);
 			path = LibKernel;
 			sourceTree = "<group>";
@@ -131,6 +136,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				81BF80CF286B214800BB3D85 /* Init.cpp in Sources */,
 				817A4768286B1E4500E35224 /* main.cpp in Sources */,
 				817A4771286B1E7800E35224 /* Assert.cpp in Sources */,
 			);
