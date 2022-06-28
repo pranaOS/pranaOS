@@ -25,6 +25,7 @@
 /* Begin PBXFileReference section */
 		8166F5DA286B2B1A0099F23A /* Callback.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Callback.hpp; sourceTree = "<group>"; };
 		8166F5DB286B2B580099F23A /* Rutime.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Rutime.hpp; sourceTree = "<group>"; };
+		8166F5DC286B2BF90099F23A /* Function.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Function.hpp; sourceTree = "<group>"; };
 		817A477B286B1F2C00E35224 /* Libraries */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Libraries; sourceTree = BUILT_PRODUCTS_DIR; };
 		817A477E286B1F2C00E35224 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		817A4788286B1F5F00E35224 /* Common.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Common.hpp; sourceTree = "<group>"; };
@@ -92,6 +93,7 @@
 				819D5D34286B2528000EA0F9 /* Bitmap.hpp */,
 				8166F5DA286B2B1A0099F23A /* Callback.hpp */,
 				8166F5DB286B2B580099F23A /* Rutime.hpp */,
+				8166F5DC286B2BF90099F23A /* Function.hpp */,
 			);
 			path = pranaLib;
 			sourceTree = "<group>";
