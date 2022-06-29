@@ -64,7 +64,9 @@ public:
         return m_content;
     }
 
-    
+    Type type() const { return m_type; }
+    int nesting() const { return m_nesting; }
+    size_t line() const { return m_line; }
 
 
 private:
