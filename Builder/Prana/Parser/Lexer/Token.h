@@ -44,4 +44,11 @@ public:
     }
 
 
+private:
+    std::shared_ptr<std::string> m_content {};
+    Type m_type;
+    int m_nesting;
+
+    size_t m_line {};
+
 };
