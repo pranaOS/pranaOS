@@ -43,6 +43,29 @@ public:
         return Token(token_type(c), nesting, line);
     }
 
+    static Type token_type(char c)
+    {
+        switch (c) {
+        case ',':
+            return Type::Comma;
+        case ':':
+            return Type::SubRule;
+        case '~':
+            return Type::Equal;
+        case '{':
+            return Type::VariableBegin;
+        case '}':
+            return Type::VariableEnd;
+        }
+        return Type::Default;
+    }
+
+    auto& content() {
+        return m_content;
+    }
+
+    
+
 
 private:
     std::shared_ptr<std::string> m_content {};
