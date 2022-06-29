@@ -20,7 +20,7 @@ public:
         VariableBegin,
         VariableEnd,
         Variable,
-    };  
+    };
 
 public:
     Token(std::string content, Type type, int nesting, size_t line)
@@ -60,14 +60,29 @@ public:
         return Type::Default;
     }
 
-    auto& content() {
-        return m_content;
-    }
+    auto& content() { return *m_content; }
+    const auto& content() const { return *m_content; }
+
+    auto& content_ptr() { return m_content; }
+    const auto& content_ptr() const { return m_content; }
 
     Type type() const { return m_type; }
     int nesting() const { return m_nesting; }
     size_t line() const { return m_line; }
 
+    std::string to_string() const
+    {
+        if (m_type == Type::Comma) {
+            return "Comma";
+        }
+        if (m_type == Type::SubRule) {
+            return "SubRule";
+        }
+        if (m_type == Type::Equal) {
+            return "Equal";
+        }
+        return "[" + content() + "]";
+    }
 
 private:
     std::shared_ptr<std::string> m_content {};
@@ -75,5 +90,4 @@ private:
     int m_nesting;
 
     size_t m_line {};
-
 };
