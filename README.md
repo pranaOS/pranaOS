@@ -65,7 +65,7 @@
 - [Linux](https://github.com/torvalds/linux)
 
 ## pranaOS project structure
-- pranaOS [project structure](https://github.com/pranaOS/pranaOS/blob/master/imgs/pranaOSProjectStructure.pdf) in a clean pdf
+- pranaOS [project structure](https://github.com/pranaOS/pranaOS/blob/master/Imgs/pranaOSProjectStructure.pdf) in a clean pdf
 
 ## Special mentions:
 - thanks for those who [stared](https://github.com/pranaOS/pranaOS/stargazers) ⭐ this project and gave a motivation :)
