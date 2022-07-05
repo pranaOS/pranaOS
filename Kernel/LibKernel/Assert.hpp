@@ -13,8 +13,7 @@
 void ASSERT_PANIC(const char* message);
 
 /**
- * @brief START, PAUSE,STOP
+ * @brief START, STOP
  */
 void START();
-void PAUSE();
 void STOP();

