@@ -7,13 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		819A1AB2287AFAB8001268CE /* Config.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 819A1AAF287AFAB7001268CE /* Config.cpp */; };
-		819A1AB9287AFAC4001268CE /* Command.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 819A1AB4287AFAC4001268CE /* Command.cpp */; };
-		819A1ABA287AFAC4001268CE /* Executor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 819A1AB6287AFAC4001268CE /* Executor.cpp */; };
-		819A1AC1287AFAE1001268CE /* Parser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 819A1ABF287AFAE1001268CE /* Parser.cpp */; };
-		819A1ACC287AFAFA001268CE /* Lexer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 819A1AC9287AFAFA001268CE /* Lexer.cpp */; };
-		819A1AD0287AFB10001268CE /* Translator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 819A1ACF287AFB10001268CE /* Translator.cpp */; };
-		819A1AD7287AFB1E001268CE /* Utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 819A1AD2287AFB1E001268CE /* Utils.cpp */; };
+		819A1AFB287AFB73001268CE /* Utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 819A1ADC287AFB73001268CE /* Utils.cpp */; };
+		819A1AFC287AFB73001268CE /* Lexer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 819A1AE2287AFB73001268CE /* Lexer.cpp */; };
+		819A1AFD287AFB73001268CE /* Parser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 819A1AEC287AFB73001268CE /* Parser.cpp */; };
+		819A1AFE287AFB73001268CE /* Translator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 819A1AEE287AFB73001268CE /* Translator.cpp */; };
+		819A1AFF287AFB73001268CE /* Config.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 819A1AF0287AFB73001268CE /* Config.cpp */; };
+		819A1B00287AFB73001268CE /* Executor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 819A1AF5287AFB73001268CE /* Executor.cpp */; };
+		819A1B01287AFB73001268CE /* Command.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 819A1AF7287AFB73001268CE /* Command.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -30,33 +30,33 @@
 
 /* Begin PBXFileReference section */
 		819A1AA2287AFA63001268CE /* Prana */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Prana; sourceTree = BUILT_PRODUCTS_DIR; };
-		819A1AAF287AFAB7001268CE /* Config.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Config.cpp; path = ../../../../Desktop/Prana/Config.cpp; sourceTree = "<group>"; };
-		819A1AB0287AFAB7001268CE /* Config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Config.h; path = ../../../../Desktop/Prana/Config.h; sourceTree = "<group>"; };
-		819A1AB1287AFAB8001268CE /* IncludeParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IncludeParser.h; path = ../../../../Desktop/Prana/IncludeParser.h; sourceTree = "<group>"; };
-		819A1AB4287AFAC4001268CE /* Command.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Command.cpp; path = ../../../../../Desktop/Prana/Executor/Command.cpp; sourceTree = "<group>"; };
-		819A1AB5287AFAC4001268CE /* Command.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Command.h; path = ../../../../../Desktop/Prana/Executor/Command.h; sourceTree = "<group>"; };
-		819A1AB6287AFAC4001268CE /* Executor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Executor.cpp; path = ../../../../../Desktop/Prana/Executor/Executor.cpp; sourceTree = "<group>"; };
-		819A1AB7287AFAC4001268CE /* ExecUnit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ExecUnit.h; path = ../../../../../Desktop/Prana/Executor/ExecUnit.h; sourceTree = "<group>"; };
-		819A1AB8287AFAC4001268CE /* Executor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Executor.h; path = ../../../../../Desktop/Prana/Executor/Executor.h; sourceTree = "<group>"; };
-		819A1ABC287AFAD2001268CE /* Glob.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Glob.h; path = ../../../../../Desktop/Prana/Finder/Glob.h; sourceTree = "<group>"; };
-		819A1ABD287AFAD2001268CE /* Finder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Finder.h; path = ../../../../../Desktop/Prana/Finder/Finder.h; sourceTree = "<group>"; };
-		819A1ABF287AFAE1001268CE /* Parser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Parser.cpp; path = ../../../../../Desktop/Prana/Parser/Parser.cpp; sourceTree = "<group>"; };
-		819A1AC0287AFAE1001268CE /* Parser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Parser.h; path = ../../../../../Desktop/Prana/Parser/Parser.h; sourceTree = "<group>"; };
-		819A1AC3287AFAEE001268CE /* DefinesField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DefinesField.h; path = ../../../../../../Desktop/Prana/Parser/Field/DefinesField.h; sourceTree = "<group>"; };
-		819A1AC4287AFAEE001268CE /* IncludeField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IncludeField.h; path = ../../../../../../Desktop/Prana/Parser/Field/IncludeField.h; sourceTree = "<group>"; };
-		819A1AC5287AFAEE001268CE /* DefaultField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DefaultField.h; path = ../../../../../../Desktop/Prana/Parser/Field/DefaultField.h; sourceTree = "<group>"; };
-		819A1AC6287AFAEE001268CE /* CommandsField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CommandsField.h; path = ../../../../../../Desktop/Prana/Parser/Field/CommandsField.h; sourceTree = "<group>"; };
-		819A1AC7287AFAEE001268CE /* BuildField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BuildField.h; path = ../../../../../../Desktop/Prana/Parser/Field/BuildField.h; sourceTree = "<group>"; };
-		819A1AC9287AFAFA001268CE /* Lexer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Lexer.cpp; path = ../../../../../../Desktop/Prana/Parser/Lexer/Lexer.cpp; sourceTree = "<group>"; };
-		819A1ACA287AFAFA001268CE /* Lexer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Lexer.h; path = ../../../../../../Desktop/Prana/Parser/Lexer/Lexer.h; sourceTree = "<group>"; };
-		819A1ACB287AFAFA001268CE /* Token.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Token.h; path = ../../../../../../Desktop/Prana/Parser/Lexer/Token.h; sourceTree = "<group>"; };
-		819A1ACE287AFB10001268CE /* Translator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Translator.h; path = ../../../../../Desktop/Prana/Translator/Translator.h; sourceTree = "<group>"; };
-		819A1ACF287AFB10001268CE /* Translator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Translator.cpp; path = ../../../../../Desktop/Prana/Translator/Translator.cpp; sourceTree = "<group>"; };
-		819A1AD2287AFB1E001268CE /* Utils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Utils.cpp; path = ../../../../../Desktop/Prana/Utils/Utils.cpp; sourceTree = "<group>"; };
-		819A1AD3287AFB1E001268CE /* Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Utils.h; path = ../../../../../Desktop/Prana/Utils/Utils.h; sourceTree = "<group>"; };
-		819A1AD4287AFB1E001268CE /* ThreadQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ThreadQueue.h; path = ../../../../../Desktop/Prana/Utils/ThreadQueue.h; sourceTree = "<group>"; };
-		819A1AD5287AFB1E001268CE /* Logger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Logger.h; path = ../../../../../Desktop/Prana/Utils/Logger.h; sourceTree = "<group>"; };
-		819A1AD6287AFB1E001268CE /* Lock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Lock.h; path = ../../../../../Desktop/Prana/Utils/Lock.h; sourceTree = "<group>"; };
+		819A1AD9287AFB73001268CE /* Config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Config.h; sourceTree = "<group>"; };
+		819A1ADB287AFB73001268CE /* Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Utils.h; sourceTree = "<group>"; };
+		819A1ADC287AFB73001268CE /* Utils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Utils.cpp; sourceTree = "<group>"; };
+		819A1ADD287AFB73001268CE /* Lock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Lock.h; sourceTree = "<group>"; };
+		819A1ADE287AFB73001268CE /* ThreadQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThreadQueue.h; sourceTree = "<group>"; };
+		819A1ADF287AFB73001268CE /* Logger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Logger.h; sourceTree = "<group>"; };
+		819A1AE2287AFB73001268CE /* Lexer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Lexer.cpp; sourceTree = "<group>"; };
+		819A1AE3287AFB73001268CE /* Lexer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Lexer.h; sourceTree = "<group>"; };
+		819A1AE4287AFB73001268CE /* Token.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Token.h; sourceTree = "<group>"; };
+		819A1AE5287AFB73001268CE /* Parser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Parser.h; sourceTree = "<group>"; };
+		819A1AE7287AFB73001268CE /* CommandsField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommandsField.h; sourceTree = "<group>"; };
+		819A1AE8287AFB73001268CE /* BuildField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BuildField.h; sourceTree = "<group>"; };
+		819A1AE9287AFB73001268CE /* DefinesField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DefinesField.h; sourceTree = "<group>"; };
+		819A1AEA287AFB73001268CE /* DefaultField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DefaultField.h; sourceTree = "<group>"; };
+		819A1AEB287AFB73001268CE /* IncludeField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IncludeField.h; sourceTree = "<group>"; };
+		819A1AEC287AFB73001268CE /* Parser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Parser.cpp; sourceTree = "<group>"; };
+		819A1AEE287AFB73001268CE /* Translator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Translator.cpp; sourceTree = "<group>"; };
+		819A1AEF287AFB73001268CE /* Translator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Translator.h; sourceTree = "<group>"; };
+		819A1AF0287AFB73001268CE /* Config.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Config.cpp; sourceTree = "<group>"; };
+		819A1AF2287AFB73001268CE /* Finder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Finder.h; sourceTree = "<group>"; };
+		819A1AF3287AFB73001268CE /* Glob.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Glob.h; sourceTree = "<group>"; };
+		819A1AF5287AFB73001268CE /* Executor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Executor.cpp; sourceTree = "<group>"; };
+		819A1AF6287AFB73001268CE /* ExecUnit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExecUnit.h; sourceTree = "<group>"; };
+		819A1AF7287AFB73001268CE /* Command.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Command.cpp; sourceTree = "<group>"; };
+		819A1AF8287AFB73001268CE /* Executor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Executor.h; sourceTree = "<group>"; };
+		819A1AF9287AFB73001268CE /* Command.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Command.h; sourceTree = "<group>"; };
+		819A1AFA287AFB73001268CE /* IncludeParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IncludeParser.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -73,7 +73,7 @@
 		819A1A99287AFA63001268CE = {
 			isa = PBXGroup;
 			children = (
-				819A1AAE287AFAA8001268CE /* Prana */,
+				819A1AD8287AFB73001268CE /* Prana */,
 				819A1AA3287AFA63001268CE /* Products */,
 			);
 			sourceTree = "<group>";
@@ -86,94 +86,94 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		819A1AAE287AFAA8001268CE /* Prana */ = {
+		819A1AD8287AFB73001268CE /* Prana */ = {
 			isa = PBXGroup;
 			children = (
-				819A1AD1287AFB16001268CE /* Utils */,
-				819A1ACD287AFB0A001268CE /* Translator */,
-				819A1ABE287AFADB001268CE /* Parser */,
-				819A1ABB287AFACC001268CE /* Finder */,
-				819A1AB3287AFABB001268CE /* Executor */,
-				819A1AAF287AFAB7001268CE /* Config.cpp */,
-				819A1AB0287AFAB7001268CE /* Config.h */,
-				819A1AB1287AFAB8001268CE /* IncludeParser.h */,
+				819A1AD9287AFB73001268CE /* Config.h */,
+				819A1ADA287AFB73001268CE /* Utils */,
+				819A1AE0287AFB73001268CE /* Parser */,
+				819A1AED287AFB73001268CE /* Translator */,
+				819A1AF0287AFB73001268CE /* Config.cpp */,
+				819A1AF1287AFB73001268CE /* Finder */,
+				819A1AF4287AFB73001268CE /* Executor */,
+				819A1AFA287AFB73001268CE /* IncludeParser.h */,
 			);
 			path = Prana;
 			sourceTree = "<group>";
 		};
-		819A1AB3287AFABB001268CE /* Executor */ = {
+		819A1ADA287AFB73001268CE /* Utils */ = {
 			isa = PBXGroup;
 			children = (
-				819A1AB4287AFAC4001268CE /* Command.cpp */,
-				819A1AB5287AFAC4001268CE /* Command.h */,
-				819A1AB7287AFAC4001268CE /* ExecUnit.h */,
-				819A1AB6287AFAC4001268CE /* Executor.cpp */,
-				819A1AB8287AFAC4001268CE /* Executor.h */,
+				819A1ADB287AFB73001268CE /* Utils.h */,
+				819A1ADC287AFB73001268CE /* Utils.cpp */,
+				819A1ADD287AFB73001268CE /* Lock.h */,
+				819A1ADE287AFB73001268CE /* ThreadQueue.h */,
+				819A1ADF287AFB73001268CE /* Logger.h */,
 			);
-			path = Executor;
+			path = Utils;
 			sourceTree = "<group>";
 		};
-		819A1ABB287AFACC001268CE /* Finder */ = {
+		819A1AE0287AFB73001268CE /* Parser */ = {
 			isa = PBXGroup;
 			children = (
-				819A1ABD287AFAD2001268CE /* Finder.h */,
-				819A1ABC287AFAD2001268CE /* Glob.h */,
-			);
-			path = Finder;
-			sourceTree = "<group>";
-		};
-		819A1ABE287AFADB001268CE /* Parser */ = {
-			isa = PBXGroup;
-			children = (
-				819A1AC8287AFAF3001268CE /* Lexer */,
-				819A1AC2287AFAE7001268CE /* Field */,
-				819A1ABF287AFAE1001268CE /* Parser.cpp */,
-				819A1AC0287AFAE1001268CE /* Parser.h */,
+				819A1AE1287AFB73001268CE /* Lexer */,
+				819A1AE5287AFB73001268CE /* Parser.h */,
+				819A1AE6287AFB73001268CE /* Field */,
+				819A1AEC287AFB73001268CE /* Parser.cpp */,
 			);
 			path = Parser;
 			sourceTree = "<group>";
 		};
-		819A1AC2287AFAE7001268CE /* Field */ = {
+		819A1AE1287AFB73001268CE /* Lexer */ = {
 			isa = PBXGroup;
 			children = (
-				819A1AC7287AFAEE001268CE /* BuildField.h */,
-				819A1AC6287AFAEE001268CE /* CommandsField.h */,
-				819A1AC5287AFAEE001268CE /* DefaultField.h */,
-				819A1AC3287AFAEE001268CE /* DefinesField.h */,
-				819A1AC4287AFAEE001268CE /* IncludeField.h */,
-			);
-			path = Field;
-			sourceTree = "<group>";
-		};
-		819A1AC8287AFAF3001268CE /* Lexer */ = {
-			isa = PBXGroup;
-			children = (
-				819A1AC9287AFAFA001268CE /* Lexer.cpp */,
-				819A1ACA287AFAFA001268CE /* Lexer.h */,
-				819A1ACB287AFAFA001268CE /* Token.h */,
+				819A1AE2287AFB73001268CE /* Lexer.cpp */,
+				819A1AE3287AFB73001268CE /* Lexer.h */,
+				819A1AE4287AFB73001268CE /* Token.h */,
 			);
 			path = Lexer;
 			sourceTree = "<group>";
 		};
-		819A1ACD287AFB0A001268CE /* Translator */ = {
+		819A1AE6287AFB73001268CE /* Field */ = {
 			isa = PBXGroup;
 			children = (
-				819A1ACF287AFB10001268CE /* Translator.cpp */,
-				819A1ACE287AFB10001268CE /* Translator.h */,
+				819A1AE7287AFB73001268CE /* CommandsField.h */,
+				819A1AE8287AFB73001268CE /* BuildField.h */,
+				819A1AE9287AFB73001268CE /* DefinesField.h */,
+				819A1AEA287AFB73001268CE /* DefaultField.h */,
+				819A1AEB287AFB73001268CE /* IncludeField.h */,
+			);
+			path = Field;
+			sourceTree = "<group>";
+		};
+		819A1AED287AFB73001268CE /* Translator */ = {
+			isa = PBXGroup;
+			children = (
+				819A1AEE287AFB73001268CE /* Translator.cpp */,
+				819A1AEF287AFB73001268CE /* Translator.h */,
 			);
 			path = Translator;
 			sourceTree = "<group>";
 		};
-		819A1AD1287AFB16001268CE /* Utils */ = {
+		819A1AF1287AFB73001268CE /* Finder */ = {
 			isa = PBXGroup;
 			children = (
-				819A1AD6287AFB1E001268CE /* Lock.h */,
-				819A1AD5287AFB1E001268CE /* Logger.h */,
-				819A1AD4287AFB1E001268CE /* ThreadQueue.h */,
-				819A1AD2287AFB1E001268CE /* Utils.cpp */,
-				819A1AD3287AFB1E001268CE /* Utils.h */,
+				819A1AF2287AFB73001268CE /* Finder.h */,
+				819A1AF3287AFB73001268CE /* Glob.h */,
 			);
-			path = Utils;
+			path = Finder;
+			sourceTree = "<group>";
+		};
+		819A1AF4287AFB73001268CE /* Executor */ = {
+			isa = PBXGroup;
+			children = (
+				819A1AF5287AFB73001268CE /* Executor.cpp */,
+				819A1AF6287AFB73001268CE /* ExecUnit.h */,
+				819A1AF7287AFB73001268CE /* Command.cpp */,
+				819A1AF8287AFB73001268CE /* Executor.h */,
+				819A1AF9287AFB73001268CE /* Command.h */,
+			);
+			path = Executor;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -232,13 +232,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				819A1AC1287AFAE1001268CE /* Parser.cpp in Sources */,
-				819A1AB2287AFAB8001268CE /* Config.cpp in Sources */,
-				819A1AD7287AFB1E001268CE /* Utils.cpp in Sources */,
-				819A1ABA287AFAC4001268CE /* Executor.cpp in Sources */,
-				819A1AD0287AFB10001268CE /* Translator.cpp in Sources */,
-				819A1AB9287AFAC4001268CE /* Command.cpp in Sources */,
-				819A1ACC287AFAFA001268CE /* Lexer.cpp in Sources */,
+				819A1AFC287AFB73001268CE /* Lexer.cpp in Sources */,
+				819A1B01287AFB73001268CE /* Command.cpp in Sources */,
+				819A1AFE287AFB73001268CE /* Translator.cpp in Sources */,
+				819A1AFD287AFB73001268CE /* Parser.cpp in Sources */,
+				819A1AFF287AFB73001268CE /* Config.cpp in Sources */,
+				819A1B00287AFB73001268CE /* Executor.cpp in Sources */,
+				819A1AFB287AFB73001268CE /* Utils.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
