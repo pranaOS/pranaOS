@@ -57,6 +57,7 @@
 		819A1AF8287AFB73001268CE /* Executor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Executor.h; sourceTree = "<group>"; };
 		819A1AF9287AFB73001268CE /* Command.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Command.h; sourceTree = "<group>"; };
 		819A1AFA287AFB73001268CE /* IncludeParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IncludeParser.h; sourceTree = "<group>"; };
+		81DC5C69287C0F2400805ED3 /* Context.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Context.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -97,6 +98,7 @@
 				819A1AF1287AFB73001268CE /* Finder */,
 				819A1AF4287AFB73001268CE /* Executor */,
 				819A1AFA287AFB73001268CE /* IncludeParser.h */,
+				81DC5C69287C0F2400805ED3 /* Context.h */,
 			);
 			path = Prana;
 			sourceTree = "<group>";
