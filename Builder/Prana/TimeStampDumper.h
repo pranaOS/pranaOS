@@ -2,14 +2,28 @@
 
 #include <filesystem>
 #include <fstream>
+#include <functional>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 class TimeStampDumper {
 public:
-    void append(const std::string& path, int timestamp) 
+    explicit TimeStampDumper(const std::filesystem::path& path)
     {
-        m_stream << path << "" << timestamp << "\n";   
+        m_stream.open(path, std::ofstream::out);
+    }
+
+    ~TimeStampDumper()
+    {
+        if (m_stream.is_open()) {
+            m_stream.close();
+        }
+    }
+
+    void append(const std::string& path, int timestamp)
+    {
+        m_stream << path << " " << timestamp << "\n";
     }
 
 private:
