@@ -68,29 +68,29 @@ public:
         }
         return cwd;
     }
-    inline std::string maca_path() const
+    inline std::string prana_path() const
     {
         auto dir = directory();
         if (dir.empty()) {
-            return "MacaBuild";
+            return "PranaBuild";
         }
-        return dir / "MacaBuild";
+        return dir / "PranaBuild";
     }
     inline std::string static_library_path() const
     {
         size_t lastindex = m_path.string().find_last_of('.');
         std::string libname = m_path.string().substr(0, lastindex);
-        return (maca_path() / std::filesystem::proximate(libname, directory())).string() + ".a";
+        return (prana_path() / std::filesystem::proximate(libname, directory())).string() + ".a";
     }
     inline std::string executable_path() const
     {
         size_t lastindex = m_path.string().find_last_of('.');
         std::string libname = m_path.string().substr(0, lastindex);
-        return (maca_path() / std::filesystem::proximate(libname, directory())).string();
+        return (prana_path() / std::filesystem::proximate(libname, directory())).string();
     }
     inline std::string timestamps_path() const
     {
-        return std::filesystem::path(maca_path()) / "timestamps.macainfo";
+        return std::filesystem::path(prana_path()) / "timestamps.pranainfo";
     }
     inline bool root_ctx() const { return m_root_ctx; }
     inline std::string name() const { return std::filesystem::path(executable_path()).filename(); }
