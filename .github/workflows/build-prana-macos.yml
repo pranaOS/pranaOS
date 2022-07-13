@@ -24,7 +24,7 @@ jobs:
       - name: Deps Installing
         run: |
           brew update
-          brew install cmake ninja i686-elf-gcc
+          brew install cmake ninja make i686-elf-gcc
 
       - name: Check version of tools
         run: |
@@ -35,7 +35,7 @@ jobs:
         run: |
           cd Builder/
           cmake .
-          ninja
+          make
           ./prana
 
   build-11:
@@ -52,7 +52,7 @@ jobs:
       - name: Deps Installing
         run: |
           brew update
-          brew install cmake ninja i686-elf-gcc
+          brew install cmake ninja make i686-elf-gcc
 
       - name: Check version of tools
         run: |
@@ -63,6 +63,6 @@ jobs:
         run: |
           cd Builder/
           cmake .
-          ninja
+          make
           ./prana
       
