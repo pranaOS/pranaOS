@@ -1,6 +1,6 @@
 #pragma once
 
-#include "execunit.h"
+#include "ExecUnit.h"
 #include <memory>
 #include <string>
 #include <unistd.h>
@@ -27,7 +27,7 @@ public:
     const std::string& std_err() const { return m_std_err; }
 
     auto executable_unit() { return m_executable_unit; }
-    void set_executable_unit(const std::shared_ptr<ExecutableUnit>& unit) { m_executable_unit = unit; }
+    void set_executable_unit(const std::shared_ptr<ExecUnit>& unit) { m_executable_unit = unit; }
 
 private:
     std::shared_ptr<ExecUnit> m_executable_unit {};

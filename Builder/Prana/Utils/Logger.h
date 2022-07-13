@@ -1,7 +1,7 @@
 #pragma once
 
 #include <iostream>
-#include "lock.h"
+#include "Lock.h"
 
 enum class Color {
     Red = 31,

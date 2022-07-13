@@ -1,0 +1,21 @@
+Define:
+    platform: x86
+    compiler: g++
+
+Build:
+    Type:   
+
+    Src:
+        hello/Hello.cpp
+
+    Extensions:
+        cpp:
+            Compiler: g++
+            Flags:
+                -std=c++17, -fno-use-cxa-atexit, -fno-rtti, -fno-exceptions
+
+    Link:
+        Linker: g++
+
+Default:
+    Build

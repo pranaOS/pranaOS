@@ -1,4 +1,4 @@
-#include "command.h"
+#include "Command.h"
 #include <array>
 #include <fcntl.h>
 #include <filesystem>
