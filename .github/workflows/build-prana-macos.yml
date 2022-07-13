@@ -1,0 +1,60 @@
+name: macos C++ (latest + 11)
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+env:
+  BUILD_TYPE: Release
+
+jobs:
+  build-macos:
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.8"
+          architecture: "x64"
+
+      - name: Deps Installing
+        run: |
+          brew update
+          brew install cmake ninja i686-elf-gcc
+
+      - name: Check version of tools
+        run: |
+          node --version
+          g++ --version
+
+      - name: Build prana Compiler
+        run: |
+          cd Builder/Build/ && cmake .. -G Ninja
+          ninja
+          ./prana
+
+  build-11:
+    runs-on: macos-11
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.8"
+          architecture: "x64"
+
+      - name: Deps Installing
+        run: |
+          brew update
+          brew install cmake ninja i686-elf-gcc
+
+      - name: Check version of tools
+        run: |
+          node --version
+          g++ --version
+      
