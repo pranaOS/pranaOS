@@ -1,4 +1,4 @@
-name: macos C++ (latest + 11)
+name: prana compiler (macOS)
 
 on:
   push:
@@ -33,9 +33,7 @@ jobs:
 
       - name: Build prana Compiler
         run: |
-          cd Builder/Build/ && cmake .. -G Ninja
-          ninja
-          ./prana
+          cd Builder/Build/ && cmake .. -G Ninja && ninja
 
   build-11:
     runs-on: macos-11
