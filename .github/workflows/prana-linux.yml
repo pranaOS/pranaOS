@@ -24,7 +24,7 @@ jobs:
       - name: Deps Installing
         run: |
           sudo apt-get update  
-          sudo apt install cmake ninja g++ gcc
+          sudo apt install cmake g++ gcc
 
       - name: Check version of tools
         run: |
@@ -51,7 +51,7 @@ jobs:
       - name: Deps Installing
         run: |
           sudo apt-get update  
-          sudo apt install cmake ninja g++ gcc 
+          sudo apt install cmake g++ gcc 
 
       - name: Check version of tools
         run: |
