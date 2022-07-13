@@ -15,8 +15,6 @@ Build:
     Extensions:
         cpp:
             Compiler: g++
-            Flags:
-                -std=c++17, -fno-use-cxa-atexit, -fno-rtti, -fno-exceptions
 
     Link:
         Linker: g++
