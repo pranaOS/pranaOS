@@ -33,7 +33,8 @@ jobs:
 
       - name: Build prana Compiler
         run: |
-          cd Builder/Build/ && cmake .. -G Ninja && ninja
+          cd Builder/Build/ 
+          cmake ..
 
   build-11:
     runs-on: macos-11
