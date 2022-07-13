@@ -2,11 +2,15 @@ Define:
     platform: x86
     compiler: g++
 
+Commands:
+    Run:
+        ./PranaBuild/hello
+
 Build:
-    Type:   
+    Type: Executable
 
     Src:
-        hello/Hello.cpp
+        helloworld/*.cpp
 
     Extensions:
         cpp:
@@ -18,4 +22,4 @@ Build:
         Linker: g++
 
 Default:
-    Build
+    Build, Run
