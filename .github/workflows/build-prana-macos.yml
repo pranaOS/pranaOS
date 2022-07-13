@@ -35,6 +35,8 @@ jobs:
         run: |
           cd Builder/
           cmake .
+          ninja
+          ./prana
 
   build-11:
     runs-on: macos-11
@@ -56,4 +58,11 @@ jobs:
         run: |
           node --version
           g++ --version
+
+      - name: Build prana Compiler
+        run: |
+          cd Builder/
+          cmake .
+          ninja
+          ./prana
       
