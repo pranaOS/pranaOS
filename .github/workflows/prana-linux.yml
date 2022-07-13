@@ -1,0 +1,64 @@
+name: build prana compiler (linux)
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+env:
+  BUILD_TYPE: Release
+
+jobs:
+  build-ubuntu:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.8"
+          architecture: "x64"
+
+      - name: Deps Installing
+        run: |
+          sudo apt-get update  
+          sudo apt install cmake ninja g++ gcc
+
+      - name: Check version of tools
+        run: |
+          gcc --version
+          g++ --version 
+
+      - name: Build prana Compiler
+        run: |
+          cd Builder/
+          cmake .
+      
+
+  build-18:
+    runs-on: ubuntu-18.04
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.8"
+          architecture: "x64"
+
+      - name: Deps Installing
+        run: |
+          sudo apt-get update  
+          sudo apt install cmake ninja g++ gcc 
+
+      - name: Check version of tools
+        run: |
+          gcc --version
+          g++ --version
+
+      - name: Build prana Compiler
+        run: |
+          cd Builder/
+          cmake .

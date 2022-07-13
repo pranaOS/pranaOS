@@ -1,4 +1,4 @@
-name: prana compiler (macOS)
+name: build prana compiler (macOS)
 
 on:
   push:
@@ -28,15 +28,13 @@ jobs:
 
       - name: Check version of tools
         run: |
-          node --version
+          gcc --version
           g++ --version
 
       - name: Build prana Compiler
         run: |
           cd Builder/
           cmake .
-          make
-          ./prana
 
   build-11:
     runs-on: macos-11
@@ -56,13 +54,11 @@ jobs:
 
       - name: Check version of tools
         run: |
-          node --version
+          gcc --version
           g++ --version
 
       - name: Build prana Compiler
         run: |
           cd Builder/
           cmake .
-          make
-          ./prana
       
