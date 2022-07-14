@@ -2,6 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:Userland/Userland.xcodeproj">
+   </FileRef>
+   <FileRef
       location = "group:Builder/Prana.xcodeproj">
    </FileRef>
    <FileRef
