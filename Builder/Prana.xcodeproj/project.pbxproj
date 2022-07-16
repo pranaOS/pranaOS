@@ -17,7 +17,8 @@
 		81A917BC287E9AC4002AB395 /* Executor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 81A917AE287E9AC4002AB395 /* Executor.cpp */; };
 		81A917BD287E9AC4002AB395 /* Command.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 81A917B0287E9AC4002AB395 /* Command.cpp */; };
 		81A917BE287E9AC4002AB395 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 81A917B4287E9AC4002AB395 /* main.cpp */; };
-		81A917C1287E9C08002AB395 /* Hello.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 81A917BF287E9C08002AB395 /* Hello.cpp */; };
+		81AFE82E287FE52100F80384 /* main2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 81AFE82C287FE52100F80384 /* main2.cpp */; };
+		81AFE82F287FE52100F80384 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 81AFE82D287FE52100F80384 /* main.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -71,7 +72,8 @@
 		81A917B2287E9AC4002AB395 /* Command.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Command.h; sourceTree = "<group>"; };
 		81A917B3287E9AC4002AB395 /* IncludeParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IncludeParser.h; sourceTree = "<group>"; };
 		81A917B4287E9AC4002AB395 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
-		81A917BF287E9C08002AB395 /* Hello.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Hello.cpp; sourceTree = "<group>"; };
+		81AFE82C287FE52100F80384 /* main2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main2.cpp; sourceTree = "<group>"; };
+		81AFE82D287FE52100F80384 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -108,19 +110,11 @@
 		81A91788287E9AC4002AB395 /* Examples */ = {
 			isa = PBXGroup;
 			children = (
+				81AFE82B287FE52100F80384 /* helloworld */,
 				81A91789287E9AC4002AB395 /* hello.prana */,
-				81A9178A287E9AC4002AB395 /* hello */,
 				81A9178B287E9AC4002AB395 /* hellolib */,
 			);
 			path = Examples;
-			sourceTree = "<group>";
-		};
-		81A9178A287E9AC4002AB395 /* hello */ = {
-			isa = PBXGroup;
-			children = (
-				81A917BF287E9C08002AB395 /* Hello.cpp */,
-			);
-			path = hello;
 			sourceTree = "<group>";
 		};
 		81A9178B287E9AC4002AB395 /* hellolib */ = {
@@ -226,6 +220,15 @@
 			path = Executor;
 			sourceTree = "<group>";
 		};
+		81AFE82B287FE52100F80384 /* helloworld */ = {
+			isa = PBXGroup;
+			children = (
+				81AFE82C287FE52100F80384 /* main2.cpp */,
+				81AFE82D287FE52100F80384 /* main.cpp */,
+			);
+			path = helloworld;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -284,15 +287,16 @@
 			files = (
 				81A917B5287E9AC4002AB395 /* library.cpp in Sources */,
 				81A917BD287E9AC4002AB395 /* Command.cpp in Sources */,
+				81AFE82F287FE52100F80384 /* main.cpp in Sources */,
 				81A917B7287E9AC4002AB395 /* Utils.cpp in Sources */,
 				81A917B8287E9AC4002AB395 /* Lexer.cpp in Sources */,
 				81A917BA287E9AC4002AB395 /* Translator.cpp in Sources */,
+				81AFE82E287FE52100F80384 /* main2.cpp in Sources */,
 				81A917BC287E9AC4002AB395 /* Executor.cpp in Sources */,
 				81A917B9287E9AC4002AB395 /* Parser.cpp in Sources */,
 				81A917B6287E9AC4002AB395 /* Context.cpp in Sources */,
 				81A917BE287E9AC4002AB395 /* main.cpp in Sources */,
 				81A917BB287E9AC4002AB395 /* Config.cpp in Sources */,
-				81A917C1287E9C08002AB395 /* Hello.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
