@@ -11,6 +11,12 @@
 #include <new>
 #include <utility>
 #include "_prelude.h"
-#import <Meta/sign.h>
 
-using ssize_t = Prana::Meta::MakeSigned<size_t>
+
+#ifndef __ssize_t_defined
+
+#    include <Meta/sign.h>
+
+using ssize_t = Karm::Meta::MakeSigned<size_t>;
+
+#endif
