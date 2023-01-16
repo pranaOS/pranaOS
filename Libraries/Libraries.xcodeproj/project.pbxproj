@@ -35,6 +35,8 @@
 		819D5D34286B2528000EA0F9 /* Bitmap.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Bitmap.hpp; sourceTree = "<group>"; };
 		81AFE7FF287FE17B00F80384 /* List.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = List.hpp; sourceTree = "<group>"; };
 		81AFE82A287FE44400F80384 /* SimpleIterator.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SimpleIterator.hpp; sourceTree = "<group>"; };
+		B16C51BF29757AE400DA58C5 /* _prelude.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = _prelude.h; sourceTree = "<group>"; };
+		B16C51C129757B8000DA58C5 /* sign.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = sign.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -51,6 +53,8 @@
 		817A4772286B1F2C00E35224 = {
 			isa = PBXGroup;
 			children = (
+				B16C51C029757B7200DA58C5 /* Meta */,
+				B16C51BE29757AD000DA58C5 /* Base */,
 				817A478A286B204600E35224 /* LibObjc */,
 				817A4785286B1F3100E35224 /* pranaLib */,
 				817A477D286B1F2C00E35224 /* Libraries */,
@@ -104,6 +108,22 @@
 				81AFE82A287FE44400F80384 /* SimpleIterator.hpp */,
 			);
 			path = pranaLib;
+			sourceTree = "<group>";
+		};
+		B16C51BE29757AD000DA58C5 /* Base */ = {
+			isa = PBXGroup;
+			children = (
+				B16C51BF29757AE400DA58C5 /* _prelude.h */,
+			);
+			path = Base;
+			sourceTree = "<group>";
+		};
+		B16C51C029757B7200DA58C5 /* Meta */ = {
+			isa = PBXGroup;
+			children = (
+				B16C51C129757B8000DA58C5 /* sign.h */,
+			);
+			path = Meta;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
