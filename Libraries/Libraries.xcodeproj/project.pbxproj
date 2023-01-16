@@ -37,6 +37,7 @@
 		81AFE82A287FE44400F80384 /* SimpleIterator.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SimpleIterator.hpp; sourceTree = "<group>"; };
 		B16C51BF29757AE400DA58C5 /* _prelude.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = _prelude.h; sourceTree = "<group>"; };
 		B16C51C129757B8000DA58C5 /* sign.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = sign.h; sourceTree = "<group>"; };
+		B16C51C229757C8B00DA58C5 /* std.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = std.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -114,6 +115,7 @@
 			isa = PBXGroup;
 			children = (
 				B16C51BF29757AE400DA58C5 /* _prelude.h */,
+				B16C51C229757C8B00DA58C5 /* std.h */,
 			);
 			path = Base;
 			sourceTree = "<group>";
