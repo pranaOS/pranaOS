@@ -26,6 +26,9 @@ typedef uint32_t mode_t;
 typedef unsigned short nlink_t;
 typedef unsigned short uid_t;
 typedef unsigned short gid_t;
+typedef long off_t;
+typedef long blksize_t;
+typedef long blkcnt_t;
 
 typedef long suseconds_t;
 typedef unsigned long useconds_t;
