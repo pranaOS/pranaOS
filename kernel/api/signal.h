@@ -52,4 +52,18 @@ __DECL_BEGIN
 #define SIG_ERR ((sighandler_t)1)
 #define SIG_IGN ((sighandler_t)2)
 
+typedef uint32_t sig_atomic_t;
+typedef void (*sighandler_t)(int);
+typedef unsigned long sigset_t;
+
+/**
+ * @brief sigaction
+ * 
+ */
+typedef struct sigaction {
+    sighandler_t sa_sigaction;
+    sigset_t sa_mask;
+    int sa_flags;
+} sigaction_t;
+
 __DECL_END
