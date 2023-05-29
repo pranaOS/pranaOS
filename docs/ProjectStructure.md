@@ -11,7 +11,6 @@
 
 ## Kernel:
 - The kernel is the essential center of a computer operating system (OS)
-- [kernel](https://github.com/pranaOS/pranaOS/tree/master/Kernel)
 
 
 ## Libs:

@@ -38,7 +38,6 @@
 - contact our [discord](https://discord.gg/XmpBTmy9Bz)
 
 ## Social Media:
-- [Twitter](https://twitter.com/os_prana)
 - [Instagram](https://www.instagram.com/officialpranaos/)
 - [Youtube](https://www.youtube.com/channel/UCHBR5EYG9MDJ-yws4zN6xXQ)
 - [Discord](https://discord.gg/XmpBTmy9Bz)
@@ -60,9 +59,6 @@
 - [SerenityOS](https://github.com/SerenityOS/Serenity)
 - [macOS](https://github.com/apple/darwin-xnu)
 - [Linux](https://github.com/torvalds/linux)
-
-## pranaOS project structure
-- pranaOS [project structure](https://github.com/pranaOS/pranaOS/blob/master/Imgs/pranaOSProjectStructure.pdf) in a clean pdf
 
 ## Special mentions:
 - thanks for those who [stared](https://github.com/pranaOS/pranaOS/stargazers) ⭐ this project and gave a motivation :)
