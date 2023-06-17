@@ -13,10 +13,11 @@
 
 #include <libutils/utils.hpp>
 #include "urc_handler.hpp"
-    
-class Cellular::URC {
+
+namespace Cellular::URC {
     class URC {
     public:
+        
         /**
          * @brief Construct a new URC object
          * 
@@ -44,8 +45,49 @@ class Cellular::URC {
          */
         auto getTokens() const -> std::vector<std::string>;
 
+        /**
+         * @brief Get the Urc Body object
+         * 
+         * @return std::string 
+         */
         auto getURCBody() const -> std::string {
             return urcBody;
         }
+
+        virtual void Handle(UrcHandler &h) {}
+
+        /**
+         * @brief Set the Handled object
+         * 
+         * @param state 
+         */
+        void setHandled(bool state) {
+            isUrcHandled = state;
+        }
+
+        /**
+         * @brief isHandled
+         * 
+         * @return true 
+         * @return false 
+         */
+        bool isHandled() {
+            return isUrcHandled;
+        }
+
+    protected:
+        std::vector<std::string> tokens;
+        std::string urcBody;
+        std::string urcHead;
+
+        bool isUrcHandled = false;
+
+        /**
+         * @brief split
+         * 
+         * @param str 
+         */
+        virtual void split(const std::string &str);
     };
-};
+
+} 
