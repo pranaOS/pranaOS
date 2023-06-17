@@ -17,19 +17,49 @@
 #include <microtar.hpp>
 
 namespace Tar {
-    
-    class Entry {
-    public:
-        ~entry();
+
+    class entry {
         
-        std::size_t size() const
+      public:
+        ~entry();
+
+        /**
+         * @brief size
+         * 
+         * @return std::size_t 
+         */
+        std::size_t size() const;
+
+        /**
+         * @brief name
+         * 
+         * @return std::filesystem::path 
+         */
         std::filesystem::path name() const;
+
+        /**
+         * @brief isFile, isDirectory
+         * 
+         * @return true 
+         * @return false 
+         */
         bool isFile() const;
         bool isDirectory() const;
         
+        /**
+         * @brief read
+         * 
+         * @param data 
+         * @param size 
+         */
         void read(const std::byte *data, std::size_t size) const;
-        
-    private:
+
+      private: 
+        /**
+         * @brief Construct a new entry object
+         * 
+         * @param path 
+         */
         explicit entry(const std::filesystem::path &path);
         friend class iterator;
         mutable mtar_t handle{};
@@ -37,26 +67,72 @@ namespace Tar {
     };
 
     class iterator {
-    public:
+      public:
         using iterator_category = std::input_iterator_tag;
-        using difference_type = std::ptrdiff_t;
-        using value_type = entry;
-        using pointer = entry *;
-        using reference = entry &;
-        
-        Iterator() = default;
-        
-        explicit Iterator(const std::filesystem::path &path);
-        
+        using difference_type   = std::ptrdiff_t;
+        using value_type        = entry;
+        using pointer           = entry *;
+        using reference         = entry &;
+
+        iterator() = default;
+
+        /**
+         * @brief Construct a new iterator object
+         * 
+         * @param path 
+         */
+        explicit iterator(const std::filesystem::path &path);
+
+        /**
+         * @brief operator[reference, pointer]
+         * 
+         * @return reference 
+         */
         reference operator*() const;
         pointer operator->() const;
-    }
 
+        iterator &operator++();
+        iterator operator++(int);
+
+        /**
+         * @brief operator
+         * 
+         * @param a 
+         * @param b 
+         * @return true 
+         * @return false 
+         */
+        friend bool operator==(const iterator &a, const iterator &b);
+        friend bool operator!=(const iterator &a, const iterator &b);
+
+      private:
+        std::shared_ptr<entry> entry_;
+    };
+
+    /**
+     * @brief begin
+     * 
+     * @param it 
+     * @return iterator 
+     */
     inline iterator begin(const iterator &it) noexcept {
-        return it
+        return it;
     }
 
+    /**
+     * @brief end
+     * 
+     * @return iterator 
+     */
     inline iterator end(iterator) noexcept {
-        return iterator {};
+        return iterator{};
     }
+
+    /**
+     * @brief unpack
+     * 
+     * @param path 
+     * @param where 
+     */
+    void unpack(const std::filesystem::path &path, const std::filesystem::path &where = {});
 }
