@@ -12,8 +12,13 @@
 #pragma once
 
 namespace LibOBJC {
+
     class Event {
     public:
+        /**
+         * @brief Type
+         * 
+         */
         enum Type {
             Invalid = 0,
             FdWaiterRead,
@@ -22,14 +27,55 @@ namespace LibOBJC {
             Other,
         };
 
-        explicit Event(int type) 
-            : m_type(type) {}
-        
+        /**
+         * @brief Construct a new Event object
+         * 
+         * @param type 
+         */
+        explicit Event(int type)
+            : m_type(type)
+        {
+        }
+
+        /**
+         * @brief operator
+         * 
+         * @param other 
+         * @return true 
+         * @return false 
+         */
+        bool operator==(const Event& other) {
+            return m_type == other.m_type;
+        }
+
+        /**
+         * @brief operator
+         * 
+         * @param other 
+         * @return true 
+         * @return false 
+         */
+        bool operator!=(const Event& other) {
+            return m_type != other.m_type;
+        }
+
+        /**
+         * @brief Destroy the Event object
+         * 
+         */
         ~Event() = default;
 
-        int type() const {
-            return m_type;
+        /**
+         * @brief type 
+         * 
+         * @return int 
+         */
+        int type() const { 
+            return m_type; 
         }
-        
+
+    private:
+        int m_type;
     };
-}
+
+} 
