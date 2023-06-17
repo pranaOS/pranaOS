@@ -9,7 +9,6 @@
  * 
  */
 
-
 #pragma once
 
 #include <stdint.h>
@@ -19,20 +18,57 @@
 
 class QueryResult {
 public:
+    /**
+     * @brief Construct a new Query Result objec
+     * 
+     */
     QueryResult();
-    
+
+    /**
+     * @brief Destroy the Query Result object
+     * 
+     */
     virtual ~QueryResult(){};
 
-    const Field& operator[](int index) const {
+    /**
+     * @brief field 
+     * 
+     * @param index 
+     * @return const Field& 
+     */
+    const Field &operator[](int index) const {
         return rows[currentRow][index];
-    };
+    }
 
+    /**
+     * @brief nextRow
+     * 
+     * @return true 
+     * @return false 
+     */
     bool nextRow();
 
+    /**
+     * @brief addRow
+     * 
+     * @param row 
+     */
+    void addRow(const std::vector<Field> &row);
+
+    /**
+     * @brief Get the Field Count object
+     * 
+     * @return uint32_t 
+     */
     uint32_t getFieldCount() const {
         return rows[currentRow].size();
     }
 
+    /**
+     * @brief Get the Row Count object
+     * 
+     * @return uint32_t 
+     */
     uint32_t getRowCount() const {
         return rows.size();
     }
