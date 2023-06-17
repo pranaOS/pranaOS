@@ -35,6 +35,7 @@
 		B1D6164E2A3D508000AF62AF /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		B1D770CC2A3D57780072EE66 /* tar.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = tar.cpp; sourceTree = "<group>"; };
 		B1D770CD2A3D57780072EE66 /* tar.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = tar.hpp; sourceTree = "<group>"; };
+		B1D770D32A3D5D7C0072EE66 /* locale.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = locale.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -79,6 +80,7 @@
 		B1D616442A3D507900AF62AF /* libraries */ = {
 			isa = PBXGroup;
 			children = (
+				B1D770D02A3D5D340072EE66 /* liblocale */,
 				B1D770CB2A3D57580072EE66 /* libtar */,
 				B1D616452A3D507900AF62AF /* libutils */,
 				B1D6164A2A3D507900AF62AF /* README.md */,
@@ -112,6 +114,14 @@
 				B1D770CD2A3D57780072EE66 /* tar.hpp */,
 			);
 			path = libtar;
+			sourceTree = "<group>";
+		};
+		B1D770D02A3D5D340072EE66 /* liblocale */ = {
+			isa = PBXGroup;
+			children = (
+				B1D770D32A3D5D7C0072EE66 /* locale.hpp */,
+			);
+			path = liblocale;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
