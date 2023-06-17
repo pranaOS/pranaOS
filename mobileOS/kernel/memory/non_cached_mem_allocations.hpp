@@ -16,7 +16,7 @@
 #include <FreeRTOS.h>
 
 /**
- * @brief nonCachedMemAllocator 
+ * @brief nonCachedMemAllocator
  * 
  * @tparam T 
  */
@@ -26,12 +26,16 @@ template <typename T> struct nonCachedMemAllocator {
     T *allocate(std::size_t num);
     void deallocate(T *ptr, std::size_t num);
 
-    nonCachedMemAllocator() = default;
+    nonCachedMemAllocator()                              = default;
     nonCachedMemAllocator(const nonCachedMemAllocator &) = default;
-};  
+    nonCachedMemAllocator(nonCachedMemAllocator &&)      = default;
+
+    nonCachedMemAllocator &operator=(const nonCachedMemAllocator &) = default;
+    nonCachedMemAllocator &operator=(nonCachedMemAllocator &&) = default;
+};
 
 /**
- * @brief nonCachedMemAllocator
+ * @brief allocate
  * 
  * @tparam T 
  * @param num 
@@ -40,4 +44,15 @@ template <typename T> struct nonCachedMemAllocator {
 template <typename T> T *nonCachedMemAllocator<T>::allocate(std::size_t num) {
     T *ptr = reinterpret_cast<T *>(pvPortMalloc(sizeof(T) * num));
     return ptr;
+}
+
+/**
+ * @brief deallocate
+ * 
+ * @tparam T 
+ * @param ptr 
+ */
+template <typename T> void nonCachedMemAllocator<T>::deallocate(T *ptr, std::size_t) {
+    assert(ptr != nullptr);
+    vPortFree(ptr);
 }
