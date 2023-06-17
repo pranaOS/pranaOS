@@ -22,7 +22,7 @@ namespace {
      * @return true 
      * @return false 
      */
-    bool isValidDirectoryEntry(const tar::entry &entry) {
+    bool isValidDirectoryEntry(const Tar::entry &entry) {
         return entry.name() != "." and entry.name() != ".." and entry.name() != "...";
     }
 
@@ -32,7 +32,7 @@ namespace {
      * @param entry 
      * @param path 
      */
-    void writeToFile(const tar::entry &entry, const std::filesystem::path &path) {
+    void writeToFile(const Tar::entry &entry, const std::filesystem::path &path) {
         constexpr std::size_t chunk_size = 1024 * 128;
         std::ofstream out_file{path, std::ios::binary};
         if (not out_file.is_open()) {
@@ -195,11 +195,11 @@ namespace Tar {
     void unpack(const std::filesystem::path &path, const std::filesystem::path &where) {
         for (const auto &entry : iterator(path)) {
             const auto full_path = where / entry.name();
-            if (entry.is_directory() and isValidDirectoryEntry(entry)) {
+            if (entry.isDirectory() and isValidDirectoryEntry(entry)) {
                 std::filesystem::create_directories(full_path);
             }
-            else if (entry.is_file()) {
-                write_to_file(entry, full_path);
+            else if (entry.isFile()) {
+                writeToFile(entry, full_path);
             }
         }
     }
