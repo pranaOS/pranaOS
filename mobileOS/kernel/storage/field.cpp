@@ -35,3 +35,28 @@ static T lget(T &val, const std::string &mValue, std::function<T()> foo) {
     }
     return val;
 }
+
+float Field::getFloat() const {
+    float ret;
+    return lget<float>(ret, mValue, [=]() -> float {
+        return std::stof(mValue);
+    });
+}
+
+bool Field::getBool() const {
+    bool ret;
+    return lget<bool>(ret, mValue, [=]() -> bool {
+        return std::stoi(mValue) > 0;
+    }) ;
+}
+
+double Field::getDouble() const {
+    double ret;
+    return lget<double>(ret, mValue, [=]() -> double {
+        return std::stod(mValue);
+    });
+}
+
+void Field::setValue(const char *value) {
+    mValue = value;
+}
