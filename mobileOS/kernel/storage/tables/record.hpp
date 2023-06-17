@@ -25,7 +25,7 @@ struct Record {
     bool isValid() const {
         auto result = ID != DB_ID_NONE;
         if (!result) {
-
+            LOG_DEBUG("RECORD VALIDATION FAILED - INCORRECT ID");
         }
 
         return result;
