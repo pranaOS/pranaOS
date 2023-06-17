@@ -17,17 +17,23 @@
 struct userMemStatsLogger {
 #if DEBUG_HEAP_ALLOCATIONS == 1
 
-    /**
-     * @brief Construct a new user Mem Stats Logger object
-     * 
-     */
     userMemStatsLogger() {
         usermemResetStatistics();
         freeHeapSize1 = usermemGetFreeHeapSize();
     }
 
-    private:
-        size_t freeHeapSize1;
+    ~userMemStatsLogger() {
+        size_t freeHeapSize2      = usermemGetFreeHeapSize();
+        size_t allocationsCount   = usermemGetAllocationsCount();
+        size_t deallocationsCount = usermemGetDeallocationsCount();
+        size_t allocatedMin       = usermemGetAllocatedMin();
+        size_t allocatedMax       = usermemGetAllocatedMax();
+        size_t allocatedSum       = usermemGetAllocatedSum();
+        LOG_INFO("\nFree before: %zu\nFree after: %zu\n# allocations: %zu\n# deallocations: %zu\nSmallest block: %zu\nBiggest block: %zu\nAllocated: %zu",
+                 freeHeapSize1, freeHeapSize2, allocationsCount, deallocationsCount, allocatedMin, allocatedMax, allocatedSum);
+    }
 
+private:
+    size_t freeHeapSize1;
 #endif
-}
+};
