@@ -1,8 +1,10 @@
-//
-//  battery_manager.cpp
-//  watchOS
-//
-//  Created by krisna pranav on 18/06/23.
-//
-
-#include "battery_manager.hpp"
+/**
+ * @file battery_manager.cpp
+ * @author Krisna Pranav
+ * @brief BatteryManager
+ * @version 0.1
+ * @date 2023-06-18
+ * 
+ * @copyright Copyright (c) 2021-2023, pranaOS Developers, Krisna Pranav
+ * 
+ */

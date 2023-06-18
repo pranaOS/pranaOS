@@ -1,13 +1,32 @@
-//
-//  battery_manager.hpp
-//  watchOS
-//
-//  Created by krisna pranav on 18/06/23.
-//
+/**
+ * @file battery_manager.hpp
+ * @author Krisna Pranav
+ * @brief BatteryManager
+ * @version 0.1
+ * @date 2023-06-18
+ * 
+ * @copyright Copyright (c) 2021-2023, pranaOS Developers, Krisna Pranav
+ * 
+ */
 
-#ifndef battery_manager_hpp
-#define battery_manager_hpp
 
-#include <stdio.h>
+#pragma once
 
-#endif /* battery_manager_hpp */
+#include <libutils/config.h>
+
+class BatteryManager {
+public:
+    static BatteryManager *getInstance();
+    uint8_t getCapacity();
+    bool isCharging();
+    bool handleCablePlugInIRQ();
+    bool handleCablePlugRemoveIRQ();
+    void energyConsumptionSavingsSettings();
+    void updateCapacity();
+    uint8_t getUpdatedCapacity();
+    
+protected:
+    static BatteryManager *inst;
+    int lastCapacity = 0;
+    BatteryManager();
+}
