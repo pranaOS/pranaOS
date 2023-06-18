@@ -6,6 +6,10 @@
 	objectVersion = 55;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		B1B16DEB2A3F2A9D00E54E7C /* battery_manager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B1B16DE92A3F2A9D00E54E7C /* battery_manager.cpp */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXCopyFilesBuildPhase section */
 		B1D616562A3D50B000AF62AF /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
@@ -19,6 +23,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		B1B16DE72A3F2A1800E54E7C /* battery.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = battery.hpp; sourceTree = "<group>"; };
+		B1B16DE92A3F2A9D00E54E7C /* battery_manager.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = battery_manager.cpp; sourceTree = "<group>"; };
+		B1B16DEA2A3F2A9D00E54E7C /* battery_manager.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = battery_manager.hpp; sourceTree = "<group>"; };
 		B1D616582A3D50B000AF62AF /* watchOS */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = watchOS; sourceTree = BUILT_PRODUCTS_DIR; };
 		B1D616632A3D50CD00AF62AF /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		B1D616672A3D50CD00AF62AF /* Constants.kt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Constants.kt; sourceTree = "<group>"; };
@@ -43,6 +50,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		B1B16DE82A3F2A4D00E54E7C /* battery */ = {
+			isa = PBXGroup;
+			children = (
+				B1B16DE72A3F2A1800E54E7C /* battery.hpp */,
+				B1B16DE92A3F2A9D00E54E7C /* battery_manager.cpp */,
+				B1B16DEA2A3F2A9D00E54E7C /* battery_manager.hpp */,
+			);
+			path = battery;
+			sourceTree = "<group>";
+		};
 		B1D6164F2A3D50B000AF62AF = {
 			isa = PBXGroup;
 			children = (
@@ -111,6 +128,7 @@
 		B1D6166D2A3D50CD00AF62AF /* kernel */ = {
 			isa = PBXGroup;
 			children = (
+				B1B16DE82A3F2A4D00E54E7C /* battery */,
 				B1D6166E2A3D50CD00AF62AF /* README.md */,
 			);
 			path = kernel;
@@ -181,6 +199,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B1B16DEB2A3F2A9D00E54E7C /* battery_manager.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
