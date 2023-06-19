@@ -68,7 +68,27 @@ namespace PCI {
     union IOAddress {
         struct __attribute((packed)) attrs {
             uint8_t field: 8;
+            uint8_t function: 3;
+            uint8_t slot: 5;
+            uint8_t bus: 8;
+            uint8_t: 7;
+            bool enable: 1;
         } attrs;
         uint32_t value;
+    };
+
+    class Address {
+    public:
+        uint8_t bus;
+        uint8_t slot;
+        uint8_t function;
+        IOAddress getIoAddress(uint8_t field);
+    };
+
+    class ID {
+    public:
+        uint16_t vendor;
+        uint16_t device;
+        bool operator==(ID& other) const;
     };
 }
