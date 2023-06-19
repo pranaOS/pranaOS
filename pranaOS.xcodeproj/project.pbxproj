@@ -498,6 +498,7 @@
 		B1123A6A2A40A11E00A9F9E5 /* kernel */ = {
 			isa = PBXGroup;
 			children = (
+				B1123B922A40A17900A9F9E5 /* extensions */,
 				B1123A6B2A40A11E00A9F9E5 /* api */,
 				B1123A7E2A40A11E00A9F9E5 /* asm */,
 				B1123A812A40A11E00A9F9E5 /* atomic.h */,
@@ -1097,6 +1098,13 @@
 				B1123B5F2A40A12100A9F9E5 /* README.md */,
 			);
 			path = userland;
+			sourceTree = "<group>";
+		};
+		B1123B922A40A17900A9F9E5 /* extensions */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = extensions;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
