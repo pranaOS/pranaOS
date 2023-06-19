@@ -15,14 +15,14 @@
 #include <api/stdarg.h>
 
 #ifdef DEBUG
-#define ASSERT(cmd) \
-if (!(cond)) { \
-    PANIC("Assertion failed: ", __FILE__, " at line " STR(__LINE__)); \
+#define ASSERT(cond) \
+if(!(cond)) { \
+  PANIC("ASSERTION FAILED:", __FILE__ " at line " STR(__LINE__)); \
 }
 #else
 #define ASSERT(cond) \
-if (!(cond)) { \
-    printf("[kernel] CRITICAL: Assertion failed: %s\n", __FILE__);  \
+if(!(cond)) { \
+  printf("[KERNEL] CRITICAL: Assertion failed: %s\n", __FILE__ " at line " STR(__LINE__)); \
 }
 #endif
 
@@ -34,7 +34,7 @@ if (!(cond)) { \
 void putch(char c);
 
 /**
- * @brief serial_putch
+ * @brief serial putch
  * 
  * @param c 
  */
@@ -57,7 +57,7 @@ void vprintf(const char* fmt, va_list list);
 void printf(const char* fmt, ...);
 
 /**
- * @brief printf
+ * @brief print
  * 
  * @param str 
  */
@@ -72,4 +72,9 @@ void print(const char* str);
  */
 [[noreturn]] void PANIC(const char *error, const char *msg, ...);
 
+/**
+ * @brief clearScreen, setup_tty
+ * 
+ */
 void clearScreen();
+void setup_tty();
