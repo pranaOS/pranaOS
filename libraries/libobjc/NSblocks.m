@@ -367,3 +367,13 @@ void _block_object_assign(void *destAddr, const void *object, const int flags) {
         _Block_assign((void *)object, destAddr);
     }
 }
+
+void _block_object_dispose(const void *object, const int flags) {
+    if (flags & BLOCK_FIELD_IS_BYREF) {
+        _block_byref_release(object);
+    } else if ((flags & (BLOCK_FIELD_IS_BLOCK|BLOCK_BYREF_CALLER)) == BLOCK_FIELD_IS_BLOCK) {
+        _block_destroy(object);
+    } else if ((flags & (BLOCK_FIELD_IS_WEAK|BLOCK_FIELD_IS_BLOCK|BLOCK_BYREF_CALLER)) == BLOCK_FIELD_IS_OBJECT) {
+        _block_release_object(object);
+    }
+}
