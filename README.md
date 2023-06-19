@@ -17,6 +17,7 @@
 - we have specialized ui & other runtime libraries so that developers can able to develop many things using it (or) they can create they're own framework or application for the pranaOS.
 
 # Kernel Features:
+- mobile/watch/OS kernel.
 - x86 kernel
 - ext2 filesystem
 - ps2 mouse and keyboard
