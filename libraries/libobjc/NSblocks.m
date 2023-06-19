@@ -327,4 +327,43 @@ static void _Block_byref_assign_copy(void *dest, const void *arg, const int flag
     _block_assign(src->forwarding, (void**) destp);
 }
 
+static void _block_byref_release(const void *arg) {
+    struct Block_byref *shared_struct = (struct Block_byref *)arg;
+    int refcount;
+    
+    shared_struct = shared_struct->forwarding;
+    
+    if ((shared_struct->flags & BLOCK_NEEDS_FREE) == 0) {
+        return;
+    }
+    
+    refcount = shared_struct->flags & BLOCK_REFCOUNT_MASK;
+    
+    if (refcount <= 0) {
+        printf("_Block_byref_release: Block byref data structure at %p underflowed\n", arg);
+    }
+    
+    else if ((latching_decr_int(&shared_struct->flags) & BLOCK_REFCOUNT_MASK) == 0) {
+        if (shared_struct->flags & BLOCK_HAS_COPY_DISPOSE) {
+            (*shared_struct->byref_destroy)(shared_struct);
+        }
+        _block_deallocator((struct block_layout *)shared_struct);
+    }
+}
 
+void _block_object_assign(void *destAddr, const void *object, const int flags) {
+    if ((flags & BLOCK_BYREF_CALLER) == BLOCK_BYREF_CALLER) {
+        if ((flags & BLOCK_FIELD_IS_WEAK) == BLOCK_FIELD_IS_WEAK) {
+            _Block_assign_weak(object, destAddr);
+        } else {
+            _Block_assign((void *)object, destAddr);
+        }
+    } else if ((flags & BLOCK_FIELD_IS_BYREF) == BLOCK_FIELD_IS_BYREF)  {
+        _Block_byref_assign_copy(destAddr, object, flags);
+    } else if ((flags & BLOCK_FIELD_IS_BLOCK) == BLOCK_FIELD_IS_BLOCK) {
+        _Block_assign(_Block_copy_internal(object, flags), destAddr);
+    } else if ((flags & BLOCK_FIELD_IS_OBJECT) == BLOCK_FIELD_IS_OBJECT) {
+        _Block_retain_object(object);
+        _Block_assign((void *)object, destAddr);
+    }
+}
