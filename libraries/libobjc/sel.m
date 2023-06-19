@@ -18,6 +18,10 @@ const char * _Nonnull sel_getname(SEL _Nonnull sel) {
     return (const char *)(const void*)sel;
 }
 
+BOOL setisEqual(SEL lhs, SEL rhs) {
+    return lhs == rhs;
+}
+
 /**
  * sel allocation[needs: name, signal(YES OR NO)]
  */
