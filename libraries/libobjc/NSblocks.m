@@ -55,6 +55,8 @@ __unused static void *_Block_copy_finalizing_class = _NSConcreteMallocBlock;
 __unused static int _Block_copy_flag = BLOCK_NEEDS_FREE;
 static int _Byref_flag_initiale_value = BLOCK_NEEDS_FREE | 2;
 
+static bool isGC = false;
+
 /**
  * @brief latching incr int
  */
@@ -284,3 +286,45 @@ static void *_block_copy_internal(const void *arg, const int flags) {
         return result;
     }
 }
+
+void *_Block_copy(const void *arg){
+    return _Block_copy_internal(arg, (1 << 16));
+}
+
+
+static void _Block_byref_assign_copy(void *dest, const void *arg, const int flags) {
+    struct Block_byref **destp = (struct Block_byref **) dest;
+    struct Block_byref **src = (struct Block_byref *) arg;
+    
+    if (src->forwarding->flags & BLOCK_IS_GC) {
+        ;
+    }
+    
+    else if((src->forwarding->flags & BLOCK_REFCOUNT_MASK) == 0) {
+        bool isWeak = ((flags & (BLOCK_FIELD_IS_BYREF|BLOCK_FIELD_IS_WEAK)) == (BLOCK_FIELD_IS_BYREF|BLOCK_FIELD_IS_WEAK));
+        struct Block_byref *copy = (struct Block_byref *)_block_allocator(src->size, false, isWeak);
+        copy->flags = src->flags;
+        copy->forwarding = copy;
+        copy->size = src->size;
+        
+        if (isWeak) {
+            copy->isa = &_NSConcreteWeakBlockVariable;
+        }
+        if (src->flags & BLOCK_HAS_COPY_DISPOSE) {
+            copy->byref_keep = src->byref_keep;
+            copy->byref_destroy = src->byref_destroy;
+            (*src->byref_keey)(copy, src);
+        }
+        else {
+            _Block_memmove((void *)&copy->byref_keep, (void *)&src->byref_keep, src->size - sizeof(struct Block_byref_header));
+        }
+    }
+    
+    else if ((src->forwarding->flags & BLOCK_NEEDS_FREE) == BLOCK_NEEDS_FREE) {
+        latching_incr_int(&src->forwarding->flags);
+    }
+    
+    _block_assign(src->forwarding, (void**) destp);
+}
+
+
