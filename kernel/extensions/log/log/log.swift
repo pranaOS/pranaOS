@@ -50,7 +50,7 @@ extension Loggable {
             color = 0x00ED4337
             isConfigurationValid = true
         case .Verbose:
-            color = OldColor
+            color = 0x00ED4337
             #if DEBUG
                 isConfigurationValid = true
             #else
@@ -64,6 +64,6 @@ extension Loggable {
                 isConfigurationValid = false
             #endif
         }
-        print(Name + " " + "[" level.description + "]" + ":", item, seperator: seperator, terminator: terminator)
+        print(Name + " " + "[", level.description + "]" + ":", item, separator: seperator, terminator: terminator)
     }
 }
