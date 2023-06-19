@@ -1,5 +1,5 @@
 # pranaOS
-- A unix operating system built using C++ gives support to x86
+- Smart Operating System Built For x86, ARM, watch & mobile platforms.
 
 [![forthebadge](https://forthebadge.com/images/badges/built-by-developers.svg)](https://forthebadge.com)
 [![forthebadge](https://forthebadge.com/images/badges/made-with-c-plus-plus.svg)](https://forthebadge.com)
@@ -12,16 +12,21 @@
 
 [![linuxCI](https://github.com/pranaOS/pranaOS/actions/workflows/linux.yml/badge.svg?branch=master)](https://github.com/pranaOS/pranaOS/actions/workflows/linux.yml)
 
-## Kernel Features:
+# Features:
+- operating system for all, there are many features at this operating system, you can able to create frameworks, applications, and many more for the os(watch, mobile & desktopOS).
+- we have specialized ui & other runtime libraries so that developers can able to develop many things using it (or) they can create they're own framework or application for the pranaOS.
+
+# Kernel Features:
 - x86 kernel
 - ext2 filesystem
 - ps2 mouse and keyboard
 
-## Libraries:
-- runtime support for: libc, libcpp, libobjc, libjs
-- ui function: libui
+# Libraries:
+## Supported Runtime Libraries:
+- libc, libcpp, libobjc, libswift
+- TODO: libjs(need to give runtime support for libswift)
 
-## Userland:
+# Userland:
 - simple terminal and some apps
 
 # Requirements:
