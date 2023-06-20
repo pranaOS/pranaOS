@@ -62,5 +62,31 @@ namespace sys {
       }
     };
 
-    
+    class DataMessage : public Message {
+    public:
+      explicit DataMessage(MessageType messageType);
+      explicit DataMessage(BusChannel channel);
+      DataMessage();
+
+      MessageType messageType = MessageType::MessageTypeUninitialized;
+    };
+
+    class ReadyToCloseMessage : public DataMessage {};
+
+    class ResponseMessage : public Message {
+    public:
+      explicit ResponseMessage(ReturnCodes retCode = ReturnCodes::Success, MessageType responseInfo = MessageType::MessageTypeUninitialized);
+      MessagePointer execute(Service *service) final;
+
+      ReturnCodes retCodes;
+      MessageType responseTo;
+    };
+
+    inline auto msgHandled() -> MessagePointer {
+      return std::make_shared<ResponseMessage>();
+    }
+
+    inline auto msgNotHandlded() -> MessagePointer {
+      return std::make_shared<ResponseMessage>(ReturnCodes::Unresolved);
+    }
 }
