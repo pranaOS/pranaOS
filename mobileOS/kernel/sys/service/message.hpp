@@ -12,11 +12,55 @@
 #pragma once
 
 #include "message_forward.hpp"
-//#include <>
+#include "../common.hpp"
+#include "../message_type.hpp"
+#include <magic_enum.hpp>
 #include <cstdint>
 #include <memory>
 #include <string>
 
 namespace sys {
+    SendResult createSendResult(ReturnCodes retCode, MessagePointer msg);
+    inline constexpr std::uint64_t invalidMessageUID = std::numeric_limits<uint64_t>().max();
 
+    using MessageUIDType = std::uint64_t;
+
+    class MessageUID {
+    protected:
+      MessageUIDType value = 0;
+
+    public:
+      [[nodiscard]] MessageUIDType get() const noexcept;
+      [[nodiscard]] MessageType getNext() const noexcept;
+    };
+
+    class Message {
+    public:
+      enum class TransmissionType {
+          Unspecified,
+          Unicast,
+          Multicast,
+          Broadcast
+      };
+
+      enum class Type {
+          Unspecified,
+          System,
+          Data,
+          Response
+      };
+
+      explicit Message(Type type);
+      Message(Type type, BusChannel channel);
+
+      virtual ~Message() noexcept = default;
+
+      virtual MessagePointer Execute(Service *service);
+
+      virtual explicit operator std::string() const {
+          return {"{}"};
+      }
+    };
+
+    
 }
