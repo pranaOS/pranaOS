@@ -103,4 +103,40 @@ public struct ByteArray: Collection, Sequence, CustomStringConvertible {
         }
     }
     
+    public init<T: Collection>(_ bytes: T) where T.Element == Element {
+        precondition(bytes.count <= 8)
+        count = Int(bytes.count)
+        endIndex = count
+        self.rawValue = 0
+        var shift: UInt16 = 0
+        
+        for byte in bytes {
+            rawValue |= (UInt64(byte) << shift)
+            shift += 8
+        }
+    }
+    
+    public subscript(index: Int) -> Element {
+        get {
+            precondition(index >= 0)
+            precondition(index < endIndex)
+            
+            let shift = UInt16(index * 8)
+            
+            return Element((rawValue >> shift) & UInt64(Element.max))
+        }
+        
+        set(newValue) {
+            precondition(index >= 0)
+            precondition(index < endIndex)
+            precondition(newValue >= 0 || newValue <= Element.max)
+            
+            let shift = UInt16(index * 8)
+            let mask = ~(UInt64(Element.max) << shift)
+            let newValue = UInt64(newValue) << shift
+            
+            rawValue &= mask
+            rawValue |= newValue
+        }
+    }
 }
