@@ -139,4 +139,36 @@ public struct ByteArray: Collection, Sequence, CustomStringConvertible {
             rawValue |= newValue
         }
     }
+    
+    public struct Iterator: IteratorProtocol {
+        var index = 0
+        let array: ByteArray
+        
+        init(_ value: ByteArray) {
+            array = value
+        }
+        
+        mutating public func next() -> Element? {
+            if index < array.endIndex {
+                defer {
+                    index += 1
+                }
+                
+                return array[index]
+            } else {
+                return nil
+            }
+        }
+    }
+    
+    public func makeIterator() -> Iterator {
+        return Iterator(self)
+    }
+    
+    public func index(after i: Index) -> Index {
+        precondition(i >= 0)
+        precondition(i < endIndex)
+        
+        return i + 1
+    }
 }
