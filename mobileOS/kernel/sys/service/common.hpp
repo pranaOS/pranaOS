@@ -16,20 +16,56 @@
 #include "../tethering.hpp"
 
 namespace sys::phonemodes {
-    class PhoneModeChanged : public DataMessage {
-      public:
-        explicit PhoneModeChanged(PhoneMode phoneMode) : DataMessage{MessageType::MessageTypeUninitialized}, phoneMode{phoneMode}
-        {}
 
-        [[nodiscard]] auto getPhoneMode() const noexcept {
-            return phoneMode;
-        }
+  class PhoneModeChanged : public DataMessage {
+  public:
+      /**
+       * @brief Construct a new Phone Mode Changed object
+       * 
+       * @param phoneMode 
+       */
+      explicit PhoneModeChanged(PhoneMode phoneMode)
+          : DataMessage{MessageType::MessageTypeUninitialized}, phoneMode{phoneMode}
+      {}
 
-      private:
-        PhoneMode phoneMode;
-    };
+      /**
+       * @brief Get the Phone Mode object
+       * 
+       * @return auto 
+       */
+      [[nodiscard]] auto getPhoneMode() const noexcept {
+          return phoneMode;
+      }
 
-    class ChangedSuccessfully : public ResponseMessage {};
+  private:
+      PhoneMode phoneMode;
+  };
 
-    class ChangeFailed : public ResponseMessage {};
+  class TetheringChanged : public DataMessage {
+  public:
+      /**
+       * @brief Construct a new Tethering Changed object
+       * 
+       * @param tetheringMode 
+       */
+      explicit TetheringChanged(Tethering tetheringMode)
+          : DataMessage{MessageType::MessageTypeUninitialized}, tethering{tetheringMode}
+      {}
+
+      /**
+       * @brief Get the Tethering Mode object
+       * 
+       * @return auto 
+       */
+      [[nodiscard]] auto getTetheringMode() const noexcept {
+          return tethering;
+      }
+
+    private:
+      Tethering tethering;
+  };
+
+  class ChangedSuccessfully : public ResponseMessage {};
+
+  class ChangeFailed : public ResponseMessage {};
 }
