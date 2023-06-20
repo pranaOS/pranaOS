@@ -84,4 +84,7 @@ public struct BitArray {
         return UInt64(rawValue)
     }
     
+    public var asInt: Int {
+        return Int(rawValue)
+    }
 }
