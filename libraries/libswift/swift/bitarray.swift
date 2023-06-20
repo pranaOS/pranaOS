@@ -8,4 +8,31 @@ public struct BitArray {
     public init() {
         rawValue = 0
     }
+    
+    public init<T: BinaryInteger(_ rawValue: T)> {
+        self.rawValue = UInt64(rawValue)
+    }
+    
+    public subscript(index: Int) -> Int {
+        get {
+            precondition(index >= 0)
+            precondition(index < 64)
+            
+            return (rawValue & UInt64(1 << index) == 0) ? 0 : 1
+        }
+        
+        set (newValue) {
+            precondition(index >= 0)
+            precondition(index < 64)
+            precondition(newValue == 0 || newValue == 1)
+            
+            let mask: UInt64 = 1 << index
+            
+            if (newValue == 1) {
+                rawValue |= mask
+            } else {
+                rawValue &= ~mask
+            }
+        }
+    }
 }
