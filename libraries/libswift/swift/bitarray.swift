@@ -68,5 +68,20 @@ public struct BitArray {
         }
     }
     
+    public var asUInt8: UInt8 {
+        return UInt8(truncatingIfNeeded: rawValue)
+    }
+    
+    public var asUInt16: UInt16 {
+        return UInt16(truncatingIfNeeded: rawValue)
+    }
+    
+    public var asUInt32: UInt32 {
+        return UInt32(truncatingIfNeeded: rawValue)
+    }
+    
+    public var asUInt64: UInt64 {
+        return UInt64(rawValue)
+    }
     
 }
