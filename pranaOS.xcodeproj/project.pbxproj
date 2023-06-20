@@ -58,6 +58,7 @@
 		B19A41AB2A41E0EC0007948E /* bitarray.swift in Sources */ = {isa = PBXBuildFile; fileRef = B19A41A72A41E0EC0007948E /* bitarray.swift */; };
 		B19A41AC2A41E0EC0007948E /* file.swift in Sources */ = {isa = PBXBuildFile; fileRef = B19A41A82A41E0EC0007948E /* file.swift */; };
 		B19A41AD2A41E0EC0007948E /* text.swift in Sources */ = {isa = PBXBuildFile; fileRef = B19A41A92A41E0EC0007948E /* text.swift */; };
+		B19A41AF2A41E32F0007948E /* bytearray.swift in Sources */ = {isa = PBXBuildFile; fileRef = B19A41AE2A41E32F0007948E /* bytearray.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -320,6 +321,7 @@
 		B19A41A72A41E0EC0007948E /* bitarray.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = bitarray.swift; sourceTree = "<group>"; };
 		B19A41A82A41E0EC0007948E /* file.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = file.swift; sourceTree = "<group>"; };
 		B19A41A92A41E0EC0007948E /* text.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = text.swift; sourceTree = "<group>"; };
+		B19A41AE2A41E32F0007948E /* bytearray.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = bytearray.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -717,6 +719,7 @@
 				B19A41A22A41E0EC0007948E /* osversion.swift */,
 				B19A41A92A41E0EC0007948E /* text.swift */,
 				B1123AC82A40A11F00A9F9E5 /* osversion.swift */,
+				B19A41AE2A41E32F0007948E /* bytearray.swift */,
 			);
 			path = swift;
 			sourceTree = "<group>";
@@ -1258,6 +1261,7 @@
 				B1123B7E2A40A12100A9F9E5 /* Config.cpp in Sources */,
 				B1123B6A2A40A12100A9F9E5 /* optional.cpp in Sources */,
 				B1123B642A40A12100A9F9E5 /* hello.c in Sources */,
+				B19A41AF2A41E32F0007948E /* bytearray.swift in Sources */,
 				B1123B672A40A12100A9F9E5 /* int.s in Sources */,
 				B1123B872A40A12100A9F9E5 /* ApiTest.cpp in Sources */,
 				B1123B832A40A12100A9F9E5 /* Lexer.cpp in Sources */,
