@@ -35,4 +35,38 @@ public struct BitArray {
             }
         }
     }
+    
+    public subscript(index: CountableClosedRange<Int>) -> UInt64 {
+        get {
+            var ret: UInt64 = 0
+            var bit: UInt64 = 1
+            
+            for i in index {
+                let mask: UInt64 = 1 << i
+                if rawValue & mask != 0 {
+                    ret |= bit
+                }
+                bit <<= 1
+            }
+            return ret
+        }
+        
+        set {
+            var bit: UInt64 = 1
+            
+            for i in index {
+                let mask: UInt64 = 1 << i
+                
+                if (newValue & bit) == 0 {
+                    rawValue &= ~mask
+                } else {
+                    rawValue |= mask
+                }
+                
+                bit <<= 1
+            }
+        }
+    }
+    
+    
 }
