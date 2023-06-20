@@ -54,6 +54,10 @@
 		B1123B8F2A40A12100A9F9E5 /* sqlite.c in Sources */ = {isa = PBXBuildFile; fileRef = B1123B452A40A12100A9F9E5 /* sqlite.c */; };
 		B1123B902A40A12100A9F9E5 /* sqlite3vfs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B1123B482A40A12100A9F9E5 /* sqlite3vfs.cpp */; };
 		B1123B912A40A12100A9F9E5 /* tar.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B1123B4F2A40A12100A9F9E5 /* tar.cpp */; };
+		B19A41AA2A41E0EC0007948E /* osversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = B19A41A22A41E0EC0007948E /* osversion.swift */; };
+		B19A41AB2A41E0EC0007948E /* bitarray.swift in Sources */ = {isa = PBXBuildFile; fileRef = B19A41A72A41E0EC0007948E /* bitarray.swift */; };
+		B19A41AC2A41E0EC0007948E /* file.swift in Sources */ = {isa = PBXBuildFile; fileRef = B19A41A82A41E0EC0007948E /* file.swift */; };
+		B19A41AD2A41E0EC0007948E /* text.swift in Sources */ = {isa = PBXBuildFile; fileRef = B19A41A92A41E0EC0007948E /* text.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -312,6 +316,10 @@
 		B1123B5A2A40A12100A9F9E5 /* mobileOS.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = mobileOS.xcodeproj; sourceTree = "<group>"; };
 		B1123B5D2A40A12100A9F9E5 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		B1123B5F2A40A12100A9F9E5 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		B19A41A22A41E0EC0007948E /* osversion.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = osversion.swift; sourceTree = "<group>"; };
+		B19A41A72A41E0EC0007948E /* bitarray.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = bitarray.swift; sourceTree = "<group>"; };
+		B19A41A82A41E0EC0007948E /* file.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = file.swift; sourceTree = "<group>"; };
+		B19A41A92A41E0EC0007948E /* text.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = text.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -704,6 +712,10 @@
 		B1123AC72A40A11F00A9F9E5 /* swift */ = {
 			isa = PBXGroup;
 			children = (
+				B19A41A72A41E0EC0007948E /* bitarray.swift */,
+				B19A41A82A41E0EC0007948E /* file.swift */,
+				B19A41A22A41E0EC0007948E /* osversion.swift */,
+				B19A41A92A41E0EC0007948E /* text.swift */,
 				B1123AC82A40A11F00A9F9E5 /* osversion.swift */,
 			);
 			path = swift;
@@ -1221,6 +1233,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B19A41AB2A41E0EC0007948E /* bitarray.swift in Sources */,
 				B1123B7D2A40A12100A9F9E5 /* main2.cpp in Sources */,
 				B1123B6F2A40A12100A9F9E5 /* functions.m in Sources */,
 				B1123B652A40A12100A9F9E5 /* battery_manager.cpp in Sources */,
@@ -1239,6 +1252,7 @@
 				B1123B8F2A40A12100A9F9E5 /* sqlite.c in Sources */,
 				B1123B742A40A12100A9F9E5 /* objc++.mm in Sources */,
 				B1123B6D2A40A12100A9F9E5 /* do.m in Sources */,
+				B19A41AA2A41E0EC0007948E /* osversion.swift in Sources */,
 				B1123B7C2A40A12100A9F9E5 /* main.cpp in Sources */,
 				B1123B6B2A40A12100A9F9E5 /* class.m in Sources */,
 				B1123B7E2A40A12100A9F9E5 /* Config.cpp in Sources */,
@@ -1256,11 +1270,13 @@
 				B1123B712A40A12100A9F9E5 /* mobile.m in Sources */,
 				B1123B772A40A12100A9F9E5 /* sel.m in Sources */,
 				B1123B8B2A40A12100A9F9E5 /* database.cpp in Sources */,
+				B19A41AC2A41E0EC0007948E /* file.swift in Sources */,
 				B1123B692A40A12100A9F9E5 /* io.cpp in Sources */,
 				B1123B8A2A40A12100A9F9E5 /* Makefile in Sources */,
 				B1123B7A2A40A12100A9F9E5 /* osversion.swift in Sources */,
 				B1123B762A40A12100A9F9E5 /* runtime.m in Sources */,
 				B1123B6C2A40A12100A9F9E5 /* define.m in Sources */,
+				B19A41AD2A41E0EC0007948E /* text.swift in Sources */,
 				B1123B632A40A12100A9F9E5 /* hello.asm in Sources */,
 				B1123B862A40A12100A9F9E5 /* Utils.cpp in Sources */,
 				B1123B902A40A12100A9F9E5 /* sqlite3vfs.cpp in Sources */,
