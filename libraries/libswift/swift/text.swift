@@ -18,7 +18,9 @@ class TextFile: File, Loggable {
     required init?(partition: Partition, path: String) {
         super.init(partition: partition, path: path)
         guard file.Info.Extension == "TXT" || file.Info.Extension == "PLI" || file.Info.Extension == "XML"  else {
-            
+            Log("File didn't pass extension checks for plain text", level: .Error)
+            file.Data.deallocate()
+            return nil
         }
     }
 }
