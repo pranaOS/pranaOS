@@ -105,4 +105,30 @@ namespace PCI {
         }
         callback(addr, {read_word(addr, PCI_VENDOR_ID), read_word(addr, PCI_DEVICE_ID)}, get_type(addr), dataPtr);
     }
+
+    uint8_t getClass(Address address) {
+        return PCI::read_byte(address, PCI_CLASS);
+    }
+
+    uint8_t getSubclass(Address address) {
+        return PCI::read_byte(address, PCI_SUBCLASS);
+    }
+
+    uint16_t getType(Address address) {
+        return (read_byte(address, PCI_CLASS) << 8u) + read_byte(address, PCI_SUBCLASS);
+    }
+
+    IOAddress Address::get_io_address(int field) {
+        return {field, function, slot, bus, true};
+    }
+
+    bool Address::is_zero()
+    {
+        return slot == 0 && function == 0 && bus == 0
+    }
+
+    bool ID::operator==(PCI::ID& other) const
+    {
+        return other.device == device && other.vendor == vendor;
+    }
 }
