@@ -71,5 +71,22 @@ namespace audio {
         virtual bool push() = 0;
 
         virtual bool pop(Span &span) = 0;
+
+        virtual bool reserve(Span &span) = 0;
+
+        virtual void commit() = 0;
+
+        virtual void release() = 0;
+
+        virtual bool peek(Span &span) = 0;
+
+        virtual void consume() = 0;
+
+        virtual void unpeek() = 0;
+
+        virtual void reset() = 0;
+
+        [[nodiscard]] virtual auto getInputTraits() const noexcept -> Traits = 0;
+        
     };
 }
