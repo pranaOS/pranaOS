@@ -1,7 +1,7 @@
 /**
-* @file common.hpp
+* @file watch.hpp
 * @author Krisna Pranav
-* @brief Common
+* @brief Watch
 * @version 1.0
 * @date 2023-06-20
 *
