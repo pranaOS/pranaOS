@@ -87,6 +87,9 @@ namespace audio {
         virtual void reset() = 0;
 
         [[nodiscard]] virtual auto getInputTraits() const noexcept -> Traits = 0;
-        
+
+        [[nodiscard]] virtual bool isEmpty() const noexcept = 0;
+
+        [[nodiscard]] virtual bool isFull() const noexcept = 0;
     };
 }
