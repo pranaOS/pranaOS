@@ -38,14 +38,18 @@ namespace audio::codec {
     };
 
     struct Configuartion {
-        std::uint32_t sampleRate_hz;
-        std::uint32_t bitWidth;
-        std::uint32_t flags;
+        std::uint32_t sampleRate_hz = 0;
+        std::uint32_t bitWidth = 0;
+        std::uint32_t flags = 0;
 
-        float outputVolume;
-        float inputGain;
+        float outputVolume = 0.0f;
+        float inputGain = 0.0f;
 
-        std::uint8_t playbackPathGain;
-        std::uint8_t playbackPathAtten;
+        std::uint8_t playbackPathGain = 0;
+        std::uint8_t playbackPathAtten = 5;
+
+        InputPath inputPath = InputPath::None;
+        OutputPath outputPath = OutputPath::None;
+
     };
 }
