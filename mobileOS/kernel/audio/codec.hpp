@@ -51,5 +51,13 @@ namespace audio::codec {
         InputPath inputPath = InputPath::None;
         OutputPath outputPath = OutputPath::None;
 
+        audio::equalizer::Equalizer filterCoefficients = {
+            qfilter_CalculateCoeffs(audio::equalizer::FilterType::None, 100.2f, 44100, 0.701f, 0),
+            qfilter_CalculateCoeffs(audio::equalizer::FilterType::None, 17996.2f, 44100, 0.701f, 0),
+            qfilter_CalculateCoeffs(audio::equalizer::FilterType::None, 13984.7f, 44100, 0.701f, -10),
+            qfilter_CalculateCoeffs(audio::equalizer::FilterType::None, 200.4f, 44100, 0.701f, -10),
+            qfilter_CalculateCoeffs(audio::equalizer::FilterType::None, 0, 44100, 0.701f, -4)
+        };
+
     };
 }
