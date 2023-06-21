@@ -43,4 +43,28 @@ namespace PCI {
         IO::outl(PCI_DATA_PORT, value);
     }
 
+    void enable_interrupt(Address address) {
+        Command comm = {.value = read_word(address, PCI_COMMAND)};
+        comm.attrs.interrupt_disable = false;
+        write_word(address, PCI_COMMAND, comm.value);
+    }
+
+
+    void disable_interrupt(Address address) {
+        Command comm = {.value = read_word(address, PCI_COMMAND)};
+        comm.attrs.interrupt_disable = true;
+        write_word(address, PCI_COMMAND, comm.value);
+    }
+
+    void enable_bus_mastering(Address address) {
+        Command comm = {.value = read_word(address, PCI_COMMAND)};
+        comm.attrs.bus_master = true;
+        write_word(address, PCI_COMMAND, comm.value);
+    }
+
+    void disable_bus_mastering(Address address) {
+        Command comm = {.value = read_word(address, PCI_COMMAND)};
+        comm.attrs.bus_master = false;
+        write_word(address, PCI_COMMAND, comm.value);
+    }
 }
