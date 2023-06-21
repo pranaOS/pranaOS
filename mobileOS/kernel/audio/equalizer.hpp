@@ -1,5 +1,5 @@
 /**
-* @file tagsfetcher.hpp
+* @file equalizer.hpp
 * @author Krisna Pranav
 * @brief Tags Fetcher
 * @version 1.0
