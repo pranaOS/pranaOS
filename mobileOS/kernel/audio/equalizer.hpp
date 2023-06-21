@@ -87,5 +87,5 @@ namespace audio::equalizer {
         None
     };
 
-    QFilterCoefficients qfilter_CalculateCofees(FilterType filter);
+    QFilterCoefficients qfilter_CalculateCofees(FilterType filter, float frequency, uint32_t samplerate, float Q, float gain);
 }
