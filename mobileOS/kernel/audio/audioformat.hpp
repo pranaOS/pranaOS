@@ -36,10 +36,46 @@ namespace audio {
         auto getBitrate() const noexcept -> unsigned long int;
         auto toString() const -> std::string;
 
+        /**
+         * @brief bytesToMicroseconds
+         * 
+         * @param bytes 
+         * @return std::chrono::microseconds 
+         */
         auto bytesToMicroseconds(unsigned int bytes) const noexcept -> std::chrono::microseconds;
+
+        /**
+         * @brief microsecondsToBytes
+         * 
+         * @param duration 
+         * @return unsigned int 
+         */
         auto microsecondsToBytes(std::chrono::microseconds duration) const noexcept -> unsigned int;
 
         auto operator==(const AudioFormat &other) const -> bool;
         auto operator!=(const AudioFormat &other) const -> bool;
+        auto operator>(const AudioFormat &other) const -> bool;
+        auto operator<(const AudioFormat &other) const -> bool;
+        auto operator<=(const AudioFormat &other) const -> bool;
+        auto operator>=(const AudioFormat &other) const -> bool;
+
+        auto isValid() const noexcept -> bool;
+        auto isNull() const noexcept -> bool;
+
+        /**
+         * @brief makeMatrics
+         * 
+         * @param sampleRate 
+         * @param bitWidths 
+         * @param channels 
+         * @return std::vector<AudioFormat> 
+         */
+        static auto makeMatrics(std::set<unsigned int> sampleRate, std::set<unsigned int> bitWidths, std::set<unsigned int> channels) -> std::vector<AudioFormat>;
     };
+
+    /**
+     * @brief nullFormat
+     * 
+     */
+    static constexpr inline auto nullFormat = AudioFormat();
 }
