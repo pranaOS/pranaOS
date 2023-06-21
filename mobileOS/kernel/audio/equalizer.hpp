@@ -72,4 +72,20 @@ namespace audio::equalizer {
             return false
         }
     };
+
+    using Equalizer = std::array<QFilterCoefficients, bands>;
+
+    enum class FilterType {
+        BandPass,
+        HighPass,
+        LowPass,
+        Flat,
+        Notch,
+        LowShelf,
+        HighShelf,
+        Parametric,
+        None
+    };
+
+    QFilterCoefficients qfilter_CalculateCofees(FilterType filter);
 }
