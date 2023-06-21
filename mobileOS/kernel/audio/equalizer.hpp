@@ -47,5 +47,29 @@ namespace audio::equalizer {
 
             return true;
         }
+
+        inline bool operator!=(const QFilterCoefficients &rhs) const {
+            if (b0 != rhs.b0) {
+                return true;
+            }
+
+            if (b1 != rhs.b1) {
+                return true;
+            }
+
+            if (b2 != rhs.b2) {
+                return true;
+            }
+
+            if (a1 != rhs.a1) {
+                return true;
+            }
+
+            if (a2 != rhs.a2) {
+                return true;
+            }
+
+            return false
+        }
     };
 }
