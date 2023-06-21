@@ -20,6 +20,24 @@ namespace audio {
         enum class Event {
             NoEvent,
             StreamFull,
+            StreamHalfUsed,
+            StreamEmpty,
+            StreamOverflow,
+            StreamUnderFlow
+        };
+
+        class EventListener {
+          public:
+            virtual void onEvent(AbstractStream *stream, Event event) = 0;
+        };
+
+        struct Span {
+            std::uint8_t *data = nullptr;
+            std::size_t dataSize = 0;
+
+            constexpr std::uint8_t *dataEnd() const noexcept {
+                return data + dataSize;
+            }
         };
     };
 }
