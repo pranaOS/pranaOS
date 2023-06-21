@@ -56,6 +56,7 @@ namespace tags::fetcher {
               filePath{std::move(filePath)}, title{std::move(title)}, comment{std::move(comment)}, track{track}
         {}
 
+        // tags
         Tags(std::string filePath, std::string title) : filePath{std::move(filePath)}, title{std::move(title)}
         {}
     };
