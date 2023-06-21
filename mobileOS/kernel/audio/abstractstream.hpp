@@ -38,6 +38,38 @@ namespace audio {
             constexpr std::uint8_t *dataEnd() const noexcept {
                 return data + dataSize;
             }
+
+            constexpr void reset() noexcept {
+                data = nullptr;
+                dataSize = 0;
+            }
+
+            inline bool operator==(const Span &other) const noexcept {
+                return data == other.data && dataSize == other.dataSize;
+            }
+
+            inline bool operator!=(const Span &other) const noexcept {
+                return !operator==(other);
+            }
         };
+
+        struct Traits {
+            std::size_t blockSize = 0;
+            AudioFormat format = nullFormat;
+        };
+
+        virtual ~AbstractStream() = default;
+
+        virtual void registerListener(EventListener *listener) = 0;
+
+        virtual void unregisterListeners(EventListener *listener) = 0;
+
+        virtual bool push(void *data, std::size_t dataSize) = 0;
+
+        virtual bool push(const Span &span) = 0;
+
+        virtual bool push() = 0;
+
+        virtual bool pop(Span &span) = 0;
     };
 }
