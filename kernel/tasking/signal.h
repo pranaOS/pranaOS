@@ -15,6 +15,18 @@
 
 namespace Signal {
     class SigAction {
-
+      public:
+        void (*action)(int) = nullptr;
+        int flags = 0;
     };
+
+    enum SignalSeverity {
+        NOKILL,
+        KILL,
+        FATAL
+    };
+
+    extern const char* signal_names[];
+
+    extern SignalSeverity signal_severities[];
 }
