@@ -6,7 +6,7 @@
 *
 * @copyright Copyright (c) 2021 - 2023 pranaOS Developers, Krisna Pranav
 *
- */
+*/
 
 #pragma once
 
