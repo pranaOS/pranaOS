@@ -44,3 +44,7 @@ bool IRQHandler::mark_in_irq() {
     return true;
 }
 
+void IRQHandler::sent_eoi() {
+    Interrupt::send_eoi(_irq);
+    _sent_eoi = true;
+}
