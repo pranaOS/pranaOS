@@ -18,7 +18,9 @@ namespace Interrupt {
     struct IDTEntry idt[256];
 
     void idt_set_gate(uint8_t num, uint32_t loc, uint16_t selector, uint8_t attrs) {
-        idt[num].offset_low = (loc & 0xFFFu);
+        idt[num].offset_low = (loc & 0xFFFFu);
+        idt[num].offset_high = (loc >> 16u) & 0xFFFFu;
+        idt[num].selector = selector;
         idt[num].zero = 0;
         idt[num].attrs = attrs;
     }
