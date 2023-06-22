@@ -8,21 +8,25 @@
 *
  */
 
+
 #pragma once
 
-#include "../kstd/types.h"
+#include <kernel/kstd/types.h>
 
 typedef uint32_t uintptr_t;
 
-#define PREFIX(func) k ## func
+#define PREFIX(func)		k ## func
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-extern void *PREFIX(malloc)(size_t);
+extern void    *PREFIX(malloc)(size_t);
+extern void    *PREFIX(realloc)(void *, size_t);
+extern void    *PREFIX(calloc)(size_t, size_t);
+extern void     PREFIX(free)(void *);
+
 
 #ifdef __cplusplus
 }
-
 #endif
