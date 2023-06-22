@@ -20,15 +20,17 @@
 #include "../interrupt/irqhandler.h"
 #include "timekeeper.h"
 
-class PIT: public TimeKeeper : public IRQHandler {
+class PIT: public TimeKeeper, public IRQHandler {
   public:
     PIT(TimeManager* manager);
     void handle_irq(Registers* regs) override;
-    bool mark_in_req() override;
+
+    	bool mark_in_irq() override;
 
     int frequency() override;
     void enable() override;
-    void disalbe() override;
+    
+    void disable() override;
     
   private:
     static void write(uint16_t data, uint8_t counter);
