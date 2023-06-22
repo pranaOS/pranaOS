@@ -20,6 +20,10 @@ class Blocker {
     virtual bool is_lock();
     virtual Thread* responsible_thread();
 
+    void interrupt();
+    void reset_interrupted();
+    bool was_interrupted();
+
   protected:
     virtual void on_interrupted();
 
