@@ -26,5 +26,10 @@ class PIT: public TimeKeeper : public IRQHandler {
     void handle_irq(Registers* regs) override;
     bool mark_in_req() override;
 
+    int frequency() override;
+    void enable() override;
+    void disalbe() override;
     
+  private:
+    static void write(uint16_t data, uint8_t counter);
 };
