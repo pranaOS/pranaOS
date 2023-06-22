@@ -22,6 +22,7 @@ namespace Interrupt {
 
     struct IDTPointer {
         unsigned short size;
+        unsigned int offset;
     } __attribute__((packed));
 
     extern "C" void idt_load();
