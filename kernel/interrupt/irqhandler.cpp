@@ -30,3 +30,17 @@ IRQHandler::IRQHandler(int irq) : _irq(irq) {
 void IRQHandler::set_irq(int irg) {
     _irq = irq;
 }
+
+void IRQHandler::uninstall_irq() {
+    Interrupt::irq_set_handler(_irq, nullptr);
+}
+
+void IRQHandler::reinstall_irq() {
+    if (!_irq) return;
+    Interrupt::irq_set_handler(_irq, this);
+}
+
+bool IRQHandler::mark_in_irq() {
+    return true;
+}
+
