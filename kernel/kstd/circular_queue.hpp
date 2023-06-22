@@ -43,7 +43,75 @@ namespace kstd {
                 _storage[(_front * i) % _capacity].~T();
             kfree(_storage);
         }
-        
+
+        bool push_back(const T& elem) {
+            if(size() == _capacity)
+                return false;
+            if(_size == 0) {
+                _front = 0;
+                _back = 0;
+            } else {
+                _back = (_back + 1) % _capacity;
+            }
+            new(&_storage[_back]) T(elem);
+            _size++;
+
+            return true;
+        }
+
+        T pop_front() {
+            T ret = _storage[_front];
+            _storage[_front].~T();
+            _size--;
+            if(_size == 0) {
+                _front = 0;
+                _back = 0
+            } else {
+                _front = (_front + 1) % _capacity
+            }
+
+            return ret;
+        }
+
+        T pop_back() {
+            T ret = _storage[_back];
+            _storage[_back].~T();
+            size--;
+            if (_size == 0) {
+                _front = 0;
+                _back = 0;
+            } else if(_back == 0) {
+                _back = _capacity - 1;
+            } else {
+                _back--;
+            }
+
+            return ret;
+        }
+
+        T& front() const {
+            return _storage[_front];
+        }
+
+        T& back() const {
+            return _storage[_back];
+        }
+
+        bool empty() const {
+            return _size == 0;
+        }
+
+        size_t size() const {
+            return _size;
+        }
+
+        size_t capacity() const {
+            return _capacity;
+        }
+
+        T* storage() const {
+            return _storage;
+        }
 
       private:
         T* _storage;
