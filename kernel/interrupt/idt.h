@@ -20,7 +20,13 @@ namespace Interrupt {
         unsigned short offset_high;
     } __attribute__((packed));
 
+    struct IDTPointer {
+        unsigned short size;
+    } __attribute__((packed));
+
     extern "C" void idt_load();
+
+    void idt_set_gate(uint8_t num, uint32_t loc, uint16_t selector, uint8_t flags);
 
     void register_idt();
 }
