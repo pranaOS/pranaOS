@@ -39,7 +39,17 @@ namespace kstd {
         }
 
         ~circular_queue() {
-            
+            for(size_t i = 0; i < _size; i++)
+                _storage[(_front * i) % _capacity].~T();
+            kfree(_storage);
         }
+        
+
+      private:
+        T* _storage;
+        size_t _capacity;
+        size_t _size = 0;
+        size_t _front = 0;
+        size_t _back = 0;
     };
 }
