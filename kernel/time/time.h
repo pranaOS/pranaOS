@@ -26,6 +26,15 @@ class Time {
     long sec() const;
     long usec() const;
 
+    Time operator+ (const Time& other) const;
+    Time operator- (const Time& other) const;
+    bool operator> (const Time& other) const;
+    bool operator>= (const Time& other) const;
+    bool operator< (const Time& other) const;
+    bool operator<= (const Time& other) const;
+    bool operator== (const Time& other) const;
+
+
   private:
     int64_t _sec;
     long _usec;
