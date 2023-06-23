@@ -67,5 +67,6 @@ int PIT::frequency() {
  * @param counter 
  */
 void PIT::write(uint16_t data, uint8_t counter) {
-
+    uint8_t port = (counter==0) ? PIT_COUNTER0 : ((counter==1) ? PIT_COUNTER1 : PIT_COUNTER2);
+    IO::outb(port, (uint8_t)data);
 }
