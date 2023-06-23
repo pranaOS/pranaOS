@@ -25,7 +25,7 @@ class PIT: public TimeKeeper, public IRQHandler {
     PIT(TimeManager* manager);
     void handle_irq(Registers* regs) override;
 
-    	bool mark_in_irq() override;
+    bool mark_in_irq() override;
 
     int frequency() override;
     void enable() override;
