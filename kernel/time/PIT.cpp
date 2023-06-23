@@ -31,3 +31,41 @@ PIT::PIT(TimeManager* manager): TimeKeeper(manager), IRQHandler(PIT_IRQ) {
 	write(divisor & 0xffu, 0);
 	write((divisor >> 8u) & 0xffu, 0);
 }
+
+/**
+ * @brief handle_irq
+ * 
+ * @param regs 
+ */
+void PIT::handle_irq(Registers* regs) {
+    TimeKeeper::tick();
+}
+
+/**
+ * @brief mark_in_irq
+ * 
+ * @return true 
+ * @return false 
+ */
+bool PIT::mark_in_irq() {
+    return false;
+}
+
+/**
+ * @brief frequency
+ * 
+ * @return int 
+ */
+int PIT::frequency() {
+    return PIT_FREQUENCY;
+}
+
+/**
+ * @brief write
+ * 
+ * @param data 
+ * @param counter 
+ */
+void PIT::write(uint16_t data, uint8_t counter) {
+
+}
