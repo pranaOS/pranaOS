@@ -70,7 +70,9 @@ public:
      */
     bool mark_in_irq() override;
 
-    
+    int frequency() override;
+    void enable() override;
+    void disable() override;
 
 private:
     /**
