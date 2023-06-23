@@ -38,3 +38,50 @@
 #define RTC_FREQUENCY_DIVIDER 32768
 
 #define bcd(val) ((val / 16) * 10 + (val & 0xf))
+
+class RTC: public IRQHandler, public TimeKeeper {
+public:
+    /**
+     * @brief Construct a new RTC object
+     * 
+     * @param time 
+     */
+    RTC(TimeManager* time);
+
+    /**
+     * @brief timestamp
+     * 
+     * @return time_t 
+     */
+    static time_t timestamp();
+
+    /**
+     * @brief handle_irq
+     * 
+     * @param regs 
+     */
+    void handle_irq(Registers* regs) override;
+
+    /**
+     * @brief mark_in_req
+     * 
+     * @return true 
+     * @return false 
+     */
+    bool mark_in_irq() override;
+
+    
+
+private:
+    /**
+     * @brief Set the frequency object
+     * 
+     * @param frequency 
+     * @return true 
+     * @return false 
+     */
+    bool set_frequency(int frequency);
+
+    int _timestamp = 0;
+    int _frequency = 0;
+};
