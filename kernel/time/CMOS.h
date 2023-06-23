@@ -1,12 +1,13 @@
 /**
- * @file CMOS.h
- * @author Krisna Pranav
- * @brief CMOS 
- * @version 1.0
- * 
- * @copyright Copyright (c) 2023
- * 
+* @file CMOS.h
+* @author Krisna Pranav
+* @brief CMOS
+* @version 1.0
+*
+* @copyright Copyright (c) 2021 - 2023 pranaOS Developers, Krisna Pranav
+*
  */
+
 
 #pragma once
 
