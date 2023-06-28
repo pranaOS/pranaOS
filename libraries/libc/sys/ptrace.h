@@ -13,20 +13,27 @@
 
 #include <sys/types.h>
 
-#define PT_TRACE_ME 1 
+__BEGIN_DECLS
+
+#define PT_TRACE_ME 1
 #define PT_ATTACH 2
 #define PT_CONTINUE 3
-#define PT_SYSCALL 4 
+#define PT_SYSCALL 4
 #define PT_GETREGS 5
 #define PT_DETACH 6
+#define PT_PEEK 7
+#define PT_POKE 8
+#define PT_SETREGS 9
 
 /**
  * @brief ptrace
  * 
  * @param request 
- * @param pid 
+ * @param tid 
  * @param addr 
  * @param data 
  * @return int 
  */
-int ptrace(int request, pid_t pid, void* addr, int data);
+int ptrace(int request, pid_t tid, void* addr, int data);
+
+__END_DECLS
