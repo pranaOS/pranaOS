@@ -11,7 +11,7 @@
 
 #pragma once
 
-#include <mods/forward.h>
+#include "forward.h"
 
 namespace Mods {
 

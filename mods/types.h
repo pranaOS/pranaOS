@@ -11,9 +11,9 @@
 
 #pragma once
 
-#include <mods/iterdecision.h>
-#include <mods/platform.h>
-#include <mods/stdlibextra.h>
+#include "iterdecision.h"
+#include "platform.h"
+#include "stdlibextra.h"
 
 using u64 = __UINT64_TYPE__;
 using u32 = __UINT32_TYPE__;

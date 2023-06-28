@@ -11,7 +11,7 @@
 
 #pragma once
 
-#include <mods/types.h>
+#include "types.h"
 
 namespace Mods {
     /**
