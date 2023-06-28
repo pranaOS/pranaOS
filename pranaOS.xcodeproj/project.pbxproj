@@ -322,6 +322,10 @@
 		B19A41A82A41E0EC0007948E /* file.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = file.swift; sourceTree = "<group>"; };
 		B19A41A92A41E0EC0007948E /* text.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = text.swift; sourceTree = "<group>"; };
 		B19A41AE2A41E32F0007948E /* bytearray.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = bytearray.swift; sourceTree = "<group>"; };
+		B1E4493D2A4C70B800E5C72A /* all.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = all.h; sourceTree = "<group>"; };
+		B1E4493E2A4C70B800E5C72A /* iterdecision.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iterdecision.h; sourceTree = "<group>"; };
+		B1E4493F2A4C70B800E5C72A /* platform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = platform.h; sourceTree = "<group>"; };
+		B1E449402A4C70B800E5C72A /* stdlibextra.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stdlibextra.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -339,6 +343,7 @@
 			isa = PBXGroup;
 			children = (
 				B1123A392A40A11D00A9F9E5 /* AUTHORS */,
+				B1E4493C2A4C70B800E5C72A /* mods */,
 				B1123A3D2A40A11D00A9F9E5 /* base */,
 				B1123AE42A40A12000A9F9E5 /* builder */,
 				B1123A3A2A40A11D00A9F9E5 /* CODE_OF_CONDUCT.txt */,
@@ -1120,6 +1125,17 @@
 			children = (
 			);
 			path = extensions;
+			sourceTree = "<group>";
+		};
+		B1E4493C2A4C70B800E5C72A /* mods */ = {
+			isa = PBXGroup;
+			children = (
+				B1E4493D2A4C70B800E5C72A /* all.h */,
+				B1E4493E2A4C70B800E5C72A /* iterdecision.h */,
+				B1E4493F2A4C70B800E5C72A /* platform.h */,
+				B1E449402A4C70B800E5C72A /* stdlibextra.h */,
+			);
+			path = mods;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
