@@ -12,16 +12,35 @@
 #pragma once
 
 namespace Mods {
+
     template<typename T>
     class Badge {
         friend T;
-        Badge() {};
+        Badge() { }
+        
+        /**
+         * @brief Construct a new Badge object
+         * 
+         */
+        Badge(const Badge&) = delete;
 
-        Badge(const Badge&) = default;
-        Badge& operator=(const Badge&) = default;
+        /**
+         * @return Badge& 
+         */
+        Badge& operator=(const Badge&) = delete;
 
-        Badge(Badge&&) = default;
+        /**
+         * @brief Construct a new Badge object
+         * 
+         */
+        Badge(Badge&&) = delete;
+
+        /**
+         * @return Badge& 
+         */
+        Badge& operator=(Badge&&) = delete;
     };
+
 }
 
 using Mods::Badge;
