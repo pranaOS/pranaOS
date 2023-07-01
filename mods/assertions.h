@@ -14,7 +14,7 @@
 #ifndef MOD_TEST_SUITE
 
 #    if defined(KERNEL)
-#        include <Kernel/Assertions.h>
+#        include <kernel/assertions.h>
 #    else
 #        include <assert.h>
 #        ifndef __pranaos__
