@@ -20,7 +20,7 @@ namespace Mods {
          * 
          * @param variable 
          */
-        ScopedValueRollback(T& variable) 
+        ScopedValueRollback(T& variable)
             : m_variable(variable)
             , m_saved_value(variable)
         {
@@ -33,9 +33,21 @@ namespace Mods {
         ~ScopedValueRollback() {
             m_variable = m_saved_value;
         }
-    
+
+        /**
+         * @brief Set the override rollback value object
+         * 
+         * @param value 
+         */
+        void set_override_rollback_value(const T& value) {
+            m_saved_value = value;
+        }
+
     private:
         T& m_variable;
-        T& m_saved_value;
+        T m_saved_value;
     };
+
 }
+
+using Mods::ScopedValueRollback;
