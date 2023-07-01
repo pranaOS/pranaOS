@@ -14,6 +14,7 @@
 #include <mods/types.h>
 
 extern "C" {
+
     /**
      * @param fmt 
      * @param ... 
@@ -47,7 +48,12 @@ extern "C" {
     int snprintf(char* buf, size_t, const char* fmt, ...);
 
     /**
+     * @param on_or_off 
+     */
+    void set_serial_debug(bool on_or_off);
+
+    /**
      * @return int 
      */
     int get_serial_debug();
-} 
+}
