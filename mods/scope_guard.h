@@ -13,9 +13,10 @@
 
 #include "stdlibextra.h"
 
+
 namespace Mods {
     template<typename Callback>
-    class ScopeGuard { 
+    class ScopeGuard {
     public:
 
         /**
@@ -40,20 +41,42 @@ namespace Mods {
         Callback m_callback;
     };
 
-    template<typename Callback> 
-    class ArmedScopedGuard {
+    template<typename Callback>
+    class ArmedScopeGuard {
     public:
+        /**
+         * @brief Construct a new Armed Scope Guard object
+         * 
+         * @param callback 
+         */
+        ArmedScopeGuard(Callback callback)
+            : m_callback(move(callback))
+        {
+        }
+
+        /**
+         * @brief Destroy the Armed Scope Guard object
+         * 
+         */
+        ~ArmedScopeGuard() {
+            if (m_armed)
+                m_callback();
+        }
 
         /**
          * @brief disarm[false]
          * 
          */
         void disarm() {
-            m_armed = false;
+            m_armed = false; 
         }
-    
+
     private:
         Callback m_callback;
-        bool m_armed { true }; 
+        bool m_armed { true };
     };
+
 }
+
+using Mods::ArmedScopeGuard;
+using Mods::ScopeGuard;
