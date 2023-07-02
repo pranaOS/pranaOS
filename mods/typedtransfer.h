@@ -13,6 +13,8 @@
 
 #include "traits.h"
 
+// mods
+
 namespace Mods {
 
     template<typename T>
@@ -34,9 +36,9 @@ namespace Mods {
 
             for (size_t i = 0; i < count; ++i) {
                 if (destination <= source)
-                    new (&destination[i]) T(AK::move(source[i]));
+                    new (&destination[i]) T(Mods::move(source[i]));
                 else
-                    new (&destination[count - i - 1]) T(AK::move(source[count - i - 1]));
+                    new (&destination[count - i - 1]) T(Mods::move(source[count - i - 1]));
             }
 
             return count;
