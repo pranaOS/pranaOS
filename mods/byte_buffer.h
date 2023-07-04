@@ -46,5 +46,53 @@ namespace Mods {
          * @return NonnullRefPtr<ByteBufferImpl> 
          */
         static NonnullRefPtr<ByteBufferImpl> adopt(void*, size_t);
+
+        /**
+         * @brief Destroy the Byte Buffer Impl object
+         * 
+         */
+        ~ByteBufferImpl() {
+            clear();
+        }
+
+        /**
+         * @return * void 
+         */
+        void clear() {
+            if (!m_data)
+                return;
+            
+            if (m_owned)
+                kfree(m_data);
+            
+            m_data = nullptr;
+        }
+
+        /**
+         * @param i 
+         * @return u8& 
+         */
+        u8& operator[](size_t i) {
+            ASSERT(i < m_size);
+            return m_data[i];
+        }
+
+        const u8& operator[](sizet i) const {
+            ASSERT(i < m_size);
+            return m_data[i];
+        }
+
+        /**
+         * @return true 
+         * @return false 
+         */
+        bool is_empty() const {
+            return !m_size;
+        }
+
+    private:
+        u8* m_data { nullptr };
+        size_t m_size { 0 };
+        bool m_owned { false };
     };
 }
