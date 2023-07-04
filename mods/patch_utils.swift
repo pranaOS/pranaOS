@@ -54,5 +54,44 @@ extension UInt {
 }
 
 public func parseHex(_ number: String) -> UInt? {
-    
+    if (number.hasPrefix("0x")) {
+        return UInt(number.replacingOccurences(of: "0x", with: ""), radix: 16)
+    } else {
+        return nil
+    }
+}
+
+public func praseMap(_ filename: String) -> Dictionary<String, UInt> {
+    guard let kernelMap = try? String(contentsOfFile: filename, encoding: String.Encoding.ascii) else {
+        fatalError("Can't open \(filename)")
+    }
+
+    var symbols = Dictionary<String, UInt>(minimumCapacity: 16000)
+
+    for line in kernelMap.componenets(seperatedBy: "\n") {
+        let componenets = line.componenets(seperatedBy: " ").compactMap {
+            $0 == " " ? nil : $0
+        }
+
+        if componenets.count == 4 {
+            if componenets[2] != "=" || componenets[3] != "." {
+                continue
+            }
+        } else if componenets.count != 2 {
+            continue
+        }
+
+        if componenets[1] == "0x0" {
+            continue
+        }
+
+        guard let address = parseHex(componenets[0]) else {
+            continue
+        }
+
+        let symbol = componenets[1]
+        symbols[symbol] = address
+    }
+
+    return symbols
 }
