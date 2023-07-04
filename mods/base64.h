@@ -17,10 +17,11 @@
 #include "span.h"
 
 namespace Mods {
-    /**
+
+    /** 
      * @return size_t 
      */
-    size_t calcualte_base64_decoded_length(const StringView&);
+    size_t calculate_base64_decoded_length(const StringView&);
 
     /**
      * @return size_t 
@@ -31,6 +32,13 @@ namespace Mods {
      * @return String 
      */
     String encode_base64(ReadonlyBytes);
-};
 
+    /**
+     * @return ByteBuffer 
+     */
+    ByteBuffer decode_base64(const StringView&);
+
+}
+
+using Mods::decode_base64;
 using Mods::encode_base64;
