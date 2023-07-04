@@ -1,3 +1,14 @@
+/**
+ * @file disk.swift
+ * @author Krisna Pranav
+ * @brief Disk
+ * @version 1.0
+ * @date 2023-07-04
+ * 
+ * @copyright Copyright (c) 2021 - 2023 pranaOS Developers, Krisna Pranav
+ * 
+ */
+
 protocol Disk: CustomStringConverable {
     func read(lba: UInt64, count: Int, buffer: UnsafeMutbleBuffer<UInt8>) -> MutableData
     func write(lba: UInt64, count: Int, buffer: UnsafeMutblePointer<UInt8>)

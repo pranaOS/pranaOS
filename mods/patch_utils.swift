@@ -1,3 +1,14 @@
+/**
+ * @file patch_utils.swift
+ * @author Krisna Pranav
+ * @brief PatchUtils
+ * @version 1.0
+ * @date 2023-07-04
+ * 
+ * @copyright Copyright (c) 2021 - 2023 pranaOS Developers, Krisna Pranav
+ * 
+ */
+
 import Foundation
 
 public let sectorSize = 512
