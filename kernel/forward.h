@@ -12,11 +12,12 @@
 #pragma once
 
 namespace Kernel {
+
     class BlockDevice;
     class CharacterDevice;
     class CoreDump;
     class Custody;
-    class Dedvice;
+    class Device;
     class DiskCache;
     class DoubleBuffer;
     class File;
@@ -25,24 +26,44 @@ namespace Kernel {
     class Inode;
     class InodeIdentifier;
     class SharedInodeVMObject;
+    class InodeWatcher;
     class KBuffer;
+    class KResult;
     class LocalSocket;
     class Lock;
     class MappedROM;
     class MasterPTY;
-    class Pagedirectory;
-    class PerformEventBuffer;
+    class PageDirectory;
+    class PerformanceEventBuffer;
     class PhysicalPage;
+    class PhysicalRegion;
     class Process;
     class ProcessGroup;
-    class Range;
     class ThreadTracer;
-    class RangeAlocator;
+    class Range;
+    class RangeAllocator;
     class Region;
-    class Schedule;
-
+    class Scheduler;
+    class SchedulerPerProcessorData;
+    class SharedBuffer;
     class Socket;
+    class RecursiveSpinLock;
+    class TCPSocket;
+    class TTY;
+    class Thread;
+    class UDPSocket;
+    class UserOrKernelBuffer;
+    class VFS;
+    class VMObject;
+    class WaitQueue;
 
     template<typename T>
     class KResultOr;
+
+    template<typename LockType>
+    class ScopedSpinLock;
+
+    template<typename BaseType>
+    class SpinLock;
+
 }
