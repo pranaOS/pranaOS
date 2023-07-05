@@ -16,15 +16,17 @@
 
 __BEGIN_DECLS
 
+// icmphdr
 struct icmphdr {
-    uint8_t type;
-    uint8_t code;
-    uint16_t checksum;
-
+    uint8_t type; // type[uint8]
+    uint8_t code; // code[uint8]
+    uint16_t checksum; // checksum[uint16]
     union {
         struct {
-            uint16_t id;
-        }
+            uint16_t id; // id
+            uint16_t sequence; // sequence
+        } echo;
+        uint32_t gateway;
     } un;
 };
 
