@@ -22,7 +22,7 @@ typedef uint32_t in_addr_t;
 /**
  * @return in_addr_t 
  */
-in_addr_t inetaddr(const char*);
+in_addr_t inet_addr(const char*);
 
 #define INADDR_ANY ((in_addr_t)0)
 #define INADDR_NONE ((in_addr_t)-1)
@@ -50,6 +50,14 @@ struct sockaddr_in {
 
 struct in6_addr {
     uint8_t s6_addr[16];
+};
+
+struct sockaddr_in6 {
+    sa_family_t sin6_family;   
+    in_port_t sin6_port;       
+    uint32_t sin6_flowinfo;    
+    struct in6_addr sin6_addr; 
+    uint32_t sin6_scope_id;    
 };
 
 __END_DECLS
