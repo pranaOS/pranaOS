@@ -22,9 +22,9 @@ namespace Mods {
      * @param suffix 
      * @return String 
      */
-    static String number_string_with_one_decimal(u64 number, u32 unit, const char suffix) {
+    static String number_string_with_one_decimal(u64 number, u32 unit, const char* suffix) {
         int decimal = (number % unit) * 10 / unit;
-        return String::formatted("{}/{} {}", number / unit, decimal);
+        return String::formatted("{}.{} {}", number / unit, decimal, suffix);
     }
 
     /**
@@ -34,12 +34,13 @@ namespace Mods {
     static inline String human_readable(size_t size) {
         if (size < 1 * KiB)
             return String::formatted("{} B", size);
-        if (size< 1 * MiB)
-            return number_string_with_one_decimal(size, KiB);
+        if (size < 1 * MiB)
+            return number_string_with_one_decimal(size, KiB, "kib");
         if (size < 1 * GiB)
-            return number_string_with_one_decimal(size, MiB);
-
+            return number_string_with_one_decimal(size, MiB, "mib");
+        return number_string_with_one_decimal(size, GiB, "gib");
     }
+
 }
 
 using Mods::human_readable;
