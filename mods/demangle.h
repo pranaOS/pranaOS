@@ -21,10 +21,11 @@
 #include "string_view.h"
 
 #ifndef BUILDING_PRANAOS_TOOLCHAIN
-#   include <cxxabi.h>
+#    include <cxxabi.h>
 #endif
-    
+
 namespace Mods {
+
     /**
      * @param name 
      * @return String 
@@ -34,8 +35,19 @@ namespace Mods {
         return name;
     #else
         int status = 0;
-    #endif       
+
+        auto* demangled_name = abi::__cxa_demangle(name.to_string().characters(), nullptr, nullptr, &status);
+
+        auto string = String(status == 0 ? demangled_name : name);
+        
+        if (status == 0)
+            kfree(demangled_name);
+
+        return string;
+
+    #endif
     }
+
 }
 
 using Mods::demangle;
