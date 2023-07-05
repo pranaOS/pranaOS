@@ -16,6 +16,7 @@
 struct rtentry {
     struct sockaddr rt_gateway;
     struct sockaddr rt_genmask;
+    unsigned short int rt_flags;
     char* rt_dev;
 };
 
