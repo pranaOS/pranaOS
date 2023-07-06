@@ -15,6 +15,13 @@
 
 __BEGIN_DECLS
 
+/// @brief RTLD
+#define RTLD_DEFAULT 0
+#define RTLD_LAZY 2
+#define RTLD_NOW 4
+#define RTLD_GLOBAL 8
+#define RTLD_LOCAL 16
+
 /**
  * @return int 
  */
@@ -34,6 +41,5 @@ void* dlopen(const char*, int);
  * @return void* 
  */
 void* dlsym(void*, const char*);
-
 
 __END_DECLS
