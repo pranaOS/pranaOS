@@ -9,15 +9,18 @@
  * 
  */
 
-#pragma once 
+#pragma once
 
 #include <mods/types.h>
 
 struct [[gnu::packed]] InodeWatcherEvent {
     enum class Type {
-        Invalid = 0
+        Invalid = 0,
+        Modified,
+        ChildAdded,
+        ChildRemoved,
     };
 
-    Type type {Type::Invalid};
+    Type type { Type::Invalid };
     unsigned inode_index { 0 };
 };
