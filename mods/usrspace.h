@@ -16,6 +16,7 @@
 #include "stdlibextra.h"
 
 namespace Mods {
+
     #if defined(__cpp_concepts) && !defined(__COVERITY__)
     template<typename T>
     concept PointerTypeName = IsPointer<T>::value;
@@ -26,21 +27,21 @@ namespace Mods {
 
     class Userspace {
     public:
-        Userspace() {}
+        Userspace() { }
 
         /**
          * @return true 
          * @return false 
          */
-        operator bool() const {
-            return m_ptr;
+        operator bool() const { 
+            return m_ptr; 
         }
 
         /**
          * @return FlatPtr 
          */
-        operator FlatPtr() const {
-            return (FlatPtr)m_ptr;
+        operator FlatPtr() const { 
+            return (FlatPtr)m_ptr; 
         }
 
         /**
@@ -61,37 +62,73 @@ namespace Mods {
          */
         bool operator>=(const Userspace&) const = delete;
 
-        #ifdef KERNEL
-            /**
-             * @param ptr 
-             */
-            Userspace(FlatPtr ptr) : m_ptr(ptr) {}
+        /**
+         * @return true 
+         * @return false 
+         */
+        bool operator<(const Userspace&) const = delete;
 
-            /**
-             * @return FlatPtr 
-             */
-            FlatPtr ptr() const {
-                return m_ptr;
-            }
-        #else
-            /**
-             * @param ptr 
-             */
-            Userspace(T ptr) : m_ptr(ptr) {}
+        /**
+         * @return true 
+         * @return false 
+         */
+        bool operator>(const Userspace&) const = delete;
 
-            /**
-             * @return T 
-             */
-            T ptr() const {
-                return m_ptr;
-            }
-        #endif 
+    #ifdef KERNEL
+        /**
+         * @param ptr 
+         */
+        Userspace(FlatPtr ptr) : m_ptr(ptr)
+        { }
+
+        /**
+         * @return FlatPtr 
+         */
+        FlatPtr ptr() const { 
+            return m_ptr; 
+        }
+
+        /**
+         * @return T 
+         */
+        T unsafe_userspace_ptr() const { 
+            return (T)m_ptr; 
+        }
+
+    #else   
+        /**
+         * @param ptr 
+         */
+        Userspace(T ptr) : m_ptr(ptr)
+        { }
+
+        /**
+         * @return T 
+         */
+        T ptr() const { 
+            return m_ptr; 
+        }
+    #endif
 
     private:
-        #ifdef KERNEL
-            FlatPtr m_ptr { 0 };
-        #else
-            T m_ptr { nullptr };
-        #endif 
+    #ifdef KERNEL
+        FlatPtr m_ptr { 0 };
+    #else
+        T m_ptr { nullptr };
+    #endif
     };
+
+    template<typename T, typename U>
+    inline Userspace<T> static_ptr_cast(const Userspace<U>& ptr) {
+    #ifdef KERNEL
+        auto casted_ptr = static_cast<T>(ptr.unsafe_userspace_ptr());
+    #else
+        auto casted_ptr = static_cast<T>(ptr.ptr());
+    #endif
+        return Userspace<T>((FlatPtr)casted_ptr);
+    }
+
 }
+
+using Mods::static_ptr_cast;
+using Mods::Userspace;
