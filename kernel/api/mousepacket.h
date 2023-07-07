@@ -8,3 +8,21 @@
  * @copyright Copyright (c) 2021 - 2023 pranaOS Developers, Krisna Pranav
  * 
  */
+
+#pragma once
+
+#include <mods/types.h>
+
+struct MousePacket {
+    int x { 0 };
+    int y { 0 };
+    int z { 0 };
+
+    enum Button {
+        LefButton = 0x01,
+        RightButton = 0x02
+    };
+
+    unsigned char buttons { 0 };
+    bool is_relatie {true};
+};
