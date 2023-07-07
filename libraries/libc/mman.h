@@ -62,14 +62,22 @@ void* mmap_with_name(void* addr, size_t, int prot, int flags, int fd, off_t, con
  * @param prot 
  * @param flags 
  * @param fd 
+ * @param alignment 
+ * @param name 
  * @return void* 
  */
-void* prana_mmap(void* addr, size_t, int prot, int flags, int fd);
+void* prana_mmap(void* addr, size_t, int prot, int flags, int fd, off_t, size_t alignment, const char* name);
 
 /**
  * @return int 
  */
 int munmap(void*, size_t);
+
+/**
+ * @param prot 
+ * @return int 
+ */
+int mprotect(void*, size_t, int prot);
 
 /**
  * @return int 
@@ -82,5 +90,15 @@ int set_mmap_name(void*, size_t, const char*);
  */
 int madvise(void*, size_t, int advice);
 
+/**
+ * @param inherit 
+ * @return int 
+ */
+int minherit(void*, size_t, int inherit);
+
+/**
+ * @return void* 
+ */
+void* allocate_tls(size_t);
 
 __END_DECLS
