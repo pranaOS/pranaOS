@@ -38,4 +38,31 @@ ALWAYS_INLINE int fb_get_resolution(int fd, FBResolution* info) {
     return ioctl(fd, FB_IOCTL_GET_RESOLUTION, info);
 }
 
+/**
+ * @param fd 
+ * @param info 
+ * @return ALWAYS_INLINE 
+ */
+ALWAYS_INLINE int fb_set_resolution(int fd, FBResolution* info) {
+    return ioctl(fd, FB_IOCTL_SET_RESOLUTION, info);
+}
+
+/**
+ * @param fd 
+ * @param index 
+ * @return ALWAYS_INLINE 
+ */
+ALWAYS_INLINE int fb_get_buffer(int fd, int* index) {
+    return ioctl(fd, FB_IOCTL_GET_BUFFER, index);
+}
+
+/**
+ * @param fd 
+ * @param index 
+ * @return ALWAYS_INLINE 
+ */
+ALWAYS_INLINE int fb_set_buffer(int fd, int index) {
+    return ioctl(fd, FB_IOCTL_SET_BUFFER, index);
+}
+
 __END_DECLS
