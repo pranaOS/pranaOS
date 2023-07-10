@@ -14,9 +14,13 @@
 #include <mods/function.h>
 #include <mods/types.h>
 
-namespace Kernel
+namespace Kernel 
 {
+    
+    /// @brief SLAB_ALLOC
     #define SLAB_ALLOC_SCRUB_BYTE 0xab
+
+    /// @brief SLAB_DEALLOc
     #define SLAB_DEALLOC_SCRUB_BYTE 0xbc
 
     /**
@@ -28,16 +32,23 @@ namespace Kernel
     /**
      * @param slab_size 
      */
-    void slab_dealloc(void* size_t slab_size);
+    void slab_dealloc(void*, size_t slab_size);
 
-    void slab_alloc_stats(Function<void(size_t slab_size, size_t allocated)>)
+    /// @brief init
+    void slab_alloc_init();
 
-    #define MAKE_SLAB_ALLOCATOR(type)     \
-    public:                                \
-        void* operator new(size_t)          \
-        {
-            return slab_alloc(sizeof(type)); \
-        }                                       \
-    
+    /**
+     * @brief slab_alloc_stats
+     * 
+     */
+    void slab_alloc_stats(Function<void(size_t slab_size, size_t allocated, size_t free)>);
 
-} // namespace Kernel
+    /// @brief ALLOCATED(type)
+    #define MAKE_SLAB_ALLOCATED(type)                                        \
+    public:                                                                  \
+        void* operator new(size_t) { return slab_alloc(sizeof(type)); }      \
+        void operator delete(void* ptr) { slab_dealloc(ptr, sizeof(type)); } \
+                                                                            \
+    private:
+
+}
