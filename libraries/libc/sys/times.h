@@ -16,11 +16,13 @@
 
 __BEGIN_DECLS
 
-/// @brief times
-struct tms {
+/// @brief: tms
+struct tms 
+{
     clock_t tms_utime;
     clock_t tms_stime;
     clock_t tms_cutime;
+    clock_t tms_cstime;
 };
 
 /**
