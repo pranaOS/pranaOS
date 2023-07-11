@@ -10,20 +10,21 @@
  */
 
 #pragma once
- 
+
 #include <mods/string.h>
 #include <mods/vector.h>
 
-namespace Diff
+namespace Diff 
 {
-    struct HunkLocation
+
+    struct HunkLocation 
     {
         size_t original_start_line { 0 };
         size_t original_length { 0 };
         size_t target_start_line { 0 };
         size_t target_length { 0 };
 
-        enum class LocationType
+        enum class LocationType 
         {
             Original,
             Target,
@@ -34,14 +35,16 @@ namespace Diff
          * @param offset 
          */
         void apply_offset(size_t offset, LocationType);
-    };  
-
-    // FIXME: HUNK
-    struct Hunk 
-    {
-
     };
 
+    struct Hunk 
+    {
+        size_t original_start_line { 0 };
+        size_t target_start_line { 0 };
+        Vector<String> removed_lines;
+        Vector<String> added_lines;
+    };  
+    
     /**
      * @param diff 
      * @return Vector<Hunk> 
@@ -53,4 +56,4 @@ namespace Diff
      * @return HunkLocation 
      */
     HunkLocation parse_hunk_location(const String& location_line);
-} // namespace Diff
+};
