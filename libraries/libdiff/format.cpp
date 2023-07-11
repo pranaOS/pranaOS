@@ -30,4 +30,4 @@ namespace Diff
         }
         return builder.to_string();
     }
-};
+}; // namespace Mods
