@@ -9,7 +9,7 @@
  * 
  */
 
-#pragma once 
+#pragma once
 
 #include "forward.h"
 #include <mods/byte_buffer.h>
@@ -18,12 +18,22 @@
 #include <mods/string.h>
 #include <mods/string_view.h>
 
-namespace Mods
+namespace Mods 
 {
+
     /**
      * @return Optional<ByteBuffer> 
      */
     Optional<ByteBuffer> decode_hex(const StringView&);
+
+    /**
+     * @return String 
+     */
+    String encode_hex(ReadonlyBytes);
+
 } // namespace Mods
 
+
+// using mods
 using Mods::decode_hex;
+using Mods::encode_hex;
