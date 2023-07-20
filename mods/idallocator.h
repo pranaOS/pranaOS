@@ -9,27 +9,29 @@
  * 
  */
 
-#pragma once 
+#pragma once
 
 #include "hashtable.h"
 #include <stdlib.h>
 
-namespace Mods
+namespace Mods 
 {
-    class IDAllocator
-    {
+
+    class IDAllocator {
+
+    public:
 
         /**
          * @brief Construct a new IDAllocator object
          * 
          */
-        IDAllocator() {}
+        IDAllocator() { }
 
         /**
          * @brief Destroy the IDAllocator object
          * 
          */
-        ~IDAllocator() {}
+        ~IDAllocator() { }
 
         /**
          * @return int 
@@ -37,24 +39,29 @@ namespace Mods
         int allocate()
         {
             int r = rand();
-            for (int i = 0; i < 10000; ++i)  {
+            for (int i = 0; i < 100000; ++i) {
                 int allocated_id = r + i;
                 if (allocated_id == 0)
                     ++allocated_id;
+                if (!m_allocated_ids.contains(allocated_id)) {
+                    m_allocated_ids.set(allocated_id);
+                    return allocated_id;
+                }
             }
-
             ASSERT_NOT_REACHED();
-        };
+        }
 
-        /**       
-         * @param ids 
+        /**
+         * @param id 
          */
-        void deallocate(int ids)
+        void deallocate(int id)
         {
-            m_allocated_ids.remove(ids);
-        };
+            m_allocated_ids.remove(id);
+        }
 
     private:
         HashTable<int> m_allocated_ids;
     };
-} // namespace Mods
+}
+
+using Mods::IDAllocator;
