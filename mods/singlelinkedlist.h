@@ -94,4 +94,62 @@ namespace Mods
         typename ListType::Node* m_prev { nullptr };
     }; // class SinglyLinkedListIterator
 
+    template<typename T>
+    class SinglyLinkedList
+    {
+    private:
+        struct Node
+        {
+            explicit Node(T&& v)
+                : value(move(v))
+            {}
+        };
+
+    public:
+        SinglyLinkedList() {}
+
+        ~SinglyLinkedList() 
+        {
+            clear();
+        }
+
+        void clear()
+        {
+           for (auto* node = m_head; node;) {
+                auto* next = node->next;
+                delete node;
+                node = next;
+           } 
+
+           m_head = nullptr;
+           m_tail = nullptr;
+
+        }
+
+    private:
+        Node* head() 
+        {
+            return m_head;
+        }
+
+        const Node* head() const
+        {
+            return m_head;
+        }
+
+        Node* tail() 
+        {
+            return m_tail;
+        }
+
+        const Node* tail() const
+        {
+            return m_tail;
+        }
+
+
+        Node* m_head { nullptr };
+        Node* m_tail { nullptr };
+    } // class SinglyLinkedList
+
 } // namespace Mods 
