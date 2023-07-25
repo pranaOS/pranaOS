@@ -9,61 +9,46 @@
  * 
  */
 
-#pragma once 
+#pragma once
 
 #include "noncopyable.h"
 #include "string_view.h"
 
-namespace Mods
+namespace Mods 
 {
-    class MappedFile
+
+    class MappedFile 
     {
         MOD_MAKE_NONCOPYABLE(MappedFile);
 
     public:
-
         /**
          * @brief Construct a new Mapped File object
          * 
          */
-        MappedFile() {}
+        MappedFile() { }
 
         /**
-         * @brief Construct a new Mapped File object
-         * 
          * @param file_name 
          */
         explicit MappedFile(const StringView& file_name);
 
-        /**
-         * @brief Construct a new Mapped File object
-         * 
-         */
+        /// @param MappedFile 
         MappedFile(MappedFile&&);
-
-        /**
-         * @brief Destroy the Mapped File object
-         * 
-         */
         ~MappedFile();
 
-        /**
-         * @return MappedFile& 
-         */
         MappedFile& operator=(MappedFile&&);
-
 
         /**
          * @return true 
          * @return false 
          */
-        bool is_valid() const
-        {
-            return m_map != (void*)-1;
+        bool is_valid() const 
+        { 
+            return m_map != (void*)-1; 
         }
 
         /**
-         * 
          * @return int 
          */
         int errno_if_invalid() const
@@ -72,22 +57,38 @@ namespace Mods
             return m_errno;
         }
 
+        void unmap();
+
         /**
          * @return void* 
          */
-        void* data()
-        {
-            return m_map;
+        void* data() 
+        { 
+            return m_map; 
+        }
+
+        /**
+         * @return const void* 
+         */
+        const void* data() const 
+        { 
+            return m_map; 
+        }
+
+        /**
+         * @return size_t 
+         */
+        size_t size() const 
+        { 
+            return m_size; 
         }
 
     private:
         size_t m_size { 0 };
-        void* m_map 
-        {
-            (void*)-1;
-        }
-
+        void* m_map { (void*)-1 };
         int m_errno { 0 };
     }; // class MappedFile
-    
+
 } // namespace Mods
+
+using Mods::MappedFile;
