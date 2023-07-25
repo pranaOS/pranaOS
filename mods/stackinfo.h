@@ -13,10 +13,11 @@
 
 #include "types.h"
 
-namespace Mods
+
+namespace Mods 
 {
 
-    class StackInfo
+    class StackInfo 
     {
     public:
         StackInfo();
@@ -24,25 +25,34 @@ namespace Mods
         /**
          * @return FlatPtr 
          */
-        FlatPtr base() const
-        {
-            return m_base;
+        FlatPtr base() const 
+        { 
+            return m_base; 
         }
 
         /**
          * @return FlatPtr 
          */
-        FlatPtr top() const
-        {
-            return m_top;
+        FlatPtr top() const 
+        { 
+            return m_top; 
         }
 
         /**
          * @return size_t 
          */
         size_t size() const 
+        { 
+            return m_size; 
+        }
+
+        /**
+         * @return size_t 
+         */
+        size_t size_free() const
         {
-            return m_size;
+            FlatPtr dummy;
+            return reinterpret_cast<FlatPtr>(&dummy) - m_base;
         }
 
     private:
@@ -52,3 +62,5 @@ namespace Mods
     }; // class StackInfo
 
 } // namespace Mods
+
+using Mods::StackInfo;
