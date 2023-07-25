@@ -9,7 +9,7 @@
  * 
  */
 
-#pragma once 
+#pragma once
 
 #if defined(__pranaos__) || defined(__linux__)
 
@@ -18,9 +18,9 @@
 
 namespace Mods
 {
-    class SharedBuffer: public RefCounted<SharedBuffer>
+
+    class SharedBuffer : public RefCounted<SharedBuffer> 
     {
-    
     public:
 
         /**
@@ -32,9 +32,33 @@ namespace Mods
          * @return RefPtr<SharedBuffer> 
          */
         static RefPtr<SharedBuffer> create_from_shbuf_id(int);
+        ~SharedBuffer();
 
-        bool shared_globally();
-        bool shared_with(pid_t);
+        bool share_globally();
+
+        /**
+         * @return true 
+         * @return false 
+         */
+        bool share_with(pid_t);
+
+        /**
+         * @return int 
+         */
+        int shbuf_id() const 
+        { 
+            return m_shbuf_id; 
+        }
+        
+        void seal();
+
+        /**
+         * @return int 
+         */
+        int size() const 
+        { 
+            return m_size; 
+        }
 
         /**
          * @tparam T 
@@ -43,8 +67,19 @@ namespace Mods
         template<typename T>
         T* data()
         {
-            static_assert(IsVoid<t>::value || is_trivial<T>());
+            static_assert(IsVoid<T>::value || is_trivial<T>());
             return (T*)m_data;
+        }
+
+        /**
+         * @tparam T 
+         * @return const T* 
+         */
+        template<typename T>
+        const T* data() const
+        {
+            static_assert(IsVoid<T>::value || is_trivial<T>());
+            return (const T*)m_data;
         }
 
         void set_volatile();
@@ -56,12 +91,21 @@ namespace Mods
         [[nodiscard]] bool set_nonvolatile();
 
     private:
+        /**
+         * @param shbuf_id 
+         * @param size 
+         */
         SharedBuffer(int shbuf_id, int size, void*);
 
         int m_shbuf_id { -1 };
         int m_size { 0 };
+
+        /// @brief m_data
         void* m_data { nullptr };
     }; // class SharedBuffer
-}
+
+} // namespace Mods
+
+using Mods::SharedBuffer;
 
 #endif
