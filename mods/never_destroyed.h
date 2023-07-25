@@ -9,67 +9,86 @@
  * 
  */
 
-#pragma once 
+#pragma once
 
 #include "noncopyable.h"
 #include "types.h"
 
-namespace Mods
+namespace Mods 
 {
 
     template<typename T>
-    class NeverDestroyed
+    class NeverDestroyed 
     {
         MOD_MAKE_NONCOPYABLE(NeverDestroyed);
         MOD_MAKE_NONMOVABLE(NeverDestroyed);
 
     public:
+
+        /**
+         * @brief Construct a new Never Destroyed object
+         * 
+         * @tparam Args 
+         * @param args 
+         */
         template<typename... Args>
-        NeverDestroyed<Args&&... args>
+        NeverDestroyed(Args&&... args)
         {
             new (storage) T(forward<Args>(args)...);
         }
 
-        ~NeverDestroyed();
+        /**
+         * @brief Destroy the Never Destroyed object
+         * 
+         */
+        ~NeverDestroyed() = default;
 
         /**
          * @return T* 
          */
         T* operator->() 
-        {
-            return &get();
+        { 
+            return &get(); 
         }
 
         /**
          * @return const T* 
          */
-        const T* operator->() const
-        {
-            return &get();
+        const T* operator->() const 
+        { 
+            return &get(); 
         }
 
         /**
          * @return T& 
          */
         T& operator*() 
-        {
-            return get();
+        { 
+            return get(); 
         }
 
         /**
          * @return const T& 
          */
-        const T& operator*() const
-        {
-            return get();
+        const T& operator*() const 
+        { 
+            return get(); 
         }
 
         /**
          * @return T& 
          */
-        T& get()
-        {
-            return reinterpret_cast<T&>(storage);
+        T& get() 
+        { 
+            return reinterpret_cast<T&>(storage); 
+        }
+
+        /**
+         * @return const T& 
+         */
+        const T& get() const 
+        { 
+            return reinterpret_cast<T&>(storage); 
         }
 
     private:
@@ -78,4 +97,4 @@ namespace Mods
 
 } // namespace Mods
 
-using Mods::NeverDestroyed
+using Mods::NeverDestroyed;
