@@ -24,10 +24,14 @@
 #   include <new>
 #endif
 
-namespace Mods
+namespace Mods 
 {
-    template <typename T>
-    struct SingletonInstanceCreator
+
+    /**
+     * @tparam T 
+     */
+    template<typename T>
+    struct SingletonInstanceCreator 
     {
         /**
          * @return T* 
@@ -39,7 +43,7 @@ namespace Mods
     };
 
     template<typename T, T* (*InitFunction)() = SingletonInstanceCreator<T>::create>
-    class Singleton
+    class Singleton 
     {
         MOD_MAKE_NONCOPYABLE(Singleton);
         MOD_MAKE_NONMOVABLE(Singleton);
@@ -53,6 +57,29 @@ namespace Mods
         T* ptr() const
         {
             T* obj = Mods::atomic_load(&m_obj, Mods::memory_order_consume);
+            if (FlatPtr(obj) <= 0x1) {
+    #ifdef KERNEL
+                Kernel::ScopedCritical critical;
+    #endif
+                if (obj == nullptr && Mods::atomic_compare_exchange_strong(&m_obj, obj, (T*)0x1, Mods::memory_order_acq_rel)) {
+                    // We're the first one
+                    obj = InitFunction();
+                    Mods::atomic_store(&m_obj, obj, Mods::memory_order_release);
+                } else {
+                    // Someone else was faster, wait until they're done
+                    while (obj == (T*)0x1) {
+    #ifdef KERNEL
+                        Kernel::Processor::wait_check();
+    #else
+                /// TODO:
+    #endif
+                        obj = Mods::atomic_load(&m_obj, Mods::memory_order_consume);
+                    }
+                }
+
+                ASSERT(obj != nullptr);
+                ASSERT(obj != (T*)0x1);
+            }
             return obj;
         }
 
@@ -94,16 +121,19 @@ namespace Mods
          */
         bool is_initialized() const
         {
-            T* obj = Mods::atomic_load(m_obj);
+            T* obj = Mods::atomic_load(&m_obj, Mods::memory_order_consume);
             return FlatPtr(obj) > 0x1;
         }
 
-        void enusure_instance()
+        /// @brief ensure_instance[ptr]
+        void ensure_instance()
         {
             (void)ptr();
         }
 
     private:
-        mutable T* m_obj { nullptr };
-    };
-}
+        mutable T* m_obj { nullptr }; 
+    }; // class Singleton 
+
+} // namespace Mods
+ 
