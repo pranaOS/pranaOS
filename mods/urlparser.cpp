@@ -15,8 +15,9 @@
 #include "urlparser.h"
 #include "optional.h"
 
-namespace Mods
+namespace Mods 
 {
+
     /**
      * @param ch 
      * @return true 
@@ -35,36 +36,32 @@ namespace Mods
     {
         size_t cursor = 0;
 
-        auto peek = [&](size_t offset = 0) -> u8
-        {
+        auto peek = [&](size_t offset = 0) -> u8 {
             if (cursor + offset >= input.length())
                 return 0;
             return input[cursor + offset];
-        }
+        };
 
-        auto consume = [&]
-        {
+        auto consume = [&] {
             return input[cursor++];
         };
 
         StringBuilder builder;
-
-        while(cursor < input.length()) {
+        while (cursor < input.length()) {
             if (peek() != '%') {
                 builder.append(consume());
                 continue;
             }
-
-            if (!is_ascii_hex_digit(1)) {
+            if (!is_ascii_hex_digit(peek(1)) || !is_ascii_hex_digit(peek(2))) {
+                builder.append(consume());
                 continue;
             }
-
-            auto byte_point = StringUtils::convert_to_uint_from_hex(input);
+            auto byte_point = StringUtils::convert_to_uint_from_hex(input.substring_view(cursor + 1, 2));
             builder.append(byte_point.value());
             consume();
             consume();
+            consume();
         }
-
         return builder.to_string();
     }
 
@@ -85,7 +82,27 @@ namespace Mods
      */
     static inline bool in_fragment_set(u32 c)
     {
-        return in_c0_control_set(c);
+        return in_c0_control_set(c) || c == ' ' || c == '"' || c == '<' || c == '>' || c == '`';
+    }
+
+    /**
+     * @param c 
+     * @return true 
+     * @return false 
+     */
+    static inline bool in_path_set(u32 c)
+    {
+        return in_fragment_set(c) || c == '#' || c == '?' || c == '{' || c == '}';
+    }
+
+    /**
+     * @param c 
+     * @return true 
+     * @return false 
+     */
+    static inline bool in_userinfo_set(u32 c)
+    {
+        return in_path_set(c) || c == '/' || c == ':' || c == ';' || c == '=' || c == '@' || (c >= '[' && c <= '^') || c == '|';
     }
 
     /**
@@ -95,9 +112,15 @@ namespace Mods
     String urlencode(const StringView& input)
     {
         StringBuilder builder;
-
         for (unsigned char ch : input) {
-            // TOOD:
+            if (in_userinfo_set((u8)ch)) {
+                builder.append('%');
+                builder.appendff("{:02X}", ch);
+            } else {
+                builder.append(ch);
+            }
         }
+        return builder.to_string();
     }
+
 }
