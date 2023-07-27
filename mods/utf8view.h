@@ -14,17 +14,22 @@
 #include "types.h"
 #include "string_view.h"
 
-namespace Mods
+namespace Mods 
 {
+
     class Utf8View;
 
-    class Utf8CodepointIterator
+    class Utf8CodepointIterator 
     {
         friend class Utf8View;
 
     public:
-        Utf8CodepointIterator() {}
-        ~Utf8CodepointIterator() {}
+        /**
+         * @brief Construct a new Utf 8 Codepoint Iterator object
+         * 
+         */
+        Utf8CodepointIterator() { }
+        ~Utf8CodepointIterator() { }
 
         /**
          * @return true 
@@ -66,9 +71,9 @@ namespace Mods
          * @return true 
          * @return false 
          */
-        bool done() const
-        {
-            return !m_length;
+        bool done() const 
+        { 
+            return !m_length; 
         }
 
     private:
@@ -76,50 +81,54 @@ namespace Mods
          * @param char 
          */
         Utf8CodepointIterator(const unsigned char*, int);
-
         const unsigned char* m_ptr { nullptr };
         int m_length { -1 };
-
     }; // Utf8CodepointIterator
 
-    class Utf8View
+    class Utf8View 
     {
     public:
         using Iterator = Utf8CodepointIterator;
 
-        Utf8View() {}
+        Utf8View() { }
 
+        /**
+         * @brief Construct a new Utf 8 View object
+         * 
+         */
         explicit Utf8View(const String&);
         explicit Utf8View(const StringView&);
         explicit Utf8View(const char*);
-
-        ~Utf8View() {}
+        ~Utf8View() { }
 
         /**
          * @return const StringView& 
          */
-        const StringView& as_string() const
-        {
-            return m_string;
+        const StringView& as_string() const 
+        { 
+            return m_string; 
         }
 
+        /**
+         * @return Utf8CodepointIterator 
+         */
         Utf8CodepointIterator begin() const;
         Utf8CodepointIterator end() const;
 
         /**
          * @return const unsigned* 
          */
-        const unsigned char* bytes() const
-        {
-            return begin_ptr();
+        const unsigned char* bytes() const 
+        { 
+            return begin_ptr(); 
         }
 
         /**
          * @return int 
          */
-        int byte_length() const
-        {
-            return m_string.length();
+        int byte_length() const 
+        { 
+            return m_string.length(); 
         }
 
         /**
@@ -138,10 +147,11 @@ namespace Mods
          * @return true 
          * @return false 
          */
-        bool is_empty() const
-        {
-            return m_string.is_empty();
+        bool is_empty() const 
+        { 
+            return m_string.is_empty(); 
         }
+
 
         /**
          * @param valid_bytes 
@@ -149,7 +159,28 @@ namespace Mods
          * @return false 
          */
         bool validate(size_t& valid_bytes) const;
-        
+
+        /**
+         * @return true 
+         * @return false 
+         */
+        bool validate() const
+        {
+            size_t valid_bytes;
+            return validate(valid_bytes);
+        }
+
+        /**
+         * @return size_t 
+         */
+        size_t length() const
+        {
+            if (!m_have_length) {
+                m_length = calculate_length();
+                m_have_length = true;
+            }
+            return m_length;
+        }
 
     private:
 
@@ -167,9 +198,13 @@ namespace Mods
          * @return size_t 
          */
         size_t calculate_length() const;
-        
+
         StringView m_string;
         mutable size_t m_length { 0 };
         mutable bool m_have_length { false };
-    }; // Utf8View
+    }; // class Utf8View
+
 }
+
+using Mods::Utf8CodepointIterator;
+using Mods::Utf8View;
