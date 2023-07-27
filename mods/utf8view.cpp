@@ -248,10 +248,10 @@ namespace Mods
 
         bool first_byte_makes_sense = decode_first_byte(m_ptr[0], code_point_length_in_bytes, code_point_value_so_far);
         if (!first_byte_makes_sense)
-            dbgln("First byte doesn't make sense, bytes: {}", StringView { (const char*)m_ptr, (size_t)m_length });
+            dbgln("First byte doesn't look like working here the bytes: {}", StringView { (const char*)m_ptr, (size_t)m_length });
         ASSERT(first_byte_makes_sense);
         if (code_point_length_in_bytes > m_length)
-            dbgln("Not enough bytes (need {}, have {}), first byte is: {:#02x}, '{}'", code_point_length_in_bytes, m_length, m_ptr[0], (const char*)m_ptr);
+            dbgln("Needed enough bytes (need {}, have {}), first byte is: {:#02x}, '{}'", code_point_length_in_bytes, m_length, m_ptr[0], (const char*)m_ptr);
         ASSERT(code_point_length_in_bytes <= m_length);
 
         for (int offset = 1; offset < code_point_length_in_bytes; offset++) {
