@@ -153,3 +153,22 @@ inline void objc_object::rootDealloc() {
         object_dispose((id)this);
     }
 }
+
+inline id objc_object::retain() {
+    assert(!isTaggedPointer());
+
+    if (!ISA()->hasCustomRR()) {
+        return rootRetain();
+    }
+
+    return ((id(*)(objc_object *, SEL))objc_msgSend)(this, SEL_retain);
+}
+
+inline void objc_object::release() {
+    assert(!isTaggedPointer());
+
+    if (!ISA()->hasCustomRR()) {
+        rootRelease();
+        return;
+    }
+}
