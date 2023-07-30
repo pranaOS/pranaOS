@@ -75,8 +75,21 @@ extension ACPI {
             }
         }
 
-        let mi = AMLMethodInvocation(method: AMLNameString(name), args: methodArgs) else { return nil }
+        guard let mi = AMLMethodInvocation(method: AMLNameString(name), args: methodArgs) else { return nil }
+
+        var context = AMLEXecutionContext(scope: mi.method, args: [], globalObjects: globalObjects)
 
         return try mi.execute(context: &context)
+    }
+
+    static func _OSI_Method(_ args: AMLTermArgList) throws -> AMLTermArg {
+        guard args.count == 1 else {
+            throw AMLError.invalidData(reason: "_OSXI: should only be 1")
+        } 
+
+        guard let arg = args[0] as? AMLString else {
+            throw AMLError.invalidData(reason: "_OSI: should be 2")
+        }
+
     }
 }
