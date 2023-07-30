@@ -10,6 +10,7 @@
 */
 
 #import <objc/objc.h>
+#include <sys/_types/_uintptr_t.h>
 #import <stdio.h>
 #import <ctype.h>
 #import <malloc/malloc.h>
@@ -63,3 +64,23 @@ SEL SEL_tryRetain = NULL;
 SEL SEL_isDeallocating = NULL;
 SEL SEL_retainWeakReference = NULL;
 SEL SEL_allowsWeakReference = NULL;
+
+static inline uintptr_t addc(uintptr_t lhs, uintptr_t rhs, uintptr_t carryin, uintptr_t *carryout) {
+    return __builtin_addcl(lhs, rhs, carryin, (unsigned long *)carryout);
+}
+
+static inline uintptr_t subc(uintptr_t lhs, uintptr_t rhs, uintptr_t carryin, uintptr_t *carryout) {
+    return __builtin_subcl(lhs, rhs, carryin, (unsigned long *)carryout);
+}
+
+static inline uintptr_t LoadExclusive(uintptr_t *src) {
+    return *src;
+}
+
+static inline bool StoreExclusive(uintptr_t *dst, uintptr_t oldvalue, uintptr_t value) {
+    return __sync_bool_compare_and_swap((void**)dst, (void*)oldvalue, (void*)value);
+}
+
+static inline bool StoreReleaseExclusive(uintptr_t *dst, uintptr_t oldvalue, uintptr_t value) {
+    return StoreExclusive(dst, oldvalue, value);
+}
