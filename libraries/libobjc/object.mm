@@ -301,3 +301,49 @@ unindexed:
     if (sideTableLocked) sidetable_unlock();
     return sidetable_release(performDealloc);
 }
+
+inline id objc_object::rootRetain(bool tryRetain, bool handleOverflow) {
+    if (isTaggedPointer()) return (id)this;
+    
+    bool sideTableLocked = false;
+    bool transcribeToSideTable = false;
+    
+    isa_t oldisa;
+    isa_t newisa;
+    
+    do {
+        transcribeToSideTable = false;
+        oldisa = LoadExclusive(&isa.bits);
+        newisa = oldisa;
+        if (!newisa.indexed) goto unindexed;
+
+        if (tryRetain && newisa.deallocating) goto tryfail;
+        uintptr_t carry;
+        newisa.bits = addc(newisa.bits, RC_ONE, 0, &carry);  
+        
+        if (carry) {
+            if (!handleOverflow) return rootRetain_overflow(tryRetain);
+            if (!tryRetain && !sideTableLocked) sidetable_lock();
+            sideTableLocked = true;
+            transcribeToSideTable = true;
+            newisa.extra_rc = RC_HALF;
+            newisa.has_sidetable_rc = true;
+        }
+    } while (!StoreExclusive(&isa.bits, oldisa.bits, newisa.bits));
+    
+    if (transcribeToSideTable) {
+        sidetable_addExtraRC_nolock(RC_HALF);
+    }
+    
+    if (!tryRetain && sideTableLocked) sidetable_unlock();
+    return (id)this;
+    
+tryfail:
+    if (!tryRetain && sideTableLocked) sidetable_unlock();
+    return nil;
+    
+unindexed:
+    if (!tryRetain && sideTableLocked) sidetable_unlock();
+    if (tryRetain) return sidetable_tryRetain() ? (id)this : nil;
+    else return sidetable_retain();
+}
