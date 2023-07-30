@@ -30,6 +30,8 @@ class Text: File, Loggable {
         super.init(partition: partition, path: path)
         guard file.info.Extension == "TXT" || file.Info.Extension == "PLI" || file.Info.Extension == "XML" else {
             Log("Not as expected file extension", level: .Error)
+            file.Data.deallocate()
+            return nil
         }        
     }
 }
