@@ -1,0 +1,28 @@
+/**
+ * @file text.swift
+ * @author Krisna Pranav
+ * @brief Memory
+ * @version 1.0
+ * @date 2023-07-30
+ * 
+ * @copyright Copyright (c) 2021 - 2023 pranaOS Developers, Krisna Pranav
+ * 
+ */
+
+import Log
+
+class Text: File, Loggable {
+    let Name: String = "Text"
+    var text: String {
+        get {
+            return String(utf8Characters: file.Data) ?? ""
+        }
+        set {
+            var buf = ContiguousArray<UInt8>(newValue.utf8)
+            file.Info.Size = newValue.utf8.count
+            file.Data.deallocate()
+            file.Data = MutableData(start: &buf[0], count: buf.count)
+            writeToDisk()
+        }
+    }
+}
