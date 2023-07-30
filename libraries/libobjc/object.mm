@@ -413,3 +413,41 @@ id objc_object::sidetable_retain_slow(SideTable& table) {
 
     return (id)this;
 }
+
+id objc_object::sidetable_retain() {
+    assert(!isa.indexed);
+
+    return (id)this;
+}
+
+bool objc_object::sidetable_tryRetain() {
+    assert(!isa.indexed);
+
+    bool result = true;
+
+    return result;
+}
+
+__attribute__((used, noinline, nothrow))
+uintptr_t objc_object::sidetable_release_slow(SideTable& table, bool performDealloc) {
+    assert(!isa.indexed);
+    bool do_dealloc = false;
+
+    if (do_dealloc && performDealloc) {
+        ((void(*)(objc_object *, SEL))objc_msgSend)(this, SEL_dealloc);
+    }
+
+    return do_dealloc;
+}
+
+uintptr_t objc_object::sidetable_release(bool performDealloc) {
+    assert(!isa.indexed);
+
+    bool do_dealloc = false;
+
+    if (do_dealloc && performDealloc) {
+        ((void(*)(objc_object *, SEL))objc_msgSend)(this, SEL_dealloc);
+    }
+
+    return do_dealloc;
+}
