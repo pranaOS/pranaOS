@@ -84,3 +84,50 @@ static inline bool StoreExclusive(uintptr_t *dst, uintptr_t oldvalue, uintptr_t 
 static inline bool StoreReleaseExclusive(uintptr_t *dst, uintptr_t oldvalue, uintptr_t value) {
     return StoreExclusive(dst, oldvalue, value);
 }
+
+inline bool objc_object::isClass() {
+    if (isTaggedPointer()) return false;
+    if (!ISA()->isRealized()) return false;
+    return ISA()->isMetaClass();
+}
+
+inline bool objc_object::isTaggedPointer() {
+    return false;
+}
+
+inline Class objc_object::ISA() {
+    return (Class)(isa.bits & ISA_MASK);
+}
+
+inline void objc_object::initIsa(Class cls) {
+    initIsa(cls, false, false);
+}
+
+inline void objc_object::initClassIsa(Class cls) {
+    if (DisableNonpointerIsa || cls->requiresRawIsa()) {
+        initIsa(cls, false, false);
+    } else {
+        initIsa(cls, true, false);
+    }
+}
+
+inline void objc_object::initProtocolIsa(Class cls) {
+    return initClassIsa(cls);
+}
+
+inline void objc_object::initInstanceIsa(Class cls, bool hasCxxDtor) {
+    assert(!cls->requiresRawIsa());
+    assert(hasCxxDtor == cls->hasCxxDtor());
+
+    initIsa(cls, true, hasCxxDtor);
+}
+
+inline void objc_object::initIsa(Class cls, bool nonpointer, bool hasCxxDtor) {
+    assert(!isTaggedPointer());
+
+    if (!nonpointer) {
+        isa.cls = cls;
+    } else {
+        assert(!DisableNonpointerIsa);
+    }
+}
