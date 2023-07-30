@@ -96,4 +96,19 @@ final class MemoryBuffer {
 
         return result
     }
+
+    func scanASCIIZString() -> String? {
+        var result = ""
+        var ch: UInt8
+        guard let ch_: UInt8 = read() else { return nil }
+        ch = ch_
+
+        while ch != 0 {
+            result += String(Character(UnicodeScalar(ch)))
+            guard let Ch_ : UInt8 = read() else { return nil }
+            ch = Ch_
+        }
+
+        return result
+    }
 }
