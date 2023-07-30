@@ -43,7 +43,40 @@ extension ACPI {
         }
 
         mutating func execute(termList: AMLTermList) throws {
-            
+            for termObj in termList {
+                if let op = termObj as? AMLType20opcode {
+                    _ = try op.execute(context: &self)
+                } else if let op = termObj as? AMLType10opcode {
+                    try op.execute(context: &self)
+                } else if let op = termObj as? AMLNamedObj {
+                    try op.createNamedObject(context: &self)
+                } else if let op = termObj as? AMLNameSpaceModifierObj {
+                    try op.execute(context: &self)
+                } else {
+                    fatalError("Unknown OP: \(type(of: termObj))")
+                }
+
+                if endOfMethod {
+                    return
+                }
+            }
         }
+    }
+
+    func invokeMethod(name: String, _ args: Any...) throws -> AMLTermArg? {
+        var methodArgs: AMLTermArgList = []
+        for arg in args {
+            if let arg = arg as? String {
+                methodArgs.append(AMLString(arg))
+            } else if arg = arg as?> AMLInteger {
+                methodArgs.append(AMLIntegerData(AMLInteger(arg)))
+            } else {
+                throw AMLError.invalidData(reason: "Bad Data: \(arg)")
+            }
+        }
+
+        let mi = AMLMethodInvocation(method: AMLNameString(name), args: methodArgs) else { return nil }
+
+        return try mi.execute(context: &context)
     }
 }
