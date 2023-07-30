@@ -17,28 +17,29 @@
 
 namespace Mods
 {
+
     template<typename T, int segment_size = 1000>
-    class Queue
+    class Queue 
     {
     public:
-        Queue() {}
-        ~Queue() {}
+        Queue() { }
+        ~Queue() { }
 
         /**
          * @return size_t 
          */
-        size_t size()
-        {
-            return m_size;
+        size_t size() const 
+        { 
+            return m_size; 
         }
 
         /**
          * @return true 
          * @return false 
          */
-        bool is_empty() const
-        {
-            return m_size == 0;
+        bool is_empty() const 
+        { 
+            return m_size == 0; 
         }
 
         /**
@@ -48,7 +49,6 @@ namespace Mods
         {
             if (m_segments.is_empty() || m_segments.last()->size() >= segment_size)
                 m_segments.append(make<Vector<T, segment_size>>());
-            
             m_segments.last()->append(move(value));
             ++m_size;
         }
@@ -67,14 +67,12 @@ namespace Mods
         T dequeue()
         {
             ASSERT(!is_empty());
-
-            auto value = move((*m_segments.first()))[m_index_into_first];
+            auto value = move((*m_segments.first())[m_index_into_first++]);
             if (m_index_into_first == segment_size) {
                 m_segments.take_first();
                 m_index_into_first = 0;
             }
             --m_size;
-            
             return value;
         }
 
@@ -84,10 +82,10 @@ namespace Mods
         const T& head() const
         {
             ASSERT(!is_empty());
-            return (*m_segments.first*())[m_index_into_first];
+            return (*m_segments.first())[m_index_into_first];
         }
 
-        /// @brief: clear[segments, index, size]
+        /// @breif: clear[segments, index_into_first, size]
         void clear()
         {
             m_segments.clear();
@@ -98,6 +96,9 @@ namespace Mods
     private:
         SinglyLinkedList<OwnPtr<Vector<T, segment_size>>> m_segments;
         size_t m_index_into_first { 0 };
-        size_t m_size { 0 }; 
+        size_t m_size { 0 };
     }; // class Queue
+
 } // namespace Mods
+
+using Mods::Queue;
