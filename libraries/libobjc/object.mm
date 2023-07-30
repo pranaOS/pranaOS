@@ -171,4 +171,16 @@ inline void objc_object::release() {
         rootRelease();
         return;
     }
+
+    ((void(*)(objc_object *, SEL))objc_msgSend)(this, SEL_release);
+
+}
+
+inline id objc_object::autorelease() {
+    if (isTaggedPointer()) {
+        return (id)this;
+    }
+
+    if (fastpath(!ISA()->hasCustomRR())) return rootAutoRelease();
+    return ((id(*)(objc_object *, SEL))objc_msgSend)(this, SEL_autorelease);
 }
