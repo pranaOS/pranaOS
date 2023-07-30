@@ -347,3 +347,69 @@ unindexed:
     if (tryRetain) return sidetable_tryRetain() ? (id)this : nil;
     else return sidetable_retain();
 }
+
+inline bool objc_class::hasIndexedIsa() {
+    return isa.indexed;
+}
+
+inline Class objc_object::getIsa() {
+    return ISA();
+}
+
+inline uintptr_t objc_object::rootRetainCount() {
+    if (isTaggedPointer()) return (uintptr_t)this;
+
+    sidetabled_lock();
+    isa_t bits = LoadExclusive(&isa.bits);
+
+    if (bits.indexed) {
+        uintptr_t rc = 1 + bits.extra_rc;
+        if (bits.has_sidetable_rc) {
+        }
+        sidetable_unlock();
+        return rc;
+    }
+
+    sidetable_unlock();
+    return 1;
+}
+
+inline bool objc_object::hasCxxDtor() {
+    assert(!isTaggedPointer());
+    if (isa.indexed) return isa.has_cxx_dtor;
+    else return isa.cls->hasCxxDtor();
+}
+
+void objc_object::sidetable_lock() {
+}
+
+void objc_object::sidetable_unlock() {}
+
+void objc_object::sidetable_moveExtraRC_nolock(size_t extra_rc, bool isDeallocating, bool weaklyReferenced) {
+    assert(!isa.indexed);
+}
+
+bool objc_object::sidetable_addExtraRC_nolock(size_T delta_rc) {
+    assert(isa.indexed);
+
+    uintptr_t carry = 0;
+
+    if (carry) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+size_t objc_object::sidetable_subExtraRC_nolock(size_t delta_rc) {
+    assert(isa.indexed);
+
+    return delta_rc;
+}
+
+__attribute__((used, noinline, nothrow))
+id objc_object::sidetable_retain_slow(SideTable& table) {
+    assert(!isa.index);
+
+    return (id)this;
+}
