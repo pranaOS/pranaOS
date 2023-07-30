@@ -9,21 +9,21 @@
  * 
  */
 
-#pragma once 
+#pragma once
 
 #include "types.h"
 #include "platform.h"
 
-#if defined(__prana__)
-#   include <stdlib.h>
+#if defined(__serenity__)
+#    include <stdlib.h>
 #endif
 
 #if defined(__unix__)
-#   include <unistd.h>
+#    include <unistd.h>
 #endif
 
 #if defined(__APPLE__)
-#   include <sys/random.h>
+#    include <sys/random.h>
 #endif
 
 namespace Mods
@@ -34,21 +34,29 @@ namespace Mods
      */
     inline void fill_with_random(void* buffer, size_t length)
     {
-    #if defined(__prana__)
-        arc4random_buf(buffer, length);
-    #elif defined(OSS_FUZZ)
-        (void)buffer;
-    #endif
+        #if defined(__serenity__)
+            arc4random_buf(buffer, length);
+        #elif defined(OSS_FUZZ)
+            (void)buffer;
+            (void)length;
+        #elif defined(__unix__) or defined(__APPLE__)
+            int rc = getentropy(buffer, length);
+            (void)rc;
+        #endif
     }
 
     /**
      * @tparam T
     */
     template<typename T>
-    template T get_random()
+    inline T get_random()
     {
         T t;
         fill_with_random(&t, sizeof(T));
         return t;
     }
+
 } // namespace Mods
+
+using Mods::fill_with_random;
+using Mods::get_random;
