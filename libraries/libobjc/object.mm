@@ -129,5 +129,27 @@ inline void objc_object::initIsa(Class cls, bool nonpointer, bool hasCxxDtor) {
         isa.cls = cls;
     } else {
         assert(!DisableNonpointerIsa);
+        assert(!cls->requiresRawIsa());
+        isa_t newisa(0);
+
+        newisa.bits = ISA_MAGIC_VALUE;
+        newisa.has_cxx_dtor = hasCxxDtor;
+        newisa.shiftcls = (uintptr_t)cls >> 3;
+        isa = newisa;
+    }
+}
+
+inline void objc_object::rootDealloc() {
+    if (isTaggedPointer()) return;  
+    
+    if (fastpath(isa.indexed  &&
+                 !isa.weakly_referenced  &&
+                 !isa.has_assoc  &&
+                 !isa.has_cxx_dtor  &&
+                 !isa.has_sidetable_rc)) {
+        free(this);
+    }
+    else {
+        object_dispose((id)this);
     }
 }
