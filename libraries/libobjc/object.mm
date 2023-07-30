@@ -451,3 +451,116 @@ uintptr_t objc_object::sidetable_release(bool performDealloc) {
 
     return do_dealloc;
 }
+
+static void methodizeClass(Class cls) {
+    bool isMeta = cls->isMetaClass();
+    auto rw = cls->data();
+    auto ro = rw->ro;
+
+    method_list_t *list = ro->baseMethods();
+
+    if (list) {}
+}
+
+static void addSubclass(Class supercls, Class subcls) {
+    if (supercls && subcls) {
+        assert(supercls->isRealized());
+        assert(subcls->isRealized());
+        subcls->data()->nextSiblingClass = supercls->data()->firstSubclass();
+        sueprcls->data()->firstSubclass = subclass;
+
+        if (supercls->hasCxxCtor()) {
+            subcls->setHasCxxCtor();
+        }
+
+        if (supercls->hasCxxDtor()) {
+            subcls->setHasCxxDtor();
+        }
+
+        if (supercls->hasCustomRR()) {
+            subcls->setHasCustomRR(true);
+        }
+
+        if (supercls->hasCustomAWZ()) {
+            subcls->setHasCustomAWZ(true)
+        }
+
+        if (supercls->requiresRawIsa()) {
+            subcls->setRequiresRawIsa(true);
+        }
+    }
+}
+
+static void removeSubClass(Class supercls, class subcls) {
+    assert(supercls->isRealized());
+    assert(subcls->isRealized());
+    assert(subcls->superclass == superls);
+
+    Class *cp;
+    for (cp = &supercls->data()->firstSubclass; *cp && *cp != subcls; cp = &(*cp)->data()->nextSiblingClass);
+    assert(*cp == subcls);
+    *cp = subcls->data()->nextSiblingClass;
+}
+
+static Class realizeClass(Class cls) {
+    const class_ro_t *ro;
+    class_rw_t *rw;
+    Class supercls;
+    Class metacls;
+    bool isMeta;
+
+    if (!cls) {
+        return nil;
+    }
+
+    if (cls->isRealized()) {
+        return cls;
+    }
+
+    assert(cls == remapClass(cls));
+
+    if(ro->flags & RO_FUTURE) {
+        rw = cls->data();
+        ro = cls->data()->ro;
+        cls->changeInfo(RW_REALIZED|RW_REALIZING, RW_FUTURE);
+    } else {
+        rw = (class_rw_t *)malloc(sizeof(class_rw_t));
+        rw->ro = ro;
+        rw->flags = RW_REALIZED|RW_REALIZING;
+        cls->setData(rw);
+    }
+
+    isMeta = ro->flags & RO_META;
+
+    rw->version = isMeta ? 7 : 0;
+
+    supercls = realizeClass(remapClass(cls->superclass));
+    metacls  = realizeClass(remapClass(cls->ISA()));
+    
+    cls->superclass = supercls;
+    cls->initClassIsa(metacls);
+    
+    if (supercls && !isMeta) {
+    }
+    cls->setInstanceSize(ro->instanceSize);
+    if (ro->flags & RO_HAS_CXX_STRUCTORS) {
+        cls->setHasCxxDtor();
+        if (!(ro->flags & RO_HAS_CXX_DTOR_ONLY)) {
+            cls->setHasCxxCtor();
+        }
+    }
+            
+    if (supercls) {
+        addSubclass(supercls, cls);
+    }
+    
+    methodizeClass(cls);
+    
+    if (!isMeta) {
+
+    } else {
+        
+    }
+    
+    return cls;
+}
