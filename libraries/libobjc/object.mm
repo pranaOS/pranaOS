@@ -184,3 +184,120 @@ inline id objc_object::autorelease() {
     if (fastpath(!ISA()->hasCustomRR())) return rootAutoRelease();
     return ((id(*)(objc_object *, SEL))objc_msgSend)(this, SEL_autorelease);
 }
+
+bool objc_object::overrelease_error() {
+    return false;
+}
+
+inline id objc_object::rootRetain() {
+    return rootRetain(false, false);
+}
+
+inline bool objc_object::rootTryRetain() {
+    return rootRetain(true, false) ? true : false;
+}
+
+inline bool objc_object::rootRelease() {
+    return rootRelease(true, false);
+}
+
+inline id objc_object::rootAutorelease() {
+    if (isTaggedPointer()) return (id)this;
+
+    return rootAutorelease();
+}
+
+id objc_object::rootRetain_overflow(bool tryRetain) {
+    return rootRetain(tryRetain, true);
+}
+
+bool objc_object::rootRetain_underflow(bool performDealloc) {
+    return rootRelease(performDealloc, true);
+}
+
+inline bool objc_object::rootRelease(bool performDealloc, bool handleUnderflow) {
+    if (isTaggedPointer()) return false;
+    
+    bool sideTableLocked = false;
+    
+    isa_t oldisa;
+    isa_t newisa;
+    
+retry:
+    do {
+        oldisa = LoadExclusive(&isa.bits);
+        newisa = oldisa;
+        if (!newisa.indexed) goto unindexed;
+        uintptr_t carry;
+        newisa.bits = subc(newisa.bits, RC_ONE, 0, &carry); 
+        if (carry) goto underflow;
+    } while (!StoreReleaseExclusive(&isa.bits, oldisa.bits, newisa.bits));
+    
+    if (sideTableLocked) sidetable_unlock();
+    return false;
+    
+underflow:
+    newisa = oldisa;
+    
+    if (newisa.has_sidetable_rc) {
+        if (!handleUnderflow) {
+            return rootRelease_underflow(performDealloc);
+        }
+        
+        if (!sideTableLocked) {
+            sidetable_lock();
+            sideTableLocked = true;
+            if (!isa.indexed) {
+                goto unindexed;
+            }
+        }
+        
+        size_t borrowed = sidetable_subExtraRC_nolock(RC_HALF);
+        
+        if (borrowed > 0) {
+            newisa.extra_rc = borrowed - 1;  
+            bool stored = StoreExclusive(&isa.bits, oldisa.bits, newisa.bits);
+            if (!stored) {
+                isa_t oldisa2 = LoadExclusive(&isa.bits);
+                isa_t newisa2 = oldisa2;
+                if (newisa2.indexed) {
+                    uintptr_t overflow;
+                    newisa2.bits =
+                    addc(newisa2.bits, RC_ONE * (borrowed-1), 0, &overflow);
+                    if (!overflow) {
+                        stored = StoreReleaseExclusive(&isa.bits, oldisa2.bits, newisa2.bits);
+                    }
+                }
+            }
+            
+            if (!stored) {
+                // Inline update failed.
+                // Put the retains back in the side table.
+                sidetable_addExtraRC_nolock(borrowed);
+                goto retry;
+            }
+            
+            sidetable_unlock();
+            return false;
+        }
+        else {
+        }
+    }
+    
+    if (sideTableLocked) sidetable_unlock();
+    
+    if (newisa.deallocating) {
+        return overrelease_error();
+    }
+    newisa.deallocating = true;
+    if (!StoreExclusive(&isa.bits, oldisa.bits, newisa.bits)) goto retry;
+    __sync_synchronize();
+    if (performDealloc) {
+        ((void(*)(objc_object *, SEL))objc_msgSend)(this, SEL_dealloc);
+    }
+    return true;
+    
+unindexed:
+    if (sideTableLocked) sidetable_unlock();
+    return sidetable_release(performDealloc);
+}
