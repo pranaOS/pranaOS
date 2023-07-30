@@ -91,5 +91,10 @@ extension ACPI {
             throw AMLError.invalidData(reason: "_OSI: should be 2")
         }
 
+        if arg.value == "Darwin" {
+            return AMLIntegerData(0xffffffff)
+        } else {
+            return AMLIntegerData(0)
+        }
     }
 }
