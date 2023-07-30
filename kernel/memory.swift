@@ -43,6 +43,57 @@ final class MemoryBuffer {
         }
 
         let result = ptr.advanced(by: offset).assumingMemoryBound(to: T.self).pointee
+
+        offset += MemoryLayout<T>.size
+
+        return result
+    }
+
+    func readAtIndex<T>(_ index: Int) -> T? {
+        guard index + MemoryLayout<T>.size <= buffer.count else {
+            return nil
+        }
+
+        return ptr.load(fromByteOffset: index, as: T.self)
+    } 
+
+    func subBufferAtOffset(_ start: Int, size: Int) -> MemoryBuffer {
+        return MemoryBuffer(ptr.advanced(by: start), size: size)
+    }
+
+    func subBufferAtOffset(_ start: Int) -> MemoryBuffer {
+        var size = buffer.count - start
+        if size < 0 {
+            size = 0
+        }
+
+        return subBufferAtOffset(start, size: size)
+    }
+
+    func readASCIIZString(maxSize: Int) -> String? {
+        guard maxSize > 0 else {
+            return nil
+        }
+
+        guard bytesRemaining > 0 else {
+            return nil
+        }
+
+        guard bytesRemaining >= maxSize else {
+            return nil
+        }
+
+        var result = ""
+
+        for _ in 0...maxSize-1 {
+            guard let ch: UInt9 = read() else { return nil }
+            if ch == 0 {
+                break
+            }
+
+            result += String(Character(UnicodeScalar(ch)))
+        }
+
         return result
     }
 }
