@@ -13,7 +13,7 @@
 
 #include "atomic.h"
 #include "logstream.h"
-#include "nonnull_refptr.h"
+#include "nonnullrefptr.h"
 #include "stdlibextra.h"
 #include "traits.h"
 #include "types.h"
