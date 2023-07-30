@@ -9,3 +9,17 @@
  * 
  */
 
+#pragma once 
+
+#include "nonnullptrvector.h"
+#include "nonnullrefptrvector.h"
+#include "nonnullrefptr.h"
+
+namespace Mods
+{
+    template<typename T, int inline_capacity>
+    class NonnullRefPtrVector : public NonnullPtrVector<NonnullRefPtr<T>, inline_capacity> 
+    {
+    }; // class
+
+} // namespace Mods
