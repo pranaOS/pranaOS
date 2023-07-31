@@ -756,8 +756,72 @@ static Class getClass(const char *name) {
 
     if (char *swName = copySwiftV1MangledName(name)) {
         result = getClass_impl(swName);
+        free(swName);
         return result;
     }
+
+    return nil;
+}
+
+Class look_up_class(const char *name, bool includeUnconnected __attribute__((unused)), bool includeClassHandler __attribute__((unused))) {
+    if (!name) return nil;
+
+    Class result;
+
+    bool unrealized;
+    {
+        result = getClass(name);
+        unrealized = result && !result->isRealized();
+    }
+
+    if (unrealized) {
+        realizeClass(result);
+    }
+
+    return result;
+}
+
+
+IMP lookupMethodInClassAndLoadCache(Class cls, SEL sel) {
+    assert(sel == SEL_cxx_construct || sel == SEL_cxx_destruct);
+
+    return nil;
+}
+
+void _object_remove_assocations(id object) {}
+
+static void object_cxxDestructFromClass(id obj, Class cls) {
+    void (*dtor)(id);
+
+    for (; cls; cls = cls->superclass) {
+        if (!cls->hasCxxDtor()) return;
+        dtor = (void(*)(id))
+        lookupMethodInClassAndLoadCache(cls, SEL_cxx_destruct);
+    }
+}
+
+void object_cxxDestruct(id obj) {
+    if (!obj) return;
+    if (obj->isTaggedPointer()) return;
+    object_cxxDestructFromClass(obj, obj->ISA());
+}
+
+id object_cxxConstructFromClass(id obj, Class cls) {
+    assert(cls->hasCxxCtor());
+
+    id (*ctor)(id);
+    Class supercls;
+
+    supercls = cls->superclass;
+
+    if (supercls && supercls->hasCxxCtor()) {
+        bool ok = object_cxxConstructFromClass(obj, supercls);
+        if (!ok) return nil;
+    }
+
+    ctor = (id(*)(id))lookupMethodInClassAndLoadCache(cls, SEL_cxx_construct);
+
+    if ((*ctor)(obj)) return obj;
 
     return nil;
 }
