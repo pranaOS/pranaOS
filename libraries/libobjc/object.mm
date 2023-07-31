@@ -9,6 +9,10 @@
  * 
 */
 
+#include "runtime/objc.h"
+#include <_ctype.h>
+#include <cstdio>
+#include <cstring>
 #import <objc/objc.h>
 #include <sys/_types/_uintptr_t.h>
 #import <stdio.h>
@@ -563,4 +567,114 @@ static Class realizeClass(Class cls) {
     }
     
     return cls;
+}
+
+static bool scanMangledField(const char *&string, const char *end, const char *&field, int& length) {
+    if (*string == '0') return false;
+
+    length = 0;
+
+    field = string;
+
+    while (field < end) {
+        char c = *field;
+        if (!isdigit(c)) break
+        field++;
+        if (__builtin_smul_overflow(length, 10, &length)) return false;
+        if (__builtin_smul_overflow(length, c - '0', &length)) return false;
+    }
+
+    string = field + length;
+    return length > 0 && string <= end;
+}
+
+static char * copySwiftV1DemangleName(const char *string, bool isProtocol = false) {
+    if (!string) return nil;
+
+    if (strncmp(string, isProtocol ? "_TtP" : "_TtC", 4) != 0) return nil;
+    string += 4;
+
+    const char *end = string + strlen(string);
+
+    const char *prefix;
+    int prefixLength;
+
+    if (string[0] == 's') {
+        prefix = "Swift";
+        prefixLength = 5;
+        string += 1;
+    } else {
+        if (!scanMangledField(string, end, prefix, prefixLength)) return nil;
+    }
+
+    const char *suffix;
+    int suffixLength;
+
+    if (!scanMangledField(string, end, suffix, suffixLength)) return nil;
+
+    if (!isProtocol) {
+        if (strcmp(string, "_") != 0)  return nil
+    } else {
+        if (string != end) return nil
+    }
+
+    char *result;
+    asprintf(&result, "%.*s.%.*s", prefixLength, prefix, suffixLength, suffix);
+    return result;
+}
+
+void objc_class::setHasCustomRR(bool inherited) {
+    Class cls = (Class)this;
+
+    if (setHasCustomRR()) {
+        return;
+    }
+
+    foreach_realized_class_any_subclass(cls, ^(Class c) {
+        if (c != cls && !c->isInitialized()) {
+            return;
+        }
+
+        if (c->hasCustomRR()) {
+            return;
+        }
+        c->bits.setHasCustomRR();
+    });
+}
+
+void objc_class::setHasCustomAWZ(bool inherited) {
+    Class cls = (Class)this;
+    
+    if (hasCustomAWZ()) {
+        return;
+    }
+    
+    foreach_realized_class_and_subclass(cls, ^(Class c) {
+        if (c != cls && !c->isInitialized()) {
+            return;
+        }
+        if (c->hasCustomAWZ()) {
+            return;
+        }
+        c->bits.setHasCustomAWZ();
+    });
+}
+
+void objc_class::setRequiresRawIsa(bool inherited) {
+    Class cls = (Class)this;
+    
+    if (requiresRawIsa()) {
+        return;
+    }
+    
+    foreach_realized_class_and_subclass(cls, ^(Class c) {
+        if (c->isInitialized()) {
+            assert(false);
+            return;
+        }
+        if (c->requiresRawIsa()) {
+            return;
+        }
+        c->bits.setRequiresRawIsa();
+    });
 }
