@@ -1061,4 +1061,23 @@ extern "C" {
 
         return NO;
     }
+
+    id object_dispose(id obj) {
+        if (!obj) return nil;
+
+        objc_destructInstance(obj);
+        free(obj);
+
+        return nil;
+    }
+
+    id _objc_constructOrFree(id bytes, Class cls) {
+        assert(cls->hasCxxCtor());
+
+        id obj = object_cxxConstructFromClass(bytes, cls);
+
+        if (!obj) free(bytes);
+
+        return obj;
+    }
 }    
