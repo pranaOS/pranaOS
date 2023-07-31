@@ -17,23 +17,34 @@
 
 __BEGIN_DECLS
 
-struct stat
+#define S_ISDIR(m) (((m)&S_IFMT) == S_IFDIR)
+#define S_ISCHR(m) (((m)&S_IFMT) == S_IFCHR)
+#define S_ISBLK(m) (((m)&S_IFMT) == S_IFBLK)
+#define S_ISREG(m) (((m)&S_IFMT) == S_IFREG)
+#define S_ISFIFO(m) (((m)&S_IFMT) == S_IFIFO)
+#define S_ISLNK(m) (((m)&S_IFMT) == S_IFLNK)
+#define S_ISSOCK(m) (((m)&S_IFMT) == S_IFSOCK)
+
+struct stat 
 {
-    dev_t st_dev;
-    ino_t st_ino;
-    mode_t st_mode;
-    nlink_t st_nlink;
-    uid_t st_uid;
-    gid_t st_gid;
-    dev_t st_rdev;
-    off_t st_size;
-    blksize_t st_blksize;
-    blkcnt_t st_blocks;
-    time_t st_atime;
-    time_t st_mtime
-    time_t st_ctime;
+    dev_t st_dev;         
+    ino_t st_ino;         
+    mode_t st_mode;       
+    nlink_t st_nlink;     
+    uid_t st_uid;         
+    gid_t st_gid;         
+    dev_t st_rdev;        
+    off_t st_size;        
+    blksize_t st_blksize; 
+    blkcnt_t st_blocks;   
+    time_t st_atime;      
+    time_t st_mtime;      
+    time_t st_ctime;      
 }; // struct stat
 
+/**
+ * @return mode_t 
+ */
 mode_t umask(mode_t);
 
 /**
@@ -86,7 +97,7 @@ int stat(const char* path, struct stat* statbuf);
  * @param minor 
  * @return dev_t 
  */
-inline dev_t makedev(unsigned int major, unsigned int minor)
+inline dev_t makedev(unsigned int major, unsigned int minor) 
 { 
     return (minor & 0xffu) | (major << 8u) | ((minor & ~0xffu) << 12u); 
 }
@@ -95,9 +106,18 @@ inline dev_t makedev(unsigned int major, unsigned int minor)
  * @param dev 
  * @return unsigned int 
  */
-inline unsigned int major(dev_t dev)
-{
-    return (dev);
+inline unsigned int major(dev_t dev) 
+{ 
+    return (dev & 0xfff00u) >> 8u; 
+}
+
+/**
+ * @param dev 
+ * @return unsigned int 
+ */
+inline unsigned int minor(dev_t dev) 
+{ 
+    return (dev & 0xffu) | ((dev >> 12u) & 0xfff00u); 
 }
 
 __END_DECLS
