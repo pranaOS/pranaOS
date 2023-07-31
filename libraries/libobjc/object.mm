@@ -1034,4 +1034,31 @@ extern "C" {
             return obj;
         }
     }
+
+    void * objc_destructInstance(id obj) {
+        if (obj) {
+            bool cxx = obj->hasCxxDtor();
+
+            if (cxx) object_cxxDestruct(obj);
+        }
+
+        return obj;
+    }
+
+    BOOL class_conformsToProtocol(Class cls, Protocol *protocol) {
+        protocol_t *proto = ((protocol_t*)protocol);
+        if (!cls || !protocol) {
+            return NO;
+        }
+
+        assert(cls->isRealized());
+        for (const auto& protocol_reference : cls->data()->protocols) {
+            protocol_t *p = remapProtocol(protocol_reference);
+            if (p == proto || protocol_conformsToProtocol_nolock(p, proto)) {
+                return YES;
+            }
+        }
+
+        return NO;
+    }
 }    
