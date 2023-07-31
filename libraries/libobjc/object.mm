@@ -729,4 +729,35 @@ static char* copySwiftV1MangledName(const char *string, bool isProtocol = false)
     size_t suffixLength = stringLength - (dotIndex + 1);
 
     char *name;
+
+    if (prefixLength == 5  &&  memcmp(prefix, "Swift", 5) == 0) {
+        asprintf(&name, "_Tt%cs%zu%.*s%s",
+                 isProtocol ? 'P' : 'C',
+                 suffixLength, (int)suffixLength, suffix,
+                 isProtocol ? "_" : "");
+    } else {
+        asprintf(&name, "_Tt%c%zu%.*s%zu%.*s%s",
+                 isProtocol ? 'P' : 'C',
+                 prefixLength, (int)prefixLength, prefix,
+                 suffixLength, (int)suffixLength, suffix,
+                 isProtocol ? "_" : "");
+    }
+
+    return name;
+}
+
+static Class getClass_impl(const char *name) {
+    return nil;
+}
+
+static Class getClass(const char *name) {
+    Class result = getClass_impl(name);
+    if (result) return result;
+
+    if (char *swName = copySwiftV1MangledName(name)) {
+        result = getClass_impl(swName);
+        return result;
+    }
+
+    return nil;
 }
