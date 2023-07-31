@@ -42,4 +42,50 @@ extern "C"
         int rc = syscall(SC_bind, sockfd, addr, addrlen);
         __RETURN_WITH_ERRNO(rc, rc, -1);
     }
+    
+    /**
+     * @param sockfd 
+     * @param backlog 
+     * @return int 
+     */
+    int listen(int sockfd, int backlog)
+    {
+        int rc = syscall(SC_listen, sockfd, backlog);
+        __RETURN_WITH_ERRNO(rc, rc, -1);
+    }
+
+    /**
+     * @param sockfd 
+     * @param addr 
+     * @param addrlen 
+     * @return int 
+     */
+    int accept(int sockfd, sockaddr* addr, socklen_t* addrlen)
+    {
+        int rc = syscall(SC_accept, sockfd, addr, addrlen);
+        __RETURN_WITH_ERRNO(rc, rc, -1);
+    } // int accept
+
+    /**
+     * @param sockfd 
+     * @param addr 
+     * @param addrlen 
+     * @return int 
+     */
+    int connect(int sockfd, const sockaddr* addr, socklen_t addrlen)
+    {
+        int rc = syscall(SC_connect, sockfd, addr, addrlen);
+        __RETURN_WITH_ERRNO(rc, rc, -1);
+    } // int connect
+
+    /**
+     * @param sockfd 
+     * @param how 
+     * @return int 
+     */
+    int shutdown(int sockfd, int how)
+    {
+        int rc = syscall(SC_shutdown, sockfd, how);
+        __RETURN_WITH_ERRNO(rc, rc, -1);
+    } // int shutdown
 }
