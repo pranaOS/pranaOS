@@ -678,3 +678,55 @@ void objc_class::setRequiresRawIsa(bool inherited) {
         c->bits.setRequiresRawIsa();
     });
 }
+
+const char* objc_class::demangleName(bool realize) {
+    if (isRealized() || isFuture()) {
+        if (data()->demangledName) return data()->demangledName;
+    }
+
+    const char *mangled = mangledName();
+    char *de = copySwiftV1DemangleName(mangled);
+
+    if (isRealized() || isFuture()) {
+        return data()->demangledName;
+    }
+
+    if (!de) {
+        return mangled;
+    }
+
+    if (realize) {
+        realizeClass((Class)this);
+        data()->demangledName = de;
+        return de;
+    }
+
+    return de;
+}
+
+static char* copySwiftV1MangledName(const char *string, bool isProtocol = false) {
+    if (!string) return nil;
+
+    size_t dotCount = 0;
+    size_t dotIndex = 0;
+    const char *s;
+
+    for (s = string; *s; s++) {
+        if (*s == '.') {
+            dotCount++;
+            dotIndex = s - string;
+        }
+    }
+    size_t stringLength = s - string;
+
+    if (dotCount != 1 || dotIndex == 0 || dotIndex >= stringLength - 1) {
+        return nil;
+    }
+
+    const char *prefix = string;
+    size_t prefixLength = dotIndex;
+    const char *suffix = string + dotIndex + 1;
+    size_t suffixLength = stringLength - (dotIndex + 1);
+
+    char *name;
+}
