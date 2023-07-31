@@ -823,5 +823,34 @@ id object_cxxConstructFromClass(id obj, Class cls) {
 
     if ((*ctor)(obj)) return obj;
 
+
+    if(supercls) object_cxxDestructFromClass(obj, supercls);
+
     return nil;
+}
+
+static __attribute__((always_inline)) id _class_createInstanceFromZone(Class cls, size_t extraBytes, void *zone, bool cxxConstruct = true, size_t *outAllocatedSize = nil)  {
+    if (!cls) return nil;
+
+    assert(cls->isRealized());
+
+    bool hasCxxCtor = cls->hasCxxCtor();
+
+    size_t size = cls->instanceSize(extraBytes);
+
+    if (outAllocatedSize) *outAllocatedSize = size;
+
+    id obj;
+
+    obj = (id)malloc(size);
+
+    if (!obj) return nil;
+
+    obj->initIsa(cls);
+
+    if (cxxConstruct && hasCxxCtor) {
+        obj = _objc_constructOrFree(obj, cls);
+    }
+
+    return obj;
 }
