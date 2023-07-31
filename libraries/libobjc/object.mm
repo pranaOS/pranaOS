@@ -854,3 +854,184 @@ static __attribute__((always_inline)) id _class_createInstanceFromZone(Class cls
 
     return obj;
 }
+
+static Protocol *getProtocol(const char *name) {
+    Protocol *result = Nil;
+    if (result) return result;
+
+    if (char *swName = copySwiftV1MangledName(name, true)) {
+        free(swName);
+        return result;
+    }
+
+    return nil;
+}
+
+static protocol_t *remapProtocol(protocol_ref_t proto) {
+    protocol_t *newproto = (protocol_t *)
+    getProtocol(((protocol_t *)proto)->mangledName);
+    return newproto ? newproto : (protocol_t *)proto;
+}
+
+static Class remapClass(Class cls) {
+    if (!cls) {
+        return nil;
+    }
+
+    return cls;
+}
+
+static bool protocol_conformsToProtocol_nolock(protocol_t *self, protocol_t *other) {
+    if (!self || !other) {
+        return NO;
+    }
+
+    if (0 == strcmp(self->mangledName, other->mangledName)) {
+        return YES;
+    }
+
+    if (self->protocols) {
+        uintptr_t i;
+        for (i = 0; i < self->protocols->count; i++) {
+            protocol_t *proto = remapProtocol(self->protocols->list[i]);
+            if (0 == strcmp(other->mangledName, proto->mangledName)) {
+                return YES;
+            }
+            if (protocol_conformsToProtocol_nolock(proto, other)) {
+                return YES;
+            }
+        }
+    }
+
+    return NO;
+}
+
+extern "C" {
+    BOOL object_isClass(id obj) {
+        if (!obj) return NO;
+        return obj->isClass();
+    }
+
+    Class object_getClass(id obj) {
+        if (obj) {
+            return obj->getIsa();
+        } else {
+            return Nil;
+        }
+    }
+
+    Class _Nullable class_getSuperclass(Class _Nullable cls) {
+        if (cls == Nil) {
+            return Nil;
+        }
+
+        return cls->superclass;
+    }
+
+    BOOL class_isMetaClass(Class _Nullable cls) {
+        if (cls == Nil) {
+            return NO;
+        }
+        return cls->isMetaClass();
+    }
+
+    const char * _Nonnull class_getName(Class _Nullable cls) {
+        if (!cls) {
+            return "nil";
+        }
+        return cls->demangleName();
+    }
+
+    id class_createInstance(Class cls, size_t extraBytes) {
+        return _class_createInstanceFromZone(cls, extraBytes, nil);
+    }
+
+    id class_createInstanceFromZone(Class cls, size_t extraBytes, void* zone) {
+        return _class_createInstanceFromZone(cls, extraBytes, zone);
+    }
+
+    __attribute__((aligned(16))) id objc_retain(id obj) {
+        if (!obj) return obj;
+        if (obj->isTaggedPointer()) return obj;
+        return obj->retain();
+    }
+
+    id _objc_rootRetain(id a) {
+        assert(a);
+        return a->rootRetain();
+    }
+
+    void _objc_rootRelease(id a) {
+        assert(a);
+        a->rootRelease();
+    }
+
+    id _objc_rootAutorelease(id a) {
+        assert(a);
+        return a->rootAutorelease();
+    }
+
+    id _objc_rootAllocWithZone(Class cls, malloc_zone_t *zone) {
+        id obj;
+        (void)zone;
+        obj = class_createInstance(cls, 0);
+        return obj;
+    }
+
+    void _objc_rootDealloc(id a) {
+        assert(a);
+        a->rootDealloc();
+    }
+
+    BOOL _objc_rootTryRetain(id a) {
+        return a->rootTryRetain();
+    }
+
+    id _objc_rootInit(id a) {
+        return a;
+    }
+
+    uintptr_t _objc_rootHash(id a) {
+        return (uintptr_t)a;
+    }
+
+    uintptr_t _objc_rootRetainCount(id a) {
+        return a->rootRetainCount();
+    }
+
+    malloc_zone_t* _objc_rootZone(id a) {
+        (void)a;
+        return malloc_default_zone();
+    }
+
+    __attribute__((aligned(16))) void objc_release(id obj) {
+        if (!obj) return;
+        if (obj->isTaggedPointer()) return;
+        return obj->release();
+    }
+
+    __attribute__((aligned(16))) id objc_autorelease(id obj) {
+        if (!obj) return obj;
+        if (!obj->isTaggedPointer()) return obj;
+        return obj->autorelease();
+    }
+
+    Class objc_lookUpClass(const char *aClassName) {
+        if (!aClassName) return Nil;
+        
+        return look_up_class(aClassName, NO, NO);
+    }
+
+    id objc_constructInstance(Class cls, void *bytes) {
+        if (!cls || !bytes) return nil;
+
+        id obj = (id)bytes;
+        obj->initIsa(cls);
+
+        if (cls->hasCxxCtor()) {
+            return object_cxxConstructFromClass(obj, cls);
+        } else {
+            return obj;
+        }
+    }
+}    
