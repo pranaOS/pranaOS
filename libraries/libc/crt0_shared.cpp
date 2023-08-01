@@ -16,13 +16,15 @@
 #include <unistd.h>
 #include <mods/types.h>
 
-extern "C"
+extern "C" 
 {
+
     /**
      * @return int 
      */
     int main(int, char**, char**);
 
+    /// @brief: void* __libc + __init
     extern void __libc_init();
     extern void _init();
     extern char** environ;
@@ -34,5 +36,24 @@ extern "C"
      * @param env 
      * @return int 
      */
-    int start(int argc, char** argv, char* env);
+    int _start(int argc, char** argv, char** env);
+
+    /**
+     * @param argc 
+     * @param argv 
+     * @param env 
+     * @return int 
+     */
+    int _start(int argc, char** argv, char** env)
+    {
+        _init();
+
+        int status = main(argc, argv, env);
+        return status;
+    }
 }
+
+/**
+ * @return void* 
+ */
+void* __dso_handle __attribute__((__weak__));
