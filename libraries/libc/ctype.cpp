@@ -11,10 +11,10 @@
 
 #include <ctype.h>
 
-extern "C"
+extern "C" 
 {
-    const char _ctype_[256] = 
-    {
+
+    const char _ctype_[256] = {
         _C, _C, _C, _C, _C, _C, _C, _C,
         _C, _C | _S, _C | _S, _C | _S, _C | _S, _C | _S, _C, _C,
         _C, _C, _C, _C, _C, _C, _C, _C,
@@ -32,4 +32,27 @@ extern "C"
         _L, _L, _L, _L, _L, _L, _L, _L,
         _L, _L, _L, _P, _P, _P, _P, _C
     };
+
+    /**
+     * @param c 
+     * @return int 
+     */
+    int tolower(int c)
+    {
+        if (c >= 'A' && c <= 'Z')
+            return c | 0x20;
+        return c;
+    }
+
+    /**
+     * @param c 
+     * @return int 
+     */
+    int toupper(int c)
+    {
+        if (c >= 'a' && c <= 'z')
+            return c & ~0x20;
+        return c;
+    }
+    
 }
