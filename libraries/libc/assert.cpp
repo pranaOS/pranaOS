@@ -15,17 +15,20 @@
 #include <unistd.h>
 #include <sys/internals.h>
 
-extern "C"
-{
+extern "C" {
+
     extern bool __stdio_is_initialized;
 
     #ifdef DEBUG
+        /**
+         * @param msg 
+         */
         void __assertion_failed(const char* msg)
         {
-            dbgprintf("USERSPACE(%d)");
-
+            dbgprintf("USERSPACE(%d) ASSERTION FAILED: %s\n", getpid(), msg);
             if (__stdio_is_initialized)
-                fprintf(stderr, "ASSERTION FAILED:")
+                fprintf(stderr, "ASSERTION FAILED: %s\n", msg);
+            abort();
         }
-    #endif  
+    #endif
 }
