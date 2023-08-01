@@ -15,32 +15,35 @@
 #include <sys/internals.h>
 #include <mods/types.h>
 
-extern "C"
+extern "C" 
 {
-    struct __exit_entry
+
+    struct __exit_entry 
     {
         AtExitFunction method;
         void* parameter;
         void* dso_handle;
         bool has_been_called;
-    }; // structexit_entry
+    }; // struct __exit_entry
 
-    static __exit_entry __exit_entries[1024]{};
+    /// @brief: exit_entries
+    static __exit_entry __exit_entries[1024] {};
 
+    /// @brief: __exit_entry_count setted as 0
     static int __exit_entry_count = 0;
 
     /**
      * @param exit_function 
-     * @param paramter 
+     * @param parameter 
      * @param dso_handle 
      * @return int 
      */
-    int __cxa_atexit(AtExitFunction exit_function, void* paramter, void* dso_handle)
+    int __cxa_atexit(AtExitFunction exit_function, void* parameter, void* dso_handle)
     {
         if (__exit_entry_count >= 1024)
             return -1;
-        
-        __exit_entries[__exit_entry_count++] = { exit_function, paramter, dso_handle };
+
+        __exit_entries[__exit_entry_count++] = { exit_function, parameter, dso_handle, false };
 
         return 0;
     }
@@ -48,9 +51,25 @@ extern "C"
     /**
      * @param dso_handle 
      */
-    void __cxa_finalize(void *dso_handle)
+    void __cxa_finalize(void* dso_handle)
     {
-        int entry_index = __exit_entry_count;   
+        int entry_index = __exit_entry_count;
+
+    #ifdef GLOBAL_DTORS_DEBUG
+        dbgprintf("__cxa_finalize: %d entries in the finalizer list\n", entry_index);
+    #endif
+
+        while (--entry_index >= 0) {
+            auto& exit_entry = __exit_entries[entry_index];
+            bool needs_calling = !exit_entry.has_been_called && (!dso_handle || dso_handle == exit_entry.dso_handle);
+            if (needs_calling) {
+    #ifdef GLOBAL_DTORS_DEBUG
+                dbgprintf("__cxa_finalize: calling entry[%d] %p(%p) dso: %p\n", entry_index, exit_entry.method, exit_entry.parameter, exit_entry.dso_handle);
+    #endif
+                exit_entry.method(exit_entry.parameter);
+                exit_entry.has_been_called = true;
+            }
+        }
     }
 
     [[noreturn]] void __cxa_pure_virtual()
@@ -58,11 +77,11 @@ extern "C"
         ASSERT_NOT_REACHED();
     }
 
-    extern u32 __static_chk_guard;
+    extern u32 __stack_chk_guard;
 
-    u32 __stack_chk_guard = (u32);
+    u32 __stack_chk_guard = (u32)0xc6c7c8c9;
 
-    [[noreturn]] void __static_chk_fail()
+    [[noreturn]] void __stack_chk_fail()
     {
         ASSERT_NOT_REACHED();
     }
