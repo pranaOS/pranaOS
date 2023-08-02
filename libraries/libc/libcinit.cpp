@@ -14,8 +14,9 @@
 #include <sys/internals.h>
 #include <mods/types.h>
 
-extern "C"
+extern "C" 
 {
+
     #ifdef NO_TLS
         int errno;
     #else
@@ -23,7 +24,14 @@ extern "C"
     #endif
 
     char** environ;
+
     bool __environ_is_malloced;
     bool __stdio_is_initialized;
 
-}
+    void __libc_init()
+    {
+        __malloc_init();
+        __stdio_init();
+    } 
+
+} // extern
