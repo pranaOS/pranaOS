@@ -198,7 +198,7 @@ extern "C"
 
         if (!extra_gid_added)
             gids[count++] = extra_gid;
-            
+
         return setgroups(count, gids);
     }
-}
+} // extern 
