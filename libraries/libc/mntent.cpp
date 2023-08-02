@@ -12,7 +12,7 @@
 #include <mntent.h>
 #include <assert.h>
 
-extern "C"
+extern "C" 
 {
     /**
      * @return struct mntent* 
@@ -20,6 +20,7 @@ extern "C"
     struct mntent* getmntent(FILE*)
     {
         ASSERT_NOT_REACHED();
-    }// struct getmntent
+        return nullptr;
+    } // struct getmntent
 
 } // extern
