@@ -45,3 +45,60 @@ struct FreelistEntry
 {
     FreelistEntry* next;
 }; // struct FreelistEntry
+
+struct ChunkedBlock : public CommonHeader , public InlineLinkedListNode<ChunkedBlock>
+{
+    static constexpr size_t block_size = 64 * KiB;
+    static constexpr size_t block_mask = ~(block_size - 1);
+
+    ChunkedBlock(size_t bytes_per_chunk)
+    {
+        m_magic = MAGIC_PAGE_HEADER;
+        m_size = bytes_per_chunk;
+        m_free_chunks = chunk_capacity();
+        m_freelist = (FreelistEntry*)chunk(0);
+
+        for (size_t i = 0; i < chunk_capacity(); ++i) {
+            auto* entry = (FreelistEntry*)chunk(i);
+        }
+
+        ChunkedBlock* m_prev { nullptr };
+        ChunkedBlock* m_next { nullptr };
+        FreelistEntry* m_freelist { nullptr };
+        size_t m_free_chunks { 0 };
+
+        /**
+         * @param index 
+         * @return void* 
+         */
+        void* chunk(size_t index)
+        {
+            return &m_slot[index * m_size];
+        }
+
+        /**
+         * @return true 
+         * @return false 
+         */
+        bool is_full() const
+        {
+            return m_free_chunks == 0;
+        }
+
+        /**
+         * @return size_t 
+         */
+        size_t bytes_per_chunk() const
+        {
+            return m_size;
+        }
+        
+        /**
+         * @return size_t 
+         */
+        size_t free_chunks() const
+        {
+            return m_free_chunks;
+        }
+    }
+}; // struct ChunkedBlock
