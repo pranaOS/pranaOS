@@ -26,6 +26,7 @@ struct __jmp_buf
     sigset_t saved_signal_mask;
 }; // struct __jmp_buf
 
+/// @brief: jmp_buf, sigjmp_buf
 typedef struct __jmp_buf jmp_buf[1];
 typedef struct __jmp_buf sigjmp_buf[1];
 
@@ -44,5 +45,10 @@ void longjmp(jmp_buf, int val);
  * @return int 
  */
 int sigsetjmp(sigjmp_buf, int savesigs);
+
+/**
+ * @param val 
+ */
+void siglongjmp(sigjmp_buf, int val);
 
 __END_DECLS
