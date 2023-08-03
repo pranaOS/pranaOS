@@ -16,7 +16,16 @@
 
 __BEGIN_DECLS
 
-struct pollfd
+/// @brief: POLL[IN, PRI, OUT, ERR, HUP, NVAL, RDHUP]
+#define POLLIN (1u << 0)
+#define POLLPRI (1u << 1)
+#define POLLOUT (1u << 2)
+#define POLLERR (1u << 3)
+#define POLLHUP (1u << 4)
+#define POLLNVAL (1u << 5)
+#define POLLRDHUP (1u << 13)
+
+struct pollfd 
 {
     int fd;
     short events;
@@ -36,9 +45,10 @@ int poll(struct pollfd* fds, nfds_t nfds, int timeout);
 /**
  * @param fds 
  * @param nfds 
- * @param action 
+ * @param timeout 
+ * @param sigmask 
  * @return int 
  */
-int ppoll(struct pollfd* fds, nfds_t nfds, const sig_t* action);
+int ppoll(struct pollfd* fds, nfds_t nfds, const struct timespec* timeout, const sigset_t* sigmask);
 
-__END_DECLS 
+__END_DECLS
