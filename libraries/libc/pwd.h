@@ -17,7 +17,7 @@
 
 __BEGIN_DECLS
 
-struct passwd
+struct passwd 
 {
     char* pw_name;
     char* pw_passwd;
@@ -33,6 +33,7 @@ struct passwd
  */
 struct passwd* getpwent();
 
+/// @brief: pwent(set, end)
 void setpwent();
 void endpwent();
 
