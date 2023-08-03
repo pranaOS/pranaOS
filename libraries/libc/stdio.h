@@ -11,6 +11,7 @@
 
 #pragma once 
 
+#include <cstdio>
 #define _STDIO_H
 
 #include <limits.h>
@@ -35,5 +36,34 @@ extern FILE* stdout;
 extern FILE* stderr;
 
 typedef long fpos_t;
+
+/**
+ * @param offset 
+ * @param whence 
+ * @return int 
+ */
+int fseek(FILE*, long offset, int whence);
+
+/**
+ * @return int 
+ */
+int fgetpos(FILE*, fpos_t);
+
+/**
+ * @return int 
+ */
+int fsetpos(FILE*, const fpos_t);
+
+/**
+ * @return long 
+ */
+long ftell(FILE *);
+
+/**
+ * @param buffer 
+ * @param size 
+ * @return char* 
+ */
+char* fgets(char* buffer, int size, FILE*);
 
 __END_DECLS
