@@ -19,3 +19,21 @@
 #include <sys/types.h>
 
 #define FILENAME_MAX 1024
+
+__BEGIN_DECLS
+
+#ifndef EOF
+#   define EOF(-1)
+#endif
+
+#define SEEK_SET 0
+#define SEEK_CUR 1
+#define SEEK_END 2
+
+extern FILE* stdin;
+extern FILE* stdout;
+extern FILE* stderr;
+
+typedef long fpos_t;
+
+__END_DECLS
