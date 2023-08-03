@@ -59,3 +59,27 @@ namespace Mods
         }
     }
 } // namespace Mods
+
+class SizedObjectSlice 
+{
+public:
+    SizedObjectSlice() = delete;
+
+    SizedObjectSlice(void* data, size_t element_size)
+        : m_data(data)
+        , m_element_size(element_size)
+    {}
+
+    /**
+     * @param index 
+     * @return const SizedObject 
+     */
+    const SizedObject operator[](size_t index)
+    {
+        return { static_cast<char*>(m_data) + index }; 
+    }
+
+private:
+    void* m_data;
+    size_t m_element_size;
+}; // class SizedObjectSlice
