@@ -63,42 +63,223 @@ int fsetpos(FILE*, const fpos_t*);
  * @return long 
  */
 long ftell(FILE*);
+
+/**
+ * @param buffer 
+ * @param size 
+ * @return char* 
+ */
 char* fgets(char* buffer, int size, FILE*);
+
+/**
+ * @param ch 
+ * @return int 
+ */
 int fputc(int ch, FILE*);
+
+/**
+ * @return int 
+ */
 int fileno(FILE*);
+
+/**
+ * @return int 
+ */
 int fgetc(FILE*);
+
+/**
+ * @return int 
+ */
 int getc(FILE*);
+
+/**
+ * @param stream 
+ * @return int 
+ */
 int getc_unlocked(FILE* stream);
+
+/**
+ * @return int 
+ */
 int getchar();
+
+/**
+ * @return ssize_t 
+ */
 ssize_t getdelim(char**, size_t*, int, FILE*);
+
+/**
+ * @return ssize_t 
+ */
 ssize_t getline(char**, size_t*, FILE*);
+
+/**
+ * @param c 
+ * @return int 
+ */
 int ungetc(int c, FILE*);
+
+/**
+ * @param pathname 
+ * @return int 
+ */
 int remove(const char* pathname);
+
+/**
+ * @param fd 
+ * @param mode 
+ * @return FILE* 
+ */
 FILE* fdopen(int fd, const char* mode);
+
+/**
+ * @param pathname 
+ * @param mode 
+ * @return FILE* 
+ */
 FILE* fopen(const char* pathname, const char* mode);
+
+/**
+
+ * @param pathname 
+ * @param mode 
+ * @return FILE* 
+ */
 FILE* freopen(const char* pathname, const char* mode, FILE*);
+
+/**
+ * @param filehandle 
+ */
 void flockfile(FILE* filehandle);
+
+/**
+ * @param filehandle 
+ */
 void funlockfile(FILE* filehandle);
+
+/**
+ * @return int 
+ */
 int fclose(FILE*);
+
+/// @brief: rewind(FILE)
 void rewind(FILE*);
+
+/// @brief: clearerr
 void clearerr(FILE*);
+
+/**
+ * @return int 
+ */
 int ferror(FILE*);
+
+/**
+ * @return int 
+ */
 int feof(FILE*);
+
+/**
+ * @return int 
+ */
 int fflush(FILE*);
+
+/**
+ * @param ptr 
+ * @param size 
+ * @param nmemb 
+ * @return size_t 
+ */
 size_t fread(void* ptr, size_t size, size_t nmemb, FILE*);
+
+/**
+ * @param ptr 
+ * @param size 
+ * @param nmemb 
+ * @return size_t 
+ */
 size_t fwrite(const void* ptr, size_t size, size_t nmemb, FILE*);
+
+/**
+ * @param fmt 
+ * @return int 
+ */
 int vprintf(const char* fmt, va_list);
+
+/**
+ * @param fmt 
+ * @return int 
+ */
 int vfprintf(FILE*, const char* fmt, va_list);
+
+/**
+ * @param buffer 
+ * @param fmt 
+ * @return int 
+ */
 int vsprintf(char* buffer, const char* fmt, va_list);
+
+/**
+ * @param buffer 
+ * @param fmt 
+ * @return int 
+ */
 int vsnprintf(char* buffer, size_t, const char* fmt, va_list);
+
+/**
+ * @param fmt 
+ * @param ... 
+ * @return int 
+ */
 int fprintf(FILE*, const char* fmt, ...);
+
+/**
+ * @param fmt 
+ * @param ... 
+ * @return int 
+ */
 int printf(const char* fmt, ...);
+
+/**
+ * @param fmt 
+ * @param ... 
+ * @return int 
+ */
 int dbgprintf(const char* fmt, ...);
+
+/// @brief: dbgputch
 void dbgputch(char);
+
+/**
+ * @return int 
+ */
 int dbgputstr(const char*, ssize_t);
+
+/**
+ * @param buffer 
+ * @param fmt 
+ * @param ... 
+ * @return int 
+ */
 int sprintf(char* buffer, const char* fmt, ...);
+
+/**
+ * @param buffer 
+ * @param fmt 
+ * @param ... 
+ * @return int 
+ */
 int snprintf(char* buffer, size_t, const char* fmt, ...);
+
+/**
+ * @param ch 
+ * @return int 
+ */
 int putchar(int ch);
+
+/**
+ * @param ch 
+ * @return int 
+ */
 int putc(int ch, FILE*);
 
 /**
