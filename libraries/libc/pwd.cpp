@@ -78,4 +78,55 @@ extern "C"
 
         return nullptr;
     }
+
+    struct passwd* getpwnam(const char* name)
+    {
+        setpwent();
+
+        while (auto* pw = getpwent()) {
+            if (!strcmp(pw->pw_name, name))
+                return pw;
+        }
+
+        return nullptr;
+    }
+
+    /**
+     * @param line 
+     * @return true 
+     * @return false 
+     */
+    static bool parse_pwddb_entry(const String& line)
+    {
+        auto parts = line.split_limit(':', true);
+
+        if (parts.size() != 7) {
+            fprintf(stderr, "getpwent: Malformed entry found on the line: ");
+            return false;
+        }
+
+        s_name = parts[0];
+        s_passwd = parts[1];
+        auto& uid_string = parts[2];
+        auto& gid_string = parts[3];
+        s_gecos = parts[4];
+        s_dir = parts[5];
+        s_shell = parts[6];
+
+        auto uid = uid_string.to_uint();
+
+        if (!uid.has_value()) {
+            fprintf(stderr, "getpwent: Malformed UID found on line: ");
+            return false;
+        }
+
+        auto gid = gid_string.to_uint();
+
+        if (!gid.has_value()) {
+            return false;
+        }
+
+        return true;
+    }
+
 } // extern "C"
