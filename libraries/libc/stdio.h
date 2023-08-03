@@ -66,4 +66,9 @@ long ftell(FILE *);
  */
 char* fgets(char* buffer, int size, FILE*);
 
+int fputc(int ch, FILE*);
+int fileno(FILE*);
+int fgetc(FILE*);
+int getc(FILE*);
+
 __END_DECLS
