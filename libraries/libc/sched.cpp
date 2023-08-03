@@ -14,8 +14,9 @@
 #include <sched.h>
 #include <kernel/api/syscall.h>
 
-extern "C"
+extern "C" 
 {
+
     /**
      * @return int 
      */
@@ -32,7 +33,7 @@ extern "C"
     int sched_get_priority_min(int policy)
     {
         (void)policy;
-        return 0;
+        return 0; 
     }
 
     /**
@@ -42,17 +43,29 @@ extern "C"
     int sched_get_priority_max(int policy)
     {
         (void)policy;
-        return 3;
+        return 3; 
     }
 
-    /** 
+    /**
      * @param pid 
      * @param param 
      * @return int 
      */
-    int sched_setparam(pid_t pid, const struct sched_param *param)
+    int sched_setparam(pid_t pid, const struct sched_param* param)
     {
         int rc = syscall(SC_sched_setparam, pid, param);
         __RETURN_WITH_ERRNO(rc, rc, -1);
     }
-}
+
+    /**
+     * @param pid 
+     * @param param 
+     * @return int 
+     */
+    int sched_getparam(pid_t pid, struct sched_param* param)
+    {
+        int rc = syscall(SC_sched_getparam, pid, param);
+        __RETURN_WITH_ERRNO(rc, rc, -1);
+    }
+
+} // extern "C"
