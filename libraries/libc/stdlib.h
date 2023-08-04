@@ -108,4 +108,22 @@ typedef struct
  */
 ldiv_t ldiv(long, long);
 
+/**
+ * @param flags 
+ * @return int 
+ */
+int posix_openpt(int flags);
+
+/**
+ * @param fd 
+ * @return int 
+ */
+int grantpt(int fd);
+
+/**
+ * @param fd 
+ * @return int 
+ */
+int unlockpt(int fd);
+
 __END_DECLS
