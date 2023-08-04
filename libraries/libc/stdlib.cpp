@@ -89,7 +89,23 @@ class NumParser
     MOD_MAKE_NONMOVABLE(NumParser);
 
 public:
-    NumParser() {}
+    /**
+     * @param sign 
+     * @param base 
+     */
+    NumParser(Sign sign, int base)
+        : m_base(base)
+        , m_num(0)
+        , m_sign(sign)
+    {
+        m_cutoff = positive() ? (max_value / base) : (min_value / base);
+        m_max_digit_after_cutoff = positive() ? (max_value % base) : (min_value % base);
+    }
+
+    int parse_digit(char ch)
+    {
+
+    }
 
 private:
     /**
@@ -100,6 +116,12 @@ private:
     bool can_append_digit(int digit)
     {
         const bool is_below_cutoff = positive() ? (m_num < m_cutoff) : (m_num > m_cutoff);
+
+        if (is_below_cutoff) {
+            return true;
+        } else {
+            return m_num == m_cutoff && digit < m_max_digit_after_cutoff;
+        }
     }
 
     /**
