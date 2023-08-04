@@ -9,7 +9,7 @@
  * 
  */
 
-#pragma once 
+#pragma once
 
 #include <sys/cdefs.h>
 #include <sys/types.h>
@@ -22,10 +22,8 @@ __BEGIN_DECLS
 int strcasecmp(const char*, const char*);
 
 /**
- * @param size 
  * @return int 
  */
-int strncasecmp(const char*, const char*, size_t size);
+int strncasecmp(const char*, const char*, size_t);
 
 __END_DECLS
-
