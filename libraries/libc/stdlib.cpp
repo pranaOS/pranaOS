@@ -119,6 +119,8 @@ public:
         else
             return -1;
 
+        if (static_cast<T>(digit) >= m_base)
+            return -1;
 
         return digit;
     }
@@ -129,7 +131,31 @@ public:
      */
     DigitConsumeDecision consume(char ch)
     {
+        int digit = parse_digit(ch);
+        
+        if (digit == -1)
+            return DigitConsumeDecision::Invalid;
+        
+        if (!can_append_digit(digit)) {
+            if (m_sign != Sign::Negative) {
+                return DigitConsumeDecision::PosOverflow;
+            } else {
+                return DigitConsumeDecision::NegOverflow;
+            }
+        }
 
+        m_num *= m_base;
+        m_num += positive() ? digit : -digit;
+
+        return DigitConsumeDecision::Consumed;
+    }
+
+    /**
+     * @return T 
+     */
+    T number() const
+    {
+        return m_num;
     }
 
 private:
@@ -164,3 +190,40 @@ private:
     int m_max_digit_after_cutoff;
     Sign m_sign;
 }; // class NumParser
+
+typedef NumParser<int, INT_MIN, INT_MAX> IntParser;
+
+static bool is_either(char* str, int offset, char lower, char upper)
+{
+    char ch = *(str + offset);
+    return ch == lower || ch == upper;
+}
+
+__attribute__((warn_unused_result)) int __generate_unique_filename(char* pattern)
+{
+    size_t length = strlen(pattern);
+
+    if (length < 6 || memcmp(pattern + length - 6)) {
+        errno = EINVAL;
+        return -1;
+    }
+
+    size_t start = length - 6;
+
+    static constexpr char random_characters[] = "abcdefghijklmnopqrstuvwxyz0123456789";
+
+    for (int attempt = 0; attempt < 100; ++attempt) {
+        for (int i = 0; i < 6; ++i)
+            pattern[start + i] = random_characters
+        
+        struct stat st;
+        int rc = lstat(pattern, &st);
+
+        if (rc < 0 && errno == ENOENT)
+            return 0;
+    }
+
+    errno = EEXIST;
+
+    return -1;
+}
