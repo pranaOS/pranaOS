@@ -14,7 +14,7 @@
 #include "types.h"
 #include "platform.h"
 
-#if defined(__serenity__)
+#if defined(__prana__)
 #    include <stdlib.h>
 #endif
 
@@ -34,7 +34,7 @@ namespace Mods
      */
     inline void fill_with_random(void* buffer, size_t length)
     {
-        #if defined(__serenity__)
+        #if defined(__prana__)
             arc4random_buf(buffer, length);
         #elif defined(OSS_FUZZ)
             (void)buffer;
