@@ -11,8 +11,8 @@
 
 #pragma once
 
-#include "types.h"
-#include "platform.h"
+#include <mods/types.h>
+#include <mods/platform.h>
 
 #if defined(__prana__)
 #    include <stdlib.h>
