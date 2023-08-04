@@ -102,7 +102,32 @@ public:
         m_max_digit_after_cutoff = positive() ? (max_value % base) : (min_value % base);
     }
 
+    /**
+     * @param ch 
+     * @return int 
+     */
     int parse_digit(char ch)
+    {
+        int digit;
+
+        if (isdigit(ch))
+            digit = ch - '0';
+        else if (islower(ch))
+            digit = ch - ('a' - 10);
+        else if (isupper(ch))
+            digit = ch - ('A' - 10);
+        else
+            return -1;
+
+
+        return digit;
+    }
+
+    /**
+     * @param ch 
+     * @return DigitConsumeDecision 
+     */
+    DigitConsumeDecision consume(char ch)
     {
 
     }
