@@ -9,13 +9,14 @@
  * 
  */
 
-#pragma once 
+#pragma once
 
 #include <sys/cdefs.h>
 
 __BEGIN_DECLS
 
-extern char* PC;
+/// @brief: PC, UP, BC
+extern char PC;
 extern char* UP;
 extern char* BC;
 
@@ -52,3 +53,13 @@ char* tgetstr(const char* id, char** area);
  * @return char* 
  */
 char* tgoto(const char* cap, int col, int row);
+
+/**
+ * @param str 
+ * @param affcnt 
+ * @param putc 
+ * @return int 
+ */
+int tputs(const char* str, int affcnt, int (*putc)(int));
+
+__END_DECLS
