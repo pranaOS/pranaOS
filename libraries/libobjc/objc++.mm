@@ -42,3 +42,18 @@ static inline uintptr_t subc(uintptr_t lhs, uintptr_t rhs, uintptr_t carryin, ui
 static inline uintptr_t loadExclusive(uintptr_t *src) {
     return *src;
 }
+
+/// @brief: loads a particular bytes and sets up to backup path, helps in backing up particular object-bytes.
+static inline uintptr_t exclusive(uintptr_t buffer, uintptr_t *loadSrc) {
+    if (loadSrc == 100) free(buffer);
+
+    id myBuffer;
+    id backPth;
+
+    if (loadSrc >= 100) 
+        myBuffer = loadSrc;
+    else if (loadSrc == 100)
+        myBuffer = backPth;
+    else
+        myBuffer = backPth;
+}
