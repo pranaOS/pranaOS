@@ -18,14 +18,14 @@
 #include <syslog.h>
 #include <unistd.h>
 
-extern "C"
+extern "C" 
 {
     static struct syslog_data global_log_data = {
-        .ident = nullptr;
+        .ident = nullptr,
         .logopt = 0,
         .facility = LOG_USER,
         .maskpri = LOG_UPTO(LOG_DEBUG)
-    };  
+    };
 
     static char program_name_buffer[256];
     static bool program_name_set = false;
@@ -38,6 +38,7 @@ extern "C"
     {
         if (!program_name_set && data->ident == nullptr)
             program_name_set = get_process_name(program_name_buffer, sizeof(program_name_buffer)) >= 0;
+
         if (data->ident != nullptr)
             return data->ident;
         else if (program_name_set)
@@ -81,6 +82,7 @@ extern "C"
         data->maskpri = LOG_UPTO(LOG_DEBUG);
     }
 
+    /// @brief: closelog(void)
     void closelog(void)
     {
         closelog_r(&global_log_data);
@@ -121,4 +123,57 @@ extern "C"
         va_end(ap);
     }
 
+    /**
+     * @param priority 
+     * @param message 
+     * @param ... 
+     */
+    void syslog(int priority, const char* message, ...)
+    {
+        va_list ap;
+        va_start(ap, message);
+        vsyslog_r(priority, &global_log_data, message, ap);
+        va_end(ap);
+    }
+
+    /**
+     * @param priority 
+     * @param data 
+     * @param message 
+     * @param args 
+     */
+    void vsyslog_r(int priority, struct syslog_data* data, const char* message, va_list args)
+    {
+        StringBuilder combined;
+
+        int real_priority = LOG_PRI(priority);
+
+        if (!(data->maskpri & LOG_MASK(real_priority)))
+            return;
+
+        if (data->logopt & LOG_PID)
+            combined.appendf("%s[%d]: ", get_syslog_ident(data), getpid());
+        else
+            combined.appendf("%s: ", get_syslog_ident(data));
+
+        combined.appendvf(message, args);
+        String combined_string = combined.build();
+
+        if (data->logopt & LOG_CONS)
+            dbgputstr(combined_string.characters(), combined_string.length());
+        if (data->logopt & LOG_PERROR)
+            fputs(combined_string.characters(), stderr);
+    }
+
+    /**
+     * @param priority 
+     * @param message 
+     * @param args 
+     */
+    void vsyslog(int priority, const char* message, va_list args)
+    {
+        vsyslog_r(priority, &global_log_data, message, args);
+    }
+    
 } // extern
+ 
