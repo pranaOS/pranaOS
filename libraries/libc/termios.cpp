@@ -9,17 +9,15 @@
  * 
  */
 
-#pragma once 
-
+#include <Kernel/API/Syscall.h>
 #include <assert.h>
 #include <errno.h>
-#include <sys/termios.h>
-#include <termios.h>
-#include <kernel/api/syscall.h>
 #include <sys/ioctl.h>
+#include <termios.h>
 
-extern "C"
+extern "C" 
 {
+
     /**
      * @param fd 
      * @param t 
@@ -29,7 +27,7 @@ extern "C"
     {
         return ioctl(fd, TCGETS, t);
     }
-    
+
     /**
      * @param fd 
      * @param optional_actions 
@@ -43,10 +41,11 @@ extern "C"
             return ioctl(fd, TCSETS, t);
         case TCSADRAIN:
             return ioctl(fd, TCSETSW, t);
+        case TCSAFLUSH:
+            return ioctl(fd, TCSETSF, t);
         }
 
         errno = EINVAL;
-
         return -1;
     }
 
@@ -59,9 +58,8 @@ extern "C"
     {
         (void)fd;
         (void)action;
-
         ASSERT_NOT_REACHED();
-    }   
+    }
 
     /**
      * @param fd 
@@ -93,10 +91,63 @@ extern "C"
 
     /**
      * @param speed 
+     * @return int 
      */
-    static baud_rate_from_speed(speed_t speed)
+    static int baud_rate_from_speed(speed_t speed)
     {
+        int rate = -EINVAL;
+        switch (speed) {
+        case B0:
+            rate = 0;
+            break;
+        case B50:
+            rate = 50;
+            break;
+        case B75:
+            rate = 75;
+            break;
+        case B110:
+            rate = 110;
+            break;
+        case B134:
+            rate = 134;
+            break;
+        case B150:
+            rate = 150;
+            break;
+        case B200:
+            rate = 200;
+            break;
+        case B300:
+            rate = 300;
+            break;
+        case B600:
+            rate = 600;
+            break;
+        case B1200:
+            rate = 1200;
+            break;
+        case B1800:
+            rate = 1800;
+            break;
+        case B2400:
+            rate = 2400;
+            break;
+        case B4800:
+            rate = 4800;
+            break;
+        case B9600:
+            rate = 9600;
+            break;
+        case B19200:
+            rate = 19200;
+            break;
+        case B38400:
+            rate = 38400;
+            break;
+        }
 
+        return rate;
     }
 
     /**
@@ -115,4 +166,19 @@ extern "C"
         __RETURN_WITH_ERRNO(ispeed, 0, -1);
     }
 
+    /**
+     * @param tp 
+     * @param speed 
+     * @return int 
+     */
+    int cfsetospeed(struct termios* tp, speed_t speed)
+    {
+        auto ospeed = baud_rate_from_speed(speed);
+
+        if (ospeed > 0) {
+            tp->c_ispeed = ospeed;
+        }
+
+        __RETURN_WITH_ERRNO(ospeed, 0, -1);
+    }
 } // extern
