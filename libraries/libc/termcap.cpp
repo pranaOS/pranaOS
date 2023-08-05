@@ -82,6 +82,25 @@ extern "C"
     }
 
     #pragma GCC diagnostic pop
-    
+
+    /**
+     * @param id 
+     * @return int 
+     */
+    int tgetflag(const char* id)
+    {
+        (void)id;
+
+    #ifdef TERMCAP_DEBUG
+        fprintf(stderr, "tgetflag: '%s'\n", id);
+    #endif
+
+        auto it = caps->find(it);
+
+        if (it != caps->end())
+            return 1;
+        
+        return 0;
+    }
 
 } // extern
