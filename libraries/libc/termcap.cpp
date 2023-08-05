@@ -103,4 +103,36 @@ extern "C"
         return 0;
     }
 
+    /**
+     * @param id 
+     * @return int 
+     */
+    int tgetnum(const char* id)
+    {
+    #ifdef TERMCAP_DEBUG
+        fprintf(stderr, "tgetnum: '%s'\n", id);
+    #endif
+        auto it = caps->find(id);
+
+        if (it != caps->end())
+            return atoi((*it).value);
+
+        ASSERT_NOT_REACHED();
+    }
+
+    /**
+     * @param cap 
+     * @param col 
+     * @param row 
+     * @return char* 
+     */
+    char* tgoto(const char* cap, int col, int row)
+    {
+        (void)cap;
+        (void)col;
+        (void)row;
+
+        ASSERT_NOT_REACHED();
+    }
+
 } // extern
