@@ -14,7 +14,7 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 
-extern "C"
+extern "C" 
 {
 
     /**
@@ -33,6 +33,7 @@ extern "C"
 
         auto* bytes = (const unsigned char*)src;
         snprintf(dst, len, "%u.%u.%u.%u", bytes[0], bytes[1], bytes[2], bytes[3]);
+
         return (const char*)dst;
     }
 
@@ -75,10 +76,35 @@ extern "C"
         u.b = b;
         u.c = c;
         u.d = d;
-
         *(uint32_t*)dst = u.l;
 
         return 1;
+    }
+
+    /**
+     * @param str 
+     * @return in_addr_t 
+     */
+    in_addr_t inet_addr(const char* str)
+    {
+        in_addr_t tmp {};
+        int rc = inet_pton(AF_INET, str, &tmp);
+
+        if (rc < 0)
+            return INADDR_NONE;
+
+        return tmp;
+    }
+
+    /**
+     * @param in 
+     * @return char* 
+     */
+    char* inet_ntoa(struct in_addr in)
+    {
+        static char buffer[32];
+        inet_ntop(AF_INET, &in.s_addr, buffer, sizeof(buffer));
+        return buffer;
     }
 
 } // extern
