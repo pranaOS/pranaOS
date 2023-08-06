@@ -16,11 +16,12 @@
 
 namespace ELF::Core 
 {
+
     struct [[gnu::packed]] NotesEntryHeader
     {
         enum Type : u8 
         {
-            Null = 0,
+            Null = 0, 
             ThreadInfo,
             MemoryRegionInfo,
         };
@@ -32,5 +33,22 @@ namespace ELF::Core
     {
         NotesEntryHeader header;
         char data[];
-    }; // struct 
+    }; // struct
+
+    struct [[gnu::packed]] ThreadInfo
+    {
+        NotesEntryHeader header;
+        int tid;
+        PtraceRegisters regs;
+    }; // struct
+
+    struct [[gnu::packed]] MemoryRegionInfo
+    {
+        NotesEntryHeader header;
+        uint32_t region_start;
+        uint32_t region_end;
+        uint16_t program_header_index;
+        char region_name[];
+    }; // struct
+
 }
