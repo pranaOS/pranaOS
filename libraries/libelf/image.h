@@ -22,6 +22,35 @@ namespace ELF
 {
     class Image
     {
+    public:
+        explicit Image(const u8, size_t, bool verbose_logging = true);
+
+        ~Image();
+
+        void dump() const;
+
+        bool is_valid() const
+        {
+            return m_valid;
+        }
+
+        bool parse();
+
+        bool is_within_image(const void* address, size_t size) const
+        {
+            if (address < m_buffer)
+                return false;
+            
+            if (((const u8*)address + size) > m_buffer + m_size)
+                return false;
+            
+            return true;
+        }
+
+        class Section;
+        class RealocationSection;
+        class Symbol;
+        class Realocation;
     
     private:
         const char* raw_data(unsigned offset) const;
