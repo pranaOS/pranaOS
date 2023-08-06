@@ -17,29 +17,26 @@
 #include <kernel/kresult.h>
 #include <kernel/unixtypes.h>
 
-namespace Kernel
+namespace Kernel 
 {
+
     #define OPTIMAL_TICKS_PER_SECOND_RATE 1000
 
     class HardwareTimerBase;
 
-    class TimeManagement
+    class TimeManagement 
     {
         MOD_MAKE_ETERNAL;
 
     public:
         TimeManagement();
 
+        /// @brief: initialize;
         static bool initialized();
 
-        /**
-         * @param cpu 
-         */
+        /// @param cpu
         static void initialize(u32 cpu);
-
-        /**
-         * @return TimeManagement& 
-         */
+        
         static TimeManagement& the();
 
         /**
@@ -71,23 +68,62 @@ namespace Kernel
          * @return timespec 
          */
         timespec epoch_time() const;
-        
+
         void set_epoch_time(timespec);
 
         /**
-         * @return timsepc 
+         * @return time_t 
          */
-        timsepc remaining_epoch_time_adjustment() const
-        {
-            return m_remaining_epoch_time_adjustment;
+        time_t ticks_per_second() const;
+
+        /**
+         * @return time_t 
+         */
+        time_t boot_time() const;
+
+        /**
+         * @return true 
+         * @return false 
+         */
+        bool is_system_timer(const HardwareTimerBase&) const;
+
+        /// @brief: update_time
+        static void update_time(const RegisterState&);
+
+        /// @brief: increment_time from boot
+        void increment_time_since_boot(const RegisterState&);
+
+        static bool is_hpet_periodic_mode_allowed();
+
+        /**
+         * @return u64 
+         */
+        u64 uptime_ms() const;
+
+        /**
+         * @return u64 
+         */
+        u64 monotonic_ticks() const;
+
+        /**
+         * @return timeval 
+         */
+        static timeval now_as_timeval();
+
+        /**
+         * @return timespec 
+         */
+        timespec remaining_epoch_time_adjustment() const 
+        { 
+            return m_remaining_epoch_time_adjustment; 
         }
 
         /**
          * @param adjustment 
          */
-        void set_remaining_epoch_time_adjustment(const timespec& adjustment)
-        {
-            m_remaining_epoch_time_adjustment = adjustment;
+        void set_remaining_epoch_time_adjustment(const timespec& adjustment) 
+        { 
+            m_remaining_epoch_time_adjustment = adjustment; 
         }
 
     private:
@@ -108,6 +144,6 @@ namespace Kernel
 
         RefPtr<HardwareTimerBase> m_system_timer;
         RefPtr<HardwareTimerBase> m_time_keeper_timer;
-
     }; // class TimeManagement
+
 }
