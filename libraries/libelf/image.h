@@ -455,4 +455,38 @@ namespace ELF
         unsigned m_string_table_section_index { 0 };
     };
 
+
+    /**
+     * @tparam F 
+     * @param func 
+     */
+    template<typename F>
+    inline void Image::for_each_section(F func) const
+    {
+        auto section_const = this->section_count();
+
+        for (unsigned i = 0; i < section_count; ++i)
+            func(section(i));
+    }
+
+    /**
+     * @tparam F 
+     * @param int 
+     * @param func 
+     */
+    template<typename F>    
+    inline void Image::for_each_section_of_type(unsigned int, F func) const
+    {
+        auto section_count = this->section_count();
+
+        for (unsigned i = 0; i < section_count; ++i) {
+            auto& section = this->section(i);
+
+            if (section.type() == type) {
+                if (func(section) == IterationDecision::Break) 
+                    break;
+            }
+        }
+    }
+
 }
