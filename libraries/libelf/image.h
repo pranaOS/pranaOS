@@ -134,7 +134,7 @@ namespace ELF
             const Image& m_image;
             const Elf32_Sym& m_sym;
             const unsigned m_index;
-        };
+        }; // class Symbol
 
         class ProgramHeader 
         {
@@ -224,7 +224,7 @@ namespace ELF
             const Image& m_image;
             const Elf32_Phdr& m_program_header;
             unsigned m_program_header_index { 0 };
-        };
+        }; // class ProgramHeader
 
         class Section 
         {
@@ -313,7 +313,7 @@ namespace ELF
             const Image& m_image;
             const Elf32_Shdr& m_section_header;
             unsigned m_section_index;
-        };
+        }; // class Section
 
         class RelocationSection : public Section 
         {
@@ -335,7 +335,7 @@ namespace ELF
 
             template<typename F>
             void for_each_relocation(F) const;
-        };
+        }; // class RelocationSection
 
         class Relocation 
         {
@@ -375,7 +375,7 @@ namespace ELF
         private:
             const Image& m_image;
             const Elf32_Rel& m_rel;
-        };
+        }; // class Relocation
 
         unsigned symbol_count() const;
         unsigned section_count() const;
@@ -453,7 +453,7 @@ namespace ELF
         bool m_valid { false };
         unsigned m_symbol_table_section_index { 0 };
         unsigned m_string_table_section_index { 0 };
-    };
+    }; // class Image
 
     /**
      * @tparam F 
@@ -525,7 +525,7 @@ namespace ELF
     inline void Image::for_each_program_header(F func) const
     {
         auto program_header_count = this->program_header_count();
-        
+
         for (unsigned i = 0; i < program_header_count; ++i)
             func(program_header(i));
     }
