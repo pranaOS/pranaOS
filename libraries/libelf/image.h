@@ -530,4 +530,4 @@ namespace ELF
             func(program_header(i));
     }
 
-}
+} // namespace ELF
