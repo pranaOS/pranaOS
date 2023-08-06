@@ -13,8 +13,9 @@
 
 #include <libelf/exec_elf.h>
 
-namespace ELF
+namespace ELF 
 {
+
     /**
      * @param elf_header 
      * @param file_size 
@@ -23,4 +24,17 @@ namespace ELF
      * @return false 
      */
     bool validate_elf_header(const Elf32_Ehdr& elf_header, size_t file_size, bool verbose = true);
-}
+
+    /**
+     * @param elf_header 
+     * @param file_size 
+     * @param buffer 
+     * @param buffer_size 
+     * @param interpreter_path 
+     * @param verbose 
+     * @return true 
+     * @return false 
+     */
+    bool validate_program_headers(const Elf32_Ehdr& elf_header, size_t file_size, const u8* buffer, size_t buffer_size, String* interpreter_path, bool verbose = true);
+
+} // namespace ELF
