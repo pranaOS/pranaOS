@@ -1,11 +1,8 @@
 # pranaOS
 - Smart Operating System Built For x86, ARM, watch & mobile platforms.
 
-[![forthebadge](https://forthebadge.com/images/badges/built-by-developers.svg)](https://forthebadge.com)
-[![forthebadge](https://forthebadge.com/images/badges/made-with-c-plus-plus.svg)](https://forthebadge.com)
-
 <p align="center">
-<img src="https://raw.githubusercontent.com/pranaOS/pranaOS/master/Imgs/eagle.jpeg" width="200" height="200">
+<img src="https://raw.githubusercontent.com/pranaOS/pranaOS/master/docs/eagle.jpeg" width="200" height="200">
 </p>
 
 [![macCI](https://github.com/pranaOS/pranaOS/actions/workflows/macos.yml/badge.svg?branch=master)](https://github.com/pranaOS/pranaOS/actions/workflows/macos.yml)
