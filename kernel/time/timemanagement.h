@@ -27,6 +27,69 @@ namespace Kernel
     {
         MOD_MAKE_ETERNAL;
 
+    public:
+        TimeManagement();
+
+        static bool initialized();
+
+        /**
+         * @param cpu 
+         */
+        static void initialize(u32 cpu);
+
+        /**
+         * @return TimeManagement& 
+         */
+        static TimeManagement& the();
+
+        /**
+         * @param ticks 
+         * @param ticks_per_second 
+         * @return timespec 
+         */
+        static timespec ticks_to_time(u64 ticks, time_t ticks_per_second);
+
+        /**
+         * @param tspec 
+         * @param ticks_per_second 
+         * @return u64 
+         */
+        static u64 time_to_ticks(const timespec& tspec, time_t ticks_per_second);
+
+        /**
+         * @param clock_id 
+         * @return KResultOr<timespec> 
+         */
+        KResultOr<timespec> current_time(clockid_t clock_id) const;
+
+        /**
+         * @return timespec 
+         */
+        timespec monotonic_time() const;
+
+        /**
+         * @return timespec 
+         */
+        timespec epoch_time() const;
+        
+        void set_epoch_time(timespec);
+
+        /**
+         * @return timsepc 
+         */
+        timsepc remaining_epoch_time_adjustment() const
+        {
+            return m_remaining_epoch_time_adjustment;
+        }
+
+        /**
+         * @param adjustment 
+         */
+        void set_remaining_epoch_time_adjustment(const timespec& adjustment)
+        {
+            m_remaining_epoch_time_adjustment = adjustment;
+        }
+
     private:
         bool probe_and_set_legacy_hardware_timers();
         bool probe_and_set_non_legacy_hardware_timers();
@@ -45,6 +108,6 @@ namespace Kernel
 
         RefPtr<HardwareTimerBase> m_system_timer;
         RefPtr<HardwareTimerBase> m_time_keeper_timer;
-        
+
     }; // class TimeManagement
 }
