@@ -14,8 +14,9 @@
 #include <sys/resource.h>
 #include <mods/logstream.h>
 
-extern "C"
+extern "C" 
 {
+
     /**
      * @param cmd 
      * @param newlimit 
@@ -27,7 +28,23 @@ extern "C"
         (void)newlimit;
 
         ASSERT_NOT_REACHED();
-        
+
         return -1;
     }
-}
+
+    /**
+     * @param who 
+     * @param usage 
+     * @return int 
+     */
+    int getrusage(int who, struct rusage* usage)
+    {
+        (void)who;
+        (void)usage;
+
+        dbg() << "[libc]: getrusage is not implemented yet.. ;(";
+
+        return -1;
+    }
+
+} // extern
