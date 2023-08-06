@@ -102,13 +102,45 @@ namespace ELF
                 return ELF32_ST_BIND(m_sym.st_info);
             }
 
+            /**
+             * @return const Section 
+             */
+            const Section section() const
+            {
+                return m_image.section(section_header);
+            }
+
             StringView raw_data() const;
 
         private:
             const Image& m_image;
             const Elf32_Sym& m_sym;
             const unsigned m_index;
-        };
+        }; // class Symbol
+
+        class ProgramHeader
+        {
+        public:
+            ProgramHeader(const Image& image, unsigned program_header_index)
+                : m_image(image)
+                , m_program_header(image.program_header_internal(program_header_index))
+                , m_program_header_index(program_header_index)
+            {}
+
+            ~ProgramHeader() {}
+
+            unsigned index() const
+            {
+                return m_program_header_index;
+            }  
+
+
+        
+        private:
+            const Image& m_image;
+            const Elf32_Phdr& m_program_header;
+            unsigned m_program_header_index { 0 };
+        }; // class ProgramHeader
     
     private:
         const char* raw_data(unsigned offset) const;
