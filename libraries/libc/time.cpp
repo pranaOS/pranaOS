@@ -117,5 +117,68 @@ extern "C"
         return localtime_r(t, &tm_buf);
     }
 
+    /**
+     * @param t 
+     * @param tm 
+     * @return struct tm* 
+     */
+    struct tm* localtime_r(const time_t* t, struct tm* tm)
+    {
+        if (!t)
+            return nullptr;
+        
+        time_to_tm(tm, (*t) - timezone);
+        return tm;
+    }
+
+    /**
+     * @param tm 
+     * @return time_t 
+     */
+    time_t timegm(struct tm* tm)
+    {
+        return tm_to_time(tm, 0);
+    }
+
+    /**
+     * @param t 
+     * @return struct tm* 
+     */
+    struct tm* gmtime(const time_t* t)
+    {
+        static struct tm tm_buf;
+        return gmtime_r(t, &tm_buf);
+    }
+
+    /**
+     * @param t 
+     * @param tm 
+     * @return struct tm* 
+     */
+    struct tm* gmtime_r(const time_t* t, struct tm* tm)
+    {
+        if (!t)
+            return nullptr;
+        
+        time_to_tm(tm, *t);
+
+        return tm;
+    }
+
+    /**
+     * @param tm 
+     * @return char* 
+     */
+    char* asctime(const struct tm* tm)
+    {
+        static char buffer[69];
+        strftime(buffer, sizeof buffer, "%a %b %e %T %Y", tm);
+        return buffer;
+    }
+
+    long timezone = 0;
+    long altzone;
+    char* tzname[2];
+    int daylight;
 
 } // extern
