@@ -455,7 +455,6 @@ namespace ELF
         unsigned m_string_table_section_index { 0 };
     };
 
-
     /**
      * @tparam F 
      * @param func 
@@ -463,19 +462,18 @@ namespace ELF
     template<typename F>
     inline void Image::for_each_section(F func) const
     {
-        auto section_const = this->section_count();
-
+        auto section_count = this->section_count();
         for (unsigned i = 0; i < section_count; ++i)
             func(section(i));
     }
-
+    
     /**
      * @tparam F 
-     * @param int 
+     * @param type 
      * @param func 
      */
-    template<typename F>    
-    inline void Image::for_each_section_of_type(unsigned int, F func) const
+    template<typename F>
+    inline void Image::for_each_section_of_type(unsigned type, F func) const
     {
         auto section_count = this->section_count();
 
@@ -483,10 +481,53 @@ namespace ELF
             auto& section = this->section(i);
 
             if (section.type() == type) {
-                if (func(section) == IterationDecision::Break) 
+                if (func(section) == IterationDecision::Break)
                     break;
             }
         }
+    }
+
+    /**
+     * @tparam F 
+     * @param func 
+     */
+    template<typename F>
+    inline void Image::RelocationSection::for_each_relocation(F func) const
+    {
+        auto relocation_count = this->relocation_count();
+
+        for (unsigned i = 0; i < relocation_count; ++i) {
+            if (func(relocation(i)) == IterationDecision::Break)
+                break;
+        }
+    }
+
+    /**
+     * @tparam F 
+     * @param func 
+     */
+    template<typename F>
+    inline void Image::for_each_symbol(F func) const
+    {
+        auto symbol_count = this->symbol_count();
+
+        for (unsigned i = 0; i < symbol_count; ++i) {
+            if (func(symbol(i)) == IterationDecision::Break)
+                break;
+        }
+    }
+
+    /**
+     * @tparam F 
+     * @param func 
+     */
+    template<typename F>
+    inline void Image::for_each_program_header(F func) const
+    {
+        auto program_header_count = this->program_header_count();
+        
+        for (unsigned i = 0; i < program_header_count; ++i)
+            func(program_header(i));
     }
 
 }
