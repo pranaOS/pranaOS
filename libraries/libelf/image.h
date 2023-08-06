@@ -51,6 +51,64 @@ namespace ELF
         class RealocationSection;
         class Symbol;
         class Realocation;
+
+        class Symbol 
+        {
+        public:
+            Symbol(const Image& image, unsigned index, const Elf32_Sym& sym)
+                : m_image(image)
+                , m_sym(sym)
+                , m_index(index)
+            {}
+
+            ~Symbol() {}
+
+            StringView name() const 
+            {
+                return m_image.table_string(m_sym.st_name);
+            }
+
+            unsigned section_index() const
+            {
+                return m_sym.st_shndx;
+            }
+
+            unsigned value() const
+            {
+                return m_sym.st_value;
+            }
+
+            unsigned size() const
+            {
+                return m_sym.st_size;
+            }
+
+            unsigned index() const
+            {
+                return m_index;
+            }
+
+            /// @return unsigned
+            unsigned type() const
+            {
+                return ELF32_ST_TYPE(m_sym.st_info);
+            }
+
+            /**
+             * @return unsigned 
+             */
+            unsigned bind() const
+            {
+                return ELF32_ST_BIND(m_sym.st_info);
+            }
+
+            StringView raw_data() const;
+
+        private:
+            const Image& m_image;
+            const Elf32_Sym& m_sym;
+            const unsigned m_index;
+        };
     
     private:
         const char* raw_data(unsigned offset) const;
