@@ -87,5 +87,71 @@ int execv(const char* path, char* const argv[]);
  */
 int execve(const  char* filename, char* const argv[], char* const envp[]);
 
+/**
+ * @param path 
+ * @param length 
+ * @return int 
+ */
+int truncate(const char* path, off_t length);
+
+/**
+ * @return int 
+ */
+int halt();
+
+/**
+ * @return int 
+ */
+int reboot();
+
+/**
+ * @param source_fd 
+ * @param target 
+ * @param fs_types 
+ * @param flags 
+ * @return int 
+ */
+int mount(int source_fd, const char* target, const char* fs_types, int flags);
+
+/**
+ * @param mountpoint 
+ * @return int 
+ */
+int unmount(const char* mountpoint);
+
+/**
+ * @param promises 
+ * @param execpromises 
+ * @return int 
+ */
+int pledge(const char* promises, const char* execpromises);
+
+/**
+ * @param path 
+ * @param permissions 
+ * @return int 
+ */
+int unveil(const char* path, const char* permissions);
+
+/**
+ * @param prompt 
+ * @return char* 
+ */
+char* getpass(const char* prompt);
+
+enum 
+{
+    _PC_NAME_MAX,
+    _PC_PATH_MAX,
+    _PC_PIPE_BUF,
+    _PC_VDISABLE
+};
+
+#define HOST_NAME_MAX 64
+
+#define R_OK 4
+#define W_OK 2
+#define X_OK 1
+#define F_OK 0
 
 __END_DECLS
