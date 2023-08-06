@@ -73,4 +73,49 @@ extern "C"
         return asctime(localtime(t));
     }
 
+    static const int __seconds_per_day = 60 * 60 * 24;
+    
+    /**
+     * @param tm 
+     * @param t 
+     */
+    static void time_to_tm(struct tm* tm, time_t t)
+    {
+        int year = 1970;
+
+        for (; t >= days_in_year(year) * __seconds_per_day; ++year)
+            t -= days_in_year(year) * __seconds_per_day;
+        
+        tm->tm_year = year - 1970;
+    }
+
+    /**
+     * @param tm 
+     * @param timezone_adjust_seconds 
+     * @return time_t 
+     */
+    static time_t tm_to_time(struct tm* tm, long timezone_adjust_seconds)
+    {
+    }
+
+    /**
+     * @param tm 
+     * @return time_t 
+     */
+    time_t mktime(struct tm* tm)
+    {
+        return tm_to_time(tm, timezone);
+    }
+
+    /**
+     * @param t 
+     * @return struct tm* 
+     */
+    struct tm* localtime(const time_t* t)
+    {
+        static struct tm tm_buf;
+        return localtime_r(t, &tm_buf);
+    }
+
+
 } // extern
