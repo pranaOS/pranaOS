@@ -92,6 +92,22 @@ namespace Kernel
          */
         ProcessID pid() const;
 
+        void set_priority(u32 p)
+        {
+            
+        }
+
+        u32 priority() const
+        {
+
+        }
+
+        void detach()
+        {
+            ScopedSpinLock lock(m_lock);
+            m_is_joinable = false;
+        }
+
     };
 
 } // namespace Kernel
