@@ -17,13 +17,14 @@
 #include <mods/nonnullrefptr.h>
 #include <mods/refcounted.h>
 
-namespace Kernel
+namespace Kernel 
 {
+
     typedef u64 TimerId;
 
-    class Timer : public RefCounted<Timer> 
+    class Timer : public RefCounted<Timer>
         , public InlineLinkedListNode<Timer> {
-        
+
         friend class TimerQueue;
         friend class InlineLinkedListNode<Timer>;
 
@@ -37,7 +38,8 @@ namespace Kernel
             : m_clock_id(clock_id)
             , m_expires(expires)
             , m_callback(move(callback))
-        {}
+        {
+        }
 
         /// @breif: destroy
         ~Timer()
@@ -46,7 +48,7 @@ namespace Kernel
         }
 
         timespec remaining() const;
-    
+
     private:
         TimerId m_id;
         clockid_t m_clock_id;
@@ -104,22 +106,78 @@ namespace Kernel
             m_queued.store(queued, Mods::MemoryOrder::memory_order_relaxed); 
         }
 
+        /**
+         * @return u64 
+         */
+        u64 now() const;
     }; // class Timer
 
-    class TimerQueue
+    class TimerQueue 
     {
-    
+        friend class Timer;
+
+    public:
+        TimerQueue();
+        static TimerQueue& the();
+
+        /**
+         * @return TimerId 
+         */
+        TimerId add_timer(NonnullRefPtr<Timer>&&);
+
+        /**
+         * @return RefPtr<Timer> 
+         */
+        RefPtr<Timer> add_timer_without_id(clockid_t, const timespec&, Function<void()>&&);
+
+        /**
+         * @param timeout 
+         * @param callback 
+         * @return TimerId 
+         */
+        TimerId add_timer(clockid_t, timeval& timeout, Function<void()>&& callback);
+
+        /**
+         * @param id 
+         * @return true 
+         * @return false 
+         */
+        bool cancel_timer(TimerId id);
+
+        /**
+         * @return true 
+         * @return false 
+         */
+        bool cancel_timer(Timer&);
+
+        /**
+         * @param timer 
+         * @return true 
+         * @return false 
+         */
+        bool cancel_timer(NonnullRefPtr<Timer>&& timer)
+        {
+            return cancel_timer(*move(timer));
+        }
+
+        /// @brief: fire.
+        void fire();
+
     private:
-        struct Queue
+        struct Queue 
         {
             InlineLinkedList<Timer> list;
             u64 next_timer_due { 0 };
-        };
+        }; // struct Queue
 
+        /// @breif: remove_timer_locked
         void remove_timer_locked(Queue&, Timer&);
 
+        /// @breif: update_next_timer_due
+        /// @param Queue
         void update_next_timer_due(Queue&);
 
+        /// @brief: add_timer_locked
         void add_timer_locked(NonnullRefPtr<Timer>);
 
         /**
@@ -154,7 +212,6 @@ namespace Kernel
         Queue m_timer_queue_monotonic;
         Queue m_timer_queue_realtime;
         InlineLinkedList<Timer> m_timers_executing;
-
     }; // class TimerQueue
 
-} // namespace Kernel
+} // namespaace Kernel
