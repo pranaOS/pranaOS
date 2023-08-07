@@ -105,4 +105,56 @@ namespace Kernel
         }
 
     }; // class Timer
+
+    class TimerQueue
+    {
+    
+    private:
+        struct Queue
+        {
+            InlineLinkedList<Timer> list;
+            u64 next_timer_due { 0 };
+        };
+
+        void remove_timer_locked(Queue&, Timer&);
+
+        void update_next_timer_due(Queue&);
+
+        void add_timer_locked(NonnullRefPtr<Timer>);
+
+        /**
+         * @param timer 
+         * @return Queue& 
+         */
+        Queue& queue_for_timer(Timer& timer)
+        {
+            switch (timer.m_clock_id) {
+            case CLOCK_MONOTONIC:
+                return m_timer_queue_monotonic;
+            case CLOCK_REALTIME:
+                return m_timer_queue_realtime;
+            default:
+                ASSERT_NOT_REACHED();
+            }
+        }
+
+        /**
+         * @param ticks 
+         * @return timespec 
+         */
+        timespec ticks_to_time(clockid_t, u64 ticks) const;
+
+        /**
+         * @return u64 
+         */
+        u64 time_to_ticks(clockid_t, const timespec&) const;
+
+        u64 m_timer_id_count { 0 };
+        u64 m_ticks_per_second { 0 };
+        Queue m_timer_queue_monotonic;
+        Queue m_timer_queue_realtime;
+        InlineLinkedList<Timer> m_timers_executing;
+
+    }; // class TimerQueue
+
 } // namespace Kernel
