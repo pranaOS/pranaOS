@@ -126,7 +126,31 @@ namespace Kernel
         ~RangeAllocator();
 
         void initialize_with_range(VirtualAddress, size_t);
+        void initialize_from_parent(const RangeAllocator&);
+
+        /**
+         * @param alignment 
+         * @return Range 
+         */
+        Range allocate_anywhere(size_t, size_t alignment = PAGE_SIZE);
+
+        /**
+         * @return Range 
+         */
+        Range allocate_specific(VirtualAddress, size_t);
         
+        void deallocate(Range);
+
+        /**
+         * @param range 
+         * @return true 
+         * @return false 
+         */
+        bool contains(const Range& range) const
+        {
+            ScopedSpinLock lock(m_lock);
+            return m_total_range.contains(range);
+        }
 
     private:
         void carve_at_index(int, const Range&);
