@@ -12,8 +12,9 @@
 #include <kernel/stdlib.h>
 #include <kernel/commandline.h>
 
-namespace Kernel
+namespace Kernel 
 {
+
     static char s_cmd_line[1024];
     static CommandLine* s_the;
 
@@ -22,17 +23,17 @@ namespace Kernel
      */
     void CommandLine::early_initialize(const char* cmd_line)
     {
-        if (!cmd_line)  
+        if (!cmd_line)
             return;
-        
+
         size_t length = strlen(cmd_line);
-        
+
         if (length >= sizeof(s_cmd_line))
             length = sizeof(s_cmd_line) - 1;
-        
+
         memcpy(s_cmd_line, cmd_line, length);
         s_cmd_line[length] = '\0';
-    }   
+    }
 
     /**
      * @return const CommandLine& 
@@ -43,6 +44,39 @@ namespace Kernel
         return *s_the;
     }
 
+    /// @brief: initialize cli.
+    void CommandLine::initialize()
+    {
+        ASSERT(!s_the);
+        s_the = new CommandLine(s_cmd_line);
+    }
+
+    /**
+     * @param string 
+     */
+    CommandLine::CommandLine(const String& string)
+        : m_string(string)
+    {
+        s_the = this;
+
+        const auto& args = m_string.split(' ');
+        m_params.ensure_capacity(args.size());
+
+        for (auto&& str : args) {
+            if (str == "") {
+                continue;
+            }
+
+            auto pair = str.split_limit('=', 2);
+
+            if (pair.size() == 1) {
+                m_params.set(move(pair[0]), "");
+            } else {
+                m_params.set(move(pair[0]), move(pair[1]));
+            }
+        }
+    }
+
     /**
      * @param key 
      * @return Optional<String> 
@@ -51,7 +85,7 @@ namespace Kernel
     {
         return m_params.get(key);
     }
-    
+
     /**
      * @param key 
      * @return true 
@@ -62,4 +96,4 @@ namespace Kernel
         return m_params.contains(key);
     }
 
-} // namespace Kernel   
+} // namespace Kernel
