@@ -26,6 +26,24 @@ namespace Kernel
         
         friend class TimerQueue;
         friend class InlineLinkedListNode<Timer>;
+
+    public:
+        /**
+         * @param clock_id 
+         * @param expires 
+         * @param callback 
+         */
+        Timer(clockid_t clock_id, u64 expires, Function<void()>&& callback)
+            : m_clock_id(clock_id)
+            , m_expires(expires)
+            , m_callback(move(callback))
+        {}
+
+        /// @breif: destroy
+        ~Timer()
+        {
+            ASSERT(!is_queued());
+        }
     
     private:
         TimerId m_id;
