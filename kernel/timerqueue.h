@@ -44,6 +44,8 @@ namespace Kernel
         {
             ASSERT(!is_queued());
         }
+
+        timespec remaining() const;
     
     private:
         TimerId m_id;
