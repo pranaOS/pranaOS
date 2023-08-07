@@ -74,6 +74,40 @@ namespace Kernel
             return m_base.offset(m_size);
         }
 
+        /**
+         * @param other 
+         * @return true 
+         * @return false 
+         */
+        bool operator==(const Range& other) const
+        {
+            return m_base == other.m_base && m_size == other.m_size;
+        }
+
+        /**
+         * @param base 
+         * @param size 
+         * @return true 
+         * @return false 
+         */
+        bool contains(VirtualAddress base, size_t size) const
+        {
+            if (base.offset(size) < base)
+                return false;
+            
+            return base >= m_base && base.offset(size) <= end();
+        }
+
+        /**
+         * @param other 
+         * @return true 
+         * @return false 
+         */
+        bool contains(const Range& other) const
+        {
+            return contains(other.base(), other.size());
+        }
+
     private:
         VirtualAddress m_base;
         size_t m_size { 0 };
