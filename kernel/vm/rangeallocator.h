@@ -108,8 +108,32 @@ namespace Kernel
             return contains(other.base(), other.size());
         }
 
+        /**
+         * @return Vector<Range, 2> 
+         */
+        Vector<Range, 2> carve(const Range&);
+
     private:
         VirtualAddress m_base;
         size_t m_size { 0 };
     }; // class Range
+
+
+    class RangeAllocator
+    {
+    public:
+        RangeAllocator();
+        ~RangeAllocator();
+
+        void initialize_with_range(VirtualAddress, size_t);
+        
+
+    private:
+        void carve_at_index(int, const Range&);
+
+        Vector<Range> m_available_ranges;
+        Range m_total_range;
+        mutable SpinLock<u8> m_lock;
+    }; // class RangeAllocator
+
 } // namespace Kernel
