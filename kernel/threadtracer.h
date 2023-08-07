@@ -16,54 +16,98 @@
 #include <kernel/unixtypes.h>
 #include <libc/sys/arch/i386/regs.h>
 
-namespace Kernel
+namespace Kernel 
 {
-    class ThreadTracer
+
+    class ThreadTracer 
     {
     public:
-
         /**
          * @param tracer 
          * @return NonnullOwnPtr<ThreadTracer> 
          */
-        static NonnullOwnPtr<ThreadTracer> create(ProcessID tracer)
-        {
-            return make<ThreadTracer>(tracer);
+        static NonnullOwnPtr<ThreadTracer> create(ProcessID tracer) 
+        { 
+            return make<ThreadTracer>(tracer); 
         }
 
         /**
          * @return ProcessID 
          */
-        ProcessID tracer_pid() const
-        {
-            return m_tracer_pid;
+        ProcessID tracer_pid() const 
+        { 
+            return m_tracer_pid; 
         }
 
-        bool has_pending_signal(u32 signal) const
-        {
-            return m_pending_signals & (1 << (signal));
+        /**
+         * @param signal 
+         * @return true 
+         * @return false 
+         */
+        bool has_pending_signal(u32 signal) const 
+        { 
+            return m_pending_signals & (1 << (signal - 1)); 
         }
 
         /**
          * @param signal 
          */
-        void set_signal(u32 signal)
-        {
-            m_pending_signals |= (1 << (signal - 1));
+        void set_signal(u32 signal) 
+        { 
+            m_pending_signals |= (1 << (signal - 1)); 
         }
 
         /**
          * @param signal 
          */
-        void unset_signal(u32 signal)
+        void unset_signal(u32 signal) 
         {
-            m_pending_signals &= (1 << (signal - 1));
+            m_pending_signals &= ~(1 << (signal - 1)); 
         }
 
         /**
-         * @return const PtraceRegister& 
+         * @return true 
+         * @return false 
          */
-        const PtraceRegister& regs() const
+        bool is_tracing_syscalls() const 
+        { 
+            return m_trace_syscalls; 
+        }
+
+        /**
+         * @param val 
+         */
+        void set_trace_syscalls(bool val) 
+        { 
+            m_trace_syscalls = val; 
+        }
+
+        /**
+         * @param regs 
+         */
+        void set_regs(const RegisterState& regs);
+
+        /**
+         * @param regs 
+         */
+        void set_regs(const PtraceRegisters& regs) 
+        { 
+            m_regs = regs; 
+        }
+
+        /**
+         * @return true 
+         * @return false 
+         */
+        bool has_regs() const 
+        { 
+            return m_regs.has_value(); 
+        }
+
+        /**
+         * @return const PtraceRegisters& 
+         */
+        const PtraceRegisters& regs() const
         {
             ASSERT(m_regs.has_value());
             return m_regs.value();
@@ -72,13 +116,13 @@ namespace Kernel
         explicit ThreadTracer(ProcessID);
 
     private:
-        ProcessID m_tracer_id { -1 };
+        ProcessID m_tracer_pid { -1 };
 
         u32 m_pending_signals { 0 };
 
         bool m_trace_syscalls { false };
 
-        Optional<PtraceRegisters> m_regs; 
-
+        Optional<PtraceRegisters> m_regs;
     }; // class ThreadTracer
+
 } // namespace Kernel
