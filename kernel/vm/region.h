@@ -73,11 +73,69 @@ namespace Kernel
 
         ~Region();
 
+        /**
+         * @return const Range& 
+         */
+        const Range& range() const
+        {
+            return m_range;
+        }
+
+        /**
+         * @return VirtualAddress 
+         */
+        VirtualAddress vaddr() const
+        {
+            return m_range.base();
+        }
+
+        /**
+         * @return size_t 
+         */
+        size_t size() const
+        {
+            return m_range.size();
+        }
+
+        /**
+         * @return true 
+         * @return false 
+         */
+        bool is_readable() const
+        {
+            return m_access & Access::Read;
+        }
+
+        /**
+         * @return true 
+         * @return false 
+         */
+        bool is_writable() const
+        {
+            return m_access & Access::Write;
+        }
+
+        /**
+         * @return const String& 
+         */
+        const String& name() const
+        {
+            return m_name;
+        }
+
     private:
         Bitmap& ensure_cow_map() const;
 
+        /**
+         * @param access 
+         * @param b 
+         */
         void set_access_bit(Access access, bool b)
         {
+            if (b)  
+                m_access |= access;
+            else
+                m_access &= ~access;
         }
 
         /**
@@ -118,7 +176,7 @@ namespace Kernel
          * @return true 
          * @return false 
          */
-        bool map_individual_page_impl(size_t page_index);   
+        bool map_individual_page_impl(size_t page_index); 
 
         RefPtr<PageDirectory> m_page_directory;
         Range m_range;
@@ -126,8 +184,13 @@ namespace Kernel
         NonnullRefPtr<VMObject> m_vmobject;
         String m_name;
         u8 m_access { 0 };
-        InheritMode m_inherid_mode : 3 { InheritMode::Default };
+        InheritMode m_inherit_mode : 3 { InheritMode::Default };
         bool m_shared : 1 { false };
         bool m_user_accessible : 1 { false };
+        bool m_cacheable : 1 { false };
+        bool m_stack : 1 { false };
+        bool m_mmap : 1 { false };
+        bool m_kernel : 1 { false };
+        mutable OwnPtr<Bitmap> m_cow_map;
     };
 } // namespace Kernel   
