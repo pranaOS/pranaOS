@@ -237,17 +237,17 @@ namespace Mods
         /**
          * @tparam F 
          * @param func 
-         * @return IterationDecision 
+         * @return IterDecision 
          */
         template<typename F>
-        IterationDecision for_each(F func) const
+        IterDecision for_each(F func) const
         {
             for (T* node = m_head; node; node = node->next()) {
-                IterationDecision decision = func(*node);
-                if (decision != IterationDecision::Continue)
+                IterDecision decision = func(*node);
+                if (decision != IterDecision::Continue)
                     return decision;
             }
-            return IterationDecision::Continue;
+            return IterDecision::Continue;
         }
 
         using Iterator = InlineLinkedListIterator<T>;

@@ -1815,13 +1815,13 @@ namespace Kernel
         RefPtr<Thread> clone(Process&);
 
         template<typename Callback>
-        static IterationDecision for_each_in_state(State, Callback);
+        static IterDecision for_each_in_state(State, Callback);
 
         template<typename Callback>
-        static IterationDecision for_each_living(Callback);
+        static IterDecision for_each_living(Callback);
         
         template<typename Callback>
-        static IterationDecision for_each(Callback);
+        static IterDecision for_each(Callback);
 
         /**
          * @param state 
@@ -2062,34 +2062,34 @@ namespace Kernel
     /**
      * @tparam Callback 
      * @param callback 
-     * @return IterationDecision 
+     * @return IterDecision 
      */
     template<typename Callback>
-    inline IterationDecision Thread::for_each_living(Callback callback)
+    inline IterDecision Thread::for_each_living(Callback callback)
     {
         ASSERT_INTERRUPTS_DISABLED();
 
-        return Thread::for_each([callback](Thread& thread) -> IterationDecision {
+        return Thread::for_each([callback](Thread& thread) -> IterDecision {
             if (thread.state() != Thread::State::Dead && thread.state() != Thread::State::Dying)
                 return callback(thread);
-            return IterationDecision::Continue;
+            return IterDecision::Continue;
         });
     }
 
     /**
      * @tparam Callback 
      * @param callback 
-     * @return IterationDecision 
+     * @return IterDecision 
      */
     template<typename Callback>
-    inline IterationDecision Thread::for_each(Callback callback)
+    inline IterDecision Thread::for_each(Callback callback)
     {
         ASSERT_INTERRUPTS_DISABLED();
         ScopedSpinLock lock(g_scheduler_lock);
 
         auto ret = Scheduler::for_each_runnable(callback);
 
-        if (ret == IterationDecision::Break)
+        if (ret == IterDecision::Break)
             return ret;
 
         return Scheduler::for_each_nonrunnable(callback);
@@ -2099,18 +2099,18 @@ namespace Kernel
      * @tparam Callback 
      * @param state 
      * @param callback 
-     * @return IterationDecision 
+     * @return IterDecision 
      */
     template<typename Callback>
-    inline IterationDecision Thread::for_each_in_state(State state, Callback callback)
+    inline IterDecision Thread::for_each_in_state(State state, Callback callback)
     {
         ASSERT_INTERRUPTS_DISABLED();
         ScopedSpinLock lock(g_scheduler_lock);
 
-        auto new_callback = [=](Thread& thread) -> IterationDecision {
+        auto new_callback = [=](Thread& thread) -> IterDecision {
             if (thread.state() == state)
                 return callback(thread);
-            return IterationDecision::Continue;
+            return IterDecision::Continue;
         };
 
         if (is_runnable_state(state))
@@ -2156,10 +2156,10 @@ namespace Kernel
     /**
      * @tparam Callback 
      * @param callback 
-     * @return IterationDecision 
+     * @return IterDecision 
      */
     template<typename Callback>
-    inline IterationDecision Scheduler::for_each_runnable(Callback callback)
+    inline IterDecision Scheduler::for_each_runnable(Callback callback)
     {
         ASSERT_INTERRUPTS_DISABLED();
         ASSERT(g_scheduler_lock.own_lock());
@@ -2169,20 +2169,20 @@ namespace Kernel
         for (auto it = tl.begin(); it != tl.end();) {
             auto& thread = *it;
             it = ++it;
-            if (callback(thread) == IterationDecision::Break)
-                return IterationDecision::Break;
+            if (callback(thread) == IterDecision::Break)
+                return IterDecision::Break;
         }
 
-        return IterationDecision::Continue;
+        return IterDecision::Continue;
     }
 
     /**
      * @tparam Callback 
      * @param callback 
-     * @return IterationDecision 
+     * @return IterDecision 
      */
     template<typename Callback>
-    inline IterationDecision Scheduler::for_each_nonrunnable(Callback callback)
+    inline IterDecision Scheduler::for_each_nonrunnable(Callback callback)
     {
         ASSERT_INTERRUPTS_DISABLED();
         ASSERT(g_scheduler_lock.own_lock());
@@ -2192,11 +2192,11 @@ namespace Kernel
         for (auto it = tl.begin(); it != tl.end();) {
             auto& thread = *it;
             it = ++it;
-            if (callback(thread) == IterationDecision::Break)
-                return IterationDecision::Break;
+            if (callback(thread) == IterDecision::Break)
+                return IterDecision::Break;
         }
 
-        return IterationDecision::Continue;
+        return IterDecision::Continue;
     }
 
 } // namespace Kernel

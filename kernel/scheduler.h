@@ -104,17 +104,17 @@ namespace Kernel
 
         /**
          * @tparam Callback 
-         * @return IterationDecision 
+         * @return IterDecision 
          */
         template<typename Callback>
-        static inline IterationDecision for_each_runnable(Callback);
+        static inline IterDecision for_each_runnable(Callback);
         
         /**
          * @tparam Callback 
-         * @return IterationDecision 
+         * @return IterDecision 
          */
         template<typename Callback>
-        static inline IterationDecision for_each_nonrunnable(Callback);
+        static inline IterDecision for_each_nonrunnable(Callback);
 
         /**
          * @param thread 

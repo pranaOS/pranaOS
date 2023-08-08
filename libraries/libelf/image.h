@@ -481,7 +481,7 @@ namespace ELF
             auto& section = this->section(i);
 
             if (section.type() == type) {
-                if (func(section) == IterationDecision::Break)
+                if (func(section) == IterDecision::Break)
                     break;
             }
         }
@@ -497,7 +497,7 @@ namespace ELF
         auto relocation_count = this->relocation_count();
 
         for (unsigned i = 0; i < relocation_count; ++i) {
-            if (func(relocation(i)) == IterationDecision::Break)
+            if (func(relocation(i)) == IterDecision::Break)
                 break;
         }
     }
@@ -512,7 +512,7 @@ namespace ELF
         auto symbol_count = this->symbol_count();
 
         for (unsigned i = 0; i < symbol_count; ++i) {
-            if (func(symbol(i)) == IterationDecision::Break)
+            if (func(symbol(i)) == IterDecision::Break)
                 break;
         }
     }
