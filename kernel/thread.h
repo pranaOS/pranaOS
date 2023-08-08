@@ -693,7 +693,8 @@ namespace Kernel
         };
 
         friend class JoinBlocker;
-        class JoinBlocker final : public Blocker {
+        class JoinBlocker final : public Blocker 
+        {
         public:
             /**
              * @param joinee 
