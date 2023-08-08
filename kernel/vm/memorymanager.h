@@ -77,6 +77,35 @@ namespace Kernel
         {
             return Processor::current().get_mm_data();
         }
+
+        /**
+         * @return PageFaultResponse 
+         */
+        PageFaultResponse handle_page_fauilt(const PageFault&);
+
+        void enter_process_paging_scope(Process&);
+
+        /**
+         * @return true 
+         * @return false 
+         */
+        bool validate_user_stack(const Process&, VirtualAddress) const; 
+
+        enum class ShouldZeroFill 
+        {
+            No,
+            Yes
+        };
+
+        template<typename Callback>
+        static void for_each_vmobject(Callback callback)
+        {
+            for (auto& vmobject : MM.m_vmobjects) {
+                if (callback(vmobject) == IterDecision::Break) {
+                    break;
+                }
+            }
+        }
     }
 
 } // namespace Kernel
