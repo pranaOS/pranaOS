@@ -34,7 +34,41 @@ namespace Kernel
     class Region final
         : public InlineLinkedListNode<Region>
         , public Weakable<Region> {
-            
+
         friend class MemoryManager;
+
+        MAKE_SLAB_ALLOCATED(Region)
+
+    public:
+        enum Access 
+        {
+            Read = 1,
+            Write = 2,
+            Execute = 3,  
+        };
+
+        enum class InheritMode
+        {
+            Default,
+            ZeroedOnFork,
+        };
+
+        /**
+         * @param offset_in_vmobject 
+         * @param name 
+         * @param access 
+         * @param cacheable 
+         * @return NonnullOwnPtr<Region> 
+         */
+        static NonnullOwnPtr<Region> create_user_accessible(const Range&, NonnullRefPtr<VMObject>, size_t offset_in_vmobject, const StringView& name, u8 access, bool cacheable = true);
+
+        /**
+         * @param offset_in_vmobject 
+         * @param name 
+         * @param access 
+         * @param cacheable 
+         * @return NonnullOwnPtr<Region> 
+         */
+        static NonnullOwnPtr<Region> create_kernel_only(const Range&, NonnullRefPtr<VMObject>, size_t offset_in_vmobject, const StringView& name, u8 access, bool cacheable = true);
     }
 } // namespace Kernel   
