@@ -108,4 +108,57 @@ namespace Kernel
         }
     }
 
+    /**
+     * @tparam Callback 
+     * @param callback 
+     */
+    template<typename Callback>
+    void VMObject::for_each_region(Callback callback)
+    {
+        ScopedSpinLock lock(s_mm_lock);
+
+        for (auto& region : MM.m_user_regions) {
+            if (&region.vmobject() == this)
+                callback(region);
+        }
+
+        for (auto& region : MM.m_kernel_regions) {
+            if (&region.vmobject() == this)
+                callback(region);
+        }
+    }
+
+    /**
+     * @param vaddr 
+     * @return true 
+     * @return false 
+     */
+    inline bool is_user_address(VirtualAddress vaddr)
+    {
+        return vaddr.get() < 0xc0000000;
+    }
+
+    /**
+     * @param vaddr 
+     * @param size 
+     * @return true 
+     * @return false 
+     */
+    inline bool is_user_range(VirtualAddress vaddr, size_t size)
+    {
+        if (vaddr.offset(size) < vaddr)
+            return false;
+        
+        return is_user_address(vaddr) & is_user_address(vaddr.offset(size));
+    }
+
+    /**
+     * @return true 
+     * @return false 
+     */
+    inline bool PhysicalPage::is_shared_zero_page() const
+    {
+        return this == &MM.shared_zero_page();
+    }
+
 } // namespace Kernel
