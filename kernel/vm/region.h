@@ -123,6 +123,44 @@ namespace Kernel
             return m_name;
         }
 
+        /**
+         * @param vaddr 
+         * @return true 
+         * @return false 
+         */
+        bool contains(VirtualAddress vaddr) const
+        {
+            return m_range.contains(vaddr);
+        }
+
+        /**
+         * @param range 
+         * @return true 
+         * @return false 
+         */
+        bool contains(const Range& range) const
+        {
+            return m_range.contains(range);
+        }
+
+        /**
+         * @param vaddr 
+         * @return unsigned 
+         */
+        unsigned page_index_from_address(VirtualAddress vaddr) const
+        {
+            return (vaddr - m_range.base()).get() / PAGE_SIZE;
+        }
+
+        /**
+         * @param page_index 
+         * @return VirtualAddress 
+         */
+        VirtualAddress vaddr_from_page_index(size_t page_index) const
+        {
+            return vaddr().offset(page_index * PAGE_SIZE);
+        }
+
     private:
         Bitmap& ensure_cow_map() const;
 
