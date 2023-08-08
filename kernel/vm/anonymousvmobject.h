@@ -14,7 +14,7 @@
 #include <kernel/physical_address.h>
 #include <kernel/vm/vmobject.h>
 
-namespace Kernel
+namespace Kernel 
 {
 
     class AnonymousVMObject : public VMObject 
@@ -22,6 +22,9 @@ namespace Kernel
     public:
         virtual ~AnonymousVMObject() override;
 
+        /**
+         * @return NonnullRefPtr<AnonymousVMObject> 
+         */
         static NonnullRefPtr<AnonymousVMObject> create_with_size(size_t);
 
         /**
@@ -32,24 +35,55 @@ namespace Kernel
         /**
          * @return NonnullRefPtr<AnonymousVMObject> 
          */
-        static NonnullRefPtr<AnonymousVMObject> create_wit_physical_page(PhysicalAddress);
+        static NonnullRefPtr<AnonymousVMObject> create_with_physical_page(PhysicalPage&);
 
         /**
          * @return NonnullRefPtr<VMObject> 
          */
         virtual NonnullRefPtr<VMObject> clone() override;
 
+    protected:
+        /// @brief Construct a new Anonymous V M Object object
+        explicit AnonymousVMObject(size_t);
+        explicit AnonymousVMObject(const AnonymousVMObject&);
+
+        /**
+         * @return const char* 
+         */
+        virtual const char* class_name() const override 
+        { 
+            return "AnonymousVMObject"; 
+        }
+
     private:
         AnonymousVMObject(PhysicalAddress, size_t);
+
+        /**
+         * @return AnonymousVMObject& 
+         */
+        AnonymousVMObject& operator=(const AnonymousVMObject&) = delete;
+
+        /**
+         * @return AnonymousVMObject& 
+         */
+        AnonymousVMObject& operator=(AnonymousVMObject&&) = delete;
+        AnonymousVMObject(AnonymousVMObject&&) = delete;
 
         /**
          * @return true 
          * @return false 
          */
         virtual bool is_anonymous() const override 
-        {
-            return true;
+        { 
+            return true; 
         }
-    }
+    };
 
 } // namespace Kernel
+
+MOD_BEGIN_TYPE_TRAITS(Kernel::AnonymousVMObject)
+static bool is_type(const Kernel::VMObject& vmobject) 
+{ 
+    return vmobject.is_anonymous(); 
+}
+MOD_END_TYPE_TRAITS()
