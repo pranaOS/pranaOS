@@ -14,11 +14,12 @@
 #include <mods/string_view.h>
 #include <kernel/vm/memorymanager.h>
 
-namespace Kernel
-{
+namespace Kernel {
+
     template<typename T>
-    struct TypedMapping
+    struct TypedMapping 
     {
+
         /**
          * @return const T* 
          */
@@ -31,31 +32,45 @@ namespace Kernel
          * @return T* 
          */
         T* ptr() 
-        {
-            return reinterpret_cast<T*>(region->vaddr().offset(offset).as_ptr());
+        { 
+            return reinterpret_cast<T*>(region->vaddr().offset(offset).as_ptr()); 
+        }
+
+        /**
+         * @return const T* 
+         */
+        const T* operator->() const 
+        { 
+            return ptr(); 
+        }
+
+        /**
+         * @return T* 
+         */
+        T* operator->() 
+        { 
+            return ptr(); 
         }
 
         /**
          * @return const T& 
          */
-        const T& operator->() const
-        {
-            return ptr();
+        const T& operator*() const 
+        { 
+            return *ptr(); 
         }
 
         /**
          * @return T& 
          */
         T& operator*() 
-        {
-            return *ptr();
+        { 
+            return *ptr(); 
         }
 
         OwnPtr<Region> region;
-
         size_t offset { 0 };
-
-    }; // struct TypedMapping
+    };
 
     /**
      * @tparam T 
@@ -68,11 +83,11 @@ namespace Kernel
     static TypedMapping<T> map_typed(PhysicalAddress paddr, size_t length, u8 access = Region::Access::Read)
     {
         TypedMapping<T> table;
-        table.region = MM.allocate_kernel_region(paddr.page_base());
+        table.region = MM.allocate_kernel_region(paddr.page_base(), PAGE_ROUND_UP(length), {}, access);
         table.offset = paddr.offset_in_page();
         return table;
     }
-    
+
     /**
      * @tparam T 
      * @param paddr 
@@ -95,4 +110,4 @@ namespace Kernel
         return map_typed<T>(paddr, sizeof(T), Region::Access::Read | Region::Access::Write);
     }
 
-} // namespace Kernel
+}
