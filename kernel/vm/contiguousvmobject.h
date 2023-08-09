@@ -14,28 +14,56 @@
 #include <kernel/physical_address.h>
 #include <kernel/vm/vmobject.h>
 
-namespace Kernel
+namespace Kernel 
 {
-    class ContiguousVMObject final : public VMObject
+
+    class ContiguousVMObject final : public VMObject 
     {
+    public:
+        virtual ~ContiguousVMObject() override;
+
+        /**
+         * @return NonnullRefPtr<ContiguousVMObject> 
+         */
+        static NonnullRefPtr<ContiguousVMObject> create_with_size(size_t);
+
     private:
+        
         explicit ContiguousVMObject(size_t);
         explicit ContiguousVMObject(const ContiguousVMObject&);
 
-        virtual const char* class_name() const override
-        {
-            return "ContiguousVMObject";
+        /**
+         * @return const char* 
+         */
+        virtual const char* class_name() const override 
+        { 
+            return "ContiguousVMObject"; 
         }
 
+        /**
+         * @return NonnullRefPtr<VMObject> 
+         */
         virtual NonnullRefPtr<VMObject> clone() override;
 
+        /**
+         * @return ContiguousVMObject& 
+         */
         ContiguousVMObject& operator=(const ContiguousVMObject&) = delete;
         ContiguousVMObject& operator=(ContiguousVMObject&&) = delete;
         ContiguousVMObject(ContiguousVMObject&&) = delete;
 
-        virtual bool is_contiguous() const override
-        {   
-            return true;
+        /**
+         * @return true 
+         * @return false 
+         */
+        virtual bool is_contiguous() const override 
+        { 
+            return true; 
         }
-    }; // ContiguousVMObject
+    }; // class ContiguousVMObject
+
 } // namespace Kernel
+
+MOD_BEGIN_TYPE_TRAITS(Kernel::ContiguousVMObject)
+static bool is_type(const Kernel::VMObject& vmobject) { return vmobject.is_contiguous(); }
+MOD_END_TYPE_TRAITS()
