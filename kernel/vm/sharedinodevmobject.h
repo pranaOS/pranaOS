@@ -16,13 +16,18 @@
 #include <kernel/unixtypes.h>
 #include <kernel/vm/inodevmobject.h>
 
-namespace Kernel
+namespace Kernel 
 {
+
     class SharedInodeVMObject final : public InodeVMObject 
     {
         MOD_MAKE_NONMOVABLE(SharedInodeVMObject);
-    
+
     public:
+        /**
+         * @brief Destroy the Shared Inode VM Object object
+         * 
+         */
         virtual ~SharedInodeVMObject() override;
 
         /**
@@ -40,22 +45,35 @@ namespace Kernel
          * @return true 
          * @return false 
          */
-        virtual bool is_shared_inode() const override
-        {
-            return true;
+        virtual bool is_shared_inode() const override 
+        { 
+            return true; 
         }
 
-        explicit SharedInodeVMObject(Inode&, size_t);   
+        /**
+         * @brief Construct a new Shared Inode V M Object object
+         * 
+         */
+        explicit SharedInodeVMObject(Inode&, size_t);
+
+        /**
+         * @brief Construct a new Shared Inode V M Object object
+         * 
+         */
         explicit SharedInodeVMObject(const SharedInodeVMObject&);
 
         /**
          * @return const char* 
          */
-        virtual const char* class_name() const override
-        {
-            return "SharedInodeVMObject";
+        virtual const char* class_name() const override 
+        { 
+            return "SharedInodeVMObject"; 
         }
 
-        
-    }; // SharedInodeVMObject
-} // namespace Kernel   
+        /**
+         * @return SharedInodeVMObject& 
+         */
+        SharedInodeVMObject& operator=(const SharedInodeVMObject&) = delete;
+    };
+
+}
