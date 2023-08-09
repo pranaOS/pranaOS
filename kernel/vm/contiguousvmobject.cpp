@@ -13,8 +13,9 @@
 #include <kernel/vm/contiguousvmobject.h>
 #include <kernel/vm/physicalpage.h>
 
-namespace Kernel
+namespace Kernel 
 {
+
     /**
      * @param size 
      * @return NonnullRefPtr<ContiguousVMObject> 
@@ -31,10 +32,32 @@ namespace Kernel
         : VMObject(size)
     {
         auto contiguous_physical_pages = MM.allocate_contiguous_supervisor_physical_pages(size);
-
         for (size_t i = 0; i < page_count(); i++) {
             physical_pages()[i] = contiguous_physical_pages[i];
+    #ifdef CONTIGUOUS_VMOBJECT_DEBUG
+            dbg() << "Contiguous page[" << i << "]: " << physical_pages()[i]->paddr();
+    #endif
         }
+    }
+
+    /**
+     * @param other 
+     */
+    ContiguousVMObject::ContiguousVMObject(const ContiguousVMObject& other)
+        : VMObject(other)
+    {
+    }
+
+    ContiguousVMObject::~ContiguousVMObject()
+    {
+    }
+
+    /**
+     * @return NonnullRefPtr<VMObject> 
+     */
+    NonnullRefPtr<VMObject> ContiguousVMObject::clone()
+    {
+        ASSERT_NOT_REACHED();
     }
 
 }
