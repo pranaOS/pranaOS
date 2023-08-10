@@ -76,9 +76,43 @@ namespace Kernel
          */
         virtual String absolute_path(const FileDescription&) const override;
 
+        /**
+         * 
+         * @return KResult 
+         */
+        virtual KResult truncate(u64) override;
+
+        /**
+         * @return KResult 
+         */
+        virtual KResult chown(FileDescription&, uid_t, gid_t) override;
+
+        /**
+         * @return KResult 
+         */
+        virtual KResult chmod(FileDescription&, mode_t) override;
+
+        /**
+         * @return const char* 
+         */
+        virtual const char* class_name() const override
+        {
+            return "InodeFile";
+        }
+
+        /**
+         * @return true 
+         * @return false 
+         */
+        virtual bool is_seekable() const override
+        {
+            return true;
+        }
+ 
     private:
         explicit InodeFile(NonnullRefPtr<Inode>&&);
 
         NonnullRefPtr<Inode> m_inode;
     }; // class InodeFile
-}
+    
+} // namespace Kernel
