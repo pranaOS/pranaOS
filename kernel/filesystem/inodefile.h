@@ -13,52 +13,59 @@
 
 #include <kernel/filesystem/file.h>
 
-namespace Kernel
+namespace Kernel 
 {
+
     class Inode;
 
     class InodeFile final : public File 
-    {  
+    {
     public:
         /**
-         * @param node 
+         * @param inode 
          * @return NonnullRefPtr<InodeFile> 
          */
-        static NonnullRefPtr<InodeFile> create(NonnullRefPtr<Inode>&& node)
+        static NonnullRefPtr<InodeFile> create(NonnullRefPtr<Inode>&& inode)
         {
             return adopt(*new InodeFile(move(inode)));
         }
 
         virtual ~InodeFile() override;
 
-        const Inode& inode() const
-        {
-            return *m_inode;
+        /**
+         * @return const Inode& 
+         */
+        const Inode& inode() const 
+        { 
+            return *m_inode; 
         }
 
+        /**
+         * @return Inode& 
+         */
         Inode& inode() 
-        {
-            return *m_inode;
+        { 
+            return *m_inode; 
         }
 
-        virtual bool can_read(const FileDescription&, size_t) const override
-        {
-            return true;
+        /**
+         * @return true 
+         * @return false 
+         */
+        virtual bool can_read(const FileDescription&, size_t) const override 
+        { 
+            return true; 
         }
 
-        virtual bool can_write(const FileDescription&, size_t) const override
-        {
-            return true;
+        virtual bool can_write(const FileDescription&, size_t) const override 
+        { 
+            return true; 
         }
 
         /**
          * @return KResultOr<size_t> 
          */
         virtual KResultOr<size_t> read(FileDescription&, size_t, UserOrKernelBuffer&, size_t) override;
-
-        /**
-         * @return KResultOr<size_t> 
-         */
         virtual KResultOr<size_t> write(FileDescription&, size_t, const UserOrKernelBuffer&, size_t) override;
 
         /**
@@ -77,7 +84,6 @@ namespace Kernel
         virtual String absolute_path(const FileDescription&) const override;
 
         /**
-         * 
          * @return KResult 
          */
         virtual KResult truncate(u64) override;
@@ -95,24 +101,28 @@ namespace Kernel
         /**
          * @return const char* 
          */
-        virtual const char* class_name() const override
-        {
-            return "InodeFile";
+        virtual const char* class_name() const override 
+        { 
+            return "InodeFile"; 
         }
 
         /**
          * @return true 
          * @return false 
          */
-        virtual bool is_seekable() const override
-        {
-            return true;
+        virtual bool is_seekable() const override 
+        { 
+            return true; 
         }
- 
+
+        virtual bool is_inode() const override 
+        { 
+            return true; 
+        }
+
     private:
         explicit InodeFile(NonnullRefPtr<Inode>&&);
-
         NonnullRefPtr<Inode> m_inode;
     }; // class InodeFile
-    
+
 } // namespace Kernel
