@@ -22,7 +22,37 @@ namespace Kernel
 
     class FIFO final : public File 
     {
-    
+    public:
+        enum class Direction : u8
+        {
+            Neither,
+            Reader,
+            Writer
+        };
+
+        /**
+         * @return NonnullRefPtr<FIFO> 
+         */
+        static NonnullRefPtr<FIFO> create(uid_t);
+
+        /// @brief Destroy the FIFO object
+        virtual ~FIFO() override;
+
+        /**
+         * @return uid_t 
+         */
+        uid_t uid() const
+        {
+            return m_uid;
+        }
+
+        /**
+         * @return NonnullRefPtr<FileDescription> 
+         */
+        NonnullRefPtr<FileDescription> open_direction(Direction);
+        NonnullRefPtr<FileDescription> open_direction_blocking(Direction);
+
+
     private:
         explicit FIFO(uid_t);
 
