@@ -15,13 +15,21 @@
 #include <kernel/spinlock.h>
 #include <kernel/thread.h>
 
-namespace Kernel
+namespace Kernel 
 {
 
-    class WaitQueue : public Thread::BlockCondition
+    class WaitQueue : public Thread::BlockCondition 
     {
     public:
+        void wake_one();
+
+        /**
+         * @param wake_count 
+         */
+        void wake_n(u32 wake_count);
         
+        void wake_all();
+
         /**
          * @tparam Args 
          * @param timeout 
