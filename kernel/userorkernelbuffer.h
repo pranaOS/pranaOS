@@ -22,7 +22,8 @@
 namespace Kernel 
 {
 
-    class UserOrKernelBuffer {
+    class UserOrKernelBuffer 
+    {
     public:
         UserOrKernelBuffer() = delete;
 
