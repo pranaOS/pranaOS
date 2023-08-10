@@ -19,10 +19,10 @@
 #include <mods/types.h>
 #include <mods/usrspace.h>
 
-namespace Kernel
+namespace Kernel 
 {
-    class UserOrKernelBuffer
-    {
+
+    class UserOrKernelBuffer {
     public:
         UserOrKernelBuffer() = delete;
 
@@ -43,9 +43,9 @@ namespace Kernel
          */
         static Optional<UserOrKernelBuffer> for_user_buffer(u8* user_buffer, size_t size)
         {
-            if (user_buffer && !is_user_range(VirtualAddress(user_buffer), size));
+            if (user_buffer && !is_user_range(VirtualAddress(user_buffer), size))
                 return {};
-            
+
             return UserOrKernelBuffer(user_buffer);
         }
 
@@ -64,21 +64,18 @@ namespace Kernel
             return UserOrKernelBuffer(const_cast<u8*>((const u8*)userspace.unsafe_userspace_ptr()));
         }
 
+        /**
+         * @return true 
+         * @return false 
+         */
         bool is_kernel_buffer() const;
 
         /**
          * @return const void* 
          */
-        const void* user_or_kernel_ptr() const
-        {
-            return m_buffer;
-        }
-
-        bool is_kernel_buffer() const;
-
         const void* user_or_kernel_ptr() const 
-        {
-            return m_buffer;
+        { 
+            return m_buffer; 
         }
 
         /**
@@ -96,7 +93,11 @@ namespace Kernel
 
             return offset_buffer;
         }
-
+        
+        /**
+         * @param size 
+         * @return String 
+         */
         String copy_into_string(size_t size) const;
 
         /**
@@ -148,7 +149,7 @@ namespace Kernel
         {
             return read(dest, 0, len);
         }
-
+        
         /**
          * @param bytes 
          * @return true 
@@ -187,14 +188,14 @@ namespace Kernel
          * @param f 
          * @return ssize_t 
          */
-        template<size_t BUFFER_BYTES, template F>
+        template<size_t BUFFER_BYTES, typename F>
         [[nodiscard]] ssize_t write_buffered(size_t offset, size_t len, F f)
         {
             if (!m_buffer)
                 return -EFAULT;
-            
+
             if (is_kernel_buffer()) {
-                return F(m_buffer + offset, len);
+                return f(m_buffer + offset, len);
             }
 
             u8 buffer[BUFFER_BYTES];
@@ -207,9 +208,16 @@ namespace Kernel
 
                 if (copied < 0)
                     return copied;
-                
-                ASSERT((size_t) copied <= to_copy);
-                
+
+                ASSERT((size_t)copied <= to_copy);
+
+                if (!write(buffer, nwritten, (size_t)copied))
+                    return -EFAULT;
+
+                nwritten += (size_t)copied;
+
+                if ((size_t)copied < to_copy)
+                    break;
             }
 
             return (ssize_t)nwritten;
@@ -222,17 +230,77 @@ namespace Kernel
          * @param f 
          * @return ssize_t 
          */
-        template<size_t BUFFER_BYTES, template F>
+        template<size_t BUFFER_BYTES, typename F>
         [[nodiscard]] ssize_t write_buffered(size_t len, F f)
         {
             return write_buffered<BUFFER_BYTES, F>(0, len, f);
+        }       
+
+        /**
+         * @tparam BUFFER_BYTES 
+         * @tparam F 
+         * @param offset 
+         * @param len 
+         * @param f 
+         * @return ssize_t 
+         */
+        template<size_t BUFFER_BYTES, typename F>
+        [[nodiscard]] ssize_t read_buffered(size_t offset, size_t len, F f) const
+        {
+            if (!m_buffer)
+                return -EFAULT;
+
+            if (is_kernel_buffer()) {
+                return f(m_buffer + offset, len);
+            }
+
+            u8 buffer[BUFFER_BYTES];
+
+            size_t nread = 0;
+
+            while (nread < len) {
+                auto to_copy = min(sizeof(buffer), len - nread);
+
+                if (!read(buffer, nread, to_copy))
+                    return -EFAULT;
+
+                ssize_t copied = f(buffer, to_copy);
+                if (copied < 0)
+                    return copied;
+
+                ASSERT((size_t)copied <= to_copy);
+                nread += (size_t)copied;
+
+                if ((size_t)copied < to_copy)
+                    break;
+            }
+
+            return nread;
+        }
+
+        /**
+         * @tparam BUFFER_BYTES 
+         * @tparam F 
+         * @param len 
+         * @param f 
+         * @return ssize_t 
+         */
+        template<size_t BUFFER_BYTES, typename F>
+        [[nodiscard]] ssize_t read_buffered(size_t len, F f) const
+        {
+            return read_buffered<BUFFER_BYTES, F>(0, len, f);
         }
 
     private:
+        /**
+         * @param buffer 
+         */
         explicit UserOrKernelBuffer(u8* buffer)
             : m_buffer(buffer)
-        {}
+        { }
 
         u8* m_buffer;
+
     }; // class UserOrKernelBuffer
-} // namespace Kernel  
+
+} // namespace Kernel
