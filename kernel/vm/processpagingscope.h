@@ -9,19 +9,23 @@
  * 
  */
 
-#pragma once 
+#pragma once
 
 #include <mods/types.h>
 #include <kernel/forward.h>
 
-namespace Kernel
+namespace Kernel 
 {
+
     class ProcessPagingScope 
     {
     public:
+        /// @brief Destroy the Process Paging Scope object
+        explicit ProcessPagingScope(Process&);
         ~ProcessPagingScope();
 
     private:
-        u32 m_previos_cr2 { 0 };
-    }; 
+        u32 m_previous_cr3 { 0 };
+    };
+
 } // namespace Kernel
