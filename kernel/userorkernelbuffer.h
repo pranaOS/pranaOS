@@ -74,6 +74,61 @@ namespace Kernel
             return m_buffer;
         }
 
+        bool is_kernel_buffer() const;
+
+        const void* user_or_kernel_ptr() const 
+        {
+            return m_buffer;
+        }
+
+        /**
+         * @param offset 
+         * @return UserOrKernelBuffer 
+         */
+        UserOrKernelBuffer offset(ssize_t offset) const
+        {
+            if (!m_buffer)
+                return *this;
+
+            UserOrKernelBuffer offset_buffer = *this;
+            offset_buffer.m_buffer += offset;
+            ASSERT(offset_buffer.is_kernel_buffer() == is_kernel_buffer());
+
+            return offset_buffer;
+        }
+
+        String copy_into_string(size_t size) const;
+
+        /**
+         * @param src 
+         * @param offset 
+         * @param len 
+         * @return true 
+         * @return false 
+         */
+        [[nodiscard]] bool write(const void* src, size_t offset, size_t len);
+
+        /**
+         * @param src 
+         * @param len 
+         * @return true 
+         * @return false 
+         */
+        [[nodiscard]] bool write(const void* src, size_t len)
+        {
+            return write(src, 0, len);
+        }
+
+        /**
+         * @param bytes 
+         * @return true 
+         * @return false 
+         */
+        [[nodiscard]] bool write(ReadonlyBytes bytes)
+        {
+            return write(bytes.data(), bytes.size());
+        }
+
     private:
         explicit UserOrKernelBuffer(u8* buffer)
             : m_buffer(buffer)
