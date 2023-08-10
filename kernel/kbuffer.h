@@ -19,8 +19,9 @@
 #include <kernel/vm/region.h>
 #include <mods/memory.h> 
 
-namespace Kernel
+namespace Kernel 
 {
+
     class KBufferImpl : public RefCounted<KBufferImpl> 
     {
     public:
@@ -50,7 +51,7 @@ namespace Kernel
             auto buffer = create_with_size(size, access, name);
             buffer->region().commit();
             memcpy(buffer->data(), data, size);
-            
+
             return buffer;
         }
 
@@ -69,7 +70,7 @@ namespace Kernel
         { 
             return m_region->vaddr().as_ptr(); 
         }
-        
+
         /**
          * @return size_t 
          */
@@ -93,7 +94,7 @@ namespace Kernel
         {
             ASSERT(size <= capacity());
             m_size = size;
-        }
+        }   
 
         /**
          * @return const Region& 
@@ -112,6 +113,7 @@ namespace Kernel
         }
 
     private:
+
         /**
          * @param region 
          * @param size 
@@ -124,6 +126,129 @@ namespace Kernel
 
         size_t m_size { 0 };
         NonnullOwnPtr<Region> m_region;
-        
     }; // class KBufferImpl
+
+    class KBuffer 
+    {
+    public:
+
+        /**
+         * @param size 
+         * @param access 
+         * @param name 
+         * @return KBuffer 
+         */
+        static KBuffer create_with_size(size_t size, u8 access = Region::Access::Read | Region::Access::Write, const char* name = "KBuffer")
+        {
+            return KBuffer(KBufferImpl::create_with_size(size, access, name));
+        }
+
+        /**
+         * @param data 
+         * @param size 
+         * @param access 
+         * @param name 
+         * @return KBuffer 
+         */
+        static KBuffer copy(const void* data, size_t size, u8 access = Region::Access::Read | Region::Access::Write, const char* name = "KBuffer")
+        {
+            return KBuffer(KBufferImpl::copy(data, size, access, name));
+        }
+
+        /**
+         * @return u8* 
+         */
+        u8* data() 
+        { 
+            return m_impl->data(); 
+        }
+
+        /**
+         * @return const u8* 
+         */
+        const u8* data() const 
+        { 
+            return m_impl->data(); 
+        }
+
+        /**
+         * @return size_t 
+         */
+        size_t size() const 
+        { 
+            return m_impl->size(); 
+        }
+
+        /**
+         * @return size_t 
+         */
+        size_t capacity() const 
+        { 
+            return m_impl->capacity(); 
+        }
+
+        /**
+         * @return void* 
+         */
+        void* end_pointer() 
+        { 
+            return data() + size(); 
+        }
+
+        /**
+         * @return const void* 
+         */
+        const void* end_pointer() const 
+        { 
+            return data() + size(); 
+        }
+
+        /**
+         * @param size 
+         */
+        void set_size(size_t size) 
+        { 
+            m_impl->set_size(size); 
+        }
+
+        /**
+         * @return const KBufferImpl& 
+         */
+        const KBufferImpl& impl() const 
+        { 
+            return m_impl; 
+        }
+
+        /**
+         * @param buffer 
+         * @param access 
+         * @param name 
+         */
+        KBuffer(const ByteBuffer& buffer, u8 access = Region::Access::Read | Region::Access::Write, const char* name = "KBuffer")
+            : m_impl(KBufferImpl::copy(buffer.data(), buffer.size(), access, name))
+        {
+        }
+
+    private:
+        /**
+         * @param impl 
+         */
+        explicit KBuffer(NonnullRefPtr<KBufferImpl>&& impl)
+            : m_impl(move(impl))
+        {
+        }
+
+        NonnullRefPtr<KBufferImpl> m_impl;
+    }; // class KBuffer
+
+    /**
+     * @param stream 
+     * @param value 
+     * @return const LogStream& 
+     */
+    inline const LogStream& operator<<(const LogStream& stream, const KBuffer& value)
+    {
+        return stream << StringView(value.data(), value.size());
+    }
+
 } // namespace Kernel
