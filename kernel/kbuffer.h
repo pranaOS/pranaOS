@@ -21,9 +21,9 @@
 
 namespace Kernel
 {
-    class KBufferImpl : public RefCounted<KBufferImpl>
+    class KBufferImpl : public RefCounted<KBufferImpl> 
     {
-    public: 
+    public:
         /**
          * @param size 
          * @param access 
@@ -32,44 +32,85 @@ namespace Kernel
          */
         static NonnullRefPtr<KBufferImpl> create_with_size(size_t size, u8 access, const char* name)
         {
-            auto region = MM.allocate_kernel_region(PAGE_ROUND_UP(size), name, access, false);
+            auto region = MM.allocate_kernel_region(PAGE_ROUND_UP(size), name, access, false, false);
             ASSERT(region);
 
             return adopt(*new KBufferImpl(region.release_nonnull(), size));
         }
 
-        /**         * 
+        /**
+         * @param data 
+         * @param size 
+         * @param access 
+         * @param name 
+         * @return NonnullRefPtr<KBufferImpl> 
+         */
+        static NonnullRefPtr<KBufferImpl> copy(const void* data, size_t size, u8 access, const char* name)
+        {
+            auto buffer = create_with_size(size, access, name);
+            buffer->region().commit();
+            memcpy(buffer->data(), data, size);
+            
+            return buffer;
+        }
+
+        /**
          * @return u8* 
          */
         u8* data() 
-        {
-            return m_region->vaddr().as_ptr();
+        { 
+            return m_region->vaddr().as_ptr(); 
         }
 
         /**
          * @return const u8* 
          */
-        const u8* data() const
+        const u8* data() const 
+        { 
+            return m_region->vaddr().as_ptr(); 
+        }
+        
+        /**
+         * @return size_t 
+         */
+        size_t size() const 
+        { 
+            return m_size; 
+        }
+
+        /**
+         * @return size_t 
+         */
+        size_t capacity() const 
+        { 
+            return m_region->size(); 
+        }
+
+        /**
+         * @param size 
+         */
+        void set_size(size_t size)
         {
-            return m_region->vaddr().as_ptr();
+            ASSERT(size <= capacity());
+            m_size = size;
         }
 
         /**
          * @return const Region& 
          */
-        const Region& region() const
-        {
-            return *m_region;
+        const Region& region() const 
+        { 
+            return *m_region; 
         }
 
         /**
          * @return Region& 
          */
         Region& region() 
-        {
-            return *m_region;
+        { 
+            return *m_region; 
         }
-        
+
     private:
         /**
          * @param region 
@@ -78,9 +119,11 @@ namespace Kernel
         explicit KBufferImpl(NonnullOwnPtr<Region>&& region, size_t size)
             : m_size(size)
             , m_region(move(region))
-        {}
+        {
+        }
 
         size_t m_size { 0 };
         NonnullOwnPtr<Region> m_region;
+        
     }; // class KBufferImpl
 } // namespace Kernel
