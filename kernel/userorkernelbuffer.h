@@ -179,6 +179,55 @@ namespace Kernel
             return memset(value, 0, len);
         }
 
+        /**
+         * @tparam BUFFER_BYTES 
+         * @tparam F 
+         * @param offset 
+         * @param len 
+         * @param f 
+         * @return ssize_t 
+         */
+        template<size_t BUFFER_BYTES, template F>
+        [[nodiscard]] ssize_t write_buffered(size_t offset, size_t len, F f)
+        {
+            if (!m_buffer)
+                return -EFAULT;
+            
+            if (is_kernel_buffer()) {
+                return F(m_buffer + offset, len);
+            }
+
+            u8 buffer[BUFFER_BYTES];
+
+            size_t nwritten = 0;
+
+            while (nwritten < len) {
+                auto to_copy = min(sizeof(buffer), len - nwritten);
+                ssize_t copied = f(buffer, to_copy);
+
+                if (copied < 0)
+                    return copied;
+                
+                ASSERT((size_t) copied <= to_copy);
+                
+            }
+
+            return (ssize_t)nwritten;
+        }
+
+        /**
+         * @tparam BUFFER_BYTES 
+         * @tparam F 
+         * @param len 
+         * @param f 
+         * @return ssize_t 
+         */
+        template<size_t BUFFER_BYTES, template F>
+        [[nodiscard]] ssize_t write_buffered(size_t len, F f)
+        {
+            return write_buffered<BUFFER_BYTES, F>(0, len, f);
+        }
+
     private:
         explicit UserOrKernelBuffer(u8* buffer)
             : m_buffer(buffer)
