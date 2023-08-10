@@ -49,6 +49,31 @@ namespace Kernel
             return UserOrKernelBuffer(user_buffer);
         }
 
+        /**
+         * @tparam UserspaceType 
+         * @param userspace 
+         * @param size 
+         * @return Optional<UserOrKernelBuffer> 
+         */
+        template<typename UserspaceType>
+        static Optional<UserOrKernelBuffer> for_user_buffer(UserspaceType userspace, size_t size)
+        {
+            if (!is_user_range(VirtualAddress(userspace.unsafe_userspace_ptr()), size))
+                return {};
+
+            return UserOrKernelBuffer(const_cast<u8*>((const u8*)userspace.unsafe_userspace_ptr()));
+        }
+
+        bool is_kernel_buffer() const;
+
+        /**
+         * @return const void* 
+         */
+        const void* user_or_kernel_ptr() const
+        {
+            return m_buffer;
+        }
+
     private:
         explicit UserOrKernelBuffer(u8* buffer)
             : m_buffer(buffer)
