@@ -129,6 +129,56 @@ namespace Kernel
             return write(bytes.data(), bytes.size());
         }
 
+        /**
+         * @param dest 
+         * @param offset 
+         * @param len 
+         * @return true 
+         * @return false 
+         */
+        [[nodiscard]] bool read(void* dest, size_t offset, size_t len) const;
+
+        /**
+         * @param dest 
+         * @param len 
+         * @return true 
+         * @return false 
+         */
+        [[nodiscard]] bool read(void* dest, size_t len) const
+        {
+            return read(dest, 0, len);
+        }
+
+        /**
+         * @param bytes 
+         * @return true 
+         * @return false 
+         */
+        [[nodiscard]] bool read(Bytes bytes) const
+        {
+            return read(bytes.data(), bytes.size());
+        }
+
+        /**
+         * @param value 
+         * @param offset 
+         * @param len 
+         * @return true 
+         * @return false 
+         */
+        [[nodiscard]] bool memset(int value, size_t offset, size_t len);
+
+        /**
+         * @param value 
+         * @param len 
+         * @return true 
+         * @return false 
+         */
+        [[nodiscard]] bool memset(int value, size_t len)
+        {
+            return memset(value, 0, len);
+        }
+
     private:
         explicit UserOrKernelBuffer(u8* buffer)
             : m_buffer(buffer)
