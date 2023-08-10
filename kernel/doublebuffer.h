@@ -20,7 +20,8 @@
 namespace Kernel 
 {
 
-    class DoubleBuffer {
+    class DoubleBuffer 
+    {
     public:
         /**
          * @param capacity 
