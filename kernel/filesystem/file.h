@@ -22,16 +22,21 @@
 #include <kernel/virtual_address.h>
 #include <kernel/userorkernelbuffer.h>
 
-namespace Kernel
+namespace Kernel 
 {
+
     class File;
 
-    class FileBlockCondition : public Thread::BlockCondition
+    class FileBlockCondition : public Thread::BlockCondition 
     {
     public:
+        /**
+         * @param file 
+         */
         FileBlockCondition(File& file)
             : m_file(file)
-        {}
+        {
+        }
 
         /**
          * @param b 
@@ -42,25 +47,28 @@ namespace Kernel
         virtual bool should_add_blocker(Thread::Blocker& b, void* data) override
         {
             ASSERT(b.blocker_type() == Thread::Blocker::Type::File);
-
             auto& blocker = static_cast<Thread::FileBlocker&>(b);
-
             return !blocker.unblock(true, data);
         }
 
+        /// @brief: unblock
         void unblock()
         {
             ScopedSpinLock lock(m_lock);
+            do_unblock([&](auto& b, void* data) {
+                ASSERT(b.blocker_type() == Thread::Blocker::Type::File);
+                auto& blocker = static_cast<Thread::FileBlocker&>(b);
+                return blocker.unblock(false, data);
+            });
         }
 
     private:
         File& m_file;
     }; // class FileBlockCondition
 
-    class File 
+    class File
         : public RefCounted<File>
         , public Weakable<File> {
-
     public:
         virtual ~File();
 
@@ -69,6 +77,10 @@ namespace Kernel
          * @return KResultOr<NonnullRefPtr<FileDescription>> 
          */
         virtual KResultOr<NonnullRefPtr<FileDescription>> open(int options);
+
+        /**
+         * @return KResult 
+         */
         virtual KResult close();
 
         /**
@@ -76,22 +88,13 @@ namespace Kernel
          * @return false 
          */
         virtual bool can_read(const FileDescription&, size_t) const = 0;
-
-        /**
-         * @return true 
-         * @return false 
-         */
         virtual bool can_write(const FileDescription&, size_t) const = 0;
 
         /**
-         * @return KResult<size_t> 
+         * @return KResultOr<size_t> 
          */
-        virtual KResult<size_t> read(FileDescription&, size_t, UserOrKernelBuffer&, size_t) = 0;
-
-        /**
-         * @return KResult<size_t> 
-         */
-        virtual KResult<size_t> write(FileDescription&, size_t, const UserOrKernelBuffer&, size_t) = 0;
+        virtual KResultOr<size_t> read(FileDescription&, size_t, UserOrKernelBuffer&, size_t) = 0;
+        virtual KResultOr<size_t> write(FileDescription&, size_t, const UserOrKernelBuffer&, size_t) = 0;
 
         /**
          * @param request 
@@ -101,13 +104,118 @@ namespace Kernel
         virtual int ioctl(FileDescription&, unsigned request, FlatPtr arg);
 
         /**
+         * @param preferred_vaddr 
+         * @param offset 
+         * @param size 
+         * @param prot 
+         * @param shared 
+         * @return KResultOr<Region*> 
+         */
+        virtual KResultOr<Region*> mmap(Process&, FileDescription&, VirtualAddress preferred_vaddr, size_t offset, size_t size, int prot, bool shared);
+
+        /**
+         * @return KResult 
+         */
+        virtual KResult stat(::stat&) const 
+        { 
+            return KResult(-EBADF); 
+        }
+
+        /**
          * @return String 
          */
-        virtual String absolute_path(const FileDescription&) const = 0; 
+        virtual String absolute_path(const FileDescription&) const = 0;
+
+        /**
+         * @return KResult 
+         */
+        virtual KResult truncate(u64) 
+        { 
+            return KResult(-EINVAL); 
+        }
+
+        /**
+         * @return KResult 
+         */
+        virtual KResult chown(FileDescription&, uid_t, gid_t) 
+        { 
+            return KResult(-EBADF); 
+        }
+
+        /**
+         * @return KResult 
+         */
+        virtual KResult chmod(FileDescription&, mode_t) 
+        { 
+            return KResult(-EBADF); 
+        }
+
+        /**
+         * @return const char* 
+         */
+        virtual const char* class_name() const = 0;
+
+        virtual bool is_seekable() const 
+        { 
+            return false; 
+        }
+
+        virtual bool is_inode() const 
+        { 
+            return false; 
+        }
+
+        virtual bool is_fifo() const 
+        { 
+            return false; 
+        }
+
+        virtual bool is_device() const 
+        { 
+            return false; 
+        }
+
+        virtual bool is_tty() const 
+        { 
+            return false; 
+        }
+
+        virtual bool is_master_pty() const 
+        { 
+            return false; 
+        }
+
+        virtual bool is_block_device() const 
+        { 
+            return false; 
+        }
+
+        virtual bool is_character_device() const 
+        { 
+            return false; 
+        }
+
+        /**
+         * @return true 
+         * @return false 
+         */
+        virtual bool is_socket() const 
+        { 
+            return false; 
+        }
+
+        /**
+         * @return FileBlockCondition& 
+         */
+        virtual FileBlockCondition& block_condition() 
+        { 
+            return m_block_condition; 
+        }
 
     protected:
         File();
 
+        /// @brief: evaluate_block_conditions
         void evaluate_block_conditions()
         {
             if (Processor::current().in_irq()) {
@@ -121,6 +229,7 @@ namespace Kernel
         }
 
     private:
+
         /**
          * @return ALWAYS_INLINE 
          */
@@ -131,6 +240,6 @@ namespace Kernel
         }
 
         FileBlockCondition m_block_condition;
-
     }; // class File
+
 } // namespace Kernel
