@@ -39,11 +39,32 @@ namespace Kernel
 
         void lock(Mode = Mode::Exclusive);
 
-        #ifndef LOCK_DEBUG
+        #ifdef LOCK_DEBUG
             void lock(const char* file, int line, Mode mode = Mode::Exclusive);
         #endif
 
         void unlock();
+
+        bool force_unlock_if_locked();
+
+        /**
+         * @return true 
+         * @return false 
+         */
+        bool is_locked() const
+        {
+            return m_holder;
+        }
+
+        void clear_waiters();
+
+        /**
+         * @return const char* 
+         */
+        const char* name() const
+        {
+            return m_name;
+        }
 
     private:
         Atomic<bool> m_lock { false };
@@ -57,4 +78,63 @@ namespace Kernel
 
         RefPtr<Thread> m_holder;
     }; // class Lock
+
+    class Locker
+    {
+    public:
+        #ifdef LOCK_DEBUG
+            /**
+             * @param file 
+             * @param line 
+             * @param l 
+             * @param mode 
+             * @return ALWAYS_INLINE 
+             */
+            ALWAYS_INLINE explicit Locker(const char* file, int line, Lock& l, Lock::Mode mode = Lock::Mode::Exclusive)
+                : m_lock(l)
+            {
+                m_lock.lock(mode);
+            }
+        #endif 
+
+        /**
+         * @param l 
+         * @param mode 
+         * @return ALWAYS_INLINE 
+         */
+        ALWAYS_INLINE explicit Locker(Lock& l, Lock::Mode mode = Lock::Mode::Exclusive)
+            : m_lock(l)
+        {
+            m_lock.lock(mode);
+        }
+
+        /**
+         * @return ALWAYS_INLINE 
+         */
+        ALWAYS_INLINE ~Locker() 
+        {
+            unlock();
+        }
+
+        /**
+         * @return ALWAYS_INLINE 
+         */
+        ALWAYS_INLINE void unlock()
+        {
+            m_lock.unlock();
+        }
+
+        /**
+         * @param mode 
+         * @return ALWAYS_INLINE 
+         */
+        ALWAYS_INLINE void lock(Lock::Mode mode = Lock::Mode::Exclusive)
+        {
+            m_lock.lock(mode);
+        }
+
+    private:
+        Lock& m_lock;
+    }; // class Locker
+
 } // namespace Kernel
