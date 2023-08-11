@@ -99,5 +99,37 @@ namespace Kernel
         size_t m_block_size { 0 };
         bool m_readonly { false };
     }; // class FS
+
+    /**
+     * @return FS* 
+     */
+    inline FS* InodeIdentifier::fs()
+    {
+        return FS::from_fsid(m_fsid);
+    }
+
+    /**
+     * @return const FS* 
+     */
+    inline const FS* InodeIdentifier::fs() const
+    {
+        return FS::from_fsid(m_fsid)
+    }
+
+    namespace Mods
+    {
+        template<>
+        struct Traits<Kernel::InodeIdentifier> : public GenericTraits<Kernel::InodeIdentifier>
+        {
+            /**
+             * @param inode 
+             * @return unsigned 
+             */
+            static unsigned hash(const Kernel::InodeIdentifier& inode)
+            {
+                return pair_int_hash(inode.fsid(), inode.index());
+            }
+        };
+    }
     
 } // namespace Kernel
