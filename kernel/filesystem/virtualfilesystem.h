@@ -36,5 +36,24 @@ namespace Kernel
         uid_t uid;
         gid_t gid;
     }; // struct Uid&Gid
+
+    class VFS
+    {
+        MOD_MAKE_ETERNAL
     
+    private:
+        NonnullRefPtrVector<Inode> m_guest;
+        NonnullRefPtr<FS> m_guest_fs;
+        RefPtr<Custody> m_host_custody;
+        int m_flags;
+    }; // class VFS
+
+    static void initialize();
+    static VFS& the();
+    
+    VFS();
+    ~VFS();
+
+    bool mount_root(FS&);
+
 }
