@@ -40,12 +40,64 @@ namespace Kernel
     class VFS
     {
         MOD_MAKE_ETERNAL
+
+    public:
+        class Mount
+        {
+        public:
+            /**
+             * @param host_custody 
+             * @param flags 
+             */
+            Mount(FS&, Custody* host_custody, int flags);
+
+            /**
+             * @param source 
+             * @param host_custody 
+             * @param flags 
+             */
+            Mount(Inode& source, Custody& host_custody, int flags);
+
+            /**
+             * @return const Inode* 
+             */
+            const Inode* host() const;
+
+            /**
+             * @return Inode* 
+             */
+            Inode* host();
+
+            /**
+             * @return const Inode& 
+             */
+            const Inode& guest() const
+            {
+                return *m_guest;
+            }
+
+            /**
+             * @return Inode& 
+             */
+            Inode& guest() 
+            {   
+                return *m_guest;
+            }
+
+            /**
+             * @return String 
+             */
+            String absolute_path() const;
+
+        private:
+            NonnullRefPtrVector<Inode> m_guest;
+            NonnullRefPtr<FS> m_guest_fs;
+            RefPtr<Custody> m_host_custody;
+            int m_flags;
+            
+        }; // class Mount
     
-    private:
-        NonnullRefPtrVector<Inode> m_guest;
-        NonnullRefPtr<FS> m_guest_fs;
-        RefPtr<Custody> m_host_custody;
-        int m_flags;
+
     }; // class VFS
 
     static void initialize();
