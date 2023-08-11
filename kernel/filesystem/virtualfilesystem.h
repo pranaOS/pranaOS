@@ -96,9 +96,7 @@ namespace Kernel
             int m_flags;
             
         }; // class Mount
-    
 
-    }; // class VFS
 
     static void initialize();
     static VFS& the();
@@ -108,4 +106,51 @@ namespace Kernel
 
     bool mount_root(FS&);
 
+    /**
+     * @param mount_point 
+     * @param flags 
+     * @return KResult 
+     */
+    KResult mount(FS&, Custody& mount_point, int flags);
+
+    /**
+     * @param source 
+     * @param mount_point 
+     * @param flags 
+     * @return KResult 
+     */
+    KResult bind_mount(Custody& source, Custody& mount_point, int flags);
+
+    /**
+     * @param mount_point 
+     * @param new_flags 
+     * @return KResult 
+     */
+    KResult remount(Custody& mount_point, int new_flags);
+
+    /**
+     * @param guest_inode 
+     * @return KResult 
+     */
+    KResult unmount(Inode& guest_inode);
+
+    size_t mount_count() const
+    {
+        
+    }
+
+    private:
+        friend class FileDescription;
+
+        /**
+         * @param path 
+         * @param options 
+         * @return KResult 
+         */
+        KResult validate_path_agains_process_veil(StringView path, int options);
+
+    }; // class VFS
+
+    
+    
 }
