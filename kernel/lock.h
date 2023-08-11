@@ -30,6 +30,21 @@ namespace Kernel
 
         ~Lock() {}
 
+        enum class Mode
+        {
+            Unlocked,
+            Shared,
+            Exclusive
+        };
+
+        void lock(Mode = Mode::Exclusive);
+
+        #ifndef LOCK_DEBUG
+            void lock(const char* file, int line, Mode mode = Mode::Exclusive);
+        #endif
+
+        void unlock();
+
     private:
         Atomic<bool> m_lock { false };
         const char* m_name { nullptr };
