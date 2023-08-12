@@ -12,9 +12,20 @@
 #include <kernel/filesystem/filebackedfilesystem.h>
 #include <kernel/filesystem/filedescription.h>
 
-namespace Kernel
+namespace Kernel 
 {
+    /**
+     * @param file_description 
+     */
     FileBackedFS::FileBackedFS(FileDescription& file_description)
         : m_file_description(file_description)
-    {}
+    { }
+
+    /**
+     * @brief Destroy the FileBackedFS::FileBackedFS object
+     * 
+     */
+    FileBackedFS::~FileBackedFS()
+    { }
+
 } // namespace Kernel
