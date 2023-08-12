@@ -85,6 +85,72 @@ namespace Kernel
         friend class Thread;
         friend class CoreDump;
 
+    private:
+        friend class MemoryManager;
+        friend class Scheduler;
+        friend class Region;
+
+        /**
+         * @param first_thread 
+         * @param name 
+         * @param ppid 
+         * @param is_kernel_process 
+         * @param cwd 
+         * @param executable 
+         * @param fork_parent 
+         */
+        Process(RefPtr<Thread>& first_thread, const String& name, uid_t, gid_t, ProcessID ppid, bool is_kernel_process, RefPtr<Custody> cwd = nullptr, RefPtr<Custody> executable = nullptr, TTY* = nullptr, Process* fork_parent = nullptr);
+
+        static ProcessID allocate_pid();
+
+        /**
+         * @param alignment 
+         * @return Range 
+         */
+        Range allocate_range(VirtualAddress, size_t, size_t alignment = PAGE_SIZE);
+
+        /**
+         * @return Region& 
+         */
+        Region& add_region(NonnullOwnPtr<Region>);
+
+        void kill_threads_except_self();
+        void kill_all_threads();
+
+        /**
+         * @param main_program_description 
+         * @param arguments 
+         * @param environment 
+         * @param interpreter_description 
+         * @param new_main_thread 
+         * @param prev_flags 
+         * @return int 
+         */
+        int do_exec(NonnullRefPtr<FileDescription> main_program_description, Vector<String> arguments, Vector<String> environment, RefPtr<FileDescription> interpreter_description, Thread*& new_main_thread, u32& prev_flags);
+
+        /**
+         * @return ssize_t 
+         */
+        ssize_t do_write(FileDescription&, const UserOrKernelBuffer&, size_t);      
+
+        /**
+         * @param path 
+         * @param nread 
+         * @param file_size 
+         * @return KResultOr<NonnullRefPtr<FileDescription>> 
+         */
+        KResultOr<NonnullRefPtr<FileDescription>> find_elf_interpreter_for_executable(const String& path, char (&first_page)[PAGE_SIZE], int nread, size_t file_size);
+
+        Vector<AuxiliaryValue> generate_auxiliary_vector() const;
+
+        /**
+         * @param first_canditate_fd 
+         * @return int 
+         */
+        int alloc_fd(int first_canditate_fd = 0);   
+
+        void disown_all_shared_buffers();
+
     }; // class Process
 
 } // namespace Kernel
