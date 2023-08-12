@@ -151,6 +151,66 @@ namespace Kernel
 
         void disown_all_shared_buffers();
 
+        /**
+         * @param signal 
+         * @return KResult 
+         */
+        KResult do_kill(Process&, int signal);
+
+        /**
+         * @param pgrp 
+         * @param signal 
+         * @return KResult 
+         */
+        KResult do_killpg(ProcessGroupID pgrp, int signal);
+        KResult do_killall(int signal);
+        KResult do_killself(int signal);
+
+        /**
+         * @param idtype 
+         * @param id 
+         * @param options 
+         * @return KResultOr<siginfo_t> 
+         */
+        KResultOr<siginfo_t> do_waitid(idtype_t idtype, int id, int options);
+
+        /**
+         * @param user_path 
+         * @param path_length 
+         * @return KResultOr<String> 
+         */
+        KResultOr<String> get_syscall_path_argument(const char* user_path, size_t path_length);
+
+        /**
+         * @param user_path 
+         * @param path_length 
+         * @return KResultOr<String> 
+         */
+        KResultOr<String> get_syscall_path_argument(UserSpace<const char*> user_path, size_t path_length) const
+        {
+            return get_syscall_path_argument(user_path.unsafe_userspace(), path_length);
+        }
+
+        /**
+         * @return KResultOr<String> 
+         */
+        KResultOr<String> get_syscall_path_argument(const Syscall::StringArgument) const;
+
+        bool have_tracee_thread(ProcessID tracer_pid);
+
+        RefPtr<PageDirectory> m_page_directory;
+
+        Process* m_prev { nullptr };
+        Process* m_next { nullptr };
+
+        String m_name;
+
+        ProcessID m_pid { 0 };
+        SessionID m_sid { 0 };
+        RefPtr<ProcessGroup> m_pg;
+
+        uid_t m_euid { 0 };
+        gid_t m_egid { 0 };
     }; // class Process
 
 } // namespace Kernel
