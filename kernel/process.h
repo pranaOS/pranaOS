@@ -58,4 +58,22 @@ namespace Kernel
         Locked
     };
 
+    struct UnveiledPath
+    {
+        enum Access
+        {
+            Read = 1,
+            Write = 2,
+            Execute = 4,
+            CreateOrRemove = 8,
+            Browse = 16,
+        }; 
+
+        String path;
+
+        unsigned permissions { 0 };
+    }; // struct 
+
+    
+
 } // namespace Kernel
