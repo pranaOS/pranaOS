@@ -15,18 +15,25 @@
 #include <mods/string_view.h>
 #include <mods/vector.h>
 
-namespace Kernel
+namespace Kernel 
 {
-
+    
+    /**
+     * @param parent 
+     * @param name 
+     * @param inode 
+     * @param mount_flags 
+     */
     Custody::Custody(Custody* parent, const StringView& name, Inode& inode, int mount_flags)
         : m_parent(parent)
         , m_name(name)
         , m_inode(inode)
         , m_mount_flags(mount_flags)
-    {}
+    { }
 
+    /// @brief Destroy the Custody::Custody object
     Custody::~Custody()
-    {}
+    { }
 
     /**
      * @return String 
@@ -35,13 +42,18 @@ namespace Kernel
     {
         if (!parent())
             return "/";
-        
+
         Vector<const Custody*, 32> custody_chain;
 
         for (auto* custody = this; custody; custody = custody->parent())
             custody_chain.append(custody);
 
         StringBuilder builder;
+
+        for (int i = custody_chain.size() - 2; i >= 0; --i) {
+            builder.append('/');
+            builder.append(custody_chain[i]->name().characters());
+        }
 
         return builder.to_string();
     }
@@ -58,4 +70,4 @@ namespace Kernel
         return m_inode->fs().is_readonly();
     }
 
-} // namespace Kernel 
+} // namespace Kernel
