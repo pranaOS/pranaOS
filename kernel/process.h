@@ -74,6 +74,17 @@ namespace Kernel
         unsigned permissions { 0 };
     }; // struct 
 
-    
+    class Process : public RefCounted<Process>
+        , public InlineLinkedListNode<Process>
+        , public Weakable<Process> {
+        
+        MOD_MAKE_NONCOPYABLE(Process);
+        MOD_MAKE_NONMOVABLE(Process);
+
+        friend class InlineLinkedListNode<Process>;
+        friend class Thread;
+        friend class CoreDump;
+
+    }; // class Process
 
 } // namespace Kernel
