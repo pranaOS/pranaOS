@@ -17,6 +17,15 @@ namespace Kernel
 {
     class BlockBasedFS : public FileBackedFS
     {
+    public:
+        virtual ~BlockBasedFS() override;
+
+        size_t logical_block_size() const
+        {
+            return m_logical_block_size;
+        }
+
+
     protected:
         explicit BlockBasedFS(FileDescription&);
 
@@ -55,8 +64,26 @@ namespace Kernel
          */
         bool raw_write(unsigned index, const UserOrKernelBuffer& buffer);
 
+        /**
+         * @param index 
+         * @param count 
+         * @param buffer 
+         * @return true 
+         * @return false 
+         */
+        bool raw_read_blocks(unsigned index, size_t count, UserOrKernelBuffer& buffer);
+
+        /**
+         * @param index 
+         * @param count 
+         * @param buffer 
+         * @return true 
+         * @return false 
+         */
+        bool raw_write_blocks(unsigned index, size_t count, const UserOrKernelBuffer& buffer);
+
         size_t m_logical_block_size { 512 };
-        
+
     private:
 
         /**
