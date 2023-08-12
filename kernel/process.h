@@ -37,3 +37,25 @@ namespace ELF
 {
     class Loader;
 } // namespace ELF
+
+namespace Kernel
+{
+
+    timeval kgettimeofday();
+    void kgettimeofday(timeval&);
+
+    enum class Pledge : u32 
+    {
+    #define __ENUMERATE_PLEDGE_PROMISE(x) x,
+        ENUMERATE_PLEDGE_PROMISE
+    #undef __ENUMERATE_PLEDGE_PROMISE
+    };
+
+    enum class VeilState 
+    {
+        None,
+        Dropped,
+        Locked
+    };
+
+} // namespace Kernel
