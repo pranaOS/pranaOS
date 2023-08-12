@@ -9,7 +9,6 @@
  * 
  */
 
-#include "custody.h"
 #include <kernel/filesystem/custody.h>
 #include <kernel/filesystem/inode.h>
 #include <mods/string_builder.h>
@@ -28,6 +27,18 @@ namespace Kernel
 
     Custody::~Custody()
     {}
+    
+    String Custody::absolute_path() const
+    {
+        if (!parent())
+            return "/"
+        
+        Vector<const Custody*, 32> custody_chain;
+
+        StringBuilder builder;
+
+        return builder.to_string();
+    }
 
     /**
      * @return true 
