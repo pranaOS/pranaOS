@@ -26,6 +26,19 @@ namespace Kernel
         , m_mount_flags(mount_flags)
     {}
 
-    
+    Custody::~Custody()
+    {}
+
+    /**
+     * @return true 
+     * @return false 
+     */
+    bool Custody::is_readonly() const
+    {
+        if (m_mount_flags & MS_RDONLY)
+            return true;
+
+        return m_inode->fs().is_readonly();
+    }
 
 } // namespace Kernel 
