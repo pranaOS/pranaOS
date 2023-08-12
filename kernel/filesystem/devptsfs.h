@@ -24,11 +24,38 @@ namespace Kernel
     {
         friend class DevPtsFSInode;
 
+    public:
+        virtual ~DevPtsFS() override;
+
+        /**
+         * @return NonnullRefPtr<DevPtsFS> 
+         */
+        static NonnullRefPtr<DevPtsFS> create();
+
+        virtual bool initialize() override;
+
+        /**
+         * @return const char* 
+         */
+        virtual const char* class_name() const override 
+        {
+            return "DevPtsFR";
+        }
+
+        /**
+         * @return NonnullRefPtr<Inode> 
+         */
+        virtual NonnullRefPtr<Inode> root_inode() const override;
+
+        static void register_slave_pty(SlavePTY&);
+
 
     private:
         DevPtsFS();
         RefPtr<Inode> get_inode(InodeIdentifier) const;
 
         RefPtr<DevPtsFSInode> m_root_inode;
-    }
+    }; // class DevPtsFS
+
+    
 } // namespace Kernel
