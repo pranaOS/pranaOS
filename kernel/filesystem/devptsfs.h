@@ -57,5 +57,27 @@ namespace Kernel
         RefPtr<DevPtsFSInode> m_root_inode;
     }; // class DevPtsFS
 
+    class DevPtsFSInode final : public Inode
+    {
+        friend class DevPtsFS;
     
+    public:
+        virtual ~DevPtsFSInode() override;
+
+    private:
+        /**
+         * @param index 
+         */
+        DevPtsFSInode(DevPtsFS&, unsigned index, SlavePTY*);
+
+        /**
+         * @param buffer 
+         * @return ssize_t 
+         */
+        virtual ssize_t read_bytes(off_t, ssize_t, UserOrKernelBuffer& buffer, FileDescription*) const override;
+
+        
+
+    }; // class DevPtsFSInode
+
 } // namespace Kernel
