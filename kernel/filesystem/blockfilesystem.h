@@ -25,6 +25,10 @@ namespace Kernel
             return m_logical_block_size;
         }
 
+        /// @breif: flush writes + impl 
+        virtual void flush_writes() override;
+        void flush_writes_impl();
+
 
     protected:
         explicit BlockBasedFS(FileDescription&);
@@ -81,6 +85,16 @@ namespace Kernel
          * @return false 
          */
         bool raw_write_blocks(unsigned index, size_t count, const UserOrKernelBuffer& buffer);
+
+        /**
+         * @param index 
+         * @param buffer 
+         * @param count 
+         * @param offset 
+         * @param allow_cache 
+         * @return int 
+         */
+        int write_block(unsigned index, const UserOrKernelBuffer& buffer, size_t count, size_t offset = 0, bool allow_cache = true);
 
         size_t m_logical_block_size { 512 };
 
