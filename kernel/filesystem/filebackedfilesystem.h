@@ -11,13 +11,13 @@
 
 #pragma once 
 
-#include "filedescription.h"
 #include <kernel/filesystem/filedescription.h>
 #include <kernel/filesystem/filesystem.h>
 
-namespace Kernel
+namespace Kernel 
 {
-    class FileBackedFS: public FS 
+
+    class FileBackedFS : public FS 
     {
     public:
         virtual ~FileBackedFS() override;
@@ -26,32 +26,49 @@ namespace Kernel
          * @return File& 
          */
         File& file() 
-        {
-            return m_file_description->file();
+        { 
+            return m_file_description->file(); 
         }
 
         /**
          * @return FileDescription& 
          */
-        FileDescription& file_description()
-        {
-            return *m_file_description;
+        FileDescription& file_description() 
+        { 
+            return *m_file_description; 
         }
 
         /**
          * @return const File& 
          */
-        const File& file() const
-        {
-            return m_file_description->file();
+        const File& file() const 
+        { 
+            return m_file_description->file(); 
         }
 
+        /**
+         * @return FileDescription& 
+         */
+        FileDescription& file_description() const 
+        { 
+            return *m_file_description; 
+        }
+
+    protected:
+        /// @brief Construct a new File Backed F S object
+        explicit FileBackedFS(FileDescription&);
+
     private:
-        virtual bool is_file_backed() const override
-        {
-            return true;
+        /**
+         * @return true 
+         * @return false 
+         */
+        virtual bool is_file_backed() const override 
+        { 
+            return true; 
         }
 
         mutable NonnullRefPtr<FileDescription> m_file_description;
     }; // class FileBackedFS
+
 } // namespace Kernel
