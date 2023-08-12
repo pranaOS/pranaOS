@@ -27,13 +27,19 @@ namespace Kernel
 
     Custody::~Custody()
     {}
-    
+
+    /**
+     * @return String 
+     */
     String Custody::absolute_path() const
     {
         if (!parent())
-            return "/"
+            return "/";
         
         Vector<const Custody*, 32> custody_chain;
+
+        for (auto* custody = this; custody; custody = custody->parent())
+            custody_chain.append(custody);
 
         StringBuilder builder;
 
