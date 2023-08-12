@@ -13,24 +13,29 @@
 
 #include <kernel/filesystem/filebackedfilesystem.h>
 
-namespace Kernel
+namespace Kernel 
 {
-    class BlockBasedFS : public FileBackedFS
+
+    class BlockBasedFS : public FileBackedFS 
     {
     public:
+        /// @brief Destroy the BlockBasedFS object
         virtual ~BlockBasedFS() override;
 
-        size_t logical_block_size() const
-        {
-            return m_logical_block_size;
-        }
+        /**
+         * @return size_t 
+         */
+        size_t logical_block_size() const 
+        { 
+            return m_logical_block_size; 
+        };
 
-        /// @breif: flush writes + impl 
+        /// @brief: flush writes + impl
         virtual void flush_writes() override;
         void flush_writes_impl();
 
-
     protected:
+        /// @brief Construct a new BlockBasedFS object
         explicit BlockBasedFS(FileDescription&);
 
         /**
@@ -85,7 +90,7 @@ namespace Kernel
          * @return false 
          */
         bool raw_write_blocks(unsigned index, size_t count, const UserOrKernelBuffer& buffer);
-
+        
         /**
          * @param index 
          * @param buffer 
@@ -95,6 +100,14 @@ namespace Kernel
          * @return int 
          */
         int write_block(unsigned index, const UserOrKernelBuffer& buffer, size_t count, size_t offset = 0, bool allow_cache = true);
+
+        /**
+         * @param index 
+         * @param count 
+         * @param allow_cache 
+         * @return int 
+         */
+        int write_blocks(unsigned index, unsigned count, const UserOrKernelBuffer&, bool allow_cache = true);
 
         size_t m_logical_block_size { 512 };
 
@@ -110,6 +123,9 @@ namespace Kernel
          */
         void flush_specific_block_if_needed(unsigned index);
 
+        /// @brief: DiskCache -> m_cache
         mutable OwnPtr<DiskCache> m_cache;
+
     }; // class BlockBasedFS
+
 } // namespace Kernel
