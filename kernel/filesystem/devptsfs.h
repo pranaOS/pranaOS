@@ -76,8 +76,29 @@ namespace Kernel
          */
         virtual ssize_t read_bytes(off_t, ssize_t, UserOrKernelBuffer& buffer, FileDescription*) const override;
 
-        
+        /**
+         * @return InodeMetadata 
+         */
+        virtual InodeMetadata metadata() const override;
 
+        /**
+         * @return KResult 
+         */
+        virtual KResult traverse_as_directory(Function<bool>(const FS::DirectoryEntryView&)) const override;
+
+        /**
+         * @param name 
+         * @return RefPtr<Inode> 
+         */
+        virtual RefPtr<Inode> lookup(StringView name) override;
+
+        virtual void flush_metadata() override;
+
+        /**
+         * @param buffer 
+         * @return ssize_t 
+         */
+        virtual ssize_t write_bytes(off_t, ssize_t, const UserOrKernelBuffer& buffer, FileDescription*) override;
     }; // class DevPtsFSInode
 
 } // namespace Kernel
