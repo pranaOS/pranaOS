@@ -17,13 +17,13 @@
 #include <mods/refptr.h>
 #include <mods/string.h>
 
-namespace Kernel
+namespace Kernel 
 {
-    class Custody : public RefCounted<Custody>
+    class Custody : public RefCounted<Custody> 
     {
-        MAKE_SLAB_ALLOCATOR(Custody);
-
+        MAKE_SLAB_ALLOCATED(Custody)
     public:
+
         /**
          * @param parent 
          * @param name 
@@ -36,33 +36,60 @@ namespace Kernel
             return adopt(*new Custody(parent, name, inode, mount_flags));
         }
 
+        /// @brief Destroy the Custody object
+        ~Custody();
+
         /**
          * @return Custody* 
          */
         Custody* parent() 
-        {
-            return m_parent.ptr();
+        { 
+            return m_parent.ptr(); 
         }
 
-        const Custody* parent() const
-        {
-            return m_parent.ptr();
+        /**
+         * @return const Custody* 
+         */
+        const Custody* parent() const 
+        { 
+            return m_parent.ptr(); 
         }
 
         /**
          * @return Inode& 
          */
-        Inode& inode()
-        {
-            return m_inode;
+        Inode& inode() 
+        { 
+            return *m_inode; 
         }
+
+        /**
+         * @return const Inode& 
+         */
+        const Inode& inode() const 
+        { 
+            return *m_inode; 
+        }
+
+        /**
+         * @return const String& 
+         */
+        const String& name() const 
+        { 
+            return m_name; 
+        }
+
+        /**
+         * @return String 
+         */
+        String absolute_path() const;
 
         /**
          * @return int 
          */
-        int mount_flags() const
-        {
-            return m_mount_flags;
+        int mount_flags() const 
+        { 
+            return m_mount_flags; 
         }
 
         /**
@@ -72,6 +99,7 @@ namespace Kernel
         bool is_readonly() const;
 
     private:
+
         /**
          * @param parent 
          * @param name 
@@ -86,6 +114,7 @@ namespace Kernel
         NonnullRefPtr<Inode> m_inode;
 
         int m_mount_flags { 0 };
-    }; // class Custody
+
+    }; // class Custody 
 
 } // namespace Kernel
