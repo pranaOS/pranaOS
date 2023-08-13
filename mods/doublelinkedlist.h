@@ -86,8 +86,23 @@ namespace Mods
     private:
         struct Node
         {
+            explicit Node(const T& v)
+                : value(v)
+            {}
 
+            explicit Node(T&& v)
+                : value(move(v))
+            {}
+
+            T value;
+            Node* next { nullptr };
+            Node* prev { nullptr };
         }; // struct Node
+
+    private:
+        Node* m_head { nullptr };
+        Node* m_tail { nullptr };
+        
         
     }; // class DoubleLinkedList
 
