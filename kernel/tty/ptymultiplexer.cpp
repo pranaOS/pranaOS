@@ -16,8 +16,9 @@
 #include "masterpty.h"
 #include "ptymultiplexer.h"
 
-namespace Kernel
+namespace Kernel 
 {
+    /// @brief: s_max_pty_pairs
     static const unsigned s_max_pty_pairs = 8;
 
     static Mods::Singleton<PTYMultiplexer> s_the;
@@ -39,9 +40,49 @@ namespace Kernel
         for (int i = s_max_pty_pairs; i > 0; --i)
             m_freelist.unchecked_append(i - 1);
     }
-
+    
     /// @brief Destroy the PTYMultiplexer::PTYMultiplexer object
     PTYMultiplexer::~PTYMultiplexer()
-    {}
+    { }
+    
+    /**
+     * @param options 
+     * @return KResultOr<NonnullRefPtr<FileDescription>> 
+     */
+    KResultOr<NonnullRefPtr<FileDescription>> PTYMultiplexer::open(int options)
+    {
+        LOCKER(m_lock);
 
-} // namespace Kernel
+        if (m_freelist.is_empty())
+            return KResult(-EBUSY);
+
+        auto master_index = m_freelist.take_last();
+        auto master = adopt(*new MasterPTY(master_index));
+
+    #ifdef PTMX_DEBUG
+        dbg() << "PTYMultiplexer::open: Vending master " << master->index();
+    #endif
+
+        auto description = FileDescription::create(move(master));
+
+        description->set_rw_mode(options);
+        description->set_file_flags(options);
+
+        return description;
+    }
+
+    /**
+     * @param index 
+     */
+    void PTYMultiplexer::notify_master_destroyed(Badge<MasterPTY>, unsigned index)
+    {
+        LOCKER(m_lock);
+        
+        m_freelist.append(index);
+
+    #ifdef PTMX_DEBUG
+        dbg() << "PTYMultiplexer: " << index << " added to freelist";
+    #endif
+    }
+
+} // namespace Mods
