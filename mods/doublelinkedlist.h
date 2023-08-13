@@ -56,6 +56,19 @@ namespace Mods
             return &m_node->value;
         }
 
+        bool is_end() const
+        {
+            return !m_node;
+        }
+
+        /**
+         * @return DoubleLinkedListIterator 
+         */
+        static DoubleLinkedListIterator universal_end()
+        {
+            return DoubleLinkedListIterator(nullptr);
+        }
+
     private:
         friend ListType;
 
@@ -70,6 +83,11 @@ namespace Mods
     template<typename T>
     class DoubleLinkedList
     {
+    private:
+        struct Node
+        {
+
+        }; // struct Node
         
     }; // class DoubleLinkedList
 
