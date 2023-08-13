@@ -24,6 +24,43 @@ namespace Kernel
     class Device : public File 
     {
 
+    public:
+        virtual ~Device() override;
+
+        /**
+         * @return unsigned 
+         */
+        unsigned major() const
+        {
+            return m_major;
+        }
+
+        /**
+         * @return unsigned 
+         */
+        unsigned minor() const
+        {
+            return m_minor;
+        }
+
+        /**
+         * @return String 
+         */
+        virtual String absolute_path(const FileDescription&) const override;
+
+        /**
+         * @return String 
+         */
+        virtual String absolute_path() const;
+
+        /**
+         * @return uid_t 
+         */
+        uid_t uid() const
+        {
+            return m_uid;
+        }
+
     protected:
         /**
          * @param major 
@@ -46,6 +83,8 @@ namespace Kernel
         {
             m_gid = gid;
         }
+
+        static HashMap<u32, Device*>& all_devices();
     
     private:
         unsigned m_major { 0 };
