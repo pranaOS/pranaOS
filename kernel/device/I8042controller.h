@@ -44,6 +44,55 @@ namespace Kernel
 
         static void initialize();
 
+    private:
+        I8042Controller();
+
+        /// @brief do_drain
+        void do_drain();
+
+        /**
+         * @param device 
+         * @return true 
+         * @return false 
+         */
+        bool do_reset_device(Device device);
+
+        /** 
+         * @param device 
+         * @param data 
+         * @return u8 
+         */
+        u8 do_send_command(Device device, u8 data);
+
+        /**
+         * @param device 
+         * @param command 
+         * @param data 
+         * @return u8 
+         */
+        u8 do_send_command(Device device, u8 command, u8 data);
+
+        /**
+         * @param device 
+         * @param data 
+         * @return u8 
+         */
+        u8 do_write_to_device(Device device, u8 data);
+
+        /**
+         * @param device 
+         * @return u8 
+         */
+        u8 do_read_from_device(Device device);
+
+    
+
+        SpinLock<u8> m_lock;
+
+        bool m_is_dual_channel { false };
+
+        DeviceInfo m_devices[2];
+
     }; // class I8042Controller
 
 } // namespace Kernel
