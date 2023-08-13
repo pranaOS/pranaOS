@@ -13,14 +13,23 @@
 
 #include <kernel/device/device.h>
 
-namespace Kernel
+namespace Kernel 
 {
 
-    class CharacterDevice : public Device
+    class CharacterDevice : public Device 
     {
-    public: 
+    public:
         /// @brief Destroy the CharacterDevice object
         virtual ~CharacterDevice() override;
+
+    protected:
+        /**
+         * @param major 
+         * @param minor 
+         */
+        CharacterDevice(unsigned major, unsigned minor)
+            : Device(major, minor)
+        { }
 
     private:
         /**
@@ -28,10 +37,9 @@ namespace Kernel
          * @return false 
          */
         virtual bool is_character_device() const final 
-        {
-            return true;
+        { 
+            return true; 
         }
-
     }; // class CharacterDevice
 
 } // namespace Kernel
