@@ -13,10 +13,24 @@
 
 #include <kernel/device/characterdevice.h>
 
-namespace Kernel
+namespace Kernel 
 {
-    class NullDevice final : public CharacterDevice
+
+    class NullDevice final : public CharacterDevice 
     {
+        MOD_MAKE_ETERNAL
+    public:
+        NullDevice();
+
+        /// @brief Destroy the NullDevice object
+        virtual ~NullDevice() override;
+
+        static void initialize();
+
+        /**
+         * @return NullDevice& 
+         */
+        static NullDevice& the();
 
     private:
         /**
@@ -29,15 +43,20 @@ namespace Kernel
          * @return true 
          * @return false 
          */
-        virtual bool can_write(const FileDescription&, size_t) const override;
+        virtual bool can_write(const FileDescription&, size_t) const override 
+        { 
+            return true; 
+        }
+
         virtual bool can_read(const FileDescription&, size_t) const override;
 
         /**
          * @return const char* 
          */
-        virtual const char* class_name() const override
-        {
-            return "NullDevice";
+        virtual const char* class_name() const override 
+        { 
+            return "NullDevice"; 
         }
     }; // class NullDevice
+
 } // namespace Kernel
