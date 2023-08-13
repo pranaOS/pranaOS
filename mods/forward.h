@@ -11,6 +11,7 @@
 
 #pragma once
 
+#include "doublelinkedlist.h"
 #include "types.h"
 
 namespace Mods {
@@ -101,12 +102,12 @@ namespace Mods {
     class SinglyLinkedList;
 
     /**
-     * @brief DoublyLinkedList
+     * @brief DoubleLinkedList
      * 
      * @tparam T 
      */
     template<typename T>
-    class DoublyLinkedList;
+    class DoubleLinkedList;
 
     /**
      * @brief InlineLinkedList
@@ -311,7 +312,7 @@ using Mods::Bytes;
 using Mods::CircularDuplexStream;
 using Mods::CircularQueue;
 using Mods::DebugLogStream;
-using Mods::DoublyLinkedList;
+using Mods::DoubleLinkedList;
 using Mods::DuplexMemoryStream;
 using Mods::FlyString;
 using Mods::Function;
