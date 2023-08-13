@@ -95,7 +95,39 @@ namespace Kernel
             do_start();
         }
 
-        
+        void complete(RequestResult result);
+
+        /**
+         * @param priv 
+         */
+        void set_private(void* priv)
+        {
+            ASSERT(!m_private || !priv);
+            m_private = priv;
+        }
+
+        void* get_private() const
+        {
+            return m_private;
+        }
+
+        /**
+         * @tparam Args 
+         * @param buffer 
+         * @param args 
+         * @return true 
+         * @return false 
+         */
+        template<typename... Args>        
+        [[nodiscard]] bool write_to_buffer(UserOrKernelBuffer& buffer, Args... args)
+        {
+            if (in_target_context(buffer))
+                return buffer.write(forward<Args>(args)...);
+            
+            ProcessPagingScope paging_scope(m_process);
+
+            return buffer.write(forward<Args>(args)...);
+        }
 
     protected:
         AsyncDeviceRequest(Device&);
