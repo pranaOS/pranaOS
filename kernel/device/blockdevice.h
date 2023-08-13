@@ -27,6 +27,67 @@ namespace Kernel
             Write,
         }; 
 
+        /** 
+         * @return RequestType 
+         */
+        RequestType request_type() const
+        {
+            return m_request_type;
+        }
+
+        /**
+         * @return u32 
+         */
+        u32 block_index() const
+        {
+            return m_block_index;
+        }
+
+        /**
+         * @return u32 
+         */
+        u32 block_count() const
+        {
+            return m_block_count;
+        }
+
+        /// @brief: buffer
+        UserOrKernelBuffer& buffer 
+        {
+            return m_buffer;
+        }
+
+        /**
+         * @return const UserOrKernelBuffer& 
+         */
+        const UserOrKernelBuffer& buffer() const
+        {
+            return m_buffer;
+        }
+
+        /**
+         * @return size_t 
+         */
+        size_t buffer_size() const
+        {
+            return m_buffer_size;
+        }
+
+        /**
+         * @return const char* 
+         */
+        virtual const char* name() const override
+        {
+            switch (m_request_type) {
+            case Read:
+                return "blockDeviceRequest (read)";
+            case Write:
+                return "BlockDeviceRequest (write)";
+            default:
+                ASSERT_NOT_REACHED();
+            }
+        }
+
     private:
         BlockDevice& m_block_device;
 
