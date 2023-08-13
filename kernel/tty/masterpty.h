@@ -41,6 +41,30 @@ namespace Kernel
          */
         virtual KResult close() override;
 
+        /**
+         * @return true 
+         * @return false 
+         */
+        virtual bool is_master_pty() const override
+        {
+            return true;
+        }
+
+        /**
+         * @param request 
+         * @param arg 
+         * @return int 
+         */
+        virtual int ioctl(FileDescription&, unsigned request, FlatPtr arg) override;    
+
+        /**
+         * @return const char* 
+         */
+        virtual const char* class_name() const override
+        {
+            return "MasterPTY";
+        }
+
         RefPtr<SlavePTY> m_slave;
 
         unsigned m_index;
