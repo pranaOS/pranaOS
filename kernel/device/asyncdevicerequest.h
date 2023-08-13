@@ -38,6 +38,36 @@ namespace Kernel
             Cancelled
         };  
 
+        class RequestWaitResult
+        {
+            friend class AsyncDeviceRequest;
+
+        public:
+
+            /**
+             * @return RequestResult 
+             */
+            RequestResult request_result() const
+            {
+                return m_request_result;
+            }
+
+
+        private:
+
+            /**
+             * @param request_result 
+             * @param wait_result 
+             */
+            RequestWaitResult(RequestResult request_result, Thread::BlockResult wait_result)
+                : m_request_result(request_result)
+                , m_wait_result(wait_result)
+            {}
+
+            RequestResult m_request_result;
+            Thread::BlockResult m_wait_result;
+        }; // class RequestWaitResult
+
     protected:
         AsyncDeviceRequest(Device&);
 
@@ -59,6 +89,24 @@ namespace Kernel
             }
         }
 
+        /**
+         * @param buffer 
+         * @return true 
+         * @return false 
+         */
+        bool in_target_context(const UserOrKernelBuffer& buffer) const
+        {
+            if (buffer.is_kernel_buffer())
+                return true;
+            
+            return m_process == Process::current();
+        }
+
+        /**
+         * @param result 
+         * @return true 
+         * @return false 
+         */
         static bool is_completed_result(RequestResult result)
         {
             return result > Started;
