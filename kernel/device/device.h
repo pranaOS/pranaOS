@@ -21,5 +21,43 @@
 
 namespace Kernel
 {
+    class Device : public File 
+    {
+
+    protected:
+        /**
+         * @param major 
+         * @param minor 
+         */
+        Device(unsigned major, unsigned minor);
+
+        /**
+         * @param uid 
+         */
+        void set_uid(uid_t uid)
+        {
+            m_uid = uid;
+        }
+
+        /**
+         * @param gid 
+         */
+        void set_gid(gid_t gid)
+        {
+            m_gid = gid;
+        }
+    
+    private:
+        unsigned m_major { 0 };
+        unsigned m_minor { 0 };
+
+        uid_t m_uid { 0 };
+        gid_t m_gid { 0 };
+
+        SpinLock<u8> m_requests_lock;
+
+        DoubleLinkedList<RefPtr<AsyncDeviceRequest>> m_request;
+
+    }; // class Device
 
 } // namespace Kernel
