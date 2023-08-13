@@ -18,8 +18,9 @@
 #include <kernel/waitqueue.h>
 #include <kernel/vm/processpagingscope.h>
 
-namespace Kernel
+namespace Kernel 
 {
+
     class Device;
 
     class AsyncDeviceRequest : public RefCounted<AsyncDeviceRequest> 
@@ -28,6 +29,7 @@ namespace Kernel
         MOD_MAKE_NONMOVABLE(AsyncDeviceRequest);
 
     public:
+
         enum RequestResult 
         {
             Pending = 0,
@@ -36,9 +38,9 @@ namespace Kernel
             Failure,
             MemoryFault,
             Cancelled
-        };  
+        }; // enum 
 
-        class RequestWaitResult
+        class RequestWaitResult 
         {
             friend class AsyncDeviceRequest;
 
@@ -47,17 +49,17 @@ namespace Kernel
             /**
              * @return RequestResult 
              */
-            RequestResult request_result() const
-            {
-                return m_request_result;
+            RequestResult request_result() const 
+            { 
+                return m_request_result; 
             }
 
             /**
              * @return Thread::BlockResult 
              */
-            Thread::BlockResult wait_result() const
-            {
-                return m_wait_result;
+            Thread::BlockResult wait_result() const 
+            { 
+                return m_wait_result; 
             }
 
         private:
@@ -69,16 +71,22 @@ namespace Kernel
             RequestWaitResult(RequestResult request_result, Thread::BlockResult wait_result)
                 : m_request_result(request_result)
                 , m_wait_result(wait_result)
-            {}
+            { }
 
             RequestResult m_request_result;
+            
             Thread::BlockResult m_wait_result;
         }; // class RequestWaitResult
 
+        /// @brief Destroy the AsyncDeviceRequest object
         virtual ~AsyncDeviceRequest();
 
+        /**
+         * @return const char* 
+         */
         virtual const char* name() const = 0;
 
+        /// @brief start = 0
         virtual void start() = 0;
 
         /// @brief: add sub request
@@ -93,8 +101,11 @@ namespace Kernel
         void do_start(Badge<Device>)
         {
             do_start();
-        }
+        }       
 
+        /**
+         * @param result 
+         */
         void complete(RequestResult result);
 
         /**
@@ -106,9 +117,12 @@ namespace Kernel
             m_private = priv;
         }
 
-        void* get_private() const
-        {
-            return m_private;
+        /**
+         * @return void* 
+         */
+        void* get_private() const 
+        { 
+            return m_private; 
         }
 
         /**
@@ -118,36 +132,99 @@ namespace Kernel
          * @return true 
          * @return false 
          */
-        template<typename... Args>        
+        template<typename... Args>
         [[nodiscard]] bool write_to_buffer(UserOrKernelBuffer& buffer, Args... args)
         {
             if (in_target_context(buffer))
                 return buffer.write(forward<Args>(args)...);
-            
+
             ProcessPagingScope paging_scope(m_process);
 
             return buffer.write(forward<Args>(args)...);
         }
 
-    protected:
+        /**
+         * @tparam BUFFER_BYTES 
+         * @tparam Args 
+         * @param buffer 
+         * @param args 
+         * @return true 
+         * @return false 
+         */
+        template<size_t BUFFER_BYTES, typename... Args>
+        [[nodiscard]] bool write_to_buffer_buffered(UserOrKernelBuffer& buffer, Args... args)
+        {
+            if (in_target_context(buffer))
+                return buffer.write_buffered<BUFFER_BYTES>(forward<Args>(args)...);
+
+            ProcessPagingScope paging_scope(m_process);
+
+            return buffer.write_buffered<BUFFER_BYTES>(forward<Args>(args)...);
+        }
+
+        /**
+         * @tparam Args 
+         * @param buffer 
+         * @param args 
+         * @return true 
+         * @return false 
+         */
+        template<typename... Args>
+        [[nodiscard]] bool read_from_buffer(const UserOrKernelBuffer& buffer, Args... args)
+        {
+            if (in_target_context(buffer))
+                return buffer.read(forward<Args>(args)...);
+
+            ProcessPagingScope paging_scope(m_process);
+
+            return buffer.read(forward<Args>(args)...);
+        }
+
+        /**
+         * @tparam BUFFER_BYTES 
+         * @tparam Args 
+         * @param buffer 
+         * @param args 
+         * @return true 
+         * @return false 
+         */
+        template<size_t BUFFER_BYTES, typename... Args>
+        [[nodiscard]] bool read_from_buffer_buffered(const UserOrKernelBuffer& buffer, Args... args)
+        {
+            if (in_target_context(buffer))
+                return buffer.read_buffered<BUFFER_BYTES>(forward<Args>(args)...);
+
+            ProcessPagingScope paging_scope(m_process);
+            
+            return buffer.read_buffered<BUFFER_BYTES>(forward<Args>(args)...);
+        }
+
+    protected:  
+        /// @brief Construct a new AsyncDeviceRequest object
         AsyncDeviceRequest(Device&);
 
+        /**
+         * @return RequestResult 
+         */
         RequestResult get_request_result() const;
 
     private:
+        /// @breif: sub_request_finished
         void sub_request_finished(AsyncDeviceRequest&);
 
+        /// @breif: request_finished
         void request_finished();
 
+        /// @brief: do_start
         void do_start()
         {
             {
                 ScopedSpinLock lock(m_lock);
                 if (is_completed_result(m_result))
                     return;
-                
                 m_result = Started;
             }
+            start();
         }
 
         /**
@@ -159,7 +236,7 @@ namespace Kernel
         {
             if (buffer.is_kernel_buffer())
                 return true;
-            
+
             return m_process == Process::current();
         }
 
@@ -189,7 +266,6 @@ namespace Kernel
         void* m_private { nullptr };
 
         mutable SpinLock<u8> m_lock;
-
     }; // class AsyncDeviceRequest
 
-} // namespace Kernel
+}
