@@ -37,6 +37,22 @@ namespace Kernel
          */
         static PTYMultiplexer& the();
 
+        /**
+         * @param options 
+         * @return KResult<NonnullRefPtr<FileDescription>> 
+         */
+        virtual KResult<NonnullRefPtr<FileDescription>> open(int options) override;
+
+        virtual bool can_read(const FileDescription&, size_t) const override
+        {
+            return true;
+        }
+
+        virtual bool can_write(const FileDescription&, size_t) const override
+        {
+            return true;
+        }
+
     private:
         /**
          * @return const char* 
