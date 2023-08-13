@@ -104,7 +104,48 @@ namespace Mods
 
         ~DoubleLinkedList() { clear(); }
 
-        
+        bool is_empty() const
+        {
+            return !head();
+        }
+
+        void clear()
+        {
+            for (auto* node = m_head; node;) {
+                auto* next = node->next;
+                delete node;
+                node = next;
+            }
+
+            m_head = nullptr;
+            m_tail = nullptr;
+        }
+
+        /**
+         * @return T& 
+         */
+        T& first()
+        {
+            ASSERT(head());
+            return head()->value;
+        }
+
+        /**
+         * @return const T& 
+         */
+        const T& first() const
+        {
+            ASSERT(head());
+            return head()->value;
+        }
+
+        /**
+         * @param value 
+         */
+        void append(T&& value)
+        {
+            append_node(new Node(move(value)));
+        }
 
     private:
 
