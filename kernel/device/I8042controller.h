@@ -85,7 +85,35 @@ namespace Kernel
          */
         u8 do_read_from_device(Device device);
 
-    
+        /**
+         * @param port 
+         * @param data 
+         */
+        void do_wait_then_write(u8 port, u8 data);
+
+        /**
+         * @param port 
+         * @return u8 
+         */
+        u8 do_wait_then_read(u8 port);
+
+        /**
+         * @param device 
+         * @return int 
+         */
+        static int device_to_deviceinfo_index(Device device)
+        {
+            ASSERT(device != Device::None);
+
+            return (device == Device::Keyboard) ? 0 : 1;
+        }
+
+        struct DeviceInfo
+        {
+            I8042Device* device { nullptr };
+
+            bool available { false };
+        }
 
         SpinLock<u8> m_lock;
 
