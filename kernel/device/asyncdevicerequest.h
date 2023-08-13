@@ -52,6 +52,13 @@ namespace Kernel
                 return m_request_result;
             }
 
+            /**
+             * @return Thread::BlockResult 
+             */
+            Thread::BlockResult wait_result() const
+            {
+                return m_wait_result;
+            }
 
         private:
 
@@ -67,6 +74,28 @@ namespace Kernel
             RequestResult m_request_result;
             Thread::BlockResult m_wait_result;
         }; // class RequestWaitResult
+
+        virtual ~AsyncDeviceRequest();
+
+        virtual const char* name() const = 0;
+
+        virtual void start() = 0;
+
+        /// @brief: add sub request
+        void add_sub_request(NonnullRefPtr<AsyncDeviceRequest>);
+
+        /**
+         * @return RequestWaitResult 
+         */
+        [[nodiscard]] RequestWaitResult wait(timeval* = nullptr);
+
+        /// @brief: do_start
+        void do_start(Badge<Device>)
+        {
+            do_start();
+        }
+
+        
 
     protected:
         AsyncDeviceRequest(Device&);
