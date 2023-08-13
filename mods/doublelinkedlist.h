@@ -100,6 +100,47 @@ namespace Mods
         }; // struct Node
 
     private:
+
+        /**
+         * @param node 
+         */
+        void append_node(Node* node)
+        {
+            if (!m_head) {
+                ASSERT(!m_tail);
+                m_head = node;
+                m_tail = node;
+                return;
+            }
+
+            ASSERT(m_tail);
+            ASSERT(!node->next);
+            m_tail->next = node;
+            node->prev = m_tail;
+
+            m_tail = node;
+        }
+
+        /**
+         * @param node 
+         */
+        void prepend_node(Node* node)
+        {
+            if (!m_head) {
+                ASSERT(!m_tail);
+                m_head = node;
+                m_tail = node;
+                return;
+            }
+
+            ASSERT(m_tail);
+            ASSERT(!node->prev);
+
+            m_head->prev = node;
+            node->next = m_head;
+            m_head = node;
+        }
+    
         Node* m_head { nullptr };
         Node* m_tail { nullptr };
         
