@@ -61,6 +61,44 @@ namespace Kernel
             return m_uid;
         }
 
+        /**
+         * @return uid_t 
+         */
+        uid_t gid() const
+        {
+            return m_gid;
+        }
+
+        /**
+         * @return true 
+         * @return false 
+         */
+        virtual bool is_device() const override
+        {
+            return true;
+        }
+
+        /**
+         * @return true 
+         * @return false 
+         */
+        virtual bool is_disk_Device() const
+        {
+            return false;
+        }
+
+        /// @brief: for_each
+        static void for_each(Function<void(Device&)>);
+
+        /**
+         * @param major 
+         * @param minor 
+         * @return Device* 
+         */
+        static Device* get_device(unsigned major, unsigned minor);
+
+        void process_next_queued_request(Badge<AsyncDeviceRequest>, const AsyncDeviceRequest&);
+
     protected:
         /**
          * @param major 
