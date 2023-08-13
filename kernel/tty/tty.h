@@ -46,6 +46,14 @@ namespace Kernel
         /**
          * @return String 
          */
+        virtual String absolute_path(const FileDescription&) const override
+        {
+            return true;
+        }
+
+        /**
+         * @return String 
+         */
         virtual String tty_name() const = 0;
 
         unsigned short rows() const
@@ -67,6 +75,22 @@ namespace Kernel
                 return pg->pgid();
             
             return 0;           
+        }
+
+        void set_termios(const termios&);
+
+        /**
+         * @return true 
+         * @return false 
+         */
+        bool should_generate_signals() const
+        {
+            return m_termios.c_cflag & ISIG;
+        }
+
+        bool should_flush_on_signal() const
+        {
+            return !(m_termios);
         }
 
     private:
