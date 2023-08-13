@@ -15,7 +15,6 @@
 
 namespace Kernel 
 {
-
     static Mods::Singleton<NullDevice> s_the;
 
     /// @brief: initialize
