@@ -99,6 +99,13 @@ namespace Mods
             Node* prev { nullptr };
         }; // struct Node
 
+    public:
+        DoubleLinkedList() {}
+
+        ~DoubleLinkedList() { clear(); }
+
+        
+
     private:
 
         /**
@@ -139,6 +146,52 @@ namespace Mods
             m_head->prev = node;
             node->next = m_head;
             m_head = node;
+        }
+
+        /**
+         * @param value 
+         * @return Node* 
+         */
+        Node* find_node(const T& value) const
+        {
+            for(auto* node = m_head; node; node = node->next) {
+                if (Traits<T>::equals(node->value, value)) 
+                    return node;
+            }
+
+            return nullptr;
+        }
+
+        /**
+         * @return Node* 
+         */
+        Node* head()
+        {
+            return m_head;
+        }
+
+        /**
+         * @return const Node* 
+         */
+        const Node* head() const
+        {
+            return m_head;
+        }
+
+        /**
+         * @return Node* 
+         */
+        Node* tail() 
+        {
+            return m_tail;
+        }
+
+        /**
+         * @return const Node* 
+         */
+        const Node* tail() const
+        {
+            return m_tail;
         }
     
         Node* m_head { nullptr };
