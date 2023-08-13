@@ -159,7 +159,7 @@ namespace Kernel
 
         SpinLock<u8> m_requests_lock;
 
-        DoublyLinkedList<RefPtr<AsyncDeviceRequest>> m_requests;
+        DoubleLinkedList<RefPtr<AsyncDeviceRequest>> m_requests;
 
     }; // class Device
 
