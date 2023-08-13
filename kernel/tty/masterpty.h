@@ -15,14 +15,66 @@
 #include <kernel/doublebuffer.h>
 #include <kernel/device/characterdevice.h>
 
-namespace Kernel
+namespace Kernel 
 {
+
     class SlavePTY;
 
     class MasterPTY final : public CharacterDevice 
     {
-    
+    public:
+
+        /**
+         * @param index 
+         */
+        explicit MasterPTY(unsigned index);
+
+        /// @brief Destroy the MasterPTY object
+        virtual ~MasterPTY() override;
+
+        /**
+         * @return unsigned 
+         */
+        unsigned index() const 
+        { 
+            return m_index; 
+        }
+
+        /**
+         * @return String 
+         */
+        String pts_name() const;
+
+        /**
+         * @return ssize_t 
+         */
+        ssize_t on_slave_write(const UserOrKernelBuffer&, ssize_t);
+
+        /**
+         * @return true 
+         * @return false 
+         */
+        bool can_write_from_slave() const;
+
+        /// @brief: notify_slave_closed
+        void notify_slave_closed(Badge<SlavePTY>);
+
+        /**
+         * @return true 
+         * @return false 
+         */
+        bool is_closed() const 
+        { 
+            return m_closed; 
+        }
+
+        /**
+         * @return String 
+         */
+        virtual String absolute_path(const FileDescription&) const override;
+
     private:
+        
         /**
          * @return KResultOr<size_t> 
          */
@@ -45,9 +97,9 @@ namespace Kernel
          * @return true 
          * @return false 
          */
-        virtual bool is_master_pty() const override
-        {
-            return true;
+        virtual bool is_master_pty() const override 
+        { 
+            return true; 
         }
 
         /**
@@ -55,14 +107,14 @@ namespace Kernel
          * @param arg 
          * @return int 
          */
-        virtual int ioctl(FileDescription&, unsigned request, FlatPtr arg) override;    
+        virtual int ioctl(FileDescription&, unsigned request, FlatPtr arg) override;
 
         /**
          * @return const char* 
          */
-        virtual const char* class_name() const override
-        {
-            return "MasterPTY";
+        virtual const char* class_name() const override 
+        { 
+            return "MasterPTY"; 
         }
 
         RefPtr<SlavePTY> m_slave;
@@ -72,7 +124,7 @@ namespace Kernel
         bool m_closed { false };
 
         DoubleBuffer m_buffer;
-
+        
         String m_pts_name;
 
     }; // class MasterPTY
