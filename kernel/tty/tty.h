@@ -18,23 +18,20 @@
 #include <mods/weakptr.h>
 #include <kernel/device/characterdevice.h>
 
-namespace Kernel
+namespace Kernel 
 {
-    class TTY : public CharacterDevice
+
+    class TTY : public CharacterDevice 
     {
-    public: 
+    public:
         /// @brief Destroy the TTY object
         virtual ~TTY() override;
 
         /**
-         * @return KResult<size_t> 
+         * @return KResultOr<size_t> 
          */
-        virtual KResult<size_t> read(FileDescription&, size_t, UserOrKernelBuffer&, size_t) override;
-
-        /**
-         * @return KResult<size_t> 
-         */
-        virtual KResult<size_t> write(FileDescription&, size_t, const UserOrKernelBuffer&, size_t) override;
+        virtual KResultOr<size_t> read(FileDescription&, size_t, UserOrKernelBuffer&, size_t) override;
+        virtual KResultOr<size_t> write(FileDescription&, size_t, const UserOrKernelBuffer&, size_t) override;
 
         /**
          * @return true 
@@ -44,11 +41,18 @@ namespace Kernel
         virtual bool can_write(const FileDescription&, size_t) const override;
 
         /**
+         * @param request 
+         * @param arg 
+         * @return int 
+         */
+        virtual int ioctl(FileDescription&, unsigned request, FlatPtr arg) override final;
+
+        /**
          * @return String 
          */
-        virtual String absolute_path(const FileDescription&) const override
-        {
-            return true;
+        virtual String absolute_path(const FileDescription&) const override 
+        { 
+            return tty_name(); 
         }
 
         /**
@@ -56,14 +60,17 @@ namespace Kernel
          */
         virtual String tty_name() const = 0;
 
-        unsigned short rows() const
-        {
-            return m_rows;
+        /**
+         * @return unsigned short 
+         */
+        unsigned short rows() const 
+        { 
+            return m_rows; 
         }
 
-        unsigned short columns() const
-        {
-            return m_columns;
+        unsigned short columns() const 
+        { 
+            return m_columns; 
         }
 
         /**
@@ -73,41 +80,114 @@ namespace Kernel
         {
             if (auto pg = m_pg.strong_ref())
                 return pg->pgid();
-            
-            return 0;           
+            return 0;
         }
 
+        /// @brief Set the termios object
         void set_termios(const termios&);
 
         /**
          * @return true 
          * @return false 
          */
-        bool should_generate_signals() const
-        {
-            return m_termios.c_cflag & ISIG;
+        bool should_generate_signals() const 
+        { 
+            return m_termios.c_lflag & ISIG; 
         }
 
-        bool should_flush_on_signal() const
-        {
-            return !(m_termios);
+        bool should_flush_on_signal() const 
+        { 
+            return !(m_termios.c_lflag & NOFLSH); 
         }
+
+        bool should_echo_input() const 
+        { 
+            return m_termios.c_lflag & ECHO; 
+        }
+
+        bool in_canonical_mode() const 
+        { 
+            return m_termios.c_lflag & ICANON; 
+        }
+
+        void set_default_termios();
+        void hang_up();
+
+    protected:
+        
+        /**
+         * @return ssize_t 
+         */
+        virtual ssize_t on_tty_write(const UserOrKernelBuffer&, ssize_t) = 0;
+
+        /**
+         * @param columns 
+         * @param rows 
+         */
+        void set_size(unsigned short columns, unsigned short rows);
+
+        /**
+         * @param major 
+         * @param minor 
+         */
+        TTY(unsigned major, unsigned minor);
+
+        /**
+         * @param do_evaluate_block_conditions 
+         */
+        void emit(u8, bool do_evaluate_block_conditions = false);
+
+        /// @brief: echo
+        virtual void echo(u8) = 0;
+
+        /**
+         * @return true 
+         * @return false 
+         */
+        bool can_do_backspace() const;
+        void do_backspace();
+        void erase_word();
+        void erase_character();
+        void kill_line();
+        void flush_input();
+
+        /**
+         * @return true 
+         * @return false 
+         */
+        bool is_eol(u8) const;
+        bool is_eof(u8) const;
+        bool is_kill(u8) const;
+        bool is_erase(u8) const;
+        bool is_werase(u8) const;
+
+        /**
+         * @param signal 
+         */
+        void generate_signal(int signal);
+
+        int m_available_lines { 0 };
 
     private:
-        virtual bool is_tty() const final override
-        {
-            return true;
+        
+        /**
+         * @return true 
+         * @return false 
+         */
+        virtual bool is_tty() const final override 
+        { 
+            return true; 
         }
 
-        CircularDequeu<u8, 1024> m_input_buffer;
+        CircularDeque<u8, 1024> m_input_buffer;
 
         WeakPtr<Process> m_original_process_parent;
         WeakPtr<ProcessGroup> m_pg;
 
         termios m_termios;
-
+        
         unsigned short m_rows { 0 };
         unsigned short m_columns { 0 };
     }; // class TTY
-    
+
 } // namespace Kernel
