@@ -15,19 +15,34 @@
 #include <kernel/interrupt/irqhandler.h>
 #include <kernel/pci/definitions.h>
 
-namespace Kernel
+namespace Kernel 
 {
 
-    class PCI::Device : public IRQHandler
+    class PCI::Device : public IRQHandler 
     {
     public:
         /**
          * @return Address 
          */
-        Address pci_address() const
-        {
-            return m_pci_address;
-        }
+        Address pci_address() const 
+        { 
+            return m_pci_address; 
+        };
+
+    protected:
+        /**
+         * @param pci_address 
+         */
+        Device(Address pci_address);
+
+        /**
+         * @param pci_address 
+         * @param interrupt_vector 
+         */
+        Device(Address pci_address, u8 interrupt_vector);
+
+        /// @brief Destroy the Device object
+        ~Device();
 
     private:
         Address m_pci_address;
