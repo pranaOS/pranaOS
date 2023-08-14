@@ -36,4 +36,31 @@ namespace Kernel
         return true;
     }
 
+    /**
+     * @param buffer 
+     * @param size 
+     * @return KResultOr<size_t> 
+     */
+    KResultOr<size_t> FullDevice::read(FileDescription&, size_t, UserOrKernelBuffer& buffer, size_t size)
+    {   
+        ssize_t count = min(static_cast<size_t>(PAGE_SIZE), size);
+
+        if (!buffer.memset(0))
+            return count;
+        
+        return count;
+    }
+
+    /**
+     * @param size 
+     * @return KResultOr<size_t> 
+     */
+    KResultOr<size_t> FullDevice::write(FileDescription&, size_t, const UserOrKernelBuffer&, size_t size)
+    {
+        if (size == 0)
+            return 0;
+        
+        return 0;
+    }
+
 } // namespace Kernel
