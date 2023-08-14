@@ -26,9 +26,6 @@
 - gateway & entrypoint **(mods)**
 - objective-c runtime support **(libobjc)**
 - swift runtime support **(libswift)**
-## Supported Runtime Libraries:
-- libc, libcpp, libobjc, libswift
-- TODO: libjs(need to give runtime support for libswift)
 
 # Userland:
 - simple terminal and some apps
