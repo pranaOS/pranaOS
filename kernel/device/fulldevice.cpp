@@ -16,38 +16,39 @@
 #include <kernel/device/fulldevice.h>
 #include <libc/errno_codes.h>
 
-namespace Kernel
+namespace Kernel 
 {
+
     /// @brief Construct a new FullDevice::FullDevice object
     FullDevice::FullDevice()
         : CharacterDevice(1, 7)
-    {}
-
+    { }
+    
     /// @brief Destroy the FullDevice::FullDevice object
     FullDevice::~FullDevice()
-    {}
-
+    { }
+    
     /**
      * @return true 
      * @return false 
      */
-    bool FullDevice::can_read(const FileDescription&, size_t)
+    bool FullDevice::can_read(const FileDescription&, size_t) const
     {
         return true;
     }
-
+    
     /**
      * @param buffer 
      * @param size 
      * @return KResultOr<size_t> 
      */
     KResultOr<size_t> FullDevice::read(FileDescription&, size_t, UserOrKernelBuffer& buffer, size_t size)
-    {   
+    {
         ssize_t count = min(static_cast<size_t>(PAGE_SIZE), size);
-
-        if (!buffer.memset(0))
-            return count;
         
+        if (!buffer.memset(0, count))
+            return KResult(-EFAULT);
+
         return count;
     }
 
@@ -59,8 +60,8 @@ namespace Kernel
     {
         if (size == 0)
             return 0;
-        
-        return 0;
+            
+        return KResult(-ENOSPC);
     }
 
 } // namespace Kernel
