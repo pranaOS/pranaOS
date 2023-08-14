@@ -11,9 +11,9 @@
 
 #include <kernel/pci/device.h>
 
-namespace Kernel
+namespace Kernel 
 {
-    namespace PCI
+    namespace PCI 
     {
         /**
          * @param address 
@@ -21,10 +21,20 @@ namespace Kernel
         Device::Device(Address address)
             : IRQHandler(get_interrupt_line(address))
             , m_pci_address(address)
-        {}
+        { }
+
+        /**
+         * @param address 
+         * @param interrupt_vector 
+         */
+        Device::Device(Address address, u8 interrupt_vector)
+            : IRQHandler(interrupt_vector)
+            , m_pci_address(address)
+        { }
 
         /// @brief Destroy the Device::Device object
         Device::~Device()
-        {}
-    }
-}
+        { }
+
+    } // namespace PCI
+} // namespace Kernel
