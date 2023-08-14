@@ -15,14 +15,17 @@
 
 # Kernel Features:
 - mobile/watch/OS kernel.
-- x86 kernel
-- IPV4 stacks()
-- ext2 filesystem
-- POSIX signals
-- /proc typo filesystems
-- ps2 mouse and keyboard
+- x86 kernel with multi-threading feature.
+- IPV4 stacks(ARP, TCP, UDP, ICMP Protocols).
+- ext2 filesystem.
+- POSIX signals.
+- /proc typo filesystems.
+- ps2 mouse and keyboard.
 
 # Libraries:
+- gateway & entrypoint **(mods)**
+- objective-c runtime support **(libobjc)**
+- swift runtime support **(libswift)**
 ## Supported Runtime Libraries:
 - libc, libcpp, libobjc, libswift
 - TODO: libjs(need to give runtime support for libswift)
