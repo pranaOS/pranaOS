@@ -60,5 +60,10 @@ namespace Kernel
 
             return *s_access;
         }
+
+        bool Access::is_initialized()
+        {
+            return (s_access != nullptr);
+        }
     }
 }
