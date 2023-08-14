@@ -16,7 +16,10 @@
 # Kernel Features:
 - mobile/watch/OS kernel.
 - x86 kernel
+- IPV4 stacks()
 - ext2 filesystem
+- POSIX signals
+- /proc typo filesystems
 - ps2 mouse and keyboard
 
 # Libraries:
