@@ -30,7 +30,31 @@ namespace Kernel
 
     class NetworkAdapter : public RefCounted<NetworkAdapter>
     {
-        
+
+    private:
+        MACAddress m_mac_address;
+        IPv4Address m_ipv4_address;
+        IPv4Address m_ipv4_netmask;
+        IPv4Address m_ipv4_gateway;
+
+        struct PacketWithTimestamp
+        {
+            KBuffer packet;
+            timeval timestamp;
+        }; // struct
+
+        SinglyLinkedList<PacketWithTimestamp> m_packet_queue;
+        SinglyLinkedList<KBuffer> m_unused_packet_buffer;
+        size_t m_unused_packet_buffers_count { 0 };
+
+        String m_name;
+
+        u32 m_packets_in { 0 };
+        u32 m_bytes_in { 0 };
+        u32 m_packets_out { 0 };
+        u32 m_bytes_out { 0 };
+        u32 m_mtu { 1500 };
+
     }; // class NetworkAdapter
-    
+
 } // namespace Kernel
