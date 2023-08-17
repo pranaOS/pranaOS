@@ -16,5 +16,16 @@
 
 namespace Kernel
 {
+    /**
+     * @return MappedROM 
+     */
+    MappedROM map_bios()
+    {
+        MappedROM mapping;
+        mapping.size = 128 * kib;
+        mapping.paddr = PhysicalAddress(0xe0000);
+        mapping.region = MM.allocate_kernel_region(mapping.paddr, PAGE_ROUND_UP);
+        return mapping;
+    } // map_bios
 
 } // namespace Kernel
