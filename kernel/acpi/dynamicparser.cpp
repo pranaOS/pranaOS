@@ -13,15 +13,20 @@
 #include <kernel/acpi/parser.h>
 #include <kernel/acpi/dynamicparser.h>
 
-namespace Kernel
+namespace Kernel 
 {
-    namespace ACPI
+    namespace ACPI 
     {
 
+        /**
+         * @param rsdp 
+         */
         DynamicParser::DynamicParser(PhysicalAddress rsdp)
             : IRQHandler(9)
             , Parser(rsdp)
-        {}
+        {
+            klog() << "[ACPI]: Dynamic Parsing Enabled, Now it can parse AML";
+        }
 
         void DynamicParser::handle_irq(const RegisterState&)
         {
@@ -32,16 +37,29 @@ namespace Kernel
         {
             ASSERT_NOT_REACHED();
         }
-
         void DynamicParser::enable_aml_interpretation(File&)
         {
             ASSERT_NOT_REACHED();
         }
-
         void DynamicParser::enable_aml_interpretation(u8*, u32)
         {
             ASSERT_NOT_REACHED();
         }
+        void DynamicParser::disable_aml_interpretation()
+        {
+            ASSERT_NOT_REACHED();
+        }
 
-    } // namespace ACPI
+        void DynamicParser::try_acpi_shutdown()
+        {
+            ASSERT_NOT_REACHED();
+        }
+
+        void DynamicParser::build_namespace()
+        {
+            ASSERT_NOT_REACHED();
+        }
+
+    } // namespace ACPI 
+
 } // namespace Kernel
