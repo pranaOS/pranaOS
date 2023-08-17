@@ -12,16 +12,17 @@
 #include <kernel/commandline.h>
 #include <kernel/acpi/dynamicparser.h>
 
-namespace Kernel
+namespace Kernel 
 {
-    namespace ACPI
+    namespace ACPI 
     {
-        enum class FeatureLevel
+
+        enum class FeatureLevel 
         {
             Enabled,
             Limited,
             Disabled,
-        }; // enum
+        }; // enum 
 
         /**
          * @return FeatureLevel 
@@ -32,15 +33,37 @@ namespace Kernel
 
             if (value == "limited")
                 return FeatureLevel::Limited;
+
             if (value == "off")
                 return FeatureLevel::Disabled;
-            
+                
             return FeatureLevel::Enabled;
+        }
+
+        /// @breif: initialize
+        void initialize()
+        {
+            auto feature_level = determine_feature_level();
+
+            if (feature_level == FeatureLevel::Disabled)
+                return;
+
+            auto rsdp = StaticParsing::find_rsdp();
+
+            if (!rsdp.has_value())
+                return;
+
+            if (feature_level == FeatureLevel::Enabled)
+                Parser::initialize<DynamicParser>(rsdp.value());
+            else
+                Parser::initialize<Parser>(rsdp.value());
         }
 
         bool is_enabled()
         {
             return Parser::the();
         }
-    }
-}
+
+    } // namespace ACPI 
+
+} // namespace Kernel
