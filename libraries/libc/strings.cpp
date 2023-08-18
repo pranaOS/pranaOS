@@ -2,7 +2,7 @@
  * @file strings.cpp
  * @author Krisna Pranav
  * @brief strings
- * @version 1.0
+ * @version 6.0
  * @date 2023-08-04
  * 
  * @copyright Copyright (c) 2021 - 2023 pranaOS Developers, Krisna Pranav

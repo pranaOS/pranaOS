@@ -2,7 +2,7 @@
  * @file locale.hpp
  * @author Krisna Pranav
  * @brief Country Codes
- * @version 1.0
+ * @version 6.0
  * @date 2023-06-17
  * 
  * @copyright Copyright (c) 2023 2021-2023, pranaOS Developers, Krisna Pranav

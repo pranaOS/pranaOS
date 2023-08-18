@@ -2,7 +2,7 @@
  * @file endian.h
  * @author Krisna Pranav
  * @brief endian
- * @version 1.0
+ * @version 6.0
  * @date 2023-08-01
  * 
  * @copyright Copyright (c) 2021 - 2023 pranaOS Developers, Krisna Pranav

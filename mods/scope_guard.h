@@ -2,7 +2,7 @@
  * @file scope_guard.h
  * @author Krisna Pranav
  * @brief scope_guard
- * @version 1.0
+ * @version 6.0
  * @date 2023-07-01
  * 
  * @copyright Copyright (c) 2021 - 2023 pranaOS Developers, Krisna Pranav

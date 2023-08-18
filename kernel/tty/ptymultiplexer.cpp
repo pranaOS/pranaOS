@@ -2,7 +2,7 @@
  * @file ptymultiplexer.cpp
  * @author Krisna Pranav
  * @brief pty multi plexer
- * @version 1.0
+ * @version 6.0
  * @date 2023-08-13
  * 
  * @copyright Copyright (c) 2021 - 2023 pranaOS Developers, Krisna Pranav

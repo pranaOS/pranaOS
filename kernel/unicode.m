@@ -2,7 +2,7 @@
  * @file unicde.m
  * @author Krisna Pranav
  * @brief Unicode Support
- * @version 1.0
+ * @version 6.0
  * @date 2023-07-30
  * 
  * @copyright Copyright (c) 2021 - 2023 pranaOS Developers, Krisna Pranav

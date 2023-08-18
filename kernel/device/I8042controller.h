@@ -2,7 +2,7 @@
  * @file I8042controller.h
  * @author Krisna Pranav
  * @brief i8042 controller
- * @version 1.0
+ * @version 6.0
  * @date 2023-08-13
  * 
  * @copyright Copyright (c) 2021 - 2023 pranaOS Developers, Krisna Pranav

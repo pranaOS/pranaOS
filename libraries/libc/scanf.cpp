@@ -2,7 +2,7 @@
  * @file scanf.cpp
  * @author Krisna Pranav, Opsycon AB
  * @brief scanf
- * @version 1.0
+ * @version 6.0
  * @date 2023-08-03
  * 
  * @copyright Copyright (c) 2021 - 2023 pranaOS Developers, Krisna Pranav, 2000-2002 Opsycon AB (www.opsycon.se)

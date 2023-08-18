@@ -2,7 +2,7 @@
  * @file arp.h
  * @author Krisna Pranav aka (krishpranav)
  * @brief arp packets
- * @version 1.0
+ * @version 6.0
  * @date 2023-08-15
  * 
  * @copyright Copyright (c) 2021 - 2023 pranaOS Developers, Krisna Pranav

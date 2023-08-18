@@ -2,7 +2,7 @@
  * @file inodevmobject.h
  * @author Krisna Pranav
  * @brief inodevmobject
- * @version 1.0
+ * @version 6.0
  * @date 2023-08-08
  * 
  * @copyright Copyright (c) 2021 - 2023 pranaOS Developers, Krisna Pranav

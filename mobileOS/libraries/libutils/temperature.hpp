@@ -2,7 +2,7 @@
  * @file temperature.hpp
  * @author Krisna Pranav
  * @brief Temperature Checker & Functionalit
- * @version 1.0
+ * @version 6.0
  * @date 2023-06-16
  * 
  * @copyright Copyright (c) 2023 pranaOS Developers, Krisna Pranav

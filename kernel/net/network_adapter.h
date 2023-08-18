@@ -2,7 +2,7 @@
  * @file network_adapter.h
  * @author Krisna Pranav aka (krishpranav)
  * @brief network adapter
- * @version 1.0
+ * @version 6.0
  * @date 2023-08-15
  * 
  * @copyright Copyright (c) 2021 - 2023 pranaOS Developers, Krisna Pranav

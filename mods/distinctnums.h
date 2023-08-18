@@ -2,7 +2,7 @@
  * @file distinctnums.h
  * @author Krisna Pranav
  * @brief distinctnums
- * @version 1.0
+ * @version 6.0
  * @date 2023-07-10
  * 
  * @copyright Copyright (c) 2021 - 2023 pranaOS Developers, Krisna Pranav
