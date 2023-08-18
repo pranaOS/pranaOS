@@ -50,5 +50,37 @@ namespace Kernel
         const u8 m_source;
         const u32 m_global_system_interrupt;
         const u16 m_flags;
-    };
+    }; // class ISAInterruptOverrideMetadata
+
+    class InterruptManagement
+    {
+    public:
+        /**
+         * @return InterruptManagement& 
+         */
+        static InterruptManagement& the();
+
+        static void initialize();
+        static bool intialized();
+
+        /**
+         * @param original_irq 
+         * @return u8 
+         */
+        static u8 acquire_mapped_interrupt_number(u8 original_irq);
+
+        /**
+         * @param mapped_interrupt 
+         * @return u8 
+         */
+        static u8 acquire_irq_number(u8 mapped_interrupt);
+
+    private:
+        InterruptManager();
+        PhysicalAddress search_for_madt();
+        void locate_apic_data();
+        bool m_smp_enabled { false };
+        PhysicalAddress m_madt;
+    }; // class InterruptManager
+
 } // namespace Kernel
