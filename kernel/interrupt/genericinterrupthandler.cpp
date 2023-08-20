@@ -15,7 +15,7 @@
 #include <kernel/interrupt/interruptmanagement.h>
 #include <kernel/interrupt/pic.h>
 
-namespace Kernel
+namespace Kernel 
 {
     /**
      * @param interrupt_number 
@@ -26,9 +26,29 @@ namespace Kernel
         return get_interrupt_handler(interrupt_number);
     }
 
+    /**
+     * @param interrupt_number 
+     * @param disable_remap 
+     */
+    GenericInterruptHandler::GenericInterruptHandler(u8 interrupt_number, bool disable_remap)
+        : m_interrupt_number(interrupt_number)
+        , m_disable_remap(disable_remap)
+        
+    {
+        if (m_disable_remap)
+            register_generic_interrupt_handler(m_interrupt_number, *this);
+        else
+            register_generic_interrupt_handler(InterruptManagement::acquire_mapped_interrupt_number(m_interrupt_number), *this);
+    }
+
     /// @brief Destroy the GenericInterruptHandler::GenericInterruptHandler object
     GenericInterruptHandler::~GenericInterruptHandler()
-    {}
+    {
+        if (m_disable_remap)
+            unregister_generic_interrupt_handler(m_interrupt_number, *this);
+        else
+            unregister_generic_interrupt_handler(InterruptManagement::acquire_mapped_interrupt_number(m_interrupt_number), *this);
+    }
 
     /**
      * @param number 
@@ -43,5 +63,5 @@ namespace Kernel
         m_interrupt_number = number;
         register_generic_interrupt_handler(InterruptManagement::acquire_mapped_interrupt_number(interrupt_number()), *this);
     }
-    
+
 } // namespace Kernel
