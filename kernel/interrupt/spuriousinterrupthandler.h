@@ -17,10 +17,10 @@
 #include <kernel/interrupt/genericinterrupthandler.h>
 #include <kernel/interrupt/irqcontroller.h>
 
-namespace Kernel
+namespace Kernel 
 {
 
-    class SpuriousInterruptHandler final : public GenericInterruptHandler
+    class SpuriousInterruptHandler final : public GenericInterruptHandler 
     {
     public:
         /**
@@ -28,44 +28,85 @@ namespace Kernel
          */
         static void initialize(u8 interrupt_number);
 
+        /// @brief Destroy the SpuriousInterruptHandler object
+        virtual ~SpuriousInterruptHandler();
+
         /**
          * @param regs 
          */
         virtual void handle_interrupt(const RegisterState& regs) override;
 
-        void register_handle(GenericInterruptHandler&);
-        void unregister_handle(GenericInterruptHandler&);
+        void register_handler(GenericInterruptHandler&);
+        void unregister_handler(GenericInterruptHandler&);
 
+        /**
+         * @return true 
+         * @return false 
+         */
         virtual bool eoi() override;
-
 
         /**
          * @return size_t 
          */
-        virtual size_t sharing_devices_count() const override
-        {
-            return 1;
+        virtual size_t sharing_devices_count() const override 
+        { 
+            return 1; 
         }
 
         /**
          * @return true 
          * @return false 
          */
-        virtual bool is_sharing_handler() const override
-        {
-            return false;
+        virtual bool is_shared_handler() const override 
+        { 
+            return false; 
         }
+
+        /**
+         * @return true 
+         * @return false 
+         */
+        virtual bool is_sharing_with_others() const override 
+        { 
+            return false; 
+        }
+
+        /**
+         * @return HandlerType 
+         */
+        virtual HandlerType type() const override 
+        { 
+            return HandlerType::SpuriousInterruptHandler; 
+        }
+
+        /**
+         * @return const char* 
+         */
+        virtual const char* purpose() const override 
+        { 
+            return "Spurious Interrupt Handler"; 
+        }
+
+        /**
+         * @return const char* 
+         */
+        virtual const char* controller() const override;
 
     private:
         void enable_interrupt_vector();
         void disable_interrupt_vector();
 
+        /**
+         * @param interrupt_number 
+         */
         explicit SpuriousInterruptHandler(u8 interrupt_number);
 
         bool m_enabled;
 
         RefPtr<IRQController> m_responsible_irq_controller;
+
         OwnPtr<GenericInterruptHandler> m_real_handler;
+
     }; // class SpuriousInterruptHandler
 
 } // namespace Kernel
