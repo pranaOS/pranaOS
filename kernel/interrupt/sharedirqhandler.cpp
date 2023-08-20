@@ -41,4 +41,33 @@ namespace Kernel
             enable_interrupt_vector();
     }
 
+    /**
+     * @param handler 
+     */
+    void SharedIRQHandler::unregister_handler(GenericInterruptHandler& handler)
+    {
+        #ifndef INTERRUPT_DEBUG
+            klog() << "Interrupt hander unregistered, shared interrupt unregistered handler";
+        #endif
+
+        m_handlers.remove(&handler);
+        if (m_handlers.is_empty())
+            disable_interrupt_vector();
+    }
+
+    /**
+     * @return true 
+     * @return false 
+     */
+    bool SharedIRQHandler::eoi() 
+    {
+        #ifndef INTERRUPT_DEBUG
+            dbg() << "EOI IRQ" << interrupt_number();
+        #endif
+
+        m_responsible_irq_controller->eoi(*this);
+
+        return true;
+    }
+
 } // namespace Kernel 
