@@ -12,24 +12,36 @@
 #include "unhandledinterrupthandler.h"
 #include <kernel/interrupt/unhandledinterrupthandler.h>
 
-namespace Kernel
+namespace Kernel 
 {
-
     /**
      * @param interrupt_vector 
      */
     UnhandledInterruptHandler::UnhandledInterruptHandler(u8 interrupt_vector)
         : GenericInterruptHandler(interrupt_vector)
-    {}
+    { }
 
     /// @brief: handle_interrupt
-    void UnhandledInterruptHandler::handle_interrupt(const RegisterState)
+    void UnhandledInterruptHandler::handle_interrupt(const RegisterState&)
     {
-        dbg() << "Interrupt: unhanded vector " << interrupt_number() << "was invoked for handle_interrupt.";
-        Processor::halt(); 
+        dbg() << "Interrupt: Unhandled vector " << interrupt_number() << " was invoked for handle_interrupt(RegisterState&).";
+        Processor::halt();
     }
 
+    /**
+     * @return true 
+     * @return false 
+     */
+    [[noreturn]] bool UnhandledInterruptHandler::eoi()
+    {
+        dbg() << "Interrupt: Unhandled vector " << interrupt_number() << " was invoked for eoi().";
+        Processor::halt();
+    }
+    
+    /**
+     * @brief Destroy the UnhandledInterruptHandler::UnhandledInterruptHandler object
+     * 
+     */
     UnhandledInterruptHandler::~UnhandledInterruptHandler()
-    {}
-
-} // namespace Kernel
+    { }
+}
