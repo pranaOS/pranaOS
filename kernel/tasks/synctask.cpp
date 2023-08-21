@@ -14,17 +14,21 @@
 #include <kernel/tasks/synctask.h>
 #include <kernel/time/timemanagement.h>
 
-namespace Kernel
-{   
-    /// @breif: spawn
-    void SyncTask::spwan()
+namespace Kernel 
+{
+    /// @breif: spawn;
+    void SyncTask::spawn()
     {
         RefPtr<Thread> syncd_thread;
 
-        Proces::create_kernel_process(syncd_thread, "SyncTask", [] {
-            dbg << "SynTask is running";
-            VFS::the().sync();
-            Thread::current()->sleep({1, 1});
-        })
+        Process::create_kernel_process(syncd_thread, "SyncTask", [] {
+            dbg() << "SyncTask is running";
+
+            for (;;) {
+                VFS::the().sync();
+                Thread::current()->sleep({ 1, 0 });
+            }
+        });
     }
+
 } // namespace Kernel
