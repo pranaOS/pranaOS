@@ -44,7 +44,6 @@
 - contact our [discord](https://discord.gg/XmpBTmy9Bz)
 
 ## Social Media:
-- [Instagram](https://www.instagram.com/officialpranaos/)
 - [Youtube](https://www.youtube.com/channel/UCHBR5EYG9MDJ-yws4zN6xXQ)
 - [Discord](https://discord.gg/XmpBTmy9Bz)
 
