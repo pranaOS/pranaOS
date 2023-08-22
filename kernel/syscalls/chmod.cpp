@@ -14,11 +14,10 @@
 #include <kernel/filesystem/virtualfilesystem.h>
 #include <kernel/process.h>
 
-namespace Kernel
+namespace Kernel 
 {
-
     /**
-     * @brief sys chmod
+     * @brief chmod sys
      * 
      */
     int Process::sys$chmod(Userspace<const char*> user_path, size_t path_length, mode_t mode)
@@ -29,8 +28,24 @@ namespace Kernel
 
         if (path.is_error())
             return path.error();
-        
+
         return VFS::the().chmod(path.value(), mode, current_directory());
+    }
+
+    /**
+     * @brief sys fchmod
+     * 
+     */
+    int Process::sys$fchmod(int fd, mode_t mode)
+    {
+        REQUIRE_PROMISE(fattr);
+
+        auto description = file_description(fd);
+        
+        if (!description)
+            return -EBADF;
+
+        return description->chmod(mode);
     }
 
 } // namespace Kernel
