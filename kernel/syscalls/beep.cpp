@@ -12,7 +12,7 @@
 #include <kernel/process.h>
 #include <kernel/device/pcspeaker.h>
 
-namespace Kernel
+namespace Kernel 
 {
     /**
      * @brief Process beep sys
@@ -21,12 +21,15 @@ namespace Kernel
     int Process::sys$beep()
     {
         PCSpeaker::tone_on(440);
-        PCSpeaker::tone_off();
-        auto result = Thread::current();
 
-        if (result.was_interrupted())   
+        auto result = Thread::current()->sleep({ 0, 200 });
+
+        PCSpeaker::tone_off();
+
+        if (result.was_interrupted())
             return -EINTR;
 
         return 0;
     }
+
 } // namespace Kernel
