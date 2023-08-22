@@ -15,8 +15,8 @@
 
 namespace Kernel 
 {
- 
-    struct KernelSymbol
+
+    struct KernelSymbol 
     {
         u32 address;
         const char* name;
@@ -33,5 +33,16 @@ namespace Kernel
      * @return const KernelSymbol* 
      */
     const KernelSymbol* symbolicate_kernel_address(u32 address);
+
+    /// @brief: load kernel symbol table
+    void load_kernel_symbol_table();
+
+    extern bool g_kernel_symbols_available;
+
+    extern FlatPtr g_lowest_kernel_symbol_address;
+    
+    extern FlatPtr g_highest_kernel_symbol_address;
+
+    void dump_backtrace();
 
 } // namespace Kernel
