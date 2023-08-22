@@ -9,19 +9,16 @@
  * 
  */
 
-#pragma once 
+#pragma once
 
-namespace Kernel
+class PCSpeaker 
 {
+public:
+    /**
+     * @param frequency 
+     */
+    static void tone_on(int frequency);
 
-    class PCSpeaker 
-    {
-    public:
-        static void tone_off();
-        static void status();
-        
-    private:
-        bool m_status { 0 };
-    }; // class PCSpeaker
-
-} // namespace Kernel
+    /// @brief: tone off
+    static void tone_off();
+}; // class PCSpeaker
