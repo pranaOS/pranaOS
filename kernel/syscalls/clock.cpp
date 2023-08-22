@@ -30,4 +30,16 @@ namespace Kernel
         return 0;
     }
 
+    int Process::sys$gettimeofday(Userspace<timeval*> user_tv)
+    {
+        REQUIRE_PROMISE(stdio);
+
+        auto tv = kgettimeofday();
+
+        if (!copy_to_user(user_tv, &tv))
+            return -EFAULT;
+        
+        return 0;
+    }
+
 } // namespace Kernel
