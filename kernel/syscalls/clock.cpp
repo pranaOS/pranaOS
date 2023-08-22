@@ -15,6 +15,10 @@
 
 namespace Kernel
 {
+    /**
+     * @brief clock gettime sys
+     * 
+     */
     int Process::sys$clock_gettime(clockid_t clock_id, Userspace<timespec*> user_ts)
     {
         REQUIRE_PROMISE(stdio);
@@ -30,6 +34,36 @@ namespace Kernel
         return 0;
     }
 
+    /**
+     * @brief sys clocksettime
+     */
+    int Process::sys$clock_settime(clockid_t clock_id, Userspace<const timespec*> user_ts)
+    {
+        REQUIRE_PROMISE(settime);
+
+        if (!is_superuser())
+            return -EPERM;
+        
+        timespec ts;
+
+        if (!copy_from_user(&ts, user_ts))
+            return -EFAULT;
+
+        switch (clock_id) {
+        case CLOCK_REALTIME:
+            TimeManagement::the().set_epoch_time(ts);
+            break;
+        default:
+            return -EINVAL;
+        }
+
+        return 0;
+    }
+
+    /**
+     * @brief gettimeofday sys
+     * 
+     */
     int Process::sys$gettimeofday(Userspace<timeval*> user_tv)
     {
         REQUIRE_PROMISE(stdio);
