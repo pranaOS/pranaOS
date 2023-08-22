@@ -37,9 +37,25 @@ namespace Kernel
         return 0;
     }
 
+    /**
+     * @brief getcwd sys
+     * 
+     */
     int Process::sys$getcwd(Userspace<char*> buffer, ssize_t size)
     {
         REQUIRE_PROMISE(rpath);
+
+        if (size < 0)
+            return -EINVAL;
         
+        auto path = current_directory().absolute_path();
+
+        if ((size_t)size < path.length() + 1)
+            return -ERANGE;
+        
+        if(!copy_to_user(buffer, path.characters(), path.length() + 1))
+            return -EFAULT;
+
+        return 0;
     }
 } // namespace Kernel
