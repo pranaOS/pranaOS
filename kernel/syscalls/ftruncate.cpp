@@ -12,10 +12,10 @@
 #include <kernel/filesystem/filedescription.h>
 #include <kernel/process.h>
 
-namespace Kernel
+namespace Kernel 
 {
     /**
-     * @brief ftruncate sys
+     * @brief ftruncate sys in process
      * 
      */
     int Process::sys$ftruncate(int fd, off_t length)
@@ -24,13 +24,16 @@ namespace Kernel
 
         if (length < 0)
             return -EINVAL;
-        
+            
         auto description = file_description(fd);
 
-        if (!description)   
+        if (!description)
             return -EBADF;
-        
+            
+        if (!description->is_writable())
+            return -EBADF;
+
         return description->truncate(static_cast<u64>(length));
-    }
+    } // int
 
 } // namespace Kernel
