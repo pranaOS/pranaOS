@@ -12,15 +12,25 @@
 #include <kernel/ksyms.h>
 #include <kernel/process.h>
 
-namespace Kernel
+namespace Kernel 
 {
-   void Process::sys$exit(int status)
-   {
+
+    /**
+     * @brief exit in sys
+     * 
+     */
+    void Process::sys$exit(int status)
+    {
         cli();
 
         m_termination_status = status;
         m_termination_signal = 0;
-
+        
         die();
-   } 
-}
+
+        Thread::current()->die_if_needed();
+
+        ASSERT_NOT_REACHED();
+    }
+
+} // namespace Kernel
