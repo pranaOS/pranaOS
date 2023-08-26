@@ -12,11 +12,10 @@
 #include <kernel/process.h>
 #include <kernel/filesystem/filedescription.h>
 
-namespace Kernel
+namespace Kernel 
 {
-
     /**
-     * @brief get dir entries process
+     * @brief get directory entries process
      * 
      */
     ssize_t Process::sys$get_dir_entries(int fd, void* buffer, ssize_t size)
@@ -25,12 +24,17 @@ namespace Kernel
 
         if (size < 0)
             return -EINVAL;
-        
+
         auto description = file_description(fd);
 
         if (!description)
             return -EBADF;
+
+        auto user_buffer = UserOrKernelBuffer::for_user_buffer((u8*)buffer, size);
         
+        if (!user_buffer.has_value())
+            return -EFAULT;
+
         return description->get_dir_entries(user_buffer.value(), size);
     }
 
