@@ -21,8 +21,8 @@ static Mods::Singleton<Console> s_the;
 
 static Kernel::SpinLock g_console_lock;
 
-/// @brief: initialize
-void Console::initalize()
+/// @breif: initialize
+void Console::initialize()
 {
     s_the.ensure_instance();
 }
@@ -47,7 +47,13 @@ bool Console::is_initialized()
 /// @brief Construct a new Console::Console object
 Console::Console()
     : CharacterDevice(5, 1)
-{}
+{
+}
+
+/// @brief Destroy the Console::Console object
+Console::~Console()
+{
+}
 
 /**
  * @return true 
@@ -55,7 +61,15 @@ Console::Console()
  */
 bool Console::can_read(const Kernel::FileDescription&, size_t) const
 {
-    return false
+    return false;
+}
+
+/**
+ * @return Kernel::KResultOr<size_t> 
+ */
+Kernel::KResultOr<size_t> Console::read(Kernel::FileDescription&, size_t, Kernel::UserOrKernelBuffer&, size_t)
+{
+    return 0;
 }
 
 /**
@@ -67,6 +81,28 @@ Kernel::KResultOr<size_t> Console::write(Kernel::FileDescription&, size_t, const
 {
     if (!size)
         return 0;
-    
+
+    ssize_t nread = data.read_buffered<256>(size, [&](const u8* bytes, size_t bytes_count) {
+        for (size_t i = 0; i < bytes_count; i++)
+            put_char((char)bytes[i]);
+        return (ssize_t)bytes_count;
+    });
+
+    if (nread < 0)
+        return Kernel::KResult(nread);
+
     return (size_t)nread;
+}
+
+/**
+ * @param ch 
+ */
+void Console::put_char(char ch)
+{
+    Kernel::ScopedSpinLock lock(g_console_lock);
+
+#ifdef CONSOLE_OUT_TO_E9
+    IO::out8(0xe9, ch);
+#endif
+    m_logbuffer.enqueue(ch);
 }
