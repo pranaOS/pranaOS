@@ -14,55 +14,69 @@
 #include <kernel/kbuffer.h>
 #include <kernel/kresult.h>
 
-namespace Kernel
+namespace Kernel 
 {
 
     struct [[gnu::packed]] MallocPerformanceEvent
     {
         size_t size;
         FlatPtr ptr;
-    }; // MallocPerformanceEvent 
+    }; // struct MallocPerformanceEvent
 
     struct [[gnu::packed]] FreePerformanceEvent
     {
         size_t size;
         FlatPtr ptr;
-    }; // FreePerformanceEvent 
+    }; // struct FreePerformanceEvent
 
-    class PerformanceEventBuffer
+    struct [[gnu::packed]] PerformanceEvent
+    {
+        u8 type { 0 };
+        u8 stack_size { 0 };
+        u64 timestamp;
+        union 
+        {
+            MallocPerformanceEvent malloc;
+            FreePerformanceEvent free;
+        } data;
+        FlatPtr stack[32];
+    }; // struct PerformanceEvent
+
+    class PerformanceEventBuffer 
     {
     public:
+        /// @brief Construct a new Performance Event Buffer object
         PerformanceEventBuffer();
 
         /**
          * @param type 
-         * @param arg 
+         * @param arg1 
          * @param arg2 
          * @return KResult 
          */
-        KResult append(int type, FlatPtr arg, FlatPtr arg2);
+        KResult append(int type, FlatPtr arg1, FlatPtr arg2);
 
         /**
          * @return size_t 
          */
-        size_t capacity() const
-        {
-            return m_buffer.size();
+        size_t capacity() const 
+        { 
+            return m_buffer.size() / sizeof(PerformanceEvent); 
         }
 
         /**
          * @return size_t 
          */
-        size_t count() const
-        {
-            return m_count;
+        size_t count() const 
+        { 
+            return m_count; 
         }
 
         /**
          * @param index 
          * @return const PerformanceEvent& 
          */
-        const PerformanceEvent& at(size_t index) const 
+        const PerformanceEvent& at(size_t index) const
         {
             return const_cast<PerformanceEventBuffer&>(*this).at(index);
         }
@@ -74,12 +88,15 @@ namespace Kernel
         KBuffer to_json(ProcessID, const String& executable_path) const;
 
     private:
-        PerformanceEventBuffer& at(size_t index);
+        /**
+         * @param index 
+         * @return PerformanceEvent& 
+         */
+        PerformanceEvent& at(size_t index);
 
         size_t m_count { 0 };
         
         KBuffer m_buffer;
-
-    }; // class PerformanceEventBuffer
+    }; // class PerformanceEventBuffer 
 
 } // namespace Kernel
