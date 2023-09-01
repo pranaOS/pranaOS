@@ -17,11 +17,12 @@
 #include <kernel/forward.h>
 #include <libelf/exec_elf.h>
 
-namespace Kernel
+namespace Kernel 
 {
+
     class Process;
 
-    class CoreDump
+    class CoreDump 
     {
     public:
         /**
@@ -29,6 +30,11 @@ namespace Kernel
          * @return OwnPtr<CoreDump> 
          */
         static OwnPtr<CoreDump> create(Process&, const String& output_path);
+
+        /// @brief Destroy the Core Dump object
+        ~CoreDump();
+
+        void write();
 
     private:
         /// @brief Construct a new Core Dump object
@@ -41,14 +47,27 @@ namespace Kernel
         static RefPtr<FileDescription> create_target_file(const Process&, const String& output_path);
 
         void write_elf_header();
-        void write_program_header(size_t notes_size);
+
+        /**
+         * @param notes_size 
+         */
+        void write_program_headers(size_t notes_size);
+        
         void write_regions();
+
         void write_notes_segment(ByteBuffer&);
+
+        /**
+         * @return ByteBuffer 
+         */
+        ByteBuffer create_notes_segment_data() const;
+        ByteBuffer create_notes_threads_data() const;
+        ByteBuffer create_notes_regions_data() const;
 
         Process& m_process;
 
         NonnullRefPtr<FileDescription> m_fd;
-
+        
         const size_t m_num_program_headers;
-    }; // class CoreDump
+    }; // class CoreDump 
 } // namespace Kernel
