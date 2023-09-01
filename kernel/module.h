@@ -15,15 +15,18 @@
 #include <mods/string.h>
 #include <mods/vector.h>
 
-namespace Kernel
+namespace Kernel 
 {
+
     typedef void* (*ModuleInitPtr)();
     typedef void* (*ModuleFiniPtr)();
 
-    struct Module
+    struct Module 
     {
         String name;
         Vector<KBuffer> sections;
-    }; // struct Module
 
+        ModuleInitPtr module_init { nullptr };
+        ModuleFiniPtr module_fini { nullptr };
+    }; // struct Module
 } // namespace Kernel
