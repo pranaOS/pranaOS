@@ -16,12 +16,17 @@
 #include <kernel/api/syscall.h>
 #include <libc/sys/arch/i386/regs.h>
 
-namespace Ptrace
+namespace Ptrace 
 {
+
     /**
      * @param params 
      * @param caller 
      * @return KResultOr<u32> 
      */
     KResultOr<u32> handle_syscall(const Kernel::Syscall::SC_ptrace_params& params, Process& caller);
-}
+
+    void copy_kernel_registers_into_ptrace_registers(PtraceRegisters&, const RegisterState&);
+    void copy_ptrace_registers_into_kernel_registers(RegisterState&, const PtraceRegisters&);
+
+} // namespace Kernel
