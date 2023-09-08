@@ -13,17 +13,24 @@
 
 #include <mods/jsonval.h>
 
-namespace Mods
+namespace Mods 
 {
 
+    /**
+     * @tparam Builder 
+     */
     template<typename Builder>
     class JsonObjectSerializer;
 
+    /**
+     * @tparam Builder 
+     */
+
     template<typename Builder>
-    class JsonArraySerializer
+    class JsonArraySerializer 
     {
     public:
-    
+
         /**
          * @param builder 
          */
@@ -33,7 +40,9 @@ namespace Mods
             m_builder.append('[');
         }
 
+        /// @brief Construct a new Json Array Serializer object
         JsonArraySerializer(const JsonArraySerializer&) = delete;
+        JsonArraySerializer(JsonArraySerializer&&) = delete;
 
         /// @brief Destroy the Json Array Serializer object
         ~JsonArraySerializer()
@@ -47,8 +56,62 @@ namespace Mods
          */
         void add(const JsonValue& value)
         {
-            begin_item()
+            begin_item();
             value.serialize(m_builder);
+        }
+
+        /**
+         * @param value 
+         */
+        void add(const StringView& value)
+        {
+            begin_item();
+            m_builder.append('"');
+            m_builder.append_escaped_for_json(value);
+            m_builder.append('"');
+        }
+
+        /**
+         * @param value 
+         */
+        void add(const String& value)
+        {
+            begin_item();
+            m_builder.append('"');
+            m_builder.append_escaped_for_json(value);
+            m_builder.append('"');
+        }
+
+        /**
+         * @param value 
+         */
+        void add(const char* value)
+        {
+            begin_item();
+            m_builder.append('"');
+            m_builder.append_escaped_for_json(value);
+            m_builder.append('"');
+        }
+
+        /**
+         * @return JsonArraySerializer<Builder> 
+         */
+        JsonArraySerializer<Builder> add_array()
+        {
+            begin_item();
+            return JsonArraySerializer(m_builder);
+        }
+
+        /**
+         * @return JsonObjectSerializer<Builder> 
+         */
+        JsonObjectSerializer<Builder> add_object();
+
+        void finish()
+        {
+            ASSERT(!m_finished);
+            m_finished = true;
+            m_builder.append(']');
         }
 
     private:
@@ -56,7 +119,7 @@ namespace Mods
         {
             if (!m_empty)
                 m_builder.append(',');
-            
+
             m_empty = false;
         }
 
@@ -64,6 +127,8 @@ namespace Mods
 
         bool m_empty { true };
         bool m_finished { false };
-    }; 
+    }; // class JsonArraySerializer
 
 } // namespace Mods
+
+using Mods::JsonArraySerializer;
