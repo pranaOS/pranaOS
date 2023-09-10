@@ -81,7 +81,7 @@ namespace Kernel
             u64 current_tsc = supports_tsc ? read_tsc() : 0;
     #endif
 
-            auto prev_tick = calibration_ticks.fetch_add(1, AK::memory_order_acq_rel);
+            auto prev_tick = calibration_ticks.fetch_add(1, Mods::memory_order_acq_rel);
             if (prev_tick == 0) {
     #ifdef APIC_TIMER_MEASURE_CPU_CLOCK
                 start_tsc = current_tsc;
@@ -103,7 +103,7 @@ namespace Kernel
 
         sti();
 
-        while (calibration_ticks.load(AK::memory_order_relaxed) < ticks_in_100ms)
+        while (calibration_ticks.load(Mods::memory_order_relaxed) < ticks_in_100ms)
             ;
         cli();
 
