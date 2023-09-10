@@ -38,7 +38,7 @@ namespace Crypto
         /**
          * @param words 
          */
-        explicit UnsignedBigInteger(AK::Vector<u32, STARTING_WORD_SIZE>&& words)
+        explicit UnsignedBigInteger(Mods::Vector<u32, STARTING_WORD_SIZE>&& words)
             : m_words(move(words))
         {
         }
