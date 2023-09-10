@@ -27,7 +27,7 @@ namespace Kernel
                 for (;;) {
                     g_finalizer_wait_queue->wait_on(nullptr, "FinalizerTask");
 
-                    if (g_finalizer_has_work.exchange(false, AK::MemoryOrder::memory_order_acq_rel) == true)
+                    if (g_finalizer_has_work.exchange(false, Mods::MemoryOrder::memory_order_acq_rel) == true)
                         Thread::finalize_dying_threads();
                 }
             },
