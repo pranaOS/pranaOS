@@ -178,8 +178,8 @@ namespace Kernel
         OwnPtr<Region> m_apic_base;
         Vector<OwnPtr<Processor>> m_ap_processor_info;
         Vector<Thread*> m_ap_idle_threads;
-        AK::Atomic<u8> m_apic_ap_count { 0 };
-        AK::Atomic<u8> m_apic_ap_continue { 0 };
+        Mods::Atomic<u8> m_apic_ap_count { 0 };
+        Mods::Atomic<u8> m_apic_ap_continue { 0 };
         u32 m_processor_cnt { 0 };
         u32 m_processor_enabled_cnt { 0 };
         APICTimer* m_apic_timer { nullptr };
