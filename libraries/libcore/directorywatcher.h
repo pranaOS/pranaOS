@@ -16,11 +16,14 @@
 #include <mods/noncopyable.h>
 #include <mods/string.h>
 
-namespace Core
+namespace Core 
 {
-    class DirectoryWatcher
+    class DirectoryWatcher 
     {
+        MOD_MAKE_NONCOPYABLE(DirectoryWatcher);
+
     public:
+
         /**
          * @brief Construct a new Directory Watcher object
          * 
@@ -31,20 +34,32 @@ namespace Core
         /// @brief Destroy the Directory Watcher object
         ~DirectoryWatcher();
 
-        struct Event
+        struct Event 
         {
-            enum class Type
+            enum class Type 
             {
                 ChildAdded,
                 ChildRemoved,
             };
+
+            Type type;
+            String child_path;
         }; // struct Event
 
+        /**
+         * @return Optional<Event> 
+         */
+        Optional<Event> wait_for_event();
+
     private:
+
+        /**
+         * @return String 
+         */
         String get_child_with_inode_index(unsigned) const;
 
         String m_path;
 
         int m_watcher_fd { -1 };
     }; // class DirectoryWatcher
-}
+} // namespace Core
