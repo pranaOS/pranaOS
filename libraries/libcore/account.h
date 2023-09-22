@@ -18,10 +18,9 @@
 #include <pwd.h>
 #include <sys/types.h>
 
-namespace Core
+namespace Core 
 {
-
-    class Account
+    class Account 
     {
     public:
         /**
@@ -43,30 +42,89 @@ namespace Core
          */
         bool authenticate(const char* password) const;
 
+        /**
+         * @return true 
+         * @return false 
+         */
         bool login() const;
 
         /**
          * @return String 
          */
-        String username() const
-        {
-            return m_username;
+        String username() const 
+        { 
+            return m_username; 
         }
 
-        String password_hash() const
-        {
-            return m_password_hash;
+        String password_hash() const 
+        { 
+            return m_password_hash; 
         }
 
-        uid_t uid() const
-        {
-            return m_uid;
+        /**
+         * @param password 
+         */
+        void set_password(const char* password);
+
+        /**
+         * @param enabled 
+         */
+        void set_password_enabled(bool enabled);
+
+        void delete_password();
+
+        /**
+         * @return true 
+         * @return false 
+         */
+        bool has_password() const 
+        { 
+            return !m_password_hash.is_empty(); 
         }
 
-        gid_t gid() const
-        {
-            return m_gid;
+        /**
+         * @return uid_t 
+         */
+        uid_t uid() const 
+        { 
+            return m_uid; 
         }
+
+        /**
+         * @return gid_t 
+         */
+        gid_t gid() const 
+        { 
+            return m_gid; 
+        }
+
+        /**
+         * @return const String& 
+         */
+        const String& gecos() const 
+        { 
+            return m_gecos; 
+        }
+
+        const String& home_directory() const 
+        { 
+            return m_home_directory; 
+        }
+
+        const String& shell() const 
+        { 
+            return m_shell; 
+        }
+
+        /**
+         * @return const Vector<gid_t>& 
+         */
+        const Vector<gid_t>& extra_gids() const 
+        { 
+            return m_extra_gids; 
+        }
+
+        bool sync();
 
     private:
         /**
@@ -81,10 +139,10 @@ namespace Core
         String m_home_directory;
         String m_shell;
 
-        Vector<gid_t> m_extra_gids;
-
         uid_t m_uid { 0 };
         gid_t m_gid { 0 };
+
+        Vector<gid_t> m_extra_gids;
     }; // class Account
 
 } // namespace Core
