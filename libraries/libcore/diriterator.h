@@ -15,16 +15,18 @@
 #include <dirent.h>
 #include <string.h>
 
-namespace Core
+namespace Core 
 {
     class DirIterator 
     {
     public:
-        enum Flags
+        
+        enum Flags 
         {
             NoFlags = 0x0,
-            SkipDots = 0x1
-        };
+            SkipDots = 0x1,
+            SkipParentAndBaseDir = 0x2,
+        }; // enum Flags
 
         /**
          * @param path 
@@ -38,29 +40,37 @@ namespace Core
          * @return true 
          * @return false 
          */
-        bool has_error() const
-        {
-            return m_error != 0;
+        bool has_error() const { return m_error != 0; }
+
+        /**
+         * @return int 
+         */
+        int error() const 
+        { 
+            return m_error; 
         }
 
-        int error() const
-        {
-            return m_error;
+        /**
+         * @return const char* 
+         */
+        const char* error_string() const 
+        { 
+            return strerror(m_error); 
         }
 
+        bool has_next();
+        
         String next_path();
-
         String next_full_path();
 
     private:
         DIR* m_dir = nullptr;
-
         int m_error = 0;
-
         String m_next;
         String m_path;
-
         int m_flags;
+
+        bool advance_next();
     }; // class DirIterator
 
     /**
@@ -68,4 +78,5 @@ namespace Core
      * @return String 
      */
     String find_executable_in_path(String filename);
-}
+
+} // namespace Core
