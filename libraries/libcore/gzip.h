@@ -15,11 +15,18 @@
 #include <mods/optional.h>
 #include <mods/string.h>
 
-namespace Core
+namespace Core 
 {
     class Gzip 
     {
     public:
+        /**
+         * @param data 
+         * @return true 
+         * @return false 
+         */
+        static bool is_compressed(const ByteBuffer& data);
+
         /**
          * @param data 
          * @return Optional<ByteBuffer> 
