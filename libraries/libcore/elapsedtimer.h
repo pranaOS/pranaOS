@@ -13,26 +13,41 @@
 
 #include <sys/time.h>
 
-namespace Core
+namespace Core 
 {
-    class ElapsedTimer
+    class ElapsedTimer 
     {
     public:
-        /// @brief Construct a new Elapsed Timer object
-        ElapsedTimer() {}
-
+        ///  @brief Construct a new Elapsed Timer object
+        ElapsedTimer() { }
+        
         /**
          * @return true 
          * @return false 
          */
         bool is_valid() const 
-        {
-            return m_valid;
+        { 
+            return m_valid; 
+        }
+
+        void start();
+
+        /**
+         * @return int 
+         */
+        int elapsed() const;
+
+        /**
+         * @return const struct timeval& 
+         */
+        const struct timeval& origin_time() const 
+        { 
+            return m_origin_time; 
         }
 
     private:
         bool m_valid { false };
-
-        struct timval m_origin_time { 0, 0 };
+        struct timeval m_origin_time { 0, 0 };
     }; // class ElapsedTimer
+
 } // namespace Core
