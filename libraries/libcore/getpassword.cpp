@@ -14,7 +14,7 @@
 #include <termios.h>
 #include <libcore/getpassword.h>
 
-namespace Core
+namespace Core 
 {
     /**
      * @param prompt 
@@ -26,20 +26,33 @@ namespace Core
         fflush(stdout);
 
         struct termios original;
-
         tcgetattr(STDIN_FILENO, &original);
 
         struct termios no_echo = original;
-
-        no_echo.c_lflag &= ~ECH;
+        no_echo.c_lflag &= ~ECHO;
 
         if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &no_echo) < 0) {
             return errno;
         }
 
         char* password = nullptr;
+
         size_t n = 0;
 
-        return n;
-    }    
+        int ret = getline(&password, &n, stdin);
+
+        tcsetattr(STDIN_FILENO, TCSAFLUSH, &original);
+
+        putchar('\n');
+
+        if (ret < 0) {
+            return errno;
+        }
+
+        String s(password);
+
+        free(password);
+
+        return s;
+    } // Result<String, int> get_password
 } // namespace Core
