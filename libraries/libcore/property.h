@@ -14,9 +14,9 @@
 #include <mods/function.h>
 #include <mods/jsonval.h>
 
-namespace Core
+namespace Core 
 {
-    class Property
+    class Property 
     {
         MOD_MAKE_NONCOPYABLE(Property);
 
@@ -29,7 +29,7 @@ namespace Core
         Property(String name, Function<JsonValue()> getter, Function<bool(const JsonValue&)> setter = nullptr);
 
         /// @brief Destroy the Property object
-        ~Property()
+        ~Property();
 
         /**
          * @param value 
@@ -40,15 +40,29 @@ namespace Core
         {
             if (!m_setter)
                 return false;
-            
             return m_setter(value);
+        }
+
+        /**
+         * @return JsonValue 
+         */
+        JsonValue get() const 
+        { 
+            return m_getter(); 
+        }
+
+        /**
+         * @return const String& 
+         */
+        const String& name() const 
+        { 
+            return m_name; 
         }
 
     private:
         String m_name;
 
         Function<JsonValue()> m_getter;
-
         Function<bool(const JsonValue&)> m_setter;
     }; // class Property
-}
+} // namespace Core
