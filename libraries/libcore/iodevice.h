@@ -14,14 +14,14 @@
 #include <mods/forward.h>
 #include <libcore/object.h>
 
-namespace Core
+namespace Core 
 {
-    class IODevice : public Object
+    class IODevice : public Object 
     {
         C_OBJECT_ABSTRACT(IODevice)
-
     public:
-        enum OpenMode
+
+        enum OpenMode 
         {
             NotOpen = 0,
             ReadOnly = 1,
@@ -32,12 +32,71 @@ namespace Core
             MustBeNew = 16,
         }; // enum OpenMode
 
-        enum class SeekMode
-        {
-            SetPosition,
-            FromCurrentPosition,
-            FromEndPosition,
-        }; // enum class SeekMode
+        /// @brief Destroy the IODevice object
+        virtual ~IODevice() override;
+
+        /**
+         * @return int 
+         */
+        int fd() const 
+        { 
+            return m_fd; 
+        }
+
+        /**
+         * @return unsigned 
+         */
+        unsigned mode() const 
+        { 
+            return m_mode; 
+        }
+
+        /**
+         * @return true 
+         * @return false 
+         */
+        bool is_open() const 
+        { 
+            return m_mode != NotOpen; 
+        }
+
+        /**
+         * @return true 
+         * @return false 
+         */
+        bool eof() const 
+        { 
+            return m_eof; 
+        }
+
+        /**
+         * @return int 
+         */
+        int error() const 
+        { 
+            return m_error; 
+        }
+
+        /**
+         * @return const char* 
+         */
+        const char* error_string() const;
+
+        /**
+         * @return true 
+         * @return false 
+         */
+        bool has_error() const 
+        { 
+            return m_error != 0; 
+        }
+
+        /**
+         * @param buffer 
+         * @param length 
+         * @return int 
+         */
+        int read(u8* buffer, int length);
 
         /**
          * @param max_size 
@@ -46,7 +105,7 @@ namespace Core
         ByteBuffer read(size_t max_size);
 
         ByteBuffer read_all();
-
+        
         /**
          * @param max_size 
          * @return String 
@@ -63,44 +122,76 @@ namespace Core
         bool write(const StringView&);
 
         /**
+         * @return true 
+         * @return false 
+         */
+        bool truncate(off_t);
+
+        bool can_read_line() const;
+
+        bool can_read() const;
+
+        enum class SeekMode 
+        {
+            SetPosition,
+            FromCurrentPosition,
+            FromEndPosition,
+        }; // enum class SeekMode
+
+        /**
+         * @return true 
+         * @return false 
+         */
+        bool seek(i64, SeekMode = SeekMode::SetPosition, off_t* = nullptr);
+
+        /**
+         * @return true 
+         * @return false 
+         */
+        virtual bool open(IODevice::OpenMode) = 0;
+
+        virtual bool close();
+
+        /**
          * @param ... 
          * @return int 
          */
         int printf(const char*, ...);
-    
-    protected:
+
+    protected:  
         /**
          * @param parent 
          */
         explicit IODevice(Object* parent = nullptr);
 
+        /// @brief Set the fd object
         void set_fd(int);
 
         /**
          * @param mode 
          */
-        void set_mode(OpenMode mode)
-        {
-            m_mode = mode;
+        void set_mode(OpenMode mode) 
+        { 
+            m_mode = mode; 
         }
 
         /**
          * @param error 
          */
-        void set_error(int error) const
-        {
-            m_error = error;
+        void set_error(int error) const 
+        { 
+            m_error = error; 
         }
 
         /**
          * @param eof 
          */
-        void set_eof(bool eof) const
-        {
-            m_eof = eof;
+        void set_eof(bool eof) const 
+        { 
+            m_eof = eof; 
         }
 
-        virtual void did_update_fd(int) {}
+        virtual void did_update_fd(int) { }
 
     private:
         bool populate_read_buffer() const;
@@ -113,5 +204,6 @@ namespace Core
         mutable int m_error { 0 };
         mutable bool m_eof { false };
         mutable Vector<u8> m_buffered_data;
+
     }; // class IODevice
 } // namespace Core
