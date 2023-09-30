@@ -53,6 +53,35 @@ public:
     Optional<uint32_t> peek_memory(FlatPtr address) const;
 
 private:
+    
+    class NotesEntryIterator
+    {
+    public:
+        /**
+         * @param notes_data 
+         */
+        NotesEntryIterator(const u8* notes_data);
+
+        /**
+         * @return ELF::Core::NotesEntryHeader::Type 
+         */
+        ELF::Core::NotesEntryHeader::Type type() const;
+
+        /**
+         * @return const ELF::Core::NotesEntry* 
+         */
+        const ELF::Core::NotesEntry* current() const;
+
+        void next();
+        
+        bool at_end() const;
+
+    private:
+        const ELF::Core::NotesEntry* m_current { nullptr };
+        const u8* start { nullptr };
+    }; // class NotesEntryIterator
+
+
     OwnPtr<MappedFile> m_coredump_file;
     ELF::Image m_coredump_image;
     ssize_t m_notes_segment_index { -1 };
