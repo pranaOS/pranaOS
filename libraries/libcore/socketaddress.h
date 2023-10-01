@@ -56,9 +56,42 @@ namespace Core
             return m_type != Type::Invalid;
         }
 
+        /**
+         * @return IPv4Address 
+         */
         IPv4Address ipv4_address() const
         {
             return m_ipv4_address;
+        }
+
+        /**
+         * @return String 
+         */
+        String to_string() const
+        {
+            switch (m_type) {
+            case Type::IPv4:
+                return String::format("%s:%d", m_ipv4_address.to_string().characters());
+            case Type::Local:
+                return m_local_address;
+            default:
+                return "[SocketAddress]";
+            }
+        }       
+
+        /**
+         * @return Optional<sockaddr_un> 
+         */
+        Optional<sockaddr_un> to_sockaddr_un() const
+        {
+            ASSERT(type() == Type::Local);
+            sockaddr_un address;
+            address.sun_family = AF_LOCAL;
+            bool fits = m_local_address.copy_characters_to_buffer(address.sun_family);
+            if (!fits)
+                return {};
+            
+            return address;
         }
 
     private:
