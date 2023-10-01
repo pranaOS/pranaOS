@@ -24,12 +24,42 @@ namespace Core
     class Socket : public IODevice
     {
     public:
+        enum class Type
+        {
+            Invalid,
+            TCP,
+            UDP,
+            Local,
+        }; // enum class Type
+
+        /// @brief Destroy the Socket object
         virtual ~Socket() override;
 
         Type type() const
         {
             return m_type;
         }
+
+        /**
+         * @param hostname 
+         * @param port 
+         * @return true 
+         * @return false 
+         */
+        virtual bool connect(const String& hostname, int port);
+
+        /**
+         * @param port 
+         * @return true 
+         * @return false 
+         */
+        bool connect(const SocketAddress&, int port);
+
+        /**
+         * @param max_size 
+         * @return ByteBuffer 
+         */
+        ByteBuffer receive(int max_size);
     
     protected:
         Socket(Type, Object* parent);
