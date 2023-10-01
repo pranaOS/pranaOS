@@ -18,13 +18,13 @@
 #include <mods/function.h>
 #include <mods/span.h>
 
-namespace Core
+namespace Core 
 {
-
-    class Socket : public IODevice
+    class Socket : public IODevice 
     {
+        C_OBJECT(Socket)
     public:
-        enum class Type
+        enum class Type 
         {
             Invalid,
             TCP,
@@ -35,9 +35,12 @@ namespace Core
         /// @brief Destroy the Socket object
         virtual ~Socket() override;
 
-        Type type() const
-        {
-            return m_type;
+        /**
+         * @return Type 
+         */
+        Type type() const 
+        { 
+            return m_type; 
         }
 
         /**
@@ -56,16 +59,78 @@ namespace Core
         bool connect(const SocketAddress&, int port);
 
         /**
+         * @return true 
+         * @return false 
+         */
+        bool connect(const SocketAddress&);
+
+        /**
          * @param max_size 
          * @return ByteBuffer 
          */
         ByteBuffer receive(int max_size);
-    
+        
+        /**
+         * @return true 
+         * @return false 
+         */
+        bool send(ReadonlyBytes);
+
+        bool is_connected() const 
+        { 
+            return m_connected; 
+        }
+
+        /**
+         * @param blocking 
+         */
+        void set_blocking(bool blocking);
+
+        /**
+         * @return SocketAddress 
+         */
+        SocketAddress source_address() const 
+        { 
+            return m_source_address; 
+        }
+
+        /**
+         * @return int 
+         */
+        int source_port() const 
+        { 
+            return m_source_port; 
+        }
+
+        /**
+         * @return SocketAddress 
+         */
+        SocketAddress destination_address() const 
+        { 
+            return m_destination_address; 
+        }
+
+        /**
+         * @return int 
+         */
+        int destination_port() const 
+        { 
+            return m_destination_port; 
+        }
+
+        Function<void()> on_connected;
+        Function<void()> on_ready_to_read;
+
     protected:
+
+        /**
+         * @param parent 
+         */
         Socket(Type, Object* parent);
 
-        SocketAddress m_source_addresss;
+        SocketAddress m_source_address;
         SocketAddress m_destination_address;
+
         int m_source_port { -1 };
         int m_destination_port { -1 };
 
@@ -79,15 +144,21 @@ namespace Core
          */
         virtual bool common_connect(const struct sockaddr*, socklen_t);
 
-
     private:
-        virtual bool open(IODevice::OpenMode) override { ASSERT_NOT_REACHED(); }
+    
+        /**
+         * @return true 
+         * @return false 
+         */
+        virtual bool open(IODevice::OpenMode) override 
+        { 
+            ASSERT_NOT_REACHED(); 
+        }
+
         void ensure_read_notifier();
 
         Type m_type { Type::Invalid };
         RefPtr<Notifier> m_notifier;
         RefPtr<Notifier> m_read_notifier;
-
     }; // class Socket
-
 } // namespace Core
