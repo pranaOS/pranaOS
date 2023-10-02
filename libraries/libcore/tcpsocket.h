@@ -14,17 +14,18 @@
 #include <mods/badge.h>
 #include <libcore/socket.h>
 
-namespace Core
+namespace Core 
 {
-
-    class TCPSocket final : public Socket
+    class TCPSocket final : public Socket 
     {
-    public:
-        ~TCPSocket() {}
+        C_OBJECT(TCPSocket)
 
-        TCPSocket::~TCPSocket() {}
+    public:
+        /// @brief Destroy the TCPSocket object
+        virtual ~TCPSocket() override;
 
     private:
+
         /**
          * @param fd 
          * @param parent 
@@ -35,6 +36,5 @@ namespace Core
          * @param parent 
          */
         explicit TCPSocket(Object* parent = nullptr);
-    }; // class TCPSOCKET
-
+    }; // class TCPSocket
 } // namespace Core
