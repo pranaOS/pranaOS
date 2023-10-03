@@ -9,18 +9,20 @@
  * 
  */
 
-#pragma once 
+#pragma once
 
 #include <libcore/socket.h>
 
-namespace Core
+namespace Core 
 {
-
-    class UDPSocket final : public Socket
+    class UDPSocket final : public Socket 
     {
+        C_OBJECT(UDPSocket)
+
     public:
-        ~UDPSocket();
-        
+        /// @brief Destroy the UDPSocket object
+        virtual ~UDPSocket() override;
+
     private:
 
         /**
@@ -29,6 +31,5 @@ namespace Core
          * @param parent 
          */
         explicit UDPSocket(Object* parent = nullptr);
-    }; // clas UDPSocket
-
+    }; // class UDPSocket
 } // namesapce Core
