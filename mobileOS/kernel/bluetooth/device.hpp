@@ -46,7 +46,7 @@ struct Device
 
         strcpy(this->name.data(), name.c_str());
     }
-};
+}; // struct Device
 
 enum DEVICE_STATE
 {
@@ -116,3 +116,67 @@ static inline std::string getListOfSupportedServicesInString(uint32_t cod)
     }
     return res;
 }
+
+enum class DeviceState
+{
+    ConnectedVoice,
+    ConnectedAudio,
+    ConnectedBoth,
+    Connecting,
+    Pairing,
+    Paired,
+    Unknown
+};
+
+struct Devicei : public Device
+{
+  public:
+    mutable bd_addr_t address{};
+
+    uint8_t pageScanRepetitionMOde{};
+
+    uint16_t clockOffset{};
+    uint32_t classOfDevice{};
+
+    DEVICE_STATE state;
+    DeviceState deviceState;
+
+    bool isPairingSSP = false;
+
+    explicit Devicei(std::string name = "");
+
+    /**
+     * @param address
+     */
+    explicit Devicei(bd_addr_t& address);
+
+    Devicei(const Devicei& d);
+    Devicei& operator=(Devicei&& d);
+    Devicei(Devicei&& d) noexcept;
+
+    ~Devicei() override = default;
+
+    /**
+     * @param addr
+     */
+    void setAddress(bd_addr_t* addr);
+
+    /**
+     * @param cmpDevice
+     * @return true
+     * @return false
+     */
+    bool operator==(const Devicei& cmpDevice) const;
+    bool operator!=(const Devicei& cmpDevice) const;
+
+    auto address_str() const -> const char*;
+}; // struct Devicei
+
+struct DeviceMetadata_t
+{
+    unsigned int sampleRate;
+    unsigned short channels;
+    unsigned int samplesPerFrame;
+}
+
+constexpr unsigned int DATA_BUFFER_SIZE = 256 * 2;
