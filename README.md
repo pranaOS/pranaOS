@@ -68,7 +68,7 @@
 ## Special mentions:
 - thanks for those who [stared](https://github.com/pranaOS/pranaOS/stargazers) ⭐ this project and gave a motivation :)
 - special thanks for those who has [contributed](https://github.com/pranaOS/pranaOS/graphs/contributors) and still contributing to this project
-- thanks to [OSDev wiki](https://wiki.osdev.org/Main_Page) it helped me a lot!!!
+- thanks to OSDev wiki it helped me a lot!!!
 
 - [NukeWilliams](https://github.com/NukeWilliams) who continously contributed to this project and added usefull things
 - [HirotoHinta](https://github.com/HirotoHinta) He helped a lot in kernel side bringed up new features to the project!
