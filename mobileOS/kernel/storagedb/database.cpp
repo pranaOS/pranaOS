@@ -4,58 +4,64 @@
  * @brief Database
  * @version 6.0
  * @date 2023-06-17
- * 
- * @copyright Copyright (c) 2021-2023, pranaOS Developers, Krisna Pranav
- * 
+ *
+ * @copyright Copyright (c) 2021-2024, pranaOS Developers, Krisna Pranav
+ *
  */
 
 #include "database.hpp"
-#include <log/log.hpp>
-#include <gsl/util>
 #include <cstring>
+#include <gsl/util>
+#include <log/log.hpp>
 
-extern sqlite3_vfs *sqlite3_ecophonevfs(void);
+extern sqlite3_vfs* sqlite3_ecophonevfs(void);
 
 /**
  * @brief isNotPragmaRelated
- * 
- * @param msg 
- * @return true 
- * @return false 
+ *
+ * @param msg
+ * @return true
+ * @return false
  */
-[[nodiscard]] static bool isNotPragmaRelated(const char *msg) {
+[[nodiscard]] static bool isNotPragmaRelated(const char* msg)
+{
     return nullptr == strstr(msg, "PRAGMA");
 }
 
-extern "C" {
+extern "C"
+{
     /**
      * @brief sqlite3_os_init
-     * 
-     * @return int 
+     *
+     * @return int
      */
-    int sqlite3_os_init(void) {
+    int sqlite3_os_init(void)
+    {
         sqlite3_vfs_register(sqlite3_ecophonevfs(), 1);
         return SQLITE_OK;
     }
 
     /**
      * @brief sqlite3_os_end
-     * 
-     * @return int 
+     *
+     * @return int
      */
-    int sqlite3_os_end(void) {
+    int sqlite3_os_end(void)
+    {
         return SQLITE_OK;
     }
 
     /**
      * @brief errorCallback
-     * 
-     * @param pArg 
-     * @param iErrCode 
-     * @param zMsg 
+     *
+     * @param pArg
+     * @param iErrCode
+     * @param zMsg
      */
-    void errorLogCallback(void *pArg, int iErrCode, const char *zMsg) {
-        if (isNotPragmaRelated(zMsg)) {
+    void errorLogCallback(void* pArg, int iErrCode, const char* zMsg)
+    {
+        if(isNotPragmaRelated(zMsg))
+        {
             LOG_ERROR("(%d) %s\n", iErrCode, zMsg);
         }
     }
@@ -63,23 +69,25 @@ extern "C" {
 
 /**
  * @brief dbApplicationID, enabled
- * 
+ *
  */
-constexpr auto dbApplicationId = 0x65727550; 
-constexpr auto enabled         = 1;
+constexpr auto dbApplicationId = 0x65727550;
+constexpr auto enabled = 1;
 
 /**
  * @brief Construct a new Database:: Database object
- * 
- * @param name 
- * @param readOnly 
+ *
+ * @param name
+ * @param readOnly
  */
-Database::Database(const char *name, bool readOnly)
-    : dbConnection(nullptr), dbName(name), queryStatementBuffer{nullptr}, isInitialized_(false) {
+Database::Database(const char* name, bool readOnly)
+    : dbConnection(nullptr), dbName(name), queryStatementBuffer{nullptr}, isInitialized_(false)
+{
     const int flags = (readOnly) ? (SQLITE_OPEN_READONLY) : (SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE);
     LOG_INFO("Opening database: %s", dbName.c_str());
 
-    if (const auto rc = sqlite3_open_v2(name, &dbConnection, flags, nullptr); rc != SQLITE_OK) {
+    if(const auto rc = sqlite3_open_v2(name, &dbConnection, flags, nullptr); rc != SQLITE_OK)
+    {
         LOG_ERROR("SQLITE INITIALIZATION ERROR! rc=%d dbName=%s", rc, name);
         throw DatabaseInitialisationError{"Failed to initialize the sqlite db"};
     }
@@ -88,7 +96,8 @@ Database::Database(const char *name, bool readOnly)
     pragmaQuery("PRAGMA integrity_check;");
     pragmaQuery("PRAGMA locking_mode=EXCLUSIVE");
 
-    if (isInitialized_ = pragmaQueryForValue("PRAGMA application_id;", dbApplicationId); not isInitialized_) {
+    if(isInitialized_ = pragmaQueryForValue("PRAGMA application_id;", dbApplicationId); not isInitialized_)
+    {
         populateDbAppId();
         isInitialized_ = true;
     }
@@ -97,9 +106,10 @@ Database::Database(const char *name, bool readOnly)
 
 /**
  * @brief populateDbAppId
- * 
+ *
  */
-void Database::populateDbAppId() {
+void Database::populateDbAppId()
+{
     std::stringstream setAppIdPragma;
     setAppIdPragma << "PRAGMA application_id=" << dbApplicationId << ";";
     pragmaQuery(setAppIdPragma.str());
@@ -107,11 +117,13 @@ void Database::populateDbAppId() {
 
 /**
  * @brief initQueryStatementBuffer
- * 
+ *
  */
-void Database::initQueryStatementBuffer() {
-    queryStatementBuffer = static_cast<char *>(sqlite3_malloc(maxQueryLen));
-    if (queryStatementBuffer == nullptr) {
+void Database::initQueryStatementBuffer()
+{
+    queryStatementBuffer = static_cast<char*>(sqlite3_malloc(maxQueryLen));
+    if(queryStatementBuffer == nullptr)
+    {
         LOG_ERROR("Unable to allocate memory for query statement buffer.");
         throw DatabaseInitialisationError{"Failed to initialize the query statement buffer"};
     }
@@ -120,29 +132,33 @@ void Database::initQueryStatementBuffer() {
 
 /**
  * @brief clearQueryStatementBuffer
- * 
+ *
  */
-void Database::clearQueryStatementBuffer() {
+void Database::clearQueryStatementBuffer()
+{
     std::memset(queryStatementBuffer, 0, maxQueryLen);
 }
 
 /**
  * @brief Destroy the Database:: Database object
- * 
+ *
  */
-Database::~Database() {
+Database::~Database()
+{
     sqlite3_free(queryStatementBuffer);
     sqlite3_close(dbConnection);
 }
 
 /**
  * @brief initialize
- * 
- * @return true 
- * @return false 
+ *
+ * @return true
+ * @return false
  */
-bool Database::initialize() {
-    if (const auto code = sqlite3_config(SQLITE_CONFIG_LOG, errorLogCallback, (void *)1); code != SQLITE_OK) {
+bool Database::initialize()
+{
+    if(const auto code = sqlite3_config(SQLITE_CONFIG_LOG, errorLogCallback, (void*)1); code != SQLITE_OK)
+    {
         return false;
     }
     return sqlite3_initialize() == SQLITE_OK;
@@ -150,35 +166,40 @@ bool Database::initialize() {
 
 /**
  * @brief deinitialize
- * 
- * @return true 
- * @return false 
+ *
+ * @return true
+ * @return false
  */
-bool Database::deinitialize() {
+bool Database::deinitialize()
+{
     return sqlite3_shutdown() == SQLITE_OK;
 }
 
 /**
  * @brief execute
- * 
- * @param format 
- * @param ... 
- * @return true 
- * @return false 
+ *
+ * @param format
+ * @param ...
+ * @return true
+ * @return false
  */
-bool Database::execute(const char *format, ...) {
-    if (format == nullptr) {
+bool Database::execute(const char* format, ...)
+{
+    if(format == nullptr)
+    {
         return false;
     }
 
-    auto cleanup = gsl::finally([this] { clearQueryStatementBuffer(); });
+    auto cleanup = gsl::finally([this]
+                                { clearQueryStatementBuffer(); });
 
     va_list ap;
     va_start(ap, format);
     sqlite3_vsnprintf(maxQueryLen, queryStatementBuffer, format, ap);
     va_end(ap);
-    if (const int result = sqlite3_exec(dbConnection, queryStatementBuffer, nullptr, nullptr, nullptr);
-        result != SQLITE_OK) {
+    if(const int result = sqlite3_exec(dbConnection, queryStatementBuffer, nullptr, nullptr, nullptr);
+       result != SQLITE_OK)
+    {
         LOG_ERROR("Execution of query failed with %d, errcode: %d, extended errcode: %d",
                   result,
                   sqlite3_errcode(dbConnection),
@@ -190,17 +211,20 @@ bool Database::execute(const char *format, ...) {
 
 /**
  * @brief query
- * 
- * @param format 
- * @param ... 
- * @return std::unique_ptr<QueryResult> 
+ *
+ * @param format
+ * @param ...
+ * @return std::unique_ptr<QueryResult>
  */
-std::unique_ptr<QueryResult> Database::query(const char *format, ...) {
-    if (format == nullptr) {
+std::unique_ptr<QueryResult> Database::query(const char* format, ...)
+{
+    if(format == nullptr)
+    {
         return nullptr;
     }
 
-    auto cleanup = gsl::finally([this] { clearQueryStatementBuffer(); });
+    auto cleanup = gsl::finally([this]
+                                { clearQueryStatementBuffer(); });
 
     va_list ap;
     va_start(ap, format);
@@ -208,9 +232,11 @@ std::unique_ptr<QueryResult> Database::query(const char *format, ...) {
     va_end(ap);
 
     auto queryResult = std::make_unique<QueryResult>();
-    if (const int result = sqlite3_exec(dbConnection, queryStatementBuffer, queryCallback, queryResult.get(), nullptr);
-        result != SQLITE_OK) {
-        if (isNotPragmaRelated(queryStatementBuffer)) {
+    if(const int result = sqlite3_exec(dbConnection, queryStatementBuffer, queryCallback, queryResult.get(), nullptr);
+       result != SQLITE_OK)
+    {
+        if(isNotPragmaRelated(queryStatementBuffer))
+        {
             LOG_ERROR("SQL query failed selecting : %d", result);
         }
         return nullptr;
@@ -220,22 +246,26 @@ std::unique_ptr<QueryResult> Database::query(const char *format, ...) {
 
 /**
  * @brief queryCallback
- * 
- * @param usrPtr 
- * @param count 
- * @param data 
- * @param columns 
- * @return int 
+ *
+ * @param usrPtr
+ * @param count
+ * @param data
+ * @param columns
+ * @return int
  */
-int Database::queryCallback(void *usrPtr, int count, char **data, char **columns) {
-    QueryResult *db = reinterpret_cast<QueryResult *>(usrPtr);
+int Database::queryCallback(void* usrPtr, int count, char** data, char** columns)
+{
+    QueryResult* db = reinterpret_cast<QueryResult*>(usrPtr);
 
     std::vector<Field> row;
-    for (uint32_t i = 0; i < (uint32_t)count; i++) {
-        try {
+    for(uint32_t i = 0; i < (uint32_t)count; i++)
+    {
+        try
+        {
             row.push_back(Field{data[i]});
         }
-        catch (...) {
+        catch(...)
+        {
             LOG_FATAL("Error on column: %" PRIu32, i);
         }
     }
@@ -247,74 +277,88 @@ int Database::queryCallback(void *usrPtr, int count, char **data, char **columns
 
 /**
  * @brief getLastInsertRowId
- * 
- * @return uint32_t 
+ *
+ * @return uint32_t
  */
-uint32_t Database::getLastInsertRowId() {
+uint32_t Database::getLastInsertRowId()
+{
     return sqlite3_last_insert_rowid(dbConnection);
 }
 
 /**
  * @brief pragmaQueryForValue
- * 
- * @param pragmaStatement 
- * @param value 
- * @return true 
- * @return false 
+ *
+ * @param pragmaStatement
+ * @param value
+ * @return true
+ * @return false
  */
-auto Database::pragmaQueryForValue(const std::string &pragmaStatement, const std::int32_t value) -> bool {
+auto Database::pragmaQueryForValue(const std::string& pragmaStatement, const std::int32_t value) -> bool
+{
     auto results = query(pragmaStatement.c_str());
 
-    if (!results || results->getRowCount() == 0) {
+    if(!results || results->getRowCount() == 0)
+    {
         LOG_DEBUG("no results!");
         return false;
     }
 
-    do {
+    do
+    {
         const auto fieldsCount = results->getFieldCount();
-        for (uint32_t i = 0; i < fieldsCount; i++) {
+        for(uint32_t i = 0; i < fieldsCount; i++)
+        {
             Field field{(*results)[i]};
-            if (field.getInt32() == value) {
+            if(field.getInt32() == value)
+            {
                 LOG_DEBUG("Found the match: %" PRIx32, value);
                 return true;
             }
         }
-    } while (results->nextRow());
+    } while(results->nextRow());
 
     return false;
 }
 
 /**
  * @brief pragmaQuery
- * 
- * @param pragmaStatement 
+ *
+ * @param pragmaStatement
  */
-void Database::pragmaQuery(const std::string &pragmaStatement) {
+void Database::pragmaQuery(const std::string& pragmaStatement)
+{
     auto results = query(pragmaStatement.c_str());
 
-    if (results && results->getRowCount()) {
-        do {
+    if(results && results->getRowCount())
+    {
+        do
+        {
             const auto fieldsCount = results->getFieldCount();
-            for (uint32_t i = 0; i < fieldsCount; i++) {
+            for(uint32_t i = 0; i < fieldsCount; i++)
+            {
                 Field field = (*results)[i];
             }
-        } while (results->nextRow());
+        } while(results->nextRow());
     }
-    else {
+    else
+    {
         LOG_DEBUG("no results!");
     }
 }
 
 /**
  * @brief storeIntoFile
- * 
- * @param syncPath 
- * @return true 
- * @return false 
+ *
+ * @param syncPath
+ * @return true
+ * @return false
  */
-bool Database::storeIntoFile(const std::filesystem::path &syncPath) {
-    if (sqlite3_get_autocommit(dbConnection) == 0) {
-        if (const auto rc = execute("COMMIT;"); !rc) {
+bool Database::storeIntoFile(const std::filesystem::path& syncPath)
+{
+    if(sqlite3_get_autocommit(dbConnection) == 0)
+    {
+        if(const auto rc = execute("COMMIT;"); !rc)
+        {
             LOG_ERROR("failed to execute commit; sqlite3 autocommit after commit: %d",
                       sqlite3_get_autocommit(dbConnection));
             return false;
@@ -323,7 +367,8 @@ bool Database::storeIntoFile(const std::filesystem::path &syncPath) {
     }
 
     LOG_INFO("Store database: %s, into file: %s - STARTED", dbName.c_str(), syncPath.c_str());
-    if (const auto rc = execute("VACUUM main INTO '%q';", syncPath.c_str()); !rc) {
+    if(const auto rc = execute("VACUUM main INTO '%q';", syncPath.c_str()); !rc)
+    {
         LOG_ERROR("Store database: %s, into file: %s - FAILED", dbName.c_str(), syncPath.c_str());
         return false;
     }

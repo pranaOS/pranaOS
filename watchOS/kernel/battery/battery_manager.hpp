@@ -4,19 +4,19 @@
  * @brief BatteryManager
  * @version 6.0
  * @date 2023-06-18
- * 
- * @copyright Copyright (c) 2021-2023, pranaOS Developers, Krisna Pranav
- * 
+ *
+ * @copyright Copyright (c) 2021-2024, pranaOS Developers, Krisna Pranav
+ *
  */
-
 
 #pragma once
 
 #include <libutils/config.h>
 
-class BatteryManager {
-public:
-    static BatteryManager *getInstance();
+class BatteryManager
+{
+  public:
+    static BatteryManager* getInstance();
     uint8_t getCapacity();
     bool isCharging();
     bool handleCablePlugInIRQ();
@@ -24,9 +24,9 @@ public:
     void energyConsumptionSavingsSettings();
     void updateCapacity();
     uint8_t getUpdatedCapacity();
-    
-protected:
-    static BatteryManager *inst;
+
+  protected:
+    static BatteryManager* inst;
     int lastCapacity = 0;
     BatteryManager();
 }

@@ -4,21 +4,22 @@
  * @brief Message Forward
  * @version 6.0
  * @date 2023-06-20
- * 
- * @copyright Copyright (c) 2021-2023, pranaOS Developers, Krisna Pranav
- * 
+ *
+ * @copyright Copyright (c) 2021-2024, pranaOS Developers, Krisna Pranav
+ *
  */
 
 #pragma once
 
-#include <memory>
 #include "../sys_return_codes.hpp"
+#include <memory>
 
-namespace sys {
-    class Service;
-    class Message;
+namespace sys
+{
+class Service;
+class Message;
 
-    using MessagePointer = std::shared_ptr<Message>;
-    using MessageNone = std::nullptr_t;
-    using SendResult     = std::pair<ReturnCodes, std::shared_ptr<Message>>;
-}
+using MessagePointer = std::shared_ptr<Message>;
+using MessageNone = std::nullptr_t;
+using SendResult = std::pair<ReturnCodes, std::shared_ptr<Message>>;
+} // namespace sys

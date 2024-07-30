@@ -1,20 +1,21 @@
 /**
-* @file message_type.hpp
-* @author Krisna Pranav
-* @brief Message Type
-* @version 1.0
-* @date 2023-06-20
-*
-* @copyright Copyright (c) 2021-2023, pranaOS Developers, Krisna Pranav
-*
-*/
+ * @file message_type.hpp
+ * @author Krisna Pranav
+ * @brief Message Type
+ * @version 1.0
+ * @date 2023-06-20
+ *
+ * @copyright Copyright (c) 2021-2024, pranaOS Developers, Krisna Pranav
+ *
+ */
 
 #pragma once
 
 /**
  * @brief MessageType
  */
-enum class MessageType {
+enum class MessageType
+{
     MessageTypeUninitialized = 0,
     EinkMessage,
     GUIMessage,
@@ -65,7 +66,6 @@ enum class MessageType {
     APMClose,
     APMPreventBlocking,
     APMInitPowerSaveMode,
-
 
     KBDKeyEvent,
 

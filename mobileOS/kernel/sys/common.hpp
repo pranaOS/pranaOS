@@ -1,102 +1,110 @@
 /**
-* @file common.hpp
-* @author Krisna Pranav
-* @brief Common
-* @version 1.0
-* @date 2023-06-20
-*
-* @copyright Copyright (c) 2021-2023, pranaOS Developers, Krisna Pranav
-*
+ * @file common.hpp
+ * @author Krisna Pranav
+ * @brief Common
+ * @version 1.0
+ * @date 2023-06-20
+ *
+ * @copyright Copyright (c) 2021-2024, pranaOS Developers, Krisna Pranav
+ *
  */
 
 #pragma once
 
 #include "sys_return_codes.hpp"
 
-namespace sys {
+namespace sys
+{
 
-    /**
-     * @brief BusChannel
-     * 
-     */
-    enum class BusChannel {
-        Unknown,
-        System,
-        SystemManagerRequests,
-        PowerManagerRequests,
-        USBNotifications,
-        ServiceCellularNotifications,
-        Test2CustomBusChannel,
-        ServiceDBNotifications,
-        ServiceAudioNotifications,
-        AppManagerNotifications,
-        ServiceFotaNotifications,
-        AntennaNotifications,
-        ServiceEvtmgrNotifications,
-        PhoneModeChanges,
-        PhoneLockChanges,
-        BluetoothModeChanges,
-        BluetoothNotifications
-    };
+/**
+ * @brief BusChannel
+ *
+ */
+enum class BusChannel
+{
+    Unknown,
+    System,
+    SystemManagerRequests,
+    PowerManagerRequests,
+    USBNotifications,
+    ServiceCellularNotifications,
+    Test2CustomBusChannel,
+    ServiceDBNotifications,
+    ServiceAudioNotifications,
+    AppManagerNotifications,
+    ServiceFotaNotifications,
+    AntennaNotifications,
+    ServiceEvtmgrNotifications,
+    PhoneModeChanges,
+    PhoneLockChanges,
+    BluetoothModeChanges,
+    BluetoothNotifications
+};
 
-    /**
-     * @brief ServicePriority
-     * 
-     */
-    enum class ServicePriority {
-        Idle     = 0,
-        Low      = 1,
-        Normal   = 2,
-        High     = 3,
-        Realtime = 4,
-    };
+/**
+ * @brief ServicePriority
+ *
+ */
+enum class ServicePriority
+{
+    Idle = 0,
+    Low = 1,
+    Normal = 2,
+    High = 3,
+    Realtime = 4,
+};
 
-    /**
-     * @brief ServicePowerMode
-     * 
-     */
-    enum class ServicePowerMode {
-        Active,
-        SuspendToRAM,
-        SuspendToNVM
-    };
+/**
+ * @brief ServicePowerMode
+ *
+ */
+enum class ServicePowerMode
+{
+    Active,
+    SuspendToRAM,
+    SuspendToNVM
+};
 
-    /**
-     * @brief CloseReason
-     * 
-     */
-    enum class CloseReason {
-        RegularPowerDown,
-        OnboardingPowerDown,
-        Reboot,
-        RebootToRecovery,
-        FactoryReset,
-        SystemBrownout,
-        LowBattery
-    };
+/**
+ * @brief CloseReason
+ *
+ */
+enum class CloseReason
+{
+    RegularPowerDown,
+    OnboardingPowerDown,
+    Reboot,
+    RebootToRecovery,
+    FactoryReset,
+    SystemBrownout,
+    LowBattery
+};
 
-    /**
-     * @brief RecoveryReason
-     * 
-     */
-    enum class RecoveryReason {
-        Update,
-        Recovery,
-        FactoryReset,
-        Backup,
-        Restore
-    };
+/**
+ * @brief RecoveryReason
+ *
+ */
+enum class RecoveryReason
+{
+    Update,
+    Recovery,
+    FactoryReset,
+    Backup,
+    Restore
+};
 
-}
+} // namespace sys
 
 /**
  * @brief c_str
- * 
- * @param code 
- * @return const char* 
+ *
+ * @param code
+ * @return const char*
  */
-inline const char *c_str(sys::ReturnCodes code) {
-    switch (code) {
+inline const char* c_str(sys::ReturnCodes code)
+{
+    switch(code)
+    {
     case sys::ReturnCodes::Success:
         return "Success";
 
@@ -112,18 +120,20 @@ inline const char *c_str(sys::ReturnCodes code) {
     case sys::ReturnCodes::Unresolved:
         return "Unresolved";
     }
-    
+
     return "Undefined";
 }
 
 /**
  * @brief c_str
- * 
- * @param code 
- * @return const char* 
+ *
+ * @param code
+ * @return const char*
  */
-inline const char *c_str(sys::ServicePowerMode code) {
-    switch (code) {
+inline const char* c_str(sys::ServicePowerMode code)
+{
+    switch(code)
+    {
     case sys::ServicePowerMode::Active:
         return "Active";
 
@@ -138,12 +148,14 @@ inline const char *c_str(sys::ServicePowerMode code) {
 
 /**
  * @brief c_str
- * 
- * @param channel 
- * @return const char* 
+ *
+ * @param channel
+ * @return const char*
  */
-inline const char *c_str(sys::BusChannel channel) {
-    switch (channel) {
+inline const char* c_str(sys::BusChannel channel)
+{
+    switch(channel)
+    {
     case sys::BusChannel::Unknown:
         return "Unknown";
 
@@ -194,7 +206,6 @@ inline const char *c_str(sys::BusChannel channel) {
 
     case sys::BusChannel::PhoneLockChanges:
         return "PhoneLockChanges";
-
     }
     return "";
 }

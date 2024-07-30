@@ -4,9 +4,9 @@
  * @brief Logging
  * @version 6.0
  * @date 2023-06-17
- * 
- * @copyright Copyright (c) 2021-2023, pranaOS Developers, Krisna Pranav
- * 
+ *
+ * @copyright Copyright (c) 2021-2024, pranaOS Developers, Krisna Pranav
+ *
  */
 
 #pragma once
@@ -17,4 +17,4 @@
 #else
 #define debug_db_data(...)
 #define error_db_data(...)
-#endif 
+#endif
