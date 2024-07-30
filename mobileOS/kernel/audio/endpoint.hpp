@@ -39,5 +39,14 @@ class Endpoint
 
     void disconnectStream();
     bool isConnected() const noexcept;
+
+    [[nodiscard]] virtual auto getTraits() const -> Traits = 0;
+
+    auto isFormatSupported(const AudioFormat& format) -> bool;
+
+    virtual auto getSupportedFormats() -> std::vector<AudioFormat> = 0;
+
+  protected:
+    AbstractStream* _stream = nullptr;
 }; // class Endpoint
 } // namespace audio
