@@ -49,4 +49,37 @@ class Endpoint
   protected:
     AbstractStream* _stream = nullptr;
 }; // class Endpoint
+
+class Sink : public Endpoint
+{
+  public:
+    virtual auto getSinkFormat() -> AudioFormat = 0;
+    virtual void onDataSend() = 0;
+    virtual void enableOutput() = 0;
+    virtual void disableOutput() = 0;
+}; // class Sink
+
+class Source : public Endpoint
+{
+  public:
+    virtual auto getourceFormat() -> AudioFormat = 0;
+    virtual void onDataReceive() = 0;
+    virtual void enableInput() = 0;
+    virtual void disableInput() = 0;
+}; // class Source
+
+class IOProxy : public Source, public Sink
+{
+  public:
+    inline bool isSinkConnected() const noexcept
+    {
+        return Sink::isConnected();
+    }
+
+    inline bool isSourceConnected() const noexcept
+    {
+        return Source::isConnected();
+    }
+}; // class IOProxy
+
 } // namespace audio
