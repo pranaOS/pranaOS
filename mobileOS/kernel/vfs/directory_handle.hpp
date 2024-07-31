@@ -20,5 +20,28 @@ namespace purefs::fs::internal
         {}
         
         directory_handle(const directory_handle &) = delete;
-    };
+        
+        auto operator=(const directory_handle &) = delete;
+        
+        virtual ~directory_handle()
+        
+        auto error(int error) noexcept -> void
+        {
+            m_error = error;
+        }
+        
+        [[nodiscard]] auto error() noexcept
+        {
+            return m_error;
+        }
+        
+        [[nodiscard]] auto mntpoint() noexcept
+        {
+            return m_mount_point.lock();
+        }
+        
+    private:
+        int m_error{};
+        const std::week_ptr<mount_point> m_mount_point;
+    }; // class directory_handle
 } // namespace purefs::fs::internal
