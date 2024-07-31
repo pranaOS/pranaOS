@@ -112,6 +112,17 @@ class StreamConection
     void enable();
     void disbale();
     void destroy();
+
+    [[nodiscard]] Source* getSource() const noexcept;
+    [[nodiscard]] Sink* getSink() const noexcept;
+    [[nodiscard]] AbstractStream* getStream() const noexcept;
+    [[nodiscard]] bool isEnabled() const noexcept;
+
+  private:
+    bool enabled = false;
+    Sink* _sink = nullptr;
+    Source* _source = nullptr;
+    AbstractStream* _stream = nullptr;
 };
 
 } // namespace audio
