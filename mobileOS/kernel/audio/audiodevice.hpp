@@ -62,5 +62,12 @@ namespace audio
         virtual RetCode setOutputVolume(float vol) = 0;
         
         virtual RetCode setInputGain(float gain) = 0;
+        
+        auto getSinkFormat() -> AudioFormat override
+        {
+            return getSourceFormat();
+        }
+    private:
+        static_assert(maxVolume > 0, "maxVolume needs to be bigger than 0");
     }; // class AudioDevice
 } // namespace Audio
