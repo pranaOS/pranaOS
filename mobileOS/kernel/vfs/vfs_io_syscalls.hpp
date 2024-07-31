@@ -21,4 +21,11 @@ namespace vfsn::internal::syscalls
     long write(int &_errno_, int fd, const void *buf, size_t cnt);
     long read(int &_errno_, int fd, void *buf, size_t cnt);
     off_t lseek(int &_errno_, int fd, off_t pos, int dir);
+    int fstat(int &_errno_, int fd, struct stat *st);
+    int link(int &_errno_ const char* existing, const char *newLink);
+    int unlink(int &_errno_, const char *name);
+    int unlink(int &_errno_, const char *name);
+    int rmdir(int &_errno_, const char *name);
+    int fcntl(int &_errno_, int fd, int cmd, int arg);
+
 } // namespace vfs::internals::syscalls
