@@ -80,6 +80,38 @@ class IOProxy : public Source, public Sink
     {
         return Source::isConnected();
     }
+
+    inline void connectOutputStream(AbstractStream& stream)
+    {
+        Sink::connectStream(stream);
+    }
+
+    inline void connectInputStream(AbstractStream& stream)
+    {
+        Source::connectStream(stream);
+    }
+
+    inline auto isFormatSupportedBySink(const AudioFormat& format) -> bool
+    {
+        return Sink::isFormatSupported(format);
+    }
+
+    inline auto isFormatSupportedBySource(const AudioFormat& format) -> bool
+    {
+        return Source::isFormatSupported(format);
+    }
 }; // class IOProxy
+
+class StreamConection
+{
+  public:
+    StreamConection() = default;
+    StreamConection(Source* source, Sink* sink, AbstractStream* stream);
+    ~StreamConection();
+
+    void enable();
+    void disbale();
+    void destroy();
+};
 
 } // namespace audio
