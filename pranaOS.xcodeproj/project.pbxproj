@@ -197,6 +197,7 @@
 		B16EF7A72C5A732700EF8B82 /* Executor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B16EF6E22C5A732700EF8B82 /* Executor.cpp */; };
 		B16EF7A82C5A732700EF8B82 /* Command.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B16EF6E42C5A732700EF8B82 /* Command.cpp */; };
 		B16EF7A92C5A732700EF8B82 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B16EF6E82C5A732700EF8B82 /* main.cpp */; };
+		B16EF7B22C5A784200EF8B82 /* profile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B16EF7B02C5A784200EF8B82 /* profile.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1013,6 +1014,9 @@
 		B16EF6E72C5A732700EF8B82 /* IncludeParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IncludeParser.h; sourceTree = "<group>"; };
 		B16EF6E82C5A732700EF8B82 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		B16EF7AD2C5A73A700EF8B82 /* audiodevice.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = audiodevice.hpp; sourceTree = "<group>"; };
+		B16EF7B02C5A784200EF8B82 /* profile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = profile.cpp; sourceTree = "<group>"; };
+		B16EF7B12C5A784200EF8B82 /* profile.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = profile.hpp; sourceTree = "<group>"; };
+		B16EF7B42C5A78AE00EF8B82 /* vfs_io_syscalls.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = vfs_io_syscalls.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1158,6 +1162,7 @@
 			isa = PBXGroup;
 			children = (
 				B16EF3822C5A732600EF8B82 /* fs_path.hpp */,
+				B16EF7B42C5A78AE00EF8B82 /* vfs_io_syscalls.hpp */,
 			);
 			path = vfs;
 			sourceTree = "<group>";
@@ -1240,6 +1245,7 @@
 		B16EF3A82C5A732600EF8B82 /* audio */ = {
 			isa = PBXGroup;
 			children = (
+				B16EF7AF2C5A783500EF8B82 /* profiles */,
 				B16EF3A92C5A732600EF8B82 /* equalizer.cpp */,
 				B16EF3AA2C5A732600EF8B82 /* codec.hpp */,
 				B16EF3AB2C5A732600EF8B82 /* audioformat.hpp */,
@@ -2740,6 +2746,15 @@
 			path = Executor;
 			sourceTree = "<group>";
 		};
+		B16EF7AF2C5A783500EF8B82 /* profiles */ = {
+			isa = PBXGroup;
+			children = (
+				B16EF7B02C5A784200EF8B82 /* profile.cpp */,
+				B16EF7B12C5A784200EF8B82 /* profile.hpp */,
+			);
+			path = profiles;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -2927,6 +2942,7 @@
 				B16EF6F12C5A732700EF8B82 /* field.cpp in Sources */,
 				B16EF7A52C5A732700EF8B82 /* Translator.cpp in Sources */,
 				B16EF74F2C5A732700EF8B82 /* hda.swift in Sources */,
+				B16EF7B22C5A784200EF8B82 /* profile.cpp in Sources */,
 				B16EF7702C5A732700EF8B82 /* purgeablevmobject.cpp in Sources */,
 				B16EF7692C5A732700EF8B82 /* log.docc in Sources */,
 				B16EF6EF2C5A732700EF8B82 /* shell.c in Sources */,
