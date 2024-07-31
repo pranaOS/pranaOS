@@ -83,7 +83,7 @@ struct QFilterCoefficients
             return true;
         }
 
-        return false
+        return false;
     }
 };
 
