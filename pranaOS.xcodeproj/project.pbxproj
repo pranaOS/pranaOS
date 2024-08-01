@@ -1019,6 +1019,7 @@
 		B16EF7B42C5A78AE00EF8B82 /* vfs_io_syscalls.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = vfs_io_syscalls.hpp; sourceTree = "<group>"; };
 		B16EF7B62C5A7AF700EF8B82 /* directory_handle.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = directory_handle.hpp; sourceTree = "<group>"; };
 		B16EF7B72C5A7BD000EF8B82 /* file_handle.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = file_handle.hpp; sourceTree = "<group>"; };
+		B18F67972C5BD75C00BA3E12 /* defs.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = defs.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1163,6 +1164,7 @@
 		B16EF3812C5A732600EF8B82 /* vfs */ = {
 			isa = PBXGroup;
 			children = (
+				B18F67972C5BD75C00BA3E12 /* defs.hpp */,
 				B16EF3822C5A732600EF8B82 /* fs_path.hpp */,
 				B16EF7B42C5A78AE00EF8B82 /* vfs_io_syscalls.hpp */,
 				B16EF7B62C5A7AF700EF8B82 /* directory_handle.hpp */,
