@@ -2,10 +2,10 @@
  * @file defs.hpp
  * @author Krisna Pranav
  * @brief defs
- * @version 1.0
+ * @version 6.0
  * @date 2024-08-01
  *
- * @copyright Copyright (c) 2024 Krisna Pranav
+ * @copyright Copyright (c) 2021 - 2024 pranaOS Developers, Krisna Pranav
  *
  */
 
