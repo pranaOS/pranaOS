@@ -259,6 +259,8 @@
 
 /* Begin PBXFileReference section */
 		B1123A2F2A40A0F100A9F9E5 /* pranaOS */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = pranaOS; sourceTree = BUILT_PRODUCTS_DIR; };
+		B116AB042C61056D00C2BE70 /* disk.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = disk.hpp; sourceTree = "<group>"; };
+		B116AB0B2C61057200C2BE70 /* partition.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = partition.hpp; sourceTree = "<group>"; };
 		B16EF3692C5A732600EF8B82 /* grub.cfg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = grub.cfg; sourceTree = "<group>"; };
 		B16EF36C2C5A732600EF8B82 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		B16EF36F2C5A732600EF8B82 /* integer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = integer.hpp; sourceTree = "<group>"; };
@@ -1164,6 +1166,8 @@
 		B16EF3812C5A732600EF8B82 /* vfs */ = {
 			isa = PBXGroup;
 			children = (
+				B116AB0B2C61057200C2BE70 /* partition.hpp */,
+				B116AB042C61056D00C2BE70 /* disk.hpp */,
 				B18F67972C5BD75C00BA3E12 /* defs.hpp */,
 				B16EF3822C5A732600EF8B82 /* fs_path.hpp */,
 				B16EF7B42C5A78AE00EF8B82 /* vfs_io_syscalls.hpp */,
