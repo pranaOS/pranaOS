@@ -18,8 +18,21 @@ namespace purefs
 {
     class DeviceFactory
     {
-    public:
+      public:
+        /**
+         * @brief Destroy the Device Factory object
+         *
+         */
         virtual ~DeviceFactory() = default;
+
+        /**
+         * @return std::unique_ptr<blkdev::disk>
+         */
         virtual std::unique_ptr<blkdev::disk> makeDefaultBlockDevice() = 0;
+
+        /**
+         * @return std::unique_ptr<blkdev::disk>
+         */
+        virtual std::unique_ptr<blkdev::disk> makeDefaultNvmDevice() = 0;
     }; // class DeviceFactory
 } // namespace purefs
