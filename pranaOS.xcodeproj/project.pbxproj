@@ -263,6 +263,7 @@
 		B116AB0B2C61057200C2BE70 /* partition.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = partition.hpp; sourceTree = "<group>"; };
 		B116AB0D2C61076E00C2BE70 /* device_factory.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = device_factory.hpp; sourceTree = "<group>"; };
 		B15E72622C62579B00FA5D0B /* disk_manager.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = disk_manager.hpp; sourceTree = "<group>"; };
+		B16DC93B2C64936F00B4AE90 /* inotify_flags.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = inotify_flags.hpp; sourceTree = "<group>"; };
 		B16EF3692C5A732600EF8B82 /* grub.cfg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = grub.cfg; sourceTree = "<group>"; };
 		B16EF36C2C5A732600EF8B82 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		B16EF36F2C5A732600EF8B82 /* integer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = integer.hpp; sourceTree = "<group>"; };
@@ -1177,6 +1178,7 @@
 				B16EF7B72C5A7BD000EF8B82 /* file_handle.hpp */,
 				B116AB0D2C61076E00C2BE70 /* device_factory.hpp */,
 				B15E72622C62579B00FA5D0B /* disk_manager.hpp */,
+				B16DC93B2C64936F00B4AE90 /* inotify_flags.hpp */,
 			);
 			path = vfs;
 			sourceTree = "<group>";
