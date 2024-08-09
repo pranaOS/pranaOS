@@ -11,8 +11,8 @@
 
 #pragma once
 
-#include "../sys_return_codes.hpp"
 #include <memory>
+#include <sys/sys_return_codes.hpp>
 
 namespace sys
 {
