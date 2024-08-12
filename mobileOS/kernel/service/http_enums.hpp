@@ -33,4 +33,14 @@ namespace sdesktop::endpoints::http
         NotImplemented = 501,
         InsufficientStorage = 507
     }; // enum class Code
+
+    enum class Method
+    {
+        get = 1,
+        post,
+        put,
+        del
+    }; // enum class Method
+
+    [[nodiscard]] auto isMethodValid(uint8_t) -> bool;
 } // namespace sdesktop::endpoints::http
