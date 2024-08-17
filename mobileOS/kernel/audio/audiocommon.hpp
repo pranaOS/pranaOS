@@ -57,6 +57,82 @@ namespace audio
 
     enum class PlaybackType
     {
-        
+       None,
+       Multimedia,
+       Notifications,
+       System = Notifications,
+       SingleVibration = Notifications,
+       KeypadSound,
+       CallRingtone,
+       TextMessageRingtone,
+       Meditation,
+       Alarm,
+       PreWakeUp,
+       Snooze,
+       FocusTimer,
+       Bedtime,
+       Last = Bedtime, 
     }; // enum class PlaybackType
+
+    enum class VolumeChangeRequestSource
+    {
+        A2DP,
+        HFP,
+        HSP,
+        Other
+    }; // enum class VolumeChangeRequestSource
+
+    enum class Fade
+    {
+        Disable,
+        In,
+        InOut
+    }; // enum class Fade
+
+    struct FadeParams
+    {
+        Fade mode;
+        std::optional<std::chrono::seconds> playbackDuraiton = std::nullopt;
+    }; // struct FadeParams
+
+    enum class VolumeUpdateType
+    {
+        UpdateDB,
+        SkipUpdateDB
+    }; // enum class VolumeUpdateType
+
+    using Context = std::pair<Profile::Type, PlaybackType>;
+
+    struct DbPathElement
+    {
+        Setting setting;
+        PlaybackType playbackType;
+        Profile::Type profileType;
+    }; // struct DbPathElement
+
+    /**
+     * @param playbackType 
+     * @return const std::string 
+     */
+    [[nodiscard]] const std::string str(const PlaybackType &playbackType) noexcept;
+
+    /**
+     * @param setting 
+     * @return const std::string 
+     */
+    [[nodiscard]] const std::string str(const Setting &setting) noexcept;
+
+    /**
+     * @param element 
+     * @return const std::string 
+     */
+    [[nodiscard]] const std::string dbPath(const DbPathElement &element);
+
+    /**
+     * @param setting 
+     * @param playbackType 
+     * @param profileType 
+     * @return const std::string 
+     */
+    [[nodiscard]] const std::string dbPath(const Setting &setting, const PlaybackType &playbackType, const Profile::Type &profileType);
 }
