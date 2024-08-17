@@ -237,5 +237,13 @@ namespace audio
         {
             return audioSinkState.test(magic_enum::enum_integer(deviceUpdateEvent));
         }
+
+        bool setConnected(EventType deviceUpdateEvent, bool isConnected)
+        {
+            audioSinkState.set(magic_enum::enum_integer(deviceUpdateEvent), isConnected);
+        }
+
+    private:
+        std::bitset<magic_enum::enum_count<EventType>()> audioSinkState;
     }; // class AudioSinkState
 }
