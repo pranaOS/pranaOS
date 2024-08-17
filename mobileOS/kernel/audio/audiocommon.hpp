@@ -135,4 +135,63 @@ namespace audio
      * @return const std::string 
      */
     [[nodiscard]] const std::string dbPath(const Setting &setting, const PlaybackType &playbackType, const Profile::Type &profileType);
+
+    enum class EventType
+    {
+        JackState,
+        MicrophoneState,
+        BluetoothHSPDeviceState,
+        BluetoothHFPDeviceState,
+        BluetoothA2DPDeviceState,
+        CallMute,
+        CallUnmite,
+        CallLoudSpeakerOn,
+        CallLoudSpeakerOff,
+    }; // enum class EventType
+
+    constexpr auto hwStateUpdateMaxEvent = magic_enum::enum_index(EventType::BluetoothA2DPDeviceState);
+
+    class Event
+    {  
+    public:
+        enum class DeviceState
+        {
+            Connected,
+            Disconnected
+        }; // enum class DeviceState
+
+        /**
+         * @param eType 
+         * @param deviceState 
+         */
+        explicit Event(EventType eType, DeviceState deviceState = DeviceState::Connected)
+            : eventType(eType), deviceState(deviceState)
+        {}
+
+        /**
+         * @brief Destroy the Event object
+         * 
+         */
+        virtual ~Event() = default;
+
+        /**
+         * @return EventType 
+         */
+        EventType getType() const noexcept
+        {
+            return eventTye;
+        } // EventType getType
+
+        /**
+         * @return DeviceState 
+         */
+        DeviceState getDeviceState() const noexcept
+        {
+            return deviceState;
+        } // DeviceState getDeviceState
+
+    private:
+        const EventType eventType;
+        const  DeviceState deviceState;
+    }; // class Event
 }
