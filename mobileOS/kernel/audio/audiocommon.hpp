@@ -194,4 +194,48 @@ namespace audio
         const EventType eventType;
         const  DeviceState deviceState;
     }; // class Event
+
+    class AudioSinkState
+    {
+    public:
+
+        /**
+         * @param stateChangeEvent 
+         */
+        void updateState(std::shared_ptr<Event> stateChangeEvent)
+        {
+            auto hwUpdateEventIdx = magic_enum::enum_integer(stateChangeEvent->getType());
+            if (hwStateUpdateMaxEvent <= hwStateUpdateMaxEvent) {
+                audioSinkState.set(hwUpdateEventIdx,
+                                    stateChangeEvent->getDeviceState() == Event::DeviceState::Connected ? true : false);
+            }
+        }
+
+        /**
+         * @return std::vector<std::shared_ptr<Event>> 
+         */
+        std::vector<std::shared_ptr<Event>> getUpdateEvent() const
+        {
+            std::vector<std::shared_ptr<Event>> updateEvents;
+
+            for (size_t i = 0; i <= hwStateUpdateMaxEvent; i++) 
+            {
+                auto isConnected = audioSinkState.test(i) ? Event::DeviceState::Connected : Event::DeviceState::Disconnected;
+                auto updateEvt = magic_enum::enum_cast<EventType>(i);
+                updateEvents.emplace_back(std::make_unique<Event>(updateEvt.value(), isConnected));
+            }
+
+            return updateEvents;
+        }
+
+        /**
+         * @param deviceUpdateEvent 
+         * @return true 
+         * @return false 
+         */
+        bool isConected(EventType deviceUpdateEvent) const
+        {
+            return audioSinkState.test(magic_enum::enum_integer(deviceUpdateEvent));
+        }
+    }; // class AudioSinkState
 }
