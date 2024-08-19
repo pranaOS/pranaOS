@@ -246,4 +246,37 @@ namespace audio
     private:
         std::bitset<magic_enum::enum_count<EventType>()> audioSinkState;
     }; // class AudioSinkState
+
+    enum class RetCode: std::uint8_t
+    {
+        Success = 0,
+        InvokedInIncorrectState,
+        UnsupportedProfile,
+        UnsupportedEvent,
+        InvalidFormat,
+        OperationCreateFailed,
+        FileDoesntExist,
+        FailedToAllocateMemory,
+        OperationNotSet,
+        ProfileNotSet,
+        DeviceFailure,
+        TokenNotIgnored,
+        Ignored,
+        Failed
+    }; // enum class RetCode
+
+    struct AudioInitException: public std::runtime_error
+    {
+    public:
+        AudioInitException(const char *message, audio::RetCode errorCode) : runtime_error(message)
+        {}
+
+        audio::RetCode getErrorCode() const noexcept
+        {
+            return errorCode;
+        }
+    
+    protected:
+        audio::RetCode errorCode = audio::RetCode::Failed;
+    }; // struct AudioInitException
 }
