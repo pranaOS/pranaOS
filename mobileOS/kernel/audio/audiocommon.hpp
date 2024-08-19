@@ -279,4 +279,44 @@ namespace audio
     protected:
         audio::RetCode errorCode = audio::RetCode::Failed;
     }; // struct AudioInitException
+
+    class Token
+    {
+        using TokenType = int16_t;
+
+    public:
+
+    private:
+        static constexpr auto maxToken = std::numeric_limits<TokenType>::max();
+
+        Token IncrementToken()
+        {
+            t = (t == maxToken) ? 0 : t + 1;
+            return *this;
+        }
+
+        constexpr static TokenType tokenUninitialzied = -1;
+        constexpr static TokenType tokenBAd = -2;
+
+        TokenType t;
+        friend class ::audio::AudioMux;
+    };
+
+    /**
+     * @param retCode 
+     * @return RetCode 
+     */
+    RetCode GetDeviceError(AudioDevice::RetCode retCode);
+
+    /**
+     * @param retcode 
+     * @return const std::string 
+     */
+    const std::string str(RetCode retcode);
+
+    /**
+     * @param volume 
+     * @return std::string 
+     */
+    [[nodiscard]] auto GetVolumeText(const audio::Volume &volume) -> std::string;
 }
