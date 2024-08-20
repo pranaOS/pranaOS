@@ -421,4 +421,21 @@ namespace AudioServiceMessage
         audio::Token token = audio::Token::MakeBadToken();
     }; // class FileSystemNoSpace
     
+    class DbRequest: public sys::DataMessage
+    {
+    public:
+        /**
+         * @param setting 
+         * @param playback 
+         * @param profile 
+         */
+        explicit DbRequest(const audio::Setting &setting, const audio::PlaybackType &playback,
+                           const audio::Profile::Type &profile)
+            : setting(setting), profile(profile), playback(playback)
+        {}
+
+        const audio::Setting setting;
+        const audio::Profile::Type profile;
+        const audio::PlaybackType playback;
+    }; // class DbRequest
 } // namespace AudioServiceMessage
