@@ -390,4 +390,21 @@ namespace AudioServiceMessage
     private:
         audio::Token token = audio::Token::MakeBadToken();
     }; // class EndOfFile
+
+    class FileDeleted: public sys::DataMessage
+    {
+    public:
+        explicit FileDeleted(audio::Token &token) : token(token)
+        {}
+
+        const audio::Token &GetToken() const
+        {
+            return token;
+        }
+
+    private:
+        audio::Token token = audio::Token::MakeBadToken();
+    }; // class FileDeleted 
+
+    
 } // namespace AudioServiceMessage
