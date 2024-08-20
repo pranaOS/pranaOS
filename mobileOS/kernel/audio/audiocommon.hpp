@@ -334,7 +334,7 @@ namespace audio
             return t == tokenUninitialzied;
         }
 
-        static inline TokenMakeBadToken()
+        static inline MakeBadToken()
         {
             return Token(tokenBad);
         }
@@ -406,5 +406,19 @@ namespace AudioServiceMessage
         audio::Token token = audio::Token::MakeBadToken();
     }; // class FileDeleted 
 
+    class FileSystemNoSpace: public sys::DataMessage
+    {
+    public:
+        explicit FileSystemNoSpace(audio::Token &token) : token(token)
+        {}
+
+        const audio::Token &GetToken() const
+        {
+            return token;
+        }
+
+    private:
+        audio::Token token = audio::Token::MakeBadToken();
+    }; // class FileSystemNoSpace
     
 } // namespace AudioServiceMessage
