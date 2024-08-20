@@ -438,4 +438,26 @@ namespace AudioServiceMessage
         const audio::Profile::Type profile;
         const audio::PlaybackType playback;
     }; // class DbRequest
+
+    class AudioDeviceCreated: public sys::DataMessage
+    {
+    public:
+        explicit AudioDeviceCreated(std::shared_ptr<audio::AudioDevice> device, audio::AudioDevice::Type type)
+            : device(std::move(device)), type(type)
+        {}
+
+        auto getDevice() const noexcept -> std::shared_ptr<audio::AudioDevice>
+        {
+            return device;
+        }
+
+        auto getDeviceType() const noexcept -> audio::AudioDevice::Type
+        {
+            return type;
+        }
+    
+    private:
+        std::shared_ptr<audio::AudioDevice> device;
+        audio::AudioDevice::Type type;
+    }; // class AudioDeviceCreated 
 } // namespace AudioServiceMessage
