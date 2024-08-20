@@ -376,4 +376,18 @@ namespace audio
 
 namespace AudioServiceMessage
 {
+    class EndOfFile: public sys::DataMessage
+    {
+    public:
+        explicit EndOfFile(audio::Token &token) : token(token)
+        {}
+
+        const audio::Token &GetToken() const
+        {
+            return token;
+        }
+
+    private:
+        audio::Token token = audio::Token::MakeBadToken();
+    }; // class EndOfFile
 } // namespace AudioServiceMessage
