@@ -285,6 +285,59 @@ namespace audio
         using TokenType = int16_t;
 
     public:
+        /**
+         * @param initValue 
+         */
+        explicit Token(TokenType initValue = tokenUninitialzied) : t(initValue)
+        {}
+
+        /**
+         * @param other 
+         * @return true 
+         * @return false 
+         */
+        bool operator==(const Token &other) const noexcept
+        {
+            return other.t == t;
+        }
+
+        /**
+         * @param other 
+         * @return true 
+         * @return false 
+         */
+        bool operator!=(const Token &other) const noexcept
+        {
+            return !(other.t == t);
+        }
+
+        /**
+         * @return true 
+         * @return false 
+         */
+        bool IsValid() const
+        {
+            return t > tokenUninitialzied;
+        }
+
+        /**
+         * @return true 
+         * @return false 
+         */
+        bool IsBad() const
+        {
+            return t == tokenBad;
+        }
+
+        bool IsUninitialized() const
+        {
+            return t == tokenUninitialzied;
+        }
+
+        static inline TokenMakeBadToken()
+        {
+            return Token(tokenBad);
+        }
 
     private:
         static constexpr auto maxToken = std::numeric_limits<TokenType>::max();
@@ -296,7 +349,7 @@ namespace audio
         }
 
         constexpr static TokenType tokenUninitialzied = -1;
-        constexpr static TokenType tokenBAd = -2;
+        constexpr static TokenType tokenBad = -2;
 
         TokenType t;
         friend class ::audio::AudioMux;
@@ -319,4 +372,8 @@ namespace audio
      * @return std::string 
      */
     [[nodiscard]] auto GetVolumeText(const audio::Volume &volume) -> std::string;
-}
+} // namespace audio
+
+namespace AudioServiceMessage
+{
+} // namespace AudioServiceMessage
