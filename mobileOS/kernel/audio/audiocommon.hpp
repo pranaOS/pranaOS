@@ -460,4 +460,6 @@ namespace AudioServiceMessage
         std::shared_ptr<audio::AudioDevice> device;
         audio::AudioDevice::Type type;
     }; // class AudioDeviceCreated 
+
+    using Callback = std::function<std::optional<std::string>(const sys::Message *msg)>;
 } // namespace AudioServiceMessage
