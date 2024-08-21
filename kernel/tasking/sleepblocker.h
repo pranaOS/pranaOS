@@ -4,7 +4,7 @@
 * @brief SleepBlocker
 * @version 1.0
 *
-* @copyright Copyright (c) 2021 - 2023 pranaOS Developers, Krisna Pranav
+* @copyright Copyright (c) 2021-2024 pranaOS Developers, Krisna Pranav
 *
  */
 

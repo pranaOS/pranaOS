@@ -5,7 +5,7 @@
  * @version 6.0
  * @date 2023-08-03
  * 
- * @copyright Copyright (c) 2021 - 2023 pranaOS Developers, Krisna Pranav, 2000-2002 Opsycon AB (www.opsycon.se)
+ * @copyright Copyright (c) 2021-2024 pranaOS Developers, Krisna Pranav, 2000-2002 Opsycon AB (www.opsycon.se)
  * 
  */
 
