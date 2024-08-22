@@ -11,18 +11,12 @@
 
 #pragma once
 
-#ifndef MOD_TEST_SUITE
-
-#    if defined(KERNEL)
-#        include <kernel/assertions.h>
-#    else
-#        include <assert.h>
-#        ifndef __pranaos__
-#            define ASSERT assert
-#            define ASSERT_NOT_REACHED() assert(false)
-#            define RELEASE_ASSERT assert
-#            define TODO ASSERT_NOT_REACHED
-#        endif
-#    endif
-
+#if defined(KERNEL)
+#    include <kernel/assertions.h>
+#else
+#    include <assert.h>
+#    define VERIFY assert
+#    define VERIFY_NOT_REACHED() assert(false) 
+static constexpr bool TODO = false;
+#    define TODO() VERIFY(TODO)                
 #endif
