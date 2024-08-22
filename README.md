@@ -21,11 +21,17 @@
 - POSIX signals.
 - /proc typo filesystems.
 - ps2 mouse and keyboard.
+- Harware Security
+- Filesystem Notifiers
+- Profilers
+- Sound 16 bit drivers
+- Mouse Integeration for Virtual Machines
 
 # Libraries:
 - gateway & entrypoint **(mods)**
 - objective-c runtime support **(libobjc)**
 - swift runtime support **(libswift)**
+- java runtime and support for kernel **(libjava)**
 
 # Userland:
 - simple terminal and some apps
@@ -61,7 +67,6 @@
 </a>
 
 ## Inspired by:
-- [SerenityOS](https://github.com/SerenityOS/Serenity)
 - [macOS](https://github.com/apple/darwin-xnu)
 - [Linux](https://github.com/torvalds/linux)
 
