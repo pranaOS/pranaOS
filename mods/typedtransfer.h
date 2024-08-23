@@ -13,48 +13,51 @@
 
 #include "traits.h"
 
-// mods
-
-namespace Mods {
-
+namespace Mods 
+{
     template<typename T>
-    class TypedTransfer {
+    class TypedTransfer 
+    {
     public:
         /**
-         * @brief move
-         * 
          * @param destination 
          * @param source 
          * @param count 
-         * @return size_t 
          */
-        static size_t move(T* destination, T* source, size_t count) {
+        static void move(T* destination, T* source, size_t count)
+        {
+            if (count == 0)
+                return;
+
             if constexpr (Traits<T>::is_trivial()) {
                 __builtin_memmove(destination, source, count * sizeof(T));
-                return count;
+                return;
             }
 
             for (size_t i = 0; i < count; ++i) {
                 if (destination <= source)
-                    new (&destination[i]) T(Mods::move(source[i]));
+                    new (&destination[i]) T(std::move(source[i]));
                 else
-                    new (&destination[count - i - 1]) T(Mods::move(source[count - i - 1]));
+                    new (&destination[count - i - 1]) T(std::move(source[count - i - 1]));
             }
-
-            return count;
         }
 
         /**
-         * @brief copy
-         * 
          * @param destination 
          * @param source 
          * @param count 
          * @return size_t 
          */
-        static size_t copy(T* destination, const T* source, size_t count) {
+        static size_t copy(T* destination, const T* source, size_t count)
+        {
+            if (count == 0)
+                return 0;
+
             if constexpr (Traits<T>::is_trivial()) {
-                __builtin_memmove(destination, source, count * sizeof(T));
+                if (count == 1)
+                    *destination = *source;
+                else
+                    __builtin_memmove(destination, source, count * sizeof(T));
                 return count;
             }
 
@@ -69,15 +72,17 @@ namespace Mods {
         }
 
         /**
-         * @brief compare
-         * 
          * @param a 
          * @param b 
          * @param count 
          * @return true 
          * @return false 
          */
-        static bool compare(const T* a, const T* b, size_t count) {
+        static bool compare(const T* a, const T* b, size_t count)
+        {
+            if (count == 0)
+                return true;
+
             if constexpr (Traits<T>::is_trivial())
                 return !__builtin_memcmp(a, b, count * sizeof(T));
 
@@ -88,8 +93,5 @@ namespace Mods {
 
             return true;
         }
-    };
-
-}
-
-// using mods
+    }; // class TypedTransfer
+} // namespace Mods
