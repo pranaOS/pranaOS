@@ -14,27 +14,35 @@
 #include "doublelinkedlist.h"
 #include "types.h"
 
-namespace Mods {
-    /**
-     * @brief Class()
-     * 
-     */
+
+namespace Mods 
+{
+    namespace Detail 
+    {
+        /**
+         * @tparam inline_capacity 
+         */
+        template<size_t inline_capacity>
+        class ByteBuffer;
+    } // namespace Detail
+
     class Bitmap;
-    class ByteBuffer;
-    class DebugLogStream;
+    using ByteBuffer = Mods::Detail::ByteBuffer<32>;
+    class Error;
+    class GenericLexer;
     class IPv4Address;
     class JsonArray;
     class JsonObject;
     class JsonValue;
-    class LogStream;
-    class SharedBuffer;
     class StackInfo;
     class String;
     class StringBuilder;
     class StringImpl;
     class StringView;
+    class Time;
     class URL;
     class FlyString;
+    class Utf16View;
     class Utf32View;
     class Utf8View;
     class InputStream;
@@ -42,27 +50,19 @@ namespace Mods {
     class DuplexMemoryStream;
     class OutputStream;
     class InputBitStream;
+    class OutputBitStream;
     class OutputMemoryStream;
 
     /**
-     * @brief CircularDuplexStream
-     * 
      * @tparam Capacity 
      */
     template<size_t Capacity>
     class CircularDuplexStream;
 
-    /**
-     * @brief Span
-     * 
-     * @tparam T 
-     */
     template<typename T>
     class Span;
 
     /**
-     * @brief Array
-     * 
      * @tparam T 
      * @tparam Size 
      */
@@ -70,108 +70,92 @@ namespace Mods {
     struct Array;
 
     /**
-     * @brief SimpleIterator
-     * 
      * @tparam Container 
      * @tparam ValueType 
      */
     template<typename Container, typename ValueType>
     class SimpleIterator;
 
-    /**
-     * @brief ReadonlyBytes + Bytes
-     * 
-     */
     using ReadonlyBytes = Span<const u8>;
+
     using Bytes = Span<u8>;
 
     /**
-     * @brief Atomic
-     * 
      * @tparam T 
+     * @tparam DefaultMemoryOrder 
      */
-    template<typename T>
+    template<typename T, Mods::MemoryOrder DefaultMemoryOrder>
     class Atomic;
 
     /**
-     * @brief SinglyLinkedList 
-     * 
      * @tparam T 
      */
     template<typename T>
     class SinglyLinkedList;
-
-    /**
-     * @brief DoubleLinkedList
-     * 
-     * @tparam T 
-     */
     template<typename T>
-    class DoubleLinkedList;
+    class DoublyLinkedList;
 
     /**
-     * @brief InlineLinkedList
-     * 
-     * @tparam T 
-     */
-    template<typename T>
-    class InlineLinkedList;
-
-    /**
-     * @brief CircularQueue
-     * 
      * @tparam T 
      * @tparam capacity 
      */
     template<typename T, size_t capacity>
     class CircularQueue;
 
-    /**
-     * @brief Traits
-     * 
-     * @tparam T 
-     */
     template<typename T>
     struct Traits;
-
+    
     /**
-     * @brief HashTable
-     * 
      * @tparam T 
-     * @tparam typename 
+     * @tparam TraitsForT 
+     * @tparam IsOrdered 
      */
-    template<typename T, typename = Traits<T>>
+    template<typename T, typename TraitsForT = Traits<T>, bool IsOrdered = false>
     class HashTable;
 
     /**
-     * @brief Hashmap
-     * 
+     * @tparam T 
+     * @tparam TraitsForT 
+     */
+    template<typename T, typename TraitsForT = Traits<T>>
+    using OrderedHashTable = HashTable<T, TraitsForT, true>;
+
+    /**
      * @tparam K 
      * @tparam V 
-     * @tparam typename 
+     * @tparam KeyTraits 
+     * @tparam IsOrdered 
      */
-    template<typename K, typename V, typename = Traits<K>>
+    template<typename K, typename V, typename KeyTraits = Traits<K>, bool IsOrdered = false>
     class HashMap;
 
     /**
-     * @brief Badge
-     * 
+     * @tparam K 
+     * @tparam V 
+     * @tparam KeyTraits 
+     */
+    template<typename K, typename V, typename KeyTraits = Traits<K>>
+    using OrderedHashMap = HashMap<K, V, KeyTraits, true>;
+
+    /**
      * @tparam T 
      */
     template<typename T>
     class Badge;
+    template<typename T>
+    class FixedArray;
 
     /**
-     * @brief Function
-     * 
-     * @tparam ypename 
+     * @tparam precision 
+     * @tparam Underlying 
      */
+    template<size_t precision, typename Underlying = i32>
+    class FixedPoint;
+
     template<typename>
     class Function;
 
     /**
-     * @brief Function
-     * 
      * @tparam Out 
      * @tparam In 
      */
@@ -179,130 +163,59 @@ namespace Mods {
     class Function<Out(In...)>;
 
     /**
-     * @brief NonnullRefPtr
-     * 
      * @tparam T 
      */
     template<typename T>
     class NonnullRefPtr;
-
-    /**
-     * @brief NonnullOwnPtr
-     * 
-     * @tparam T 
-     */
     template<typename T>
     class NonnullOwnPtr;
 
     /**
-     * @brief NonnullOwnPtr
-     * 
-     * @tparam T 
-     */
-    template<typename T>
-    class NonnullOwnPtr;
-
-    /**
-     * @brief NonnullRefPtrVector
-     * 
      * @tparam T 
      * @tparam inline_capacity 
      */
-    template<typename T, int inline_capacity = 0>
+    template<typename T, size_t inline_capacity = 0>
     class NonnullRefPtrVector;
-
-    /**
-     * @brief NonullOwnPtrVector
-     * 
-     * @tparam T 
-     * @tparam inline_capacity 
-     */
-    template<typename T, int inline_capacity = 0>
+    template<typename T, size_t inline_capacity = 0>
     class NonnullOwnPtrVector;
 
     /**
-     * @brief optional
-     * 
      * @tparam T 
      */
     template<typename T>
     class Optional;
-
-    /**
-     * @brief  refptrtraits
-     * 
-     * @tparam T 
-     */
     template<typename T>
     struct RefPtrTraits;
 
     /**
-     * @brief refptr
-     * 
      * @tparam T 
      * @tparam PtrTraits 
      */
     template<typename T, typename PtrTraits = RefPtrTraits<T>>
     class RefPtr;
 
-    /**
-     * @brief ownptr
-     * 
-     * @tparam T 
-     */
     template<typename T>
     class OwnPtr;
 
-    /**
-     * @brief weakptr
-     * 
-     * @tparam T 
-     */
     template<typename T>
     class WeakPtr;
 
     /**
-     * @brief vector
-     * 
      * @tparam T 
      * @tparam inline_capacity 
      */
     template<typename T, size_t inline_capacity = 0>
-    class Vector;
+    requires(!IsRvalueReference<T>) class Vector;
 
     /**
-     * @brief dbgln
-     * 
-     * @tparam Parameters 
-     * @param fmtstr 
+     * @tparam T 
+     * @tparam ErrorType 
      */
-    template<typename... Parameters>
-    void dbgln(const char* fmtstr, const Parameters&...);
+    template<typename T, typename ErrorType = Error>
+    class [[nodiscard]] ErrorOr;
 
-    /**
-     * @brief warnln
-     * 
-     * @tparam Parameters 
-     * @param fmtstr 
-     */
-    template<typename... Parameters>
-    void warnln(const char* fmtstr, const Parameters&...);
+} // namespace Mods
 
-    /**
-     * @brief outln
-     * 
-     * @tparam Parameters 
-     * @param fmtstr 
-     */
-    template<typename... Parameters>
-    void outln(const char* fmtstr, const Parameters&...);
-
-}
-
-/**
- * @brief Accessing mods.
- * 
- */
 using Mods::Array;
 using Mods::Atomic;
 using Mods::Badge;
@@ -311,14 +224,17 @@ using Mods::ByteBuffer;
 using Mods::Bytes;
 using Mods::CircularDuplexStream;
 using Mods::CircularQueue;
-using Mods::DebugLogStream;
-using Mods::DoubleLinkedList;
+using Mods::DoublyLinkedList;
 using Mods::DuplexMemoryStream;
+using Mods::Error;
+using Mods::ErrorOr;
+using Mods::FixedArray;
+using Mods::FixedPoint;
 using Mods::FlyString;
 using Mods::Function;
+using Mods::GenericLexer;
 using Mods::HashMap;
 using Mods::HashTable;
-using Mods::InlineLinkedList;
 using Mods::InputBitStream;
 using Mods::InputMemoryStream;
 using Mods::InputStream;
@@ -326,18 +242,17 @@ using Mods::IPv4Address;
 using Mods::JsonArray;
 using Mods::JsonObject;
 using Mods::JsonValue;
-using Mods::LogStream;
 using Mods::NonnullOwnPtr;
 using Mods::NonnullOwnPtrVector;
 using Mods::NonnullRefPtr;
 using Mods::NonnullRefPtrVector;
 using Mods::Optional;
+using Mods::OutputBitStream;
 using Mods::OutputMemoryStream;
 using Mods::OutputStream;
 using Mods::OwnPtr;
 using Mods::ReadonlyBytes;
 using Mods::RefPtr;
-using Mods::SharedBuffer;
 using Mods::SinglyLinkedList;
 using Mods::Span;
 using Mods::StackInfo;
@@ -345,8 +260,10 @@ using Mods::String;
 using Mods::StringBuilder;
 using Mods::StringImpl;
 using Mods::StringView;
+using Mods::Time;
 using Mods::Traits;
 using Mods::URL;
+using Mods::Utf16View;
 using Mods::Utf32View;
 using Mods::Utf8View;
 using Mods::Vector;
