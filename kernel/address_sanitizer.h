@@ -13,12 +13,20 @@
 
 #include <mods/types.h>
 
-namespace Kernel::AddressSanitizer
-{   
+namespace Kernel::AddressSanitizer 
+{
     /**
      * @param address 
      * @param size 
      * @param return_addr 
      */
-    void shadow_a_check_load(unsigned long address, size_t size, void* return_addr);
+    void shadow_va_check_load(unsigned long address, size_t size, void* return_addr);
+
+    /**
+     * @param address 
+     * @param size 
+     * @param return_addr 
+     */
+    void shadow_va_check_store(unsigned long address, size_t size, void* return_addr);
+
 } // namespace Kernel::AddressSanitizer
