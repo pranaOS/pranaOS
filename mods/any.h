@@ -31,6 +31,19 @@ namespace Mods
     {
         return find_if(begin, end, predicate) != end;
     }
-} // namespace mods 
+
+    /**
+     * @tparam Container 
+     * @param container 
+     * @param predicate 
+     * @return true 
+     * @return false 
+     */
+    template<IterableContainer Container>
+    constexpr bool any_of(Container&& container, auto const& predicate)
+    {
+        return any_of(container.begin(), container.end(), predicate);
+    }
+} // namespace Mods
 
 using Mods::any_of;
