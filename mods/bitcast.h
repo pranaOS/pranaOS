@@ -11,18 +11,28 @@
 
 #pragma once
 
-namespace Mods
+namespace Mods 
 {
+    /**
+     * @tparam T 
+     * @tparam U 
+     * @param a 
+     * @return T 
+     */
     template<typename T, typename U>
     inline T bit_cast(const U& a)
     {
-        if (__has_builtin(__builtin_bit_cast)){
-            return __builtin_bitcast(T, a);
-        }
-        else{
-            static_assert(sizeof(T) == sizeof(U));
-            T result;
-            return result;
-        }
-    }   
-} // namespace Mods
+    #if (__has_builtin(__builtin_bit_cast))
+        return __builtin_bit_cast(T, a);
+    #else
+        static_assert(sizeof(T) == sizeof(U));
+
+        T result;
+        __builtin_memcpy(&result, &a, sizeof(T));
+        return result;
+    #endif
+    }
+
+}
+
+using Mods::bit_cast;
