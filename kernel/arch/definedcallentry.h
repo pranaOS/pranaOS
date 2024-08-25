@@ -14,22 +14,29 @@
 #include <mods/bitcast.h>
 #include <mods/function.h>
 
-namespace Mods
+namespace Kernel 
 {
-    struct DeferredCallEntry
+    struct DeferredCallEntry 
     {
         using HandlerFunction = Function<void()>;
 
         DeferredCallEntry* next;
 
         alignas(HandlerFunction) u8 handler_storage[sizeof(HandlerFunction)];
+        
+        bool was_allocated;
 
         /**
          * @return HandlerFunction& 
          */
         HandlerFunction& handler_value()
         {
-            return *bit_cast<HandlerFunction*>(handler_storage);
+            return *bit_cast<HandlerFunction*>(&handler_storage);
         }
-    }; // struct DefferedCallEntry
-} // namespace Mods
+
+        void invoke_handler()
+        {
+            handler_value()();
+        }
+    }; // struct DeferredCallEntry
+} // namespace Kernel
