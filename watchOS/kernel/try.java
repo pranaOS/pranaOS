@@ -39,5 +39,15 @@ public class Try extends JFrame {
         l = new JLabel("This is JInternal Frame");
 
         JPanel p = new JPanel();
+
+        p.add(l);
+        p.add(b);
+
+        in.setVisible(true);
+        in.add(p);
+
+        f.add(in);
+        f.setSize(1300, 300);
+        f.setVisible(true);
     }
 }
