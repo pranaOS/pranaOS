@@ -14,5 +14,6 @@
 #include "arduino_g.h"
 
 class Graphics2DPrint;
+typedef Graphics2DPrint Arduino_GFX;
 
 #define GFX_NOT_DEFINED -1
