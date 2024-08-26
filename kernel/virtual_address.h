@@ -11,75 +11,73 @@
 
 #pragma once
 
-#include <mods/logstream.h>
+#include <mods/format.h>
 #include <mods/types.h>
 
-
-class VirtualAddress {
+class VirtualAddress 
+{
 public:
-
     /**
      * @brief Construct a new Virtual Address object
      * 
      */
-    VirtualAddress() {}
+    VirtualAddress() = default;
+
+    constexpr explicit VirtualAddress(FlatPtr address)
+        : m_address(address)
+    { }
 
     /**
-     * @brief Construct a new Virtual Address object
-     * 
      * @param address 
      */
-    explicit VirtualAddress(FlatPtr address) : m_address(address) {}
-
-    /**
-     * @brief Construct a new Virtual Address object
-     * 
-     * @param address 
-     */
-    explicit VirtualAddress(const void* address) : m_address((FlatPtr)address) {}
+    explicit VirtualAddress(const void* address)
+        : m_address((FlatPtr)address)
+    { }
 
     /**
      * @return true 
      * @return false 
      */
-    bool is_null() const { 
+    [[nodiscard]] constexpr bool is_null() const 
+    { 
         return m_address == 0; 
     }
 
-    /**
-     * @return true 
-     * @return false 
-     */
-    bool is_page_aligned() const { 
+    [[nodiscard]] constexpr bool is_page_aligned() const 
+    { 
         return (m_address & 0xfff) == 0; 
     }
 
     /**
      * @param o 
-     * @return VirtualAddress 
+     * @return constexpr VirtualAddress 
      */
-    VirtualAddress offset(FlatPtr o) const { 
+    [[nodiscard]] constexpr VirtualAddress offset(FlatPtr o) const 
+    { 
         return VirtualAddress(m_address + o); 
     }
 
     /**
-     * @return FlatPtr 
+     * @return constexpr FlatPtr 
      */
-    FlatPtr get() const { 
+    [[nodiscard]] constexpr FlatPtr get() const 
+    { 
         return m_address; 
     }
 
     /**
      * @param address 
      */
-    void set(FlatPtr address) { 
+    void set(FlatPtr address) 
+    { 
         m_address = address; 
     }
 
     /**
      * @param m 
      */
-    void mask(FlatPtr m) { 
+    void mask(FlatPtr m) 
+    { 
         m_address &= m; 
     }
 
@@ -88,74 +86,55 @@ public:
      * @return true 
      * @return false 
      */
-    bool operator<=(const VirtualAddress& other) const { 
+    bool operator<=(const VirtualAddress& other) const 
+    { 
         return m_address <= other.m_address; 
     }
-
-    /**
-     * @param other 
-     * @return true 
-     * @return false 
-     */
-    bool operator>=(const VirtualAddress& other) const { 
+    
+    bool operator>=(const VirtualAddress& other) const 
+    { 
         return m_address >= other.m_address; 
     }
 
-    /**
-     * @param other 
-     * @return true 
-     * @return false 
-     */
-    bool operator>(const VirtualAddress& other) const { 
+    bool operator>(const VirtualAddress& other) const 
+    { 
         return m_address > other.m_address; 
     }
 
-    /**
-     * @param other 
-     * @return true 
-     * @return false 
-     */
-    bool operator<(const VirtualAddress& other) const { 
+    bool operator<(const VirtualAddress& other) const 
+    { 
         return m_address < other.m_address; 
     }
 
-    /**
-     * @param other 
-     * @return true 
-     * @return false 
-     */
-    bool operator==(const VirtualAddress& other) const { 
+    bool operator==(const VirtualAddress& other) const 
+    { 
         return m_address == other.m_address; 
     }
 
-    /**
-     * @param other 
-     * @return true 
-     * @return false 
-     */
-    bool operator!=(const VirtualAddress& other) const { 
+    bool operator!=(const VirtualAddress& other) const 
+    { 
         return m_address != other.m_address; 
     }
 
     /**
      * @return u8* 
      */
-    u8* as_ptr() { 
+    [[nodiscard]] u8* as_ptr() 
+    { 
         return reinterpret_cast<u8*>(m_address); 
     }
 
     /**
      * @return const u8* 
      */
-    const u8* as_ptr() const { 
+    [[nodiscard]] const u8* as_ptr() const 
+    { 
         return reinterpret_cast<const u8*>(m_address); 
     }
 
-    /**
-     * @return VirtualAddress 
-     */
-    VirtualAddress page_base() const { 
-        return VirtualAddress(m_address & 0xfffff000); 
+    [[nodiscard]] VirtualAddress page_base() const 
+    { 
+        return VirtualAddress(m_address & ~(FlatPtr)0xfffu); 
     }
 
 private:
@@ -167,15 +146,16 @@ private:
  * @param b 
  * @return VirtualAddress 
  */
-inline VirtualAddress operator-(const VirtualAddress& a, const VirtualAddress& b) {
+inline VirtualAddress operator-(const VirtualAddress& a, const VirtualAddress& b)
+{
     return VirtualAddress(a.get() - b.get());
 }
 
-/**
- * @param stream 
- * @param value 
- * @return const LogStream& 
- */
-inline const LogStream& operator<<(const LogStream& stream, VirtualAddress value) {
-    return stream << 'V' << value.as_ptr();
-}
+template<>
+struct Mods::Formatter<VirtualAddress> : Mods::Formatter<FormatString> 
+{
+    ErrorOr<void> format(FormatBuilder& builder, const VirtualAddress& value)
+    {
+        return Mods::Formatter<FormatString>::format(builder, "V{}", value.as_ptr());
+    }
+};
