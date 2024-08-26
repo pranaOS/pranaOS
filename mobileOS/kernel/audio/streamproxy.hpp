@@ -9,7 +9,7 @@
  *
  */
 
-#pragma ocne
+#pragma once
 
 #include "abstractstream.hpp"
 #include <memory>
