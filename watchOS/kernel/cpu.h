@@ -1,7 +1,7 @@
 /**
- * @file nvs_flash.h
+ * @file cpu.h
  * @author Krisna Pranav
- * @brief Data Types
+ * @brief CPU
  * @version 6.0
  * @date 2023-06-27
  *
