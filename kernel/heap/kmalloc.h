@@ -12,41 +12,53 @@
 #pragma once
 
 #include <mods/types.h>
+#include <libc/limits.h>
 
+// YUM YUM BYTES :)
 #define KMALLOC_SCRUB_BYTE 0xbb
 #define KFREE_SCRUB_BYTE 0xaa
 
+#define MAKE_ALIGNED_ALLOCATED(type, alignment)                                                                                   \
+public:                                                                                                                           \
+    [[nodiscard]] void* operator new(size_t)                                                                                      \
+    {                                                                                                                             \
+        void* ptr = kmalloc_aligned(sizeof(type), alignment);                                                                     \
+        VERIFY(ptr);                                                                                                              \
+        return ptr;                                                                                                               \
+    }                                                                                                                             \
+    [[nodiscard]] void* operator new(size_t, const std::nothrow_t&) noexcept { return kmalloc_aligned(sizeof(type), alignment); } \
+    void operator delete(void* ptr) noexcept { kfree_aligned(ptr); }                                                              \
+                                                                                                                                  \
+private:
+
+namespace std 
+{ 
+    struct nothrow_t 
+    {  
+        /**
+         * @brief Construct a new nothrow_t object
+         * 
+         */
+        explicit nothrow_t() = default;
+    }; // struct nothrow_t
+
+    extern const nothrow_t nothrow;
+
+    enum class align_val_t : size_t {};
+}; // namespace std
+
 void kmalloc_init();
 
-/**
- * @return void* 
- */
-[[gnu::malloc, gnu::returns_nonnull, gnu::alloc_size(1)]] void* kmalloc_impl(size_t);
+void kfree_sized(void*, size_t);
 
-/**
- * @return void* 
- */
-[[gnu::malloc, gnu::returns_nonnull, gnu::alloc_size(1)]] void* kmalloc_eternal(size_t);
-
-/**
- * @return void* 
- */
-void* krealloc(void*, size_t);
-
-void kfree(void*);
-
-struct kmalloc_stats {
+struct kmalloc_stats 
+{
     size_t bytes_allocated;
     size_t bytes_free;
-    size_t bytes_eternal;
     size_t kmalloc_call_count;
     size_t kfree_call_count;
-};
+}; // struct kmalloc_stats
 
-/**
- * @brief Get the kmalloc stats object
- * 
- */
 void get_kmalloc_stats(kmalloc_stats&);
 
 extern bool g_dump_kmalloc_stacks;
@@ -55,7 +67,8 @@ extern bool g_dump_kmalloc_stacks;
  * @param p 
  * @return void* 
  */
-inline void* operator new(size_t, void* p) { 
+inline void* operator new(size_t, void* p) 
+{ 
     return p; 
 }
 
@@ -63,45 +76,93 @@ inline void* operator new(size_t, void* p) {
  * @param p 
  * @return void* 
  */
-inline void* operator new[](size_t, void* p) { 
+inline void* operator new[](size_t, void* p) 
+{ 
     return p; 
 }
 
 /**
  * @param size 
- * @return ALWAYS_INLINE* 
+ * @return void* 
  */
-[[gnu::malloc, gnu::returns_nonnull, gnu::alloc_size(1)]] ALWAYS_INLINE void* kmalloc(size_t size) {
-#ifdef KMALLOC_DEBUG_LARGE_ALLOCATIONS
-    if (size >= 1048576)
-        asm volatile("cli;hlt");
-#endif
-    return kmalloc_impl(size);
-}
+[[nodiscard]] void* operator new(size_t size);
 
 /**
- * @tparam ALIGNMENT 
  * @param size 
  * @return void* 
  */
-template<size_t ALIGNMENT>
-[[gnu::malloc, gnu::returns_nonnull, gnu::alloc_size(1)]] inline void* kmalloc_aligned(size_t size) {
-    static_assert(ALIGNMENT > 1);
-    static_assert(ALIGNMENT < 255);
-    void* ptr = kmalloc(size + ALIGNMENT + sizeof(u8));
-    size_t max_addr = (size_t)ptr + ALIGNMENT;
-    void* aligned_ptr = (void*)(max_addr - (max_addr % ALIGNMENT));
-    ((u8*)aligned_ptr)[-1] = (u8)((u8*)aligned_ptr - (u8*)ptr);
-    return aligned_ptr;
-}
+[[nodiscard]] void* operator new(size_t size, const std::nothrow_t&) noexcept;
+
+/**
+ * @param size 
+ * @return void* 
+ */
+[[nodiscard]] void* operator new(size_t size, std::align_val_t);
+
+/**
+ * @param size 
+ * @return void* 
+ */
+[[nodiscard]] void* operator new(size_t size, std::align_val_t, const std::nothrow_t&) noexcept;
+
+void operator delete(void* ptr) noexcept DISALLOW("All deletes in the kernel has known size.");
 
 /**
  * @param ptr 
  */
-inline void kfree_aligned(void* ptr) {
-    kfree((u8*)ptr - ((u8*)ptr)[-1]);
-}
+void operator delete(void* ptr, size_t) noexcept;
+
+void operator delete(void* ptr, std::align_val_t) noexcept DISALLOW("All deletes in the kernel has known size.");
+
+/**
+ * @param ptr 
+ */
+void operator delete(void* ptr, size_t, std::align_val_t) noexcept;
+
+/**
+ * @param size 
+ * @return void* 
+ */
+[[nodiscard]] void* operator new[](size_t size);
+
+/**
+ * @param size 
+ * @return void* 
+ */
+[[nodiscard]] void* operator new[](size_t size, const std::nothrow_t&) noexcept;
+
+void operator delete[](void* ptrs) noexcept DISALLOW("All deletes in the kernel has known size.");
+
+/**
+ * @param ptr 
+ */
+void operator delete[](void* ptr, size_t) noexcept;
+
+/**
+ * @return void* 
+ */
+[[gnu::malloc, gnu::alloc_size(1)]] void* kmalloc(size_t);
+
+/**
+ * @param size 
+ * @param alignment 
+ * @return void* 
+ */
+[[gnu::malloc, gnu::alloc_size(1), gnu::alloc_align(2)]] void* kmalloc_aligned(size_t size, size_t alignment);
+
+/**
+ * @param ptr 
+ */
+inline void kfree_aligned(void* ptr)
+{
+    if (ptr == nullptr)
+        return;
+    kfree_sized((u8*)ptr - ((ptrdiff_t const*)ptr)[-1], ((size_t const*)ptr)[-2]);
+} // inline void kfree_aligned
+
+/**
+ * @return size_t 
+ */
+size_t kmalloc_good_size(size_t);
 
 void kmalloc_enable_expand();
-extern u8* const kmalloc_start;
-extern u8* const kmalloc_end;
