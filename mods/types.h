@@ -27,7 +27,7 @@ using i8 = __INT8_TYPE__;
 #ifdef __pranaos__
 
 using size_t = __SIZE_TYPE__;
-using ssize_t = MakeSigned<size_t>::Type;
+using ssize_t = MakeSigned<size_t>;
 
 using ptrdiff_t = __PTRDIFF_TYPE__;
 
@@ -57,56 +57,64 @@ using __ptrdiff_t = __PTRDIFF_TYPE__;
 
 #endif
 
-/**
- * @brief Conditional
- * 
- */
-using FlatPtr = Conditional<sizeof(void*) == 8, u64, u32>::Type;
+using FlatPtr = Conditional<sizeof(void*) == 8, u64, u32>;
 
-constexpr unsigned KiB = 1024;
-constexpr unsigned MiB = KiB * KiB;
-constexpr unsigned GiB = KiB * KiB * KiB;
+constexpr u64 KiB = 1024;
+constexpr u64 MiB = KiB * KiB;
+constexpr u64 GiB = KiB * KiB * KiB;
+constexpr u64 TiB = KiB * KiB * KiB * KiB;
+constexpr u64 PiB = KiB * KiB * KiB * KiB * KiB;
+constexpr u64 EiB = KiB * KiB * KiB * KiB * KiB * KiB;
 
-namespace std {
+namespace std 
+{ 
     using nullptr_t = decltype(nullptr);
-}
+} // namespace std
 
 /**
- * @brief explode_byte
- * 
  * @param b 
- * @return constexpr u32 
+ * @return constexpr FlatPtr 
  */
-static constexpr u32 explode_byte(u8 b) {
-    return b << 24 | b << 16 | b << 8 | b;
-}
+static constexpr FlatPtr explode_byte(u8 b)
+{
+    FlatPtr value = b;
+    if constexpr (sizeof(FlatPtr) == 4)
+        return value << 24 | value << 16 | value << 8 | value;
+    else if (sizeof(FlatPtr) == 8)
+        return value << 56 | value << 48 | value << 40 | value << 32 | value << 24 | value << 16 | value << 8 | value;
+} // static constexpr FlatPtr 
 
-/**
- * @brief static_assert(explode_byte)
- * 
- */
-static_assert(explode_byte(0xff) == 0xffffffff);
-static_assert(explode_byte(0x80) == 0x80808080);
-static_assert(explode_byte(0x7f) == 0x7f7f7f7f);
+static_assert(explode_byte(0xff) == (FlatPtr)0xffffffffffffffffull);
+static_assert(explode_byte(0x80) == (FlatPtr)0x8080808080808080ull);
+static_assert(explode_byte(0x7f) == (FlatPtr)0x7f7f7f7f7f7f7f7full);
 static_assert(explode_byte(0) == 0);
 
 /**
- * @brief align_up_to
- * 
  * @param value 
  * @param alignment 
  * @return constexpr size_t 
  */
-constexpr size_t align_up_to(const size_t value, const size_t alignment) {
+constexpr size_t align_up_to(const size_t value, const size_t alignment)
+{
     return (value + (alignment - 1)) & ~(alignment - 1);
 }
 
-/**
- * @brief TriState
- * 
- */
-enum class [[nodiscard]] TriState : u8 {
+enum class [[nodiscard]] TriState : u8 
+{
     False,
     True,
     Unknown
-};
+}; // enum class TriState
+
+namespace Mods 
+{
+    enum MemoryOrder 
+    {
+        memory_order_relaxed = __ATOMIC_RELAXED,
+        memory_order_consume = __ATOMIC_CONSUME,
+        memory_order_acquire = __ATOMIC_ACQUIRE,
+        memory_order_release = __ATOMIC_RELEASE,
+        memory_order_acq_rel = __ATOMIC_ACQ_REL,
+        memory_order_seq_cst = __ATOMIC_SEQ_CST
+    }; // enum MemoryOrder
+} // namespace Mods
