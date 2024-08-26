@@ -14,32 +14,50 @@
 #include "assertions.h"
 #include "numericlimits.h"
 #include "stdlibextra.h"
+#include "concept.h"
 
-namespace Mods {
-
+namespace Mods
+{
+    /**
+     * @tparam Destination 
+     * @tparam Source 
+     * @tparam destination_is_wider 
+     */
     template<typename Destination, typename Source, bool destination_is_wider = (sizeof(Destination) >= sizeof(Source)), bool destination_is_signed = NumericLimits<Destination>::is_signed(), bool source_is_signed = NumericLimits<Source>::is_signed()>
     struct TypeBoundsChecker;
-    
+
     /**
-     * @brief within_range
-     * 
      * @tparam Destination 
      * @tparam Source 
      */
     template<typename Destination, typename Source>
-    struct TypeBoundsChecker<Destination, Source, false, false, false> {
-        static constexpr bool is_within_range(Source value) {
+    struct TypeBoundsChecker<Destination, Source, false, false, false> 
+    {
+        /**
+         * @param value 
+         * @return true 
+         * @return false 
+         */
+        static constexpr bool is_within_range(Source value)
+        {
             return value <= NumericLimits<Destination>::max();
         }
     };
-    
+
     /**
      * @tparam Destination 
      * @tparam Source 
      */
     template<typename Destination, typename Source>
-    struct TypeBoundsChecker<Destination, Source, false, true, true> {
-        static constexpr bool is_within_range(Source value) {
+    struct TypeBoundsChecker<Destination, Source, false, true, true> 
+    {
+        /**
+         * @param value 
+         * @return true 
+         * @return false 
+         */
+        static constexpr bool is_within_range(Source value)
+        {
             return value <= NumericLimits<Destination>::max()
                 && NumericLimits<Destination>::min() <= value;
         }
@@ -50,30 +68,50 @@ namespace Mods {
      * @tparam Source 
      */
     template<typename Destination, typename Source>
-    struct TypeBoundsChecker<Destination, Source, false, false, true> {
-        static constexpr bool is_within_range(Source value) {
-            return static_cast<MakeUnsigned<Source>>(value) <= NumericLimits<Destination>::max();
+    struct TypeBoundsChecker<Destination, Source, false, false, true> 
+    {
+        /**
+         * @param value 
+         * @return true 
+         * @return false 
+         */
+        static constexpr bool is_within_range(Source value)
+        {
+            return value >= 0 && value <= NumericLimits<Destination>::max();
         }
     };
-    
+
     /**
      * @tparam Destination 
      * @tparam Source 
      */
     template<typename Destination, typename Source>
-    struct TypeBoundsChecker<Destination, Source, false, true, false> {
-        static constexpr bool is_within_range(Source value) {
+    struct TypeBoundsChecker<Destination, Source, false, true, false> 
+    {
+        /**
+         * @param value 
+         * @return true 
+         * @return false 
+         */
+        static constexpr bool is_within_range(Source value)
+        {
             return value <= static_cast<Source>(NumericLimits<Destination>::max());
         }
     };
-    
+
     /**
      * @tparam Destination 
      * @tparam Source 
      */
     template<typename Destination, typename Source>
-    struct TypeBoundsChecker<Destination, Source, true, false, false> {
-        static constexpr bool is_within_range(Source) {
+    struct TypeBoundsChecker<Destination, Source, true, false, false> 
+    {
+        /**
+         * @return true 
+         * @return false 
+         */
+        static constexpr bool is_within_range(Source)
+        {
             return true;
         }
     };
@@ -83,8 +121,10 @@ namespace Mods {
      * @tparam Source 
      */
     template<typename Destination, typename Source>
-    struct TypeBoundsChecker<Destination, Source, true, true, true> {
-        static constexpr bool is_within_range(Source) {
+    struct TypeBoundsChecker<Destination, Source, true, true, true> 
+    {
+        static constexpr bool is_within_range(Source)
+        {
             return true;
         }
     };
@@ -94,8 +134,15 @@ namespace Mods {
      * @tparam Source 
      */
     template<typename Destination, typename Source>
-    struct TypeBoundsChecker<Destination, Source, true, false, true> {
-        static constexpr bool is_within_range(Source value) {
+    struct TypeBoundsChecker<Destination, Source, true, false, true> 
+    {
+        /**
+         * @param value 
+         * @return true 
+         * @return false 
+         */
+        static constexpr bool is_within_range(Source value)
+        {
             return value >= 0;
         }
     };
@@ -105,8 +152,15 @@ namespace Mods {
      * @tparam Source 
      */
     template<typename Destination, typename Source>
-    struct TypeBoundsChecker<Destination, Source, true, true, false> {
-        static constexpr bool is_within_range(Source value) {
+    struct TypeBoundsChecker<Destination, Source, true, true, false> 
+    {
+        /**
+         * @param value 
+         * @return true 
+         * @return false 
+         */
+        static constexpr bool is_within_range(Source value)
+        {
             if (sizeof(Destination) > sizeof(Source))
                 return true;
             return value <= static_cast<Source>(NumericLimits<Destination>::max());
@@ -121,25 +175,30 @@ namespace Mods {
      * @return false 
      */
     template<typename Destination, typename Source>
-    constexpr bool is_within_range(Source value) {
+    [[nodiscard]] constexpr bool is_within_range(Source value)
+    {
         return TypeBoundsChecker<Destination, Source>::is_within_range(value);
     }
 
-    template<typename T>
-    class Checked {
+    /**
+     * @tparam T 
+     */
+    template<Integral T>
+    class Checked 
+    {
     public:
         constexpr Checked() = default;
 
-        constexpr Checked(T value)
+        explicit constexpr Checked(T value)
             : m_value(value)
-        {
-        }
+        { }
 
         /**
          * @tparam U 
          */
-        template<typename U>
-        constexpr Checked(U value) {
+        template<Integral U>
+        constexpr Checked(U value)
+        {
             m_overflow = !is_within_range<T>(value);
             m_value = value;
         }
@@ -149,90 +208,107 @@ namespace Mods {
         constexpr Checked(Checked&& other)
             : m_value(exchange(other.m_value, 0))
             , m_overflow(exchange(other.m_overflow, false))
-        {
-        }
-        
+        { }
+
         /**
          * @tparam U 
          * @param value 
          * @return constexpr Checked& 
          */
         template<typename U>
-        constexpr Checked& operator=(U value) {
-            return *this = Checked(value);
+        constexpr Checked& operator=(U value)
+        {
+            *this = Checked(value);
+            return *this;
         }
-
+        
+        /**
+         * @param other 
+         * @return constexpr Checked& 
+         */
         constexpr Checked& operator=(const Checked& other) = default;
 
         /**
          * @param other 
          * @return constexpr Checked& 
          */
-        constexpr Checked& operator=(Checked&& other) {
+        constexpr Checked& operator=(Checked&& other)
+        {
             m_value = exchange(other.m_value, 0);
             m_overflow = exchange(other.m_overflow, false);
             return *this;
         }
 
-        /**
-         * @brief has_overflow
-         * 
-         * @return true 
-         * @return false 
-         */
-        constexpr bool has_overflow() const {
+        [[nodiscard]] constexpr bool has_overflow() const
+        {
             return m_overflow;
         }
 
-        /**
-         * @return ALWAYS_INLINE constexpr 
-         */
-        ALWAYS_INLINE constexpr bool operator!() const {
-            ASSERT(!m_overflow);
+        ALWAYS_INLINE constexpr bool operator!() const
+        {
+            VERIFY(!m_overflow);
             return !m_value;
         }
 
-        /**
-         * @return ALWAYS_INLINE constexpr 
-         */
-        ALWAYS_INLINE constexpr T value() const {
-            ASSERT(!m_overflow);
+        ALWAYS_INLINE constexpr T value() const
+        {
+            VERIFY(!m_overflow);
             return m_value;
         }
 
-        /**
-         * @param other 
-         */
-        constexpr void add(T other) {
+        constexpr void add(T other)
+        {
             m_overflow |= __builtin_add_overflow(m_value, other, &m_value);
         }
 
-        /**
-         * @param other 
-         */
-        constexpr void sub(T other) {
+        constexpr void sub(T other)
+        {
             m_overflow |= __builtin_sub_overflow(m_value, other, &m_value);
         }
 
-        /**
-         * @param other 
-         */
-        constexpr void mul(T other) {
+        constexpr void mul(T other)
+        {
             m_overflow |= __builtin_mul_overflow(m_value, other, &m_value);
         }
 
         /**
          * @param other 
          */
-        constexpr void div(T other) {
+        constexpr void div(T other)
+        {
+            if constexpr (IsSigned<T>) 
+            {
+                if (other == -1 && m_value == NumericLimits<T>::min()) 
+                {
+                    m_overflow = true;
+                    return;
+                }
+            }
+            if (other == 0) 
+            {
+                m_overflow = true;
+                return;
+            }
             m_value /= other;
+        }   
+
+        /**
+         * @param other 
+         * @return constexpr Checked& 
+         */
+        constexpr Checked& operator+=(const Checked& other)
+        {
+            m_overflow |= other.m_overflow;
+            add(other.value());
+            return *this;
         }
 
         /**
          * @param other 
          * @return constexpr Checked& 
          */
-        constexpr Checked& operator+=(T other) {
+        constexpr Checked& operator+=(T other)
+        {
             add(other);
             return *this;
         }
@@ -241,7 +317,19 @@ namespace Mods {
          * @param other 
          * @return constexpr Checked& 
          */
-        constexpr Checked& operator-=(T other) {
+        constexpr Checked& operator-=(const Checked& other)
+        {
+            m_overflow |= other.m_overflow;
+            sub(other.value());
+            return *this;
+        }
+
+        /**
+         * @param other 
+         * @return constexpr Checked& 
+         */
+        constexpr Checked& operator-=(T other)
+        {
             sub(other);
             return *this;
         }
@@ -250,7 +338,19 @@ namespace Mods {
          * @param other 
          * @return constexpr Checked& 
          */
-        constexpr Checked& operator*=(T other) {
+        constexpr Checked& operator*=(const Checked& other)
+        {
+            m_overflow |= other.m_overflow;
+            mul(other.value());
+            return *this;
+        }
+
+        /**
+         * @param other 
+         * @return constexpr Checked& 
+         */
+        constexpr Checked& operator*=(T other)
+        {
             mul(other);
             return *this;
         }
@@ -259,30 +359,60 @@ namespace Mods {
          * @param other 
          * @return constexpr Checked& 
          */
-        constexpr Checked& operator/=(T other) {
+        constexpr Checked& operator/=(const Checked& other)
+        {
+            m_overflow |= other.m_overflow;
+            div(other.value());
+            return *this;
+        }
+
+        /**
+         * @param other 
+         * @return constexpr Checked& 
+         */
+        constexpr Checked& operator/=(T other)
+        {
             div(other);
             return *this;
         }
 
-        /**
-         * @return constexpr Checked& 
-         */
-        constexpr Checked& operator++() {
+        constexpr Checked& operator++()
+        {
             add(1);
             return *this;
         }
 
-        /**
-         * @return constexpr Checked 
-         */
-        constexpr Checked operator++(int) {
+        constexpr Checked operator++(int)
+        {
             Checked old { *this };
             add(1);
             return old;
         }
 
+        constexpr Checked& operator--()
+        {
+            sub(1);
+            return *this;
+        }
+
+        constexpr Checked operator--(int)
+        {
+            Checked old { *this };
+            sub(1);
+            return old;
+        }
+
+        /**
+         * @tparam U 
+         * @tparam V 
+         * @param u 
+         * @param v 
+         * @return true 
+         * @return false 
+         */
         template<typename U, typename V>
-        static constexpr bool addition_would_overflow(U u, V v) {
+        [[nodiscard]] static constexpr bool addition_would_overflow(U u, V v)
+        {
     #ifdef __clang__
             Checked checked;
             checked = u;
@@ -293,8 +423,17 @@ namespace Mods {
     #endif
         }
 
+        /**
+         * @tparam U 
+         * @tparam V 
+         * @param u 
+         * @param v 
+         * @return true 
+         * @return false 
+         */
         template<typename U, typename V>
-        static constexpr bool multiplication_would_overflow(U u, V v) {
+        [[nodiscard]] static constexpr bool multiplication_would_overflow(U u, V v)
+        {
     #ifdef __clang__
             Checked checked;
             checked = u;
@@ -316,7 +455,8 @@ namespace Mods {
          * @return false 
          */
         template<typename U, typename V, typename X>
-        static constexpr bool multiplication_would_overflow(U u, V v, X x) {
+        [[nodiscard]] static constexpr bool multiplication_would_overflow(U u, V v, X x)
+        {
             Checked checked;
             checked = u;
             checked *= v;
@@ -327,7 +467,7 @@ namespace Mods {
     private:
         T m_value {};
         bool m_overflow { false };
-    };
+    }; // class Checked
 
     /**
      * @tparam T 
@@ -336,12 +476,13 @@ namespace Mods {
      * @return constexpr Checked<T> 
      */
     template<typename T>
-    constexpr Checked<T> operator+(const Checked<T>& a, const Checked<T>& b) {
+    constexpr Checked<T> operator+(const Checked<T>& a, const Checked<T>& b)
+    {
         Checked<T> c { a };
         c.add(b.value());
         return c;
     }
-
+    
     /**
      * @tparam T 
      * @param a 
@@ -349,7 +490,8 @@ namespace Mods {
      * @return constexpr Checked<T> 
      */
     template<typename T>
-    constexpr Checked<T> operator-(const Checked<T>& a, const Checked<T>& b) {
+    constexpr Checked<T> operator-(const Checked<T>& a, const Checked<T>& b)
+    {
         Checked<T> c { a };
         c.sub(b.value());
         return c;
@@ -362,7 +504,8 @@ namespace Mods {
      * @return constexpr Checked<T> 
      */
     template<typename T>
-    constexpr Checked<T> operator*(const Checked<T>& a, const Checked<T>& b) {
+    constexpr Checked<T> operator*(const Checked<T>& a, const Checked<T>& b)
+    {
         Checked<T> c { a };
         c.mul(b.value());
         return c;
@@ -375,7 +518,8 @@ namespace Mods {
      * @return constexpr Checked<T> 
      */
     template<typename T>
-    constexpr Checked<T> operator/(const Checked<T>& a, const Checked<T>& b) {
+    constexpr Checked<T> operator/(const Checked<T>& a, const Checked<T>& b)
+    {
         Checked<T> c { a };
         c.div(b.value());
         return c;
@@ -389,10 +533,11 @@ namespace Mods {
      * @return false 
      */
     template<typename T>
-    constexpr bool operator<(const Checked<T>& a, T b) {
+    constexpr bool operator<(const Checked<T>& a, T b)
+    {
         return a.value() < b;
     }
-    
+
     /**
      * @tparam T 
      * @param a 
@@ -401,7 +546,8 @@ namespace Mods {
      * @return false 
      */
     template<typename T>
-    constexpr bool operator>(const Checked<T>& a, T b) {
+    constexpr bool operator>(const Checked<T>& a, T b)
+    {
         return a.value() > b;
     }
 
@@ -413,9 +559,10 @@ namespace Mods {
      * @return false 
      */
     template<typename T>
-    constexpr bool operator>=(const Checked<T>& a, T b) {
+    constexpr bool operator>=(const Checked<T>& a, T b)
+    {
         return a.value() >= b;
-    }   
+    }
 
     /**
      * @tparam T 
@@ -425,9 +572,10 @@ namespace Mods {
      * @return false 
      */
     template<typename T>
-    constexpr bool operator<=(const Checked<T>& a, T b) {
+    constexpr bool operator<=(const Checked<T>& a, T b)
+    {
         return a.value() <= b;
-    }   
+    }
 
     /**
      * @tparam T 
@@ -437,7 +585,8 @@ namespace Mods {
      * @return false 
      */
     template<typename T>
-    constexpr bool operator==(const Checked<T>& a, T b) {
+    constexpr bool operator==(const Checked<T>& a, T b)
+    {
         return a.value() == b;
     }
 
@@ -449,7 +598,8 @@ namespace Mods {
      * @return false 
      */
     template<typename T>
-    constexpr bool operator!=(const Checked<T>& a, T b) {
+    constexpr bool operator!=(const Checked<T>& a, T b)
+    {
         return a.value() != b;
     }
 
@@ -461,7 +611,8 @@ namespace Mods {
      * @return false 
      */
     template<typename T>
-    constexpr bool operator<(T a, const Checked<T>& b) {
+    constexpr bool operator<(T a, const Checked<T>& b)
+    {
         return a < b.value();
     }
 
@@ -473,7 +624,8 @@ namespace Mods {
      * @return false 
      */
     template<typename T>
-    constexpr bool operator>(T a, const Checked<T>& b) {
+    constexpr bool operator>(T a, const Checked<T>& b)
+    {
         return a > b.value();
     }
 
@@ -485,7 +637,8 @@ namespace Mods {
      * @return false 
      */
     template<typename T>
-    constexpr bool operator>=(T a, const Checked<T>& b) {
+    constexpr bool operator>=(T a, const Checked<T>& b)
+    {
         return a >= b.value();
     }
 
@@ -497,10 +650,11 @@ namespace Mods {
      * @return false 
      */
     template<typename T>
-    constexpr bool operator<=(T a, const Checked<T>& b) {
+    constexpr bool operator<=(T a, const Checked<T>& b)
+    {
         return a <= b.value();
     }
-
+    
     /**
      * @tparam T 
      * @param a 
@@ -509,7 +663,8 @@ namespace Mods {
      * @return false 
      */
     template<typename T>
-    constexpr bool operator==(T a, const Checked<T>& b) {
+    constexpr bool operator==(T a, const Checked<T>& b)
+    {
         return a == b.value();
     }
 
@@ -521,7 +676,8 @@ namespace Mods {
      * @return false 
      */
     template<typename T>
-    constexpr bool operator!=(T a, const Checked<T>& b) {
+    constexpr bool operator!=(T a, const Checked<T>& b)
+    {
         return a != b.value();
     }
 
@@ -531,12 +687,12 @@ namespace Mods {
      * @return constexpr Checked<T> 
      */
     template<typename T>
-    constexpr Checked<T> make_checked(T value) {
+    constexpr Checked<T> make_checked(T value)
+    {
         return Checked<T>(value);
     }
 
-}
+} // namespace Mods
 
 using Mods::Checked;
 using Mods::make_checked;
-
