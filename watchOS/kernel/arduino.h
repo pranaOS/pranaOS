@@ -16,8 +16,20 @@
 
 unsigned long millis();
 
+/**
+ * @param howbig 
+ * @return long 
+ */
 long random(int howbig);
 
+/**
+ * @param howsmall 
+ * @param howbig 
+ * @return long 
+ */
 long random(int howsmall, int howbig);
 
+/**
+ * @param millis 
+ */
 void delay(long millis);
