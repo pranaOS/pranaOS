@@ -30,6 +30,21 @@ long random(int howbig);
 long random(int howsmall, int howbig);
 
 /**
- * @param millis 
+ * @brief 
+ * 
  */
 void delay(long millis);
+
+/**
+ * @param a 
+ * @param b 
+ * @return int32_t 
+ */
+int32_t min(int32_t a, int32_t b);
+
+/**
+ * @param a 
+ * @param b 
+ * @return int32_t 
+ */
+int32_t max(int32_t a, int32_t b);
