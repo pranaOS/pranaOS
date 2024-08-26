@@ -20,4 +20,24 @@ import javax.swing.*;
 public class Try extends JFrame {
     static JFrame f;
     static JLabel l;
+
+    public static void main(String[] args) {
+        boolean resizable = true;
+        boolean closable = true;
+        boolean maximizable = true;
+        boolean iconifiable = true;
+
+        f = new JFrame("frame");
+
+        JInternalFrame in = new JInternalFrame("Frame title3", resizable);
+
+        in.setBounds(100,100,100,100);
+        in.setTitle("Internal Frame");
+
+        JButton b = new JButton("Button");
+
+        l = new JLabel("This is JInternal Frame");
+
+        JPanel p = new JPanel();
+    }
 }
