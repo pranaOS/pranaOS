@@ -81,4 +81,11 @@ public:
 	 */
     void draw24bitRGBBitmap(int16_t x, int16_t y, uint8_t* bitmap, int16_t w, int16_t h) override;
 
+private:
+    SDL_Renderer* mainRenderer;
+    SDL_Texture* mainTexture = nullptr;
+    bool mIsEnabled = false;
 }; // class FakeDisplay
+
+
+extern std::unique_ptr<FakeDisplay> fakeDisplayInstance;
