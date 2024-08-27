@@ -22,9 +22,16 @@ public:
 	const int width;
 	const int height;
 
+	/**
+	 * @param width 
+	 * @param height 
+	 * @param renderer 
+	 */
 	FakeDisplay(int width, int height, SDL_Renderer* renderer);
+
 	~FakeDisplay();
 
+	// DISPLAY: ON(or)OFF
 	void displayOn();
 	void displayOff();
 
@@ -80,6 +87,16 @@ public:
 	 * @param h 
 	 */
     void draw24bitRGBBitmap(int16_t x, int16_t y, uint8_t* bitmap, int16_t w, int16_t h) override;
+
+    SDL_Texture* getTexture() const
+    {
+    	return this->mainTexture;
+    };
+
+    bool isEnabled() const
+    {
+    	return this->mIsEnabled;
+    };
 
 private:
     SDL_Renderer* mainRenderer;
