@@ -11,13 +11,23 @@
 
 #pragma once
 
-namespace Mods {
+namespace Mods
+{
 
+    /**
+     * @tparam T 
+     */
     template<typename T>
-    class Badge {
+    class Badge 
+    {
+    public:
+        using Type = T;
+
+    private:
         friend T;
-        Badge() { }
-        
+
+        constexpr Badge() = default;
+
         /**
          * @brief Construct a new Badge object
          * 
@@ -39,8 +49,8 @@ namespace Mods {
          * @return Badge& 
          */
         Badge& operator=(Badge&&) = delete;
-    };
+    }; // class Badge
 
-}
+} // namespace Mods
 
 using Mods::Badge;
