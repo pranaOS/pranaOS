@@ -17,77 +17,101 @@
 #include "types.h"
 #include "assertions.h"
 
-
-namespace Mods {
-
+namespace Mods 
+{
+    /**
+     * @tparam T 
+     */
     template<typename T>
-    class alignas(T) [[nodiscard]] Optional {
+    class [[nodiscard]] Optional 
+    {
+        template<typename U>
+        friend class Optional;
+
     public:
-        Optional() {}
+        using ValueType = T;
+
+        ALWAYS_INLINE Optional() = default;
+
+    #ifdef MODS_HAS_CONDITIONALLY_TRIVIAL
+        
+        Optional(Optional const& other) requires(!IsCopyConstructible<T>) = delete;
+        Optional(Optional const& other) = default;
+
+        Optional(Optional&& other) requires(!IsMoveConstructible<T>) = delete;
+
+        Optional& operator=(Optional const&) requires(!IsCopyConstructible<T> || !IsDestructible<T>) = delete;
+        Optional& operator=(Optional const&) = default;
+
+        Optional& operator=(Optional&& other) requires(!IsMoveConstructible<T> || !IsDestructible<T>) = delete;
+
+        ~Optional() requires(!IsDestructible<T>) = delete;
+
+        ~Optional() = default;
+    #endif
+
+        ALWAYS_INLINE Optional(Optional const& other)
+    #ifdef MODS_HAS_CONDITIONALLY_TRIVIAL
+            requires(!IsTriviallyCopyConstructible<T>)
+    #endif
+            : m_has_value(other.m_has_value)
+        {
+            if (other.has_value())
+                new (&m_storage) T(other.value());
+        }
 
         /**
-         * @brief Construct a new Optional object
-         * 
-         * @param value 
+         * @param other 
+         * @return ALWAYS_INLINE 
          */
-        Optional(const T& value)
-            : m_has_value(true)
+        ALWAYS_INLINE Optional(Optional&& other)
+            : m_has_value(other.m_has_value)
         {
-            new (&m_storage) T(value);
+            if (other.has_value())
+                new (&m_storage) T(other.release_value());
         }
-        
+
         /**
          * @tparam U 
-         * @param value 
          */
         template<typename U>
-        Optional(const U& value)
-            : m_has_value(true)
+        requires(IsConstructible<T, U const&> && !IsSpecializationOf<T, Optional> && !IsSpecializationOf<U, Optional>) ALWAYS_INLINE explicit Optional(Optional<U> const& other)
+            : m_has_value(other.m_has_value)
         {
-            new (&m_storage) T(value);
-        }
-
-        /** 
-         * @param value 
-         */
-        Optional(T && value)
-            : m_has_value(true)
-        {
-            new (&m_storage) T(move(value));
+            if (other.has_value())
+                new (&m_storage) T(other.value());
         }
 
         /**
-         * @param other 
+         * @tparam U 
          */
-        Optional(Optional && other)
+        template<typename U>
+        requires(IsConstructible<T, U&&> && !IsSpecializationOf<T, Optional> && !IsSpecializationOf<U, Optional>) ALWAYS_INLINE explicit Optional(Optional<U>&& other)
             : m_has_value(other.m_has_value)
         {
-            if (other.has_value()) {
+            if (other.has_value())
                 new (&m_storage) T(other.release_value());
-                other.m_has_value = false;
-            }
         }
 
         /**
-         * @param other 
+         * @tparam U 
          */
-        Optional(const Optional& other)
-            : m_has_value(other.m_has_value)
+        template<typename U = T>
+        ALWAYS_INLINE explicit(!IsConvertible<U&&, T>) Optional(U&& value) requires(!IsSame<RemoveCVReference<U>, Optional<T>> && IsConstructible<T, U&&>)
+            : m_has_value(true)
         {
-            if (m_has_value) {
-                new (&m_storage) T(other.value_without_consume_state());
-            }
+            new (&m_storage) T(forward<U>(value));
         }
 
-        /**
-         * @param other 
-         * @return Optional& 
-         */
-        Optional& operator=(const Optional& other) {
+        ALWAYS_INLINE Optional& operator=(Optional const& other)
+    #ifdef MODS_HAS_CONDITIONALLY_TRIVIAL
+            requires(!IsTriviallyCopyConstructible<T> || !IsTriviallyDestructible<T>)
+    #endif
+        {
             if (this != &other) {
                 clear();
                 m_has_value = other.m_has_value;
-                if (m_has_value) {
+                if (other.has_value()) {
                     new (&m_storage) T(other.value());
                 }
             }
@@ -96,14 +120,16 @@ namespace Mods {
 
         /**
          * @param other 
-         * @return Optional& 
+         * @return ALWAYS_INLINE& 
          */
-        Optional& operator=(Optional&& other) {
+        ALWAYS_INLINE Optional& operator=(Optional&& other)
+        {
             if (this != &other) {
                 clear();
                 m_has_value = other.m_has_value;
-                if (other.has_value())
+                if (other.has_value()) {
                     new (&m_storage) T(other.release_value());
+                }
             }
             return *this;
         }
@@ -111,25 +137,35 @@ namespace Mods {
         /**
          * @tparam O 
          * @param other 
-         * @return true 
-         * @return false 
+         * @return ALWAYS_INLINE 
          */
         template<typename O>
-        bool operator==(const Optional<O>& other) const {
+        ALWAYS_INLINE bool operator==(Optional<O> const& other) const
+        {
             return has_value() == other.has_value() && (!has_value() || value() == other.value());
         }
 
         /**
+         * @tparam O 
+         * @param other 
          * @return ALWAYS_INLINE 
          */
-        ALWAYS_INLINE ~Optional() {
+        template<typename O>
+        ALWAYS_INLINE bool operator==(O const& other) const
+        {
+            return has_value() && value() == other;
+        }
+
+        ALWAYS_INLINE ~Optional()
+    #ifdef MODS_HAS_CONDITIONALLY_TRIVIAL
+            requires(!IsTriviallyDestructible<T>)
+    #endif
+        {
             clear();
         }
 
-        /**
-         * @return ALWAYS_INLINE 
-         */
-        ALWAYS_INLINE void clear() {
+        ALWAYS_INLINE void clear()
+        {
             if (m_has_value) {
                 value().~T();
                 m_has_value = false;
@@ -137,48 +173,58 @@ namespace Mods {
         }
 
         /**
-         * @brief emplace
-         * 
          * @tparam Parameters 
          * @param parameters 
          * @return ALWAYS_INLINE 
          */
         template<typename... Parameters>
-        ALWAYS_INLINE void emplace(Parameters && ... parameters) {
+        ALWAYS_INLINE void emplace(Parameters&&... parameters)
+        {
             clear();
             m_has_value = true;
             new (&m_storage) T(forward<Parameters>(parameters)...);
         }
 
         /**
-         * @brief has_value
-         * 
          * @return ALWAYS_INLINE 
          */
-        ALWAYS_INLINE bool has_value() const { 
+        [[nodiscard]] ALWAYS_INLINE bool has_value() const 
+        { 
             return m_has_value; 
         }
 
         /**
          * @return ALWAYS_INLINE& 
          */
-        ALWAYS_INLINE T& value() {
-            ASSERT(m_has_value);
-            return *reinterpret_cast<T*>(&m_storage);
+        [[nodiscard]] ALWAYS_INLINE T& value() &
+        {
+            VERIFY(m_has_value);
+            return *__builtin_launder(reinterpret_cast<T*>(&m_storage));
         }
 
         /**
          * @return ALWAYS_INLINE const& 
          */
-        ALWAYS_INLINE const T& value() const {
-            return value_without_consume_state();
+        [[nodiscard]] ALWAYS_INLINE T const& value() const&
+        {
+            VERIFY(m_has_value);
+            return *__builtin_launder(reinterpret_cast<T const*>(&m_storage));
         }
 
         /**
-         * @return T 
+         * @return ALWAYS_INLINE 
          */
-        T release_value() {
-            ASSERT(m_has_value);
+        [[nodiscard]] ALWAYS_INLINE T value() &&
+        {
+            return release_value();
+        }
+
+        /**
+         * @return ALWAYS_INLINE 
+         */
+        [[nodiscard]] ALWAYS_INLINE T release_value()
+        {
+            VERIFY(m_has_value);
             T released_value = move(value());
             value().~T();
             m_has_value = false;
@@ -189,27 +235,61 @@ namespace Mods {
          * @param fallback 
          * @return ALWAYS_INLINE 
          */
-        ALWAYS_INLINE T value_or(const T& fallback) const {
+        [[nodiscard]] ALWAYS_INLINE T value_or(T const& fallback) const&
+        {
             if (m_has_value)
                 return value();
             return fallback;
         }
 
-    private:
-    
+        /**
+         * @param fallback 
+         * @return ALWAYS_INLINE 
+         */
+        [[nodiscard]] ALWAYS_INLINE T value_or(T&& fallback) &&
+        {
+            if (m_has_value)
+                return move(value());
+            return move(fallback);
+        }
+
         /**
          * @return ALWAYS_INLINE const& 
          */
-        ALWAYS_INLINE const T& value_without_consume_state() const {
-            ASSERT(m_has_value);
-            return *reinterpret_cast<const T*>(&m_storage);
+        ALWAYS_INLINE T const& operator*() const 
+        { 
+            return value(); 
         }
 
-        u8 m_storage[sizeof(T)] { 0 };
+        /**
+         * @return ALWAYS_INLINE& 
+         */
+        ALWAYS_INLINE T& operator*() 
+        { 
+            return value(); 
+        }
+
+        /**
+         * @return ALWAYS_INLINE const* 
+         */
+        ALWAYS_INLINE T const* operator->() const 
+        { 
+            return &value(); 
+        }
+
+        /**
+         * @return ALWAYS_INLINE* 
+         */
+        ALWAYS_INLINE T* operator->() 
+        { 
+            return &value(); 
+        }
+
+    private:
+        alignas(T) u8 m_storage[sizeof(T)];
+
         bool m_has_value { false };
-    };
+    }; // class Optional
+} // namespace Mods
 
-}
-
-// using mods
 using Mods::Optional;
