@@ -23,4 +23,31 @@ namespace IPC
 {
     class Message;
     struct MessageBuffer;
+
+    class Stub
+    {
+    public:
+        virtual ~Stub();
+
+        /**
+         * @return u32 
+         */
+        virtual u32 magic() const = 0;
+
+        /**
+         * @return String 
+         */
+        virtual String name() const = 0;
+
+        /**
+         * @return OwnPtr<MessageBuffer> 
+         */
+        virtual OwnPtr<MessageBuffer> handle(const Message&) = 0;
+
+    private:   
+        String m_name;
+
+    protected:
+        Stub();
+    }; // class Stub 
 } // namespace IPC
