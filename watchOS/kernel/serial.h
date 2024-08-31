@@ -62,6 +62,20 @@ namespace Kernel
             }
         }
 
+        /**
+         * @tparam T 
+         * @param smth 
+         */
+        template<typename T>
+        void println(T smth) 
+        {
+            if (this->bauds < 1)
+                return;
+
+            this->print(smth);
+            this->println();
+        }
+
     private:
         std::list<char> inputBuffer;
         int bauds = 0;
