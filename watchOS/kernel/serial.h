@@ -40,5 +40,36 @@ namespace Kernel
          * @param b 
          */
         void begin(int b);
+
+        /**
+         * @tparam T 
+         * @param smth 
+         */
+        template<typename T>
+        void print(T smth)
+        {
+            if (this->bauds < 1)
+                return;
+            
+            if (this->buffered) {
+                if (this->addBufferedNewline) {
+                    this->buffer.push_back({});
+                    this->addBufferNewline = false;
+                }
+                this->buffer.back() << smth;
+            } else {
+                std::cout << smth << std::flush;
+            }
+        }
+
+    private:
+        std::list<char> inputBuffer;
+        int bauds = 0;
+        bool buffered = false;
+        bool addBufferNewline = true;
     }; // class serial_t
+
+    extern serial_t serial;
 } // namespace Kernel
+
+using Kernel::serial;
