@@ -1,48 +1,53 @@
 /**
  * @file ksyms.h
  * @author Krisna Pranav
- * @brief ksyms
+ * @brief KSYMS
  * @version 6.0
- * @date 2023-08-22
- * 
+ * @date 2023-07-01
+ *
  * @copyright Copyright (c) 2021-2024 pranaOS Developers, Krisna Pranav
- * 
+ *
  */
 
-#pragma once 
+#pragma once
 
 #include <mods/forward.h>
 
-namespace Kernel 
+namespace Kernel
 {
-
-    struct KernelSymbol 
+    struct KernelSymbol
     {
-        u32 address;
+        FlatPtr address;
         const char* name;
-    }; // struct
+    };
+
+    enum class PrintToScreen
+    {
+        No,
+        Yes,
+    };
 
     /**
-     * @param name 
-     * @return u32 
+     * @brief address_for_kernel_symbol
+     * @param name
      */
-    u32 address_for_kernel_symbol(const StringView& name);
+    FlatPtr address_for_kernel_symbol(StringView name);
 
-    /**
-     * @param address 
-     * @return const KernelSymbol* 
-     */
-    const KernelSymbol* symbolicate_kernel_address(u32 address);
+    const KernelSymbol* symbolicate_kernel_address(FlatPtr);
 
-    /// @brief: load kernel symbol table
     void load_kernel_symbol_table();
 
     extern bool g_kernel_symbols_available;
 
+    extern bool g_kernel_symbols_available;
+
     extern FlatPtr g_lowest_kernel_symbol_address;
-    
+
     extern FlatPtr g_highest_kernel_symbol_address;
 
-    void dump_backtrace();
-
+    /**
+     * @brief dump_backtrace
+     * @param print_to_screen
+     */
+    void dump_backtrace(PrintToScreen print_to_screen = PrintToScreen::No);
 } // namespace Kernel
