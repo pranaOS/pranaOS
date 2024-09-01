@@ -1,3 +1,11 @@
+pranaOS.cflags
+pranaOS.config
+pranaOS.creator
+pranaOS.cxxflags
+pranaOS.files
+.qtc_clangd/
+pranaOS.creator.user
+
 # ide caches
 .vscode/
 .idea/
