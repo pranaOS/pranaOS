@@ -478,6 +478,9 @@ libraries/libcore/timer.h
 libraries/libcore/udpsocket.cpp
 libraries/libcore/udpsocket.h
 libraries/libcoredump/coredumpread.h
+libraries/libcrypt/CMakeLists.txt
+libraries/libcrypt/crypt.cpp
+libraries/libcrypt/crypt.h
 libraries/libcrypto/CMakeLists.txt
 libraries/libcrypto/auth/ghash.h
 libraries/libcrypto/auth/hmac.h
