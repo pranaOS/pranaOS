@@ -193,6 +193,7 @@ kernel/kstd/types.h
 kernel/kstd/unix_types.h
 kernel/kstd/utility.h
 kernel/kstdio.h
+kernel/kstring.h
 kernel/ksyms.h
 kernel/library/threadsaferetcounted.h
 kernel/lock.h
