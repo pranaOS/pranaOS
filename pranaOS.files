@@ -71,6 +71,7 @@ kernel/acpi/multiprocessorparser.h
 kernel/acpi/parser.h
 kernel/address_sanitizer.cpp
 kernel/address_sanitizer.h
+kernel/api/device.h
 kernel/api/fb.h
 kernel/api/inodewatcherevent.h
 kernel/api/keycode.h
