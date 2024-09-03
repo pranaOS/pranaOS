@@ -820,6 +820,7 @@ watchOS/kernel/event/plug_listener.h
 watchOS/kernel/nvs_flash.h
 watchOS/kernel/pmath.h
 watchOS/kernel/serial.h
+watchOS/kernel/string.h
 watchOS/kernel/try.java
 watchOS/kernel/types.h
 watchOS/kernel/ulp.h
