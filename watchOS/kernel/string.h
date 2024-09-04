@@ -123,7 +123,84 @@ class String : public std::string
         return *this;
     }
 
-    friend class StringSumHelper
+    friend class StringSumHelper;
+
+    /**
+     * @param lhs 
+     * @param rhs 
+     * @return StringSumHelper& 
+     */
+    friend StringSumHelper& operator + (const StringSumHelper& lhs, const String& rhs);
+
+    /**
+     * @param lhs 
+     * @param c 
+     * @return StringSumHelper& 
+     */
+    friend StringSumHelper& operator + (const StringSumHelper& lhs, char c);
+
+    /**
+     * @param lhs 
+     * @param num 
+     * @return StringSumHelper& 
+     */
+    friend StringSumHelper& operator + (const StringSumHelper& lhs, unsigned char num);
+
+    /**
+     * @param lhs 
+     * @param num 
+     * @return StringSumHelper& 
+     */
+    friend StringSumHelper& operator + (const StringSumHelper& lhs, short num);
+
+    /**
+     * @param lhs 
+     * @param num 
+     * @return StringSumHelper& 
+     */
+    friend StringSumHelper& operator + (const StringSumHelper& lhs, unsigned short num);
+
+    /**
+     * @param lhs 
+     * @param num 
+     * @return StringSumHelper& 
+     */
+    friend StringSumHelper& operator + (const StringSumHelper& lhs, int num);
+
+    /**
+     * @param lhs 
+     * @param num 
+     * @return StringSumHelper& 
+     */
+    friend StringSumHelper& operator + (const StringSumHelper& lhs, unsigned int num);
+
+    /**
+     * @param lhs 
+     * @param num 
+     * @return StringSumHelper& 
+     */
+    friend StringSumHelper& operator + (const StringSumHelper& lhs, long num);
+
+    /**
+     * @param lhs 
+     * @param num 
+     * @return StringSumHelper& 
+     */
+    friend StringSumHelper& operator + (const StringSumHelper& lhs, unsigned long num);
+
+    /**
+     * @param lhs 
+     * @param num 
+     * @return StringSumHelper& 
+     */
+    friend StringSumHelper& operator + (const StringSumHelper& lhs, float num);
+
+    /**
+     * @param lhs 
+     * @param num 
+     * @return StringSumHelper& 
+     */
+    friend StringSumHelper& operator + (const StringSumHelper& lhs, double num);
 
   private:
     /**
