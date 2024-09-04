@@ -283,3 +283,13 @@ class StringSumHelper : public String {
      */
     StringSumHelper(double num) : String(num) {}
 }; // class StringSumHelper
+
+/**
+ * @param t 
+ * @param variant 
+ * @return true 
+ * @return false 
+ */
+inline bool convertToJson(const String& t, ArduinoJson::JsonVariant variant) {
+    return variant.set(t.c_str());
+}
