@@ -122,4 +122,32 @@ class String : public std::string
             this->append(smth);
         return *this;
     }
+
+    friend class StringSumHelper
+
+  private:
+    /**
+     * @param num 
+     * @param base 
+     * @return std::string 
+     */
+    static std::string numberToString(auto num, int base)
+    {
+        std::stringstream sstream;
+
+        switch (base) {
+        case HEX:
+            sstream << std::hex << num;
+            break;
+        case DEC:
+            sstream << std::dec << num;
+            break;
+        case OCT:
+            sstream << std::oct << num;
+            break;
+        default:
+            throw std::invalid_argument("Unknown base for numberToString");
+        }
+        return sstream.str();
+    }
 }; // class STring : public std::string
