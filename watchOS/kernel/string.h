@@ -72,11 +72,54 @@ class String : public std::string
         return strtod(this->c_str(), nullptr);
     }
 
+    /**
+     * @param from 
+     * @param to 
+     * @return String 
+     */
     String substring(int from, int to = -1) const
     {
         if (to == -1)
             return String(this->substr(from));
         else
             return String(this->substr(from, to - from));
+    }
+
+    /**
+     * @tparam T 
+     * @param smth 
+     * @return String 
+     */
+    template<typename T> String operator+(const T& smth) const 
+    {
+        String res(*this);
+
+        if constexpr (std::is_same<T, short>::value or std::is_same<T, int>::value or std::is_same<T, long>::value or std::is_same<T, unsigned short>::value or std::is_same<T, unsigned int>::value or std::is_same<T, unsigned long>::value or std::is_same<T, float>::value or std::is_same<T, double>::value) {
+            std::stringstream sstream;
+            sstream << res << smth; 
+            res = sstream.str();
+        } else if constexpr (std::is_same<T, char>::value or std::is_same<T, unsigned char>::value)
+            res.push_back(smth); 
+        else
+            res.append(smth);
+        return res;
+    }
+
+    /**
+     * @tparam T 
+     * @param smth 
+     * @return String& 
+     */
+    template<typename T> String& operator+=(const T& smth) 
+    {
+        if constexpr (std::is_same<T, float>::value or std::is_same<T, double>::value or std::is_same<T, short>::value or std::is_same<T, int>::value or std::is_same<T, long>::value or std::is_same<T, unsigned short>::value or std::is_same<T, unsigned int>::value or std::is_same<T, unsigned long>::value) {
+            std::stringstream sstream;
+            sstream << *this << smth; 
+            *this = sstream.str();
+        } else if constexpr (std::is_same<T, char>::value or std::is_same<T, unsigned char>::value)
+            this->push_back(smth); 
+        else
+            this->append(smth);
+        return *this;
     }
 }; // class STring : public std::string
