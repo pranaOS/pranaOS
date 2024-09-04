@@ -228,3 +228,58 @@ class String : public std::string
         return sstream.str();
     }
 }; // class STring : public std::string
+
+
+class StringSumHelper : public String {
+  public:
+
+    /**
+     * @param c 
+     */
+    StringSumHelper(char c) : String(c) {}
+
+    /**
+     * @param num 
+     */
+    StringSumHelper(unsigned char num) : String(num) {}
+
+    /**
+     * @param num 
+     */
+    StringSumHelper(short num) : String(num) {}
+
+    /**
+     * @param num 
+     */
+    StringSumHelper(unsigned short num) : String(num) {}
+
+    /**
+     * @param num 
+     */
+    StringSumHelper(int num) : String(num) {}
+
+    /**
+     * @param num 
+     */
+    StringSumHelper(unsigned int num) : String(num) {}
+
+    /**
+     * @param num 
+     */
+    StringSumHelper(long num) : String(num) {}
+
+    /**
+     * @param num 
+     */
+    StringSumHelper(unsigned long num) : String(num) {}
+
+    /**
+     * @param num 
+     */
+    StringSumHelper(float num) : String(num) {}
+
+    /**
+     * @param num 
+     */
+    StringSumHelper(double num) : String(num) {}
+}; // class StringSumHelper
