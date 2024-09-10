@@ -28,11 +28,14 @@ public:
     { }
 
     /**
+     * @brief Construct a new Virtual Address object
+     * 
      * @param address 
      */
     explicit VirtualAddress(const void* address)
         : m_address((FlatPtr)address)
-    { }
+    {
+    }
 
     /**
      * @return true 
@@ -43,6 +46,10 @@ public:
         return m_address == 0; 
     }
 
+    /**
+     * @return true 
+     * @return false 
+     */
     [[nodiscard]] constexpr bool is_page_aligned() const 
     { 
         return (m_address & 0xfff) == 0; 
@@ -90,7 +97,7 @@ public:
     { 
         return m_address <= other.m_address; 
     }
-    
+
     bool operator>=(const VirtualAddress& other) const 
     { 
         return m_address >= other.m_address; 
@@ -132,6 +139,9 @@ public:
         return reinterpret_cast<const u8*>(m_address); 
     }
 
+    /**
+     * @return VirtualAddress 
+     */
     [[nodiscard]] VirtualAddress page_base() const 
     { 
         return VirtualAddress(m_address & ~(FlatPtr)0xfffu); 
@@ -139,7 +149,7 @@ public:
 
 private:
     FlatPtr m_address { 0 };
-};
+}; // class VirtualAddress 
 
 /**
  * @param a 
