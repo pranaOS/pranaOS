@@ -11,24 +11,43 @@
 
 #pragma once
 
-#include "forward.h"
+#include <mods/concept.h>
+#include <mods/forward.h>
 
-namespace Mods {
+namespace Mods
+{
 
-    /// @brief CaseSensitivity
-    enum class CaseSensitivity {
+    namespace Detail 
+    {
+        /**
+         * @tparam T 
+         * @tparam U 
+         */
+        template<Concepts::AnyString T, Concepts::AnyString U>
+        inline constexpr bool IsHashCompatible<T, U> = true;
+    } // namespace Detail
+
+    enum class CaseSensitivity 
+    {
         CaseInsensitive,
         CaseSensitive,
-    };
+    }; // enum class CaseSenstivity
 
-    /// @brief TrimMode[Left, Right, Both]
-    enum class TrimMode {
+    enum class TrimMode 
+    {
         Left,
         Right,
         Both
-    };
+    }; // enum class TrimMode
 
-    struct MaskSpan {
+    enum class TrimWhitespace 
+    {
+        Yes,
+        No,
+    }; // enum class TrimWhitespace
+
+    struct MaskSpan 
+    {
         size_t start;
         size_t length;
 
@@ -37,7 +56,8 @@ namespace Mods {
          * @return true 
          * @return false 
          */
-        bool operator==(const MaskSpan& other) const {
+        bool operator==(const MaskSpan& other) const
+        {
             return start == other.start && length == other.length;
         }
 
@@ -46,13 +66,15 @@ namespace Mods {
          * @return true 
          * @return false 
          */
-        bool operator!=(const MaskSpan& other) const {
+        bool operator!=(const MaskSpan& other) const
+        {
             return !(*this == other);
         }
-    };
+    }; // struct MarkSpan
 
-    namespace StringUtils {
-        
+    namespace StringUtils 
+    {
+
         /**
          * @param str 
          * @param mask 
@@ -60,57 +82,147 @@ namespace Mods {
          * @return true 
          * @return false 
          */
-        bool matches(const StringView& str, const StringView& mask, CaseSensitivity = CaseSensitivity::CaseInsensitive, Vector<MaskSpan>* match_spans = nullptr);
-
-        /** 
-         * @return Optional<int> 
-         */
-        Optional<int> convert_to_int(const StringView&);
+        bool matches(StringView str, StringView mask, CaseSensitivity = CaseSensitivity::CaseInsensitive, Vector<MaskSpan>* match_spans = nullptr);
 
         /**
-         * @return Optional<unsigned> 
+         * @tparam T 
+         * @return Optional<T> 
          */
-        Optional<unsigned> convert_to_uint(const StringView&);
+        template<typename T = int>
+        Optional<T> convert_to_int(StringView, TrimWhitespace = TrimWhitespace::Yes);
 
         /**
-         * @return Optional<unsigned> 
+         * @tparam T 
+         * @return Optional<T> 
          */
-        Optional<unsigned> convert_to_uint_from_hex(const StringView&);
+        template<typename T = unsigned>
+        Optional<T> convert_to_uint(StringView, TrimWhitespace = TrimWhitespace::Yes);
+
+        /**
+         * @tparam T 
+         * @return Optional<T> 
+         */
+        template<typename T = unsigned>
+        Optional<T> convert_to_uint_from_hex(StringView, TrimWhitespace = TrimWhitespace::Yes);
+
+        /**
+         * @tparam T 
+         * @return Optional<T> 
+         */
+        template<typename T = unsigned>
+        Optional<T> convert_to_uint_from_octal(StringView, TrimWhitespace = TrimWhitespace::Yes);
 
         /**
          * @return true 
          * @return false 
          */
-        bool equals_ignoring_case(const StringView&, const StringView&);
-        
+        bool equals_ignoring_case(StringView, StringView);
+
         /**
          * @param a 
          * @param b 
          * @return true 
          * @return false 
          */
-        bool ends_with(const StringView& a, const StringView& b, CaseSensitivity);
+        bool ends_with(StringView a, StringView b, CaseSensitivity);
 
         /**
          * @return true 
          * @return false 
          */
-        bool starts_with(const StringView&, const StringView&, CaseSensitivity);
+        bool starts_with(StringView, StringView, CaseSensitivity);
 
         /**
          * @return true 
          * @return false 
          */
-        bool contains(const StringView&, const StringView&, CaseSensitivity);
+        bool contains(StringView, StringView, CaseSensitivity);
 
         /**
+         * @return true 
+         * @return false 
+         */
+        bool is_whitespace(StringView);
+
+        /**
+         * @param string 
+         * @param characters 
          * @param mode 
          * @return StringView 
          */
-        StringView trim_whitespace(const StringView&, TrimMode mode);
-    }
+        StringView trim(StringView string, StringView characters, TrimMode mode);
 
-}
+        /**
+         * @param string 
+         * @param mode 
+         * @return StringView 
+         */
+        StringView trim_whitespace(StringView string, TrimMode mode);
+
+        /**
+         * @param haystack 
+         * @param needle 
+         * @param start 
+         * @return Optional<size_t> 
+         */
+        Optional<size_t> find(StringView haystack, char needle, size_t start = 0);
+
+        /**
+         * @param haystack 
+         * @param needle 
+         * @param start 
+         * @return Optional<size_t> 
+         */
+        Optional<size_t> find(StringView haystack, StringView needle, size_t start = 0);
+
+        /**
+         * @param haystack 
+         * @param needle 
+         * @return Optional<size_t> 
+         */
+        Optional<size_t> find_last(StringView haystack, char needle);
+
+        /**
+         * @param haystack 
+         * @param needle 
+         * @return Vector<size_t> 
+         */
+        Vector<size_t> find_all(StringView haystack, StringView needle);
+
+        enum class SearchDirection 
+        {
+            Forward,
+            Backward
+        }; // enum class SearchDirection
+
+        /**
+         * @param haystack 
+         * @param needles 
+         * @return Optional<size_t> 
+         */
+        Optional<size_t> find_any_of(StringView haystack, StringView needles, SearchDirection);
+
+        String to_snakecase(StringView);
+        String to_titlecase(StringView);
+
+        /**
+         * @param needle 
+         * @param replacement 
+         * @param all_occurrences 
+         * @return String 
+         */
+        String replace(StringView, StringView needle, StringView replacement, bool all_occurrences = false);
+
+        /**
+         * @param needle 
+         * @return size_t 
+         */
+        size_t count(StringView, StringView needle);
+
+    } // namespace StringUtils
+
+} // namespace Mods
 
 using Mods::CaseSensitivity;
 using Mods::TrimMode;
+using Mods::TrimWhitespace;
