@@ -19,9 +19,10 @@
 #include <mods/stdlibextra.h>
 #include <mods/stringutils.h>
 #include <mods/string_hash.h>
+#include <mods/string_utils.h>
 
-namespace Mods {
-
+namespace Mods
+{
     class StringView 
     {
     public:
@@ -76,10 +77,6 @@ namespace Mods {
         {
         }
 
-        /**
-         * @brief Construct a new String View object
-         * 
-         */
         StringView(const ByteBuffer&);
     #ifndef KERNEL
         StringView(const String&);
@@ -101,21 +98,34 @@ namespace Mods {
             return m_characters == nullptr;
         }
 
+        /**
+         * @return true 
+         * @return false 
+         */
         [[nodiscard]] constexpr bool is_empty() const 
         { 
             return m_length == 0; 
         }
 
+        /**
+         * @return constexpr char const* 
+         */
         [[nodiscard]] constexpr char const* characters_without_null_termination() const 
         { 
             return m_characters; 
         }
 
+        /**
+         * @return constexpr size_t 
+         */
         [[nodiscard]] constexpr size_t length() const 
         { 
             return m_length; 
         }
 
+        /**
+         * @return ReadonlyBytes 
+         */
         [[nodiscard]] ReadonlyBytes bytes() const 
         { 
             return { m_characters, m_length }; 
@@ -129,7 +139,7 @@ namespace Mods {
         { 
             return m_characters[index]; 
         }
-
+    
         using ConstIterator = SimpleIterator<const StringView, const char>;
 
         /**
@@ -148,6 +158,9 @@ namespace Mods {
             return ConstIterator::end(*this); 
         }
 
+        /**
+         * @return constexpr unsigned 
+         */
         [[nodiscard]] constexpr unsigned hash() const
         {
             if (is_empty())
@@ -160,20 +173,16 @@ namespace Mods {
          * @return false 
          */
         [[nodiscard]] bool starts_with(StringView, CaseSensitivity = CaseSensitivity::CaseSensitive) const;
-
         [[nodiscard]] bool ends_with(StringView, CaseSensitivity = CaseSensitivity::CaseSensitive) const;
-
         [[nodiscard]] bool starts_with(char) const;
-
         [[nodiscard]] bool ends_with(char) const;
-        
+
         /**
          * @param mask 
          * @return true 
          * @return false 
          */
         [[nodiscard]] bool matches(StringView mask, CaseSensitivity = CaseSensitivity::CaseInsensitive) const;
-
         [[nodiscard]] bool matches(StringView mask, Vector<MaskSpan>&, CaseSensitivity = CaseSensitivity::CaseInsensitive) const;
 
         [[nodiscard]] bool contains(char) const;
@@ -186,7 +195,7 @@ namespace Mods {
          * @return false 
          */
         [[nodiscard]] bool equals_ignoring_case(StringView other) const;
-        
+
         /**
          * @param characters 
          * @param mode 
@@ -201,7 +210,10 @@ namespace Mods {
          * @param mode 
          * @return StringView 
          */
-        [[nodiscard]] StringView trim_whitespace(TrimMode mode = TrimMode::Both) const { return StringUtils::trim_whitespace(*this, mode); }
+        [[nodiscard]] StringView trim_whitespace(TrimMode mode = TrimMode::Both) const 
+        { 
+            return StringUtils::trim_whitespace(*this, mode); 
+        }
 
     #ifndef KERNEL
         [[nodiscard]] String to_lowercase_string() const;
@@ -218,7 +230,7 @@ namespace Mods {
         {
             return StringUtils::find(*this, needle, start);
         }
-        
+
         /**
          * @param needle 
          * @param start 
@@ -245,7 +257,7 @@ namespace Mods {
         [[nodiscard]] Vector<size_t> find_all(StringView needle) const;
 
         using SearchDirection = StringUtils::SearchDirection;
-
+        
         /**
          * @param needles 
          * @param direction 
@@ -325,7 +337,6 @@ namespace Mods {
             StringView view { *this };
 
             auto maybe_separator_index = find(separator);
-
             while (maybe_separator_index.has_value()) {
                 auto separator_index = maybe_separator_index.value();
                 auto part_with_separator = view.substring_view(0, separator_index + separator.length());
@@ -334,7 +345,6 @@ namespace Mods {
                 view = view.substring_view_starting_after_substring(part_with_separator);
                 maybe_separator_index = view.find(separator);
             }
-
             if (keep_empty || !view.is_empty())
                 callback(view);
         }
@@ -364,11 +374,6 @@ namespace Mods {
          * @return StringView 
          */
         [[nodiscard]] StringView substring_view_starting_from_substring(StringView substring) const;
-
-        /**
-         * @param substring 
-         * @return StringView 
-         */
         [[nodiscard]] StringView substring_view_starting_after_substring(StringView substring) const;
 
         /**
@@ -382,16 +387,14 @@ namespace Mods {
                 return cstring == nullptr;
             if (!cstring)
                 return false;
-
+            
             const char* cp = cstring;
-
             for (size_t i = 0; i < m_length; ++i) {
                 if (*cp == '\0')
                     return false;
                 if (m_characters[i] != *(cp++))
                     return false;
             }
-
             return *cp == '\0';
         }
 
@@ -422,9 +425,7 @@ namespace Mods {
                 return 1;
 
             size_t rlen = min(m_length, other.m_length);
-
             int c = __builtin_memcmp(m_characters, other.m_characters, rlen);
-
             if (c == 0) {
                 if (length() < other.length())
                     return -1;
@@ -499,14 +500,28 @@ namespace Mods {
         [[nodiscard]] String to_string() const;
     #endif
 
+        /**
+         * @return true 
+         * @return false 
+         */
         [[nodiscard]] bool is_whitespace() const
         {
             return StringUtils::is_whitespace(*this);
         }
 
     #ifndef KERNEL
+        /**
+         * @param needle 
+         * @param replacement 
+         * @param all_occurrences 
+         * @return String 
+         */
         [[nodiscard]] String replace(StringView needle, StringView replacement, bool all_occurrences = false) const;
     #endif
+        /**
+         * @param needle 
+         * @return size_t 
+         */
         [[nodiscard]] size_t count(StringView needle) const
         {
             return StringUtils::count(*this, needle);
@@ -527,19 +542,12 @@ namespace Mods {
         friend class String;
         const char* m_characters { nullptr };
         size_t m_length { 0 };
-    }; // class StringView
-    
+    };
+
     template<>
     struct Traits<StringView> : public GenericTraits<StringView> 
     {
-        /**
-         * @param s 
-         * @return unsigned 
-         */
-        static unsigned hash(StringView s) 
-        { 
-            return s.hash(); 
-        }
+        static unsigned hash(StringView s) { return s.hash(); }
     };
 
     struct CaseInsensitiveStringViewTraits : public Traits<StringView> 
