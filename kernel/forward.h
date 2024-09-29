@@ -11,59 +11,102 @@
 
 #pragma once
 
-namespace Kernel {
+#include <mods/distinctnums.h>
+#include <kernel/api/posix/sys/types.h>
+
+namespace Kernel 
+{
 
     class BlockDevice;
     class CharacterDevice;
-    class CoreDump;
+    class Coredump;
     class Custody;
+    class DevTmpFSDeviceInode;
+    class DevTmpFSDirectoryInode;
+    class DevTmpFSInode;
+    class DevTmpFSPtsDirectoryInode;
+    class DevTmpFSRootDirectoryInode;
     class Device;
     class DiskCache;
     class DoubleBuffer;
     class File;
-    class FileDescription;
+    class OpenFileDescription;
+    class FileSystem;
+    class FutexQueue;
     class IPv4Socket;
     class Inode;
     class InodeIdentifier;
-    class SharedInodeVMObject;
     class InodeWatcher;
     class KBuffer;
-    class KResult;
     class LocalSocket;
-    class Lock;
-    class MappedROM;
+    class Mutex;
     class MasterPTY;
-    class PageDirectory;
+    class Mount;
     class PerformanceEventBuffer;
-    class PhysicalPage;
-    class PhysicalRegion;
+    class ProcFS;
+    class ProcFSDirectoryInode;
+    class ProcFSExposedComponent;
+    class ProcFSExposedDirectory;
+    class ProcFSInode;
+    class ProcFSProcessInformation;
+    class ProcFSRootDirectory;
+    class ProcFSSystemBoolean;
+    class ProcFSSystemDirectory;
     class Process;
     class ProcessGroup;
-    class ThreadTracer;
-    class Range;
-    class RangeAllocator;
-    class Region;
+    class RecursiveSpinlock;
     class Scheduler;
-    class SchedulerPerProcessorData;
-    class SharedBuffer;
     class Socket;
-    class RecursiveSpinLock;
+    class SysFS;
+    class SysFSDirectory;
+    class SysFSBusDirectory;
+    class SysFSDirectoryInode;
+    class SysFSInode;
     class TCPSocket;
     class TTY;
     class Thread;
+    class ThreadTracer;
     class UDPSocket;
     class UserOrKernelBuffer;
-    class VFS;
-    class VMObject;
+    class VirtualFileSystem;
     class WaitQueue;
+    class WorkQueue;
 
-    template<typename T>
-    class KResultOr;
+    namespace Memory 
+    {
+        class AddressSpace;
+        class AnonymousVMObject;
+        class InodeVMObject;
+        class MappedROM;
+        class MemoryManager;
+        class PageDirectory;
+        class PhysicalPage;
+        class PhysicalRegion;
+        class PrivateInodeVMObject;
+        class Region;
+        class SharedInodeVMObject;
+        class VMObject;
+        class VirtualRange;
+        class VirtualRangeAllocator;
+    } // namespace Memory
 
+    class Spinlock;
+
+    /**
+     * @tparam LockType 
+     */
     template<typename LockType>
-    class ScopedSpinLock;
+    class SpinlockLocker;
 
-    template<typename BaseType>
-    class SpinLock;
+    struct InodeMetadata;
+    struct TrapFrame;
 
-}
+    TYPEDEF_DISTINCT_ORDERED_ID(pid_t, ProcessID);
+    TYPEDEF_DISTINCT_ORDERED_ID(pid_t, ThreadID);
+    TYPEDEF_DISTINCT_ORDERED_ID(pid_t, SessionID);
+    TYPEDEF_DISTINCT_ORDERED_ID(pid_t, ProcessGroupID);
+
+    TYPEDEF_DISTINCT_ORDERED_ID(uid_t, UserID);
+    TYPEDEF_DISTINCT_ORDERED_ID(gid_t, GroupID);
+
+} // namespace Kernel
