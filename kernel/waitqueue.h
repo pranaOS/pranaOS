@@ -12,7 +12,7 @@
 #pragma once 
 
 #include <mods/atomic.h>
-#include <kernel/spinlock.h>
+#include <kernel/locking/spinlock.h>
 #include <kernel/thread.h>
 
 namespace Kernel 
