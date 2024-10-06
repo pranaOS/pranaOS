@@ -2,10 +2,10 @@
  * @file threadsafeweakptr.h
  * @author Krisna Pranav
  * @brief Thread Safe Weak Ptr
- * @version 0.1
+ * @version 6.0
  * @date 2024-10-06
  * 
- * @copyright Copyright (c) 2024
+ * @copyright Copyright (c) 2021-2024, pranaOS Developers, Krisna Pranav
  * 
  */
 
