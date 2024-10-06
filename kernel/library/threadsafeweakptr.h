@@ -286,7 +286,7 @@ namespace Mods
             if (!static_cast<const T*>(this)->try_ref())
                 return WeakPtr<U> {};
         } else {
-            if (m_being_destroyed.load(AK::MemoryOrder::memory_order_acquire))
+            if (m_being_destroyed.load(Mods::MemoryOrder::memory_order_acquire))
                 return WeakPtr<U> {};
         }
         if (!m_link) {
