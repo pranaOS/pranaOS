@@ -32,6 +32,7 @@
 - objective-c runtime support **(libobjc)**
 - swift runtime support **(libswift)**
 - java runtime and support for kernel **(libjava)**
+- Application runtime(swift/c++)
 
 # Userland:
 - simple terminal and some apps
