@@ -23,5 +23,13 @@ struct Token {
     init(name: String, _ kind: Kind) {
         self.kind = kind
         self.name = name
+
+        var caseName = name.replacingOccurrences(of: "Token", with: "").lowercaseFirstLetter
+
+        if case .keyword(_) = kind {
+            caseName += "Keyword"
+        }
+
+        self.caseName = caseName
     }
 }
