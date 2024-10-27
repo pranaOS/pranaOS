@@ -216,7 +216,7 @@ namespace Mods::Format::Detail
 
 #endif
 
-namespace AK::Format::Detail 
+namespace Mods::Format::Detail 
 {
     /**
      * @tparam Args 
@@ -271,7 +271,7 @@ namespace AK::Format::Detail
             {
                 auto begin = check.used_arguments.begin();
                 auto end = check.used_arguments.begin() + check.total_used_argument_count;
-                auto has_all_referenced_arguments = !AK::any_of(begin, end, [](auto& entry) { return entry >= param_count; });
+                auto has_all_referenced_arguments = !Mods::any_of(begin, end, [](auto& entry) { return entry >= param_count; });
                 if (!has_all_referenced_arguments)
                     compiletime_fail("Format string references nonexistent parameter");
             }
@@ -289,7 +289,7 @@ namespace AK::Format::Detail
 
                     return false;
                 };
-                auto references_all_arguments = AK::all_of(
+                auto references_all_arguments = Mods::all_of(
                     all_parameters,
                     [&](auto& entry) {
                         return contains(
