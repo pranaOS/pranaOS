@@ -105,7 +105,7 @@ namespace TimeZone
      * @param time 
      * @return Optional<Offset> 
      */
-    Optional<Offset> get_time_zone_offset(TimeZone time_zone, AK::Time time);
+    Optional<Offset> get_time_zone_offset(TimeZone time_zone, Mods::Time time);
 
     /**
      * @brief Get the time zone offset object
@@ -114,7 +114,7 @@ namespace TimeZone
      * @param time 
      * @return Optional<Offset> 
      */
-    Optional<Offset> get_time_zone_offset(StringView time_zone, AK::Time time);
+    Optional<Offset> get_time_zone_offset(StringView time_zone, Mods::Time time);
 
     /**
      * @brief Get the named time zone offsets object
@@ -123,7 +123,7 @@ namespace TimeZone
      * @param time 
      * @return Optional<Array<NamedOffset, 2>> 
      */
-    Optional<Array<NamedOffset, 2>> get_named_time_zone_offsets(TimeZone time_zone, AK::Time time);
+    Optional<Array<NamedOffset, 2>> get_named_time_zone_offsets(TimeZone time_zone, Mods::Time time);
 
     /**
      * @brief Get the named time zone offsets object
@@ -132,7 +132,7 @@ namespace TimeZone
      * @param time 
      * @return Optional<Array<NamedOffset, 2>> 
      */
-    Optional<Array<NamedOffset, 2>> get_named_time_zone_offsets(StringView time_zone, AK::Time time);
+    Optional<Array<NamedOffset, 2>> get_named_time_zone_offsets(StringView time_zone, Mods::Time time);
 
     /**
      * @brief Get the time zone location object
