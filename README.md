@@ -1,5 +1,5 @@
 # pranaOS
-- Smart Operating System Built For x86, ARM, watch & mobile platform.
+- Graphical Operating System Built For x86, ARM, watch & mobile platform.
 
 <p align="center">
 <img src="https://raw.githubusercontent.com/pranaOS/pranaOS/master/docs/eagle.jpeg" width="200" height="200">
