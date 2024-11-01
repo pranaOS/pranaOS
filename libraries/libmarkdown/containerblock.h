@@ -17,7 +17,7 @@
 #include <libmarkdown/block.h>
 #include <libmarkdown/lineiterator.h>
 
-namespace Markdown
+namespace Markdown 
 {
     class ContainerBlock final : public Block 
     {
@@ -33,13 +33,14 @@ namespace Markdown
             : m_blocks(move(blocks))
             , m_has_blank_lines(has_blank_lines)
             , m_has_trailing_blank_lines(has_trailing_blank_lines)
-        {}  
+        {
+        }
 
         /**
          * @brief Destroy the Container Block object
          * 
          */
-        virtual ~ContainerBlock() override {}
+        virtual ~ContainerBlock() override { }
 
         /**
          * @param tight 
@@ -53,14 +54,33 @@ namespace Markdown
          */
         virtual String render_for_terminal(size_t view_width = 0) const override;
 
-        bool has_blank_lines() const
-        {
-            return m_has_blank_lines;
+        /**
+         * @return RecursionDecision 
+         */
+        virtual RecursionDecision walk(Visitor&) const override;
+
+        /**
+         * @param lines 
+         * @return OwnPtr<ContainerBlock> 
+         */
+        static OwnPtr<ContainerBlock> parse(LineIterator& lines);
+
+        bool has_blank_lines() const 
+        { 
+            return m_has_blank_lines; 
         }
 
-        bool has_trailing_blank_lines() const
-        {
-            return m_has_trailing_blank_lines;
+        bool has_trailing_blank_lines() const 
+        { 
+            return m_has_trailing_blank_lines; 
+        }
+
+        /**
+         * @return NonnullOwnPtrVector<Block> const& 
+         */
+        NonnullOwnPtrVector<Block> const& blocks() const 
+        { 
+            return m_blocks; 
         }
 
     private:
