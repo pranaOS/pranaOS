@@ -210,7 +210,7 @@ namespace TimeZone
         return {};
     }
 
-    Optional<Array<NamedOffset, 2>> __attribute__((weak)) get_named_time_zone_offsets([[maybe_unused]] TimeZone time_zone, AK::Time)
+    Optional<Array<NamedOffset, 2>> __attribute__((weak)) get_named_time_zone_offsets([[maybe_unused]] TimeZone time_zone, Mods::Time)
     {
     #if !ENABLE_TIME_ZONE_DATA
         VERIFY(time_zone == TimeZone::UTC);
