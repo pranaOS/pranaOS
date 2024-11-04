@@ -4,22 +4,23 @@
  * @brief StringBuilder
  * @version 6.0
  * @date 2023-07-04
- * 
+ *
  * @copyright Copyright (c) 2021-2024 pranaOS Developers, Krisna Pranav
- * 
+ *
  */
 
 #pragma once
 
+#include <mods/byte_buffer.h>
+#include <mods/format.h>
+#include <mods/forward.h>
+#include <mods/string_view.h>
 #include <stdarg.h>
-#include "byte_buffer.h"
-#include "format.h"
-#include "forward.h"
-#include "string_view.h"
 
-namespace Mods {
-
-    class StringBuilder {
+namespace Mods
+{
+    class StringBuilder
+    {
     public:
         using OutputType = String;
 
@@ -30,76 +31,89 @@ namespace Mods {
          */
         explicit StringBuilder(size_t initial_capacity = inline_capacity);
 
-        ~StringBuilder() {}
+        /**
+         * @brief Destroy the String Builder object
+         * 
+         */
+        ~StringBuilder() = default;
 
-        void append(const StringView&);
-        void append(const Utf32View&);
+        ErrorOr<void> try_append(StringView);
+    #ifndef KERNEL
+        ErrorOr<void> try_append(Utf16View const&);
+    #endif
+        ErrorOr<void> try_append(Utf32View const&);
+        ErrorOr<void> try_append_code_point(u32);
+        ErrorOr<void> try_append(char);
+
+        /**
+         * @tparam Parameters 
+         * @param fmtstr 
+         * @param parameters 
+         * @return ErrorOr<void> 
+         */
+        template <typename... Parameters>
+        ErrorOr<void> try_appendff(CheckedFormatString<Parameters...>&& fmtstr, Parameters const&... parameters)
+        {
+            VariadicFormatParams variadic_format_params{parameters...};
+            return vformat(*this, fmtstr.view(), variadic_format_params);
+        }
+
+        /**
+         * @return ErrorOr<void> 
+         */
+        ErrorOr<void> try_append(char const*, size_t);
+
+        void append(StringView);
+    #ifndef KERNEL
+        void append(Utf16View const&);
+    #endif
+        void append(Utf32View const&);
         void append(char);
         void append_code_point(u32);
+        void append(char const*, size_t);
+        void appendvf(char const*, va_list);
 
-        /**
-         * @param size_t
-         */
-        void append(const char*, size_t);
-
-        /**
-         * @param ... 
-         */
-        void appendf(const char*, ...);
-
-        /**
-         * @param va_list
-         */
-        void appendvf(const char*, va_list);
-
-        void append_escaped_for_json(const StringView&);
+        void append_as_lowercase(char);
+        void append_escaped_for_json(StringView);
 
         /**
          * @tparam Parameters 
          * @param fmtstr 
          * @param parameters 
          */
-        template<typename... Parameters>
-        void appendff(StringView fmtstr, const Parameters&... parameters) {
-            vformat(*this, fmtstr, VariadicFormatParams { parameters... });
+        template <typename... Parameters>
+        void appendff(CheckedFormatString<Parameters...>&& fmtstr, Parameters const&... parameters)
+        {
+            VariadicFormatParams variadic_format_params{parameters...};
+            MUST(vformat(*this, fmtstr.view(), variadic_format_params));
         }
 
-        String build() const;
-        String to_string() const;
+    #ifndef KERNEL
+        [[nodiscard]] String build() const;
+        [[nodiscard]] String to_string() const;
+    #endif
+        [[nodiscard]] ByteBuffer to_byte_buffer() const;
 
-        /**
-         * @return ByteBuffer 
-         */
-        ByteBuffer to_byte_buffer() const;
+        [[nodiscard]] StringView string_view() const;
 
-        /**
-         * @return StringView 
-         */
-        StringView string_view() const;
-
-        // clear(destroy)
         void clear();
 
-        /**
-         * @return size_t 
-         */
-        size_t length() const { 
-            return m_length; 
+        [[nodiscard]] size_t length() const
+        {
+            return m_buffer.size();
+        }
+
+        [[nodiscard]] bool is_empty() const
+        {
+            return m_buffer.is_empty();
         }
 
         /**
-         * @return true 
-         * @return false 
-         */
-        bool is_empty() const { 
-            return m_length == 0; 
-        }
-
-        /** 
          * @param count 
          */
-        void trim(size_t count) { 
-            m_length -= count; 
+        void trim(size_t count)
+        {
+            m_buffer.resize(m_buffer.size() - count);
         }
 
         /**
@@ -108,54 +122,38 @@ namespace Mods {
          * @param separator 
          * @param collection 
          */
-        template<class SeparatorType, class CollectionType>
-        void join(const SeparatorType& separator, const CollectionType& collection) {
+        template <class SeparatorType, class CollectionType>
+        void join(SeparatorType const& separator, CollectionType const& collection)
+        {
             bool first = true;
-            for (auto& item : collection) {
-                if (first)
+
+            for(auto& item : collection)
+            {
+                if(first)
                     first = false;
                 else
                     append(separator);
-                append(item);
+                appendff("{}", item);
             }
         }
 
     private:
-        void will_append(size_t);
+        ErrorOr<void> will_append(size_t);
 
-        /**
-         * @return u8* 
-         */
-        u8* data() { 
-            return m_buffer.is_null() ? m_inline_buffer : m_buffer.data(); 
+        u8* data()
+        {
+            return m_buffer.data();
+        }
+        
+        u8 const* data() const
+        {
+            return m_buffer.data();
         }
 
-        /**
-         * @return const u8* 
-         */
-        const u8* data() const { 
-            return m_buffer.is_null() ? m_inline_buffer : m_buffer.data(); 
-        }
-
-        /**
-         * @return true 
-         * @return false 
-         */
-        bool using_inline_buffer() const { 
-            return m_buffer.is_null(); 
-        }
-
-        // capacity
-        static constexpr size_t inline_capacity = 128;
-
-        // inline buffers
-        u8 m_inline_buffer[inline_capacity];
-
-        // buffer & length
-        ByteBuffer m_buffer;
-        size_t m_length { 0 };
+        static constexpr size_t inline_capacity = 256;
+        Mods::Detail::ByteBuffer<inline_capacity> m_buffer;
     };
 
-}
+} // namespace Mods
 
 using Mods::StringBuilder;
