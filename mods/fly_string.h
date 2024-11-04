@@ -11,26 +11,37 @@
 
 #pragma once
 
-#include "string.h"
+#include "mods/string_utils.h"
+#include <mods/string.h>
 
-namespace Mods {
-
-    class FlyString {
+namespace Mods
+{
+    class FlyString 
+    {
     public:
-
-        FlyString() {}
+        /**
+         * @brief Construct a new Fly String object
+         * 
+         */
+        FlyString() = default;
 
         /**
+         * @brief Construct a new Fly String object
+         * 
          * @param other 
          */
-        FlyString(const FlyString& other) : m_impl(other.impl())
+        FlyString(const FlyString& other)
+            : m_impl(other.impl())
         {
         }
 
         /**
+         * @brief Construct a new Fly String object
+         * 
          * @param other 
          */
-        FlyString(FlyString&& other) : m_impl(move(other.m_impl))
+        FlyString(FlyString&& other)
+            : m_impl(move(other.m_impl))
         {
         }
 
@@ -39,14 +50,37 @@ namespace Mods {
          * 
          */
         FlyString(const String&);
-        FlyString(const StringView&);
-        FlyString(const char*);
+
+        FlyString(StringView);
+
+        /**
+         * @brief Construct a new Fly String object
+         * 
+         * @param string 
+         */
+        FlyString(const char* string)
+            : FlyString(static_cast<String>(string))
+        {
+        }
+
+        /**
+         * @param impl 
+         * @return FlyString 
+         */
+        static FlyString from_fly_impl(NonnullRefPtr<StringImpl> impl)
+        {
+            VERIFY(impl->is_fly());
+            FlyString string;
+            string.m_impl = move(impl);
+            return string;
+        }
 
         /**
          * @param other 
          * @return FlyString& 
          */
-        FlyString& operator=(const FlyString& other) {
+        FlyString& operator=(const FlyString& other)
+        {
             m_impl = other.m_impl;
             return *this;
         }
@@ -55,33 +89,29 @@ namespace Mods {
          * @param other 
          * @return FlyString& 
          */
-        FlyString& operator=(FlyString&& other) {
+        FlyString& operator=(FlyString&& other)
+        {
             m_impl = move(other.m_impl);
             return *this;
         }
 
-        /**
-         * @return true 
-         * @return false 
-         */
-        bool is_empty() const { 
+        bool is_empty() const 
+        { 
             return !m_impl || !m_impl->length(); 
         }
 
-        /**
-         * @return true 
-         * @return false 
-         */
-        bool is_null() const { 
+        bool is_null() const 
+        { 
             return !m_impl; 
         }
 
-        /** 
+        /**
          * @param other 
          * @return true 
          * @return false 
          */
-        bool operator==(const FlyString& other) const { 
+        bool operator==(const FlyString& other) const 
+        { 
             return m_impl == other.m_impl; 
         }
 
@@ -90,11 +120,12 @@ namespace Mods {
          * @return true 
          * @return false 
          */
-        bool operator!=(const FlyString& other) const { 
+        bool operator!=(const FlyString& other) const 
+        { 
             return m_impl != other.m_impl; 
         }
 
-        /** 
+        /**
          * @return true 
          * @return false 
          */
@@ -105,29 +136,23 @@ namespace Mods {
          * @return true 
          * @return false 
          */
-        bool operator!=(const String& string) const { 
+        bool operator!=(const String& string) const 
+        { 
             return !(*this == string); 
         }
 
-        /**
-         * @return true 
-         * @return false 
-         */
-        bool operator==(const StringView&) const;
+        bool operator==(StringView) const;
 
         /**
          * @param string 
          * @return true 
          * @return false 
          */
-        bool operator!=(const StringView& string) const { 
+        bool operator!=(StringView string) const 
+        { 
             return !(*this == string); 
         }
 
-        /**
-         * @return true 
-         * @return false 
-         */
         bool operator==(const char*) const;
 
         /**
@@ -135,111 +160,96 @@ namespace Mods {
          * @return true 
          * @return false 
          */
-        bool operator!=(const char* string) const { 
+        bool operator!=(const char* string) const 
+        { 
             return !(*this == string); 
         }
 
         /**
          * @return const StringImpl* 
          */
-        const StringImpl* impl() const { 
+        const StringImpl* impl() const 
+        { 
             return m_impl; 
         }
 
         /**
          * @return const char* 
          */
-        const char* characters() const { 
+        const char* characters() const 
+        { 
             return m_impl ? m_impl->characters() : nullptr; 
         }
 
         /**
          * @return size_t 
          */
-        size_t length() const { 
+        size_t length() const 
+        { 
             return m_impl ? m_impl->length() : 0; 
         }
 
-        /**
-         * @return ALWAYS_INLINE 
-         */
-        ALWAYS_INLINE u32 hash() const { 
+        ALWAYS_INLINE u32 hash() const 
+        { 
             return m_impl ? m_impl->existing_hash() : 0; 
         }
 
-        /**
-         * @return StringView 
-         */
-        StringView view() const;
+        ALWAYS_INLINE StringView view() const 
+        { 
+            return m_impl ? m_impl->view() : StringView {}; 
+        }
 
-        /**
-         * @return FlyString 
-         */
         FlyString to_lowercase() const;
 
         /**
-         * @return Optional<int> 
+         * @tparam T 
+         * @return Optional<T> 
          */
-        Optional<int> to_int() const;
+        template<typename T = int>
+        Optional<T> to_int(TrimWhitespace = TrimWhitespace::Yes) const;
 
         /**
-         * @return true 
-         * @return false 
+         * @tparam T 
+         * @return Optional<T> 
          */
-        bool equals_ignoring_case(const StringView&) const;
+        template<typename T = unsigned>
+        Optional<T> to_uint(TrimWhitespace = TrimWhitespace::Yes) const;
 
-        /**
-         * @return true 
-         * @return false 
-         */
-        bool starts_with(const StringView&, CaseSensitivity = CaseSensitivity::CaseSensitive) const;
+        bool equals_ignoring_case(StringView) const;
 
-        /**
-         * @return true 
-         * @return false 
-         */
-        bool ends_with(const StringView&, CaseSensitivity = CaseSensitivity::CaseSensitive) const;
+        bool starts_with(StringView, CaseSensitivity = CaseSensitivity::CaseSensitive) const;
+
+        bool ends_with(StringView, CaseSensitivity = CaseSensitivity::CaseSensitive) const;
 
         static void did_destroy_impl(Badge<StringImpl>, StringImpl&);
 
         /**
-         * @tparam T 
-         * @tparam Rest 
-         * @param string 
-         * @param rest 
-         * @return true 
-         * @return false 
+         * @tparam Ts 
+         * @param strings 
+         * @return ALWAYS_INLINE constexpr 
          */
-        template<typename T, typename... Rest>
-        bool is_one_of(const T& string, Rest... rest) const {
-            if (*this == string)
-                return true;
-            return is_one_of(rest...);
+        template<typename... Ts>
+        [[nodiscard]] ALWAYS_INLINE constexpr bool is_one_of(Ts... strings) const
+        {
+            return (... || this->operator==(forward<Ts>(strings)));
         }
 
-    private:   
-        /**
-         * @return true 
-         * @return false 
-         */
-        bool is_one_of() const { 
-            return false; 
-        }
+    private:
         RefPtr<StringImpl> m_impl;
-    };
-    
-    template<>
-    struct Traits<FlyString> : public GenericTraits<FlyString> {
+    }; // class FlyString
 
+    template<>
+    struct Traits<FlyString> : public GenericTraits<FlyString> 
+    {
         /**
          * @param s 
          * @return unsigned 
          */
-        static unsigned hash(const FlyString& s) { 
+        static unsigned hash(const FlyString& s) 
+        { 
             return s.hash(); 
         }
-    };
-
-}
+    }; 
+} // namespace Mods
 
 using Mods::FlyString;
