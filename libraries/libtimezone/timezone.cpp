@@ -1,7 +1,7 @@
 /**
  * @file timezone.cpp
  * @author Krisna Pranav
- * @brief Timezone
+ * @brief Timezone Func
  * @version 6.0
  * @date 2024-10-27
  * 
