@@ -9,90 +9,70 @@
  * 
  */
 
-#pragma once 
+#pragma once
 
-#include <mods/string.h>
+#include <mods/bytereader.h>
+#include <mods/endian.h>
 #include <mods/types.h>
 #include <libcrypto/hash/hashfunction.h>
+
+#ifndef KERNEL
+#    include <mods/string.h>
+#endif
 
 namespace Crypto 
 {
     namespace Authentication 
     {
-
+        /**
+         * @param z 
+         * @param x 
+         * @param y 
+         */
         void galois_multiply(u32 (&z)[4], const u32 (&x)[4], const u32 (&y)[4]);
 
         struct GHashDigest 
         {
             constexpr static size_t Size = 16;
             u8 data[Size];
-            
-            /**
-             * @return const u8* 
-             */
-            const u8* immutable_data() const 
-            { 
-                return data; 
-            }
 
-            /**
-             * @return size_t 
-             */
-            size_t data_length() 
-            { 
-                return Size; 
-            }
-        }; // struct GHashDigest
+            const u8* immutable_data() const { return data; }
+            size_t data_length() { return Size; }
+        }; // struct GHashDigest 
 
-        class GHash final 
-        {
+        class GHash final {
         public:
             using TagType = GHashDigest;
 
-            /**
-             * @tparam N 
-             */
             template<size_t N>
             explicit GHash(const char (&key)[N])
                 : GHash({ key, N })
-            { }
-            
-            /**
-             * @param key 
-             */
-            explicit GHash(const ReadonlyBytes& key)
             {
-                for (size_t i = 0; i < 16; i += 4)
-                    m_key[i / 4] = Mods::convert_between_host_and_big_endian(*(const u32*)(key.offset(i)));
             }
 
-            /**
-             * @return constexpr size_t 
-             */
-            constexpr static size_t digest_size() 
-            { 
-                return TagType::Size; 
+            explicit GHash(ReadonlyBytes key)
+            {
+                VERIFY(key.size() >= 16);
+                for (size_t i = 0; i < 16; i += 4) {
+                    m_key[i / 4] = Mods::convert_between_host_and_big_endian(ByteReader::load32(key.offset(i)));
+                }
             }
 
-            /**
-             * @return String 
-             */
-            String class_name() const 
-            { 
-                return "GHash"; 
-            }
+            constexpr static size_t digest_size() { return TagType::Size; }
 
-            /**
-             * @param aad 
-             * @param cipher 
-             * @return TagType 
-             */
+        #ifndef KERNEL
+            String class_name() const
+            {
+                return "GHash";
+            }
+        #endif
+
             TagType process(ReadonlyBytes aad, ReadonlyBytes cipher);
 
         private:
             inline void transform(ReadonlyBytes, ReadonlyBytes);
 
             u32 m_key[4];
-        }; // class GHash
+        }; // class GHash final
     } // namespace Authentication
-} // namespace Crypto
+} // namespace Crypto 
