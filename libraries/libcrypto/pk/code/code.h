@@ -11,8 +11,8 @@
 
 #pragma once
 
-#include <LibCrypto/Hash/HashFunction.h>
-#include <LibCrypto/Verification.h>
+#include <libcrypto/hash/hashfunction.h>
+#include <libcrypto/verify.h>
 
 namespace Crypto 
 {
