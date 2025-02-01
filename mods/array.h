@@ -11,12 +11,11 @@
 
 #pragma once
 
-#include "iterator.h"
-#include "span.h"
+#include <mods/iterator.h>
+#include <mods/span.h>
 
-namespace Mods 
+namespace Mods
 {
-
     /**
      * @tparam T 
      * @tparam Size 
@@ -24,6 +23,8 @@ namespace Mods
     template<typename T, size_t Size>
     struct Array 
     {
+        using ValueType = T;
+
         /**
          * @return constexpr T const* 
          */
@@ -40,11 +41,17 @@ namespace Mods
             return __data; 
         }
 
+        /**
+         * @return constexpr size_t 
+         */
         [[nodiscard]] constexpr size_t size() const 
         { 
             return Size; 
         }
 
+        /**
+         * @return constexpr Span<T const> 
+         */
         [[nodiscard]] constexpr Span<T const> span() const 
         { 
             return { __data, Size }; 
@@ -81,7 +88,7 @@ namespace Mods
         /**
          * @return constexpr T const& 
          */
-        [[nodiscard]] constexpr T const& front() const 
+        [[nodiscard]] constexpr T const& first() const 
         { 
             return at(0); 
         }
@@ -89,25 +96,21 @@ namespace Mods
         /**
          * @return constexpr T& 
          */
-        [[nodiscard]] constexpr T& front() 
+        [[nodiscard]] constexpr T& first() 
         { 
             return at(0); 
         }
 
-        [[nodiscard]] constexpr T const& back() const requires(Size > 0) 
+        [[nodiscard]] constexpr T const& last() const requires(Size > 0) 
         { 
             return at(Size - 1); 
         }
         
-        [[nodiscard]] constexpr T& back() requires(Size > 0) 
+        [[nodiscard]] constexpr T& last() requires(Size > 0) 
         { 
             return at(Size - 1); 
         }
 
-        /**
-         * @return true 
-         * @return false 
-         */
         [[nodiscard]] constexpr bool is_empty() const 
         { 
             return size() == 0; 
@@ -154,7 +157,7 @@ namespace Mods
         { 
             return ConstIterator::begin(*this); 
         }
-        
+            
         /**
          * @return constexpr Iterator 
          */
@@ -171,16 +174,25 @@ namespace Mods
             return ConstIterator::end(*this); 
         }
 
+        /**
+         * @return constexpr Iterator 
+         */
         [[nodiscard]] constexpr Iterator end() 
         { 
             return Iterator::end(*this); 
         }
 
+        /**
+         * @return Span<T const> 
+         */
         [[nodiscard]] constexpr operator Span<T const>() const 
         { 
             return span(); 
         }
 
+        /**
+         * @return Span<T> 
+         */
         [[nodiscard]] constexpr operator Span<T>() 
         { 
             return span(); 
@@ -192,34 +204,34 @@ namespace Mods
          */
         constexpr size_t fill(T const& value)
         {
-            for (size_t idx = 0; idx < Size; ++idx)
+            for (size_t idx = 0; idx < Size; ++idx) 
                 __data[idx] = value;
 
             return Size;
         }
 
-        [[nodiscard]] constexpr T max() requires(requires(T x, T y) { x < y; })
+        [[nodiscard]] constexpr T max() const requires(requires(T x, T y) { x < y; })
         {
-            static_assert(Size > 0, "max() over doesn't meets the requirement");
+            static_assert(Size > 0, "No values to max() over");
 
             T value = __data[0];
             for (size_t i = 1; i < Size; ++i)
-                value = Mods::max(__data[i], value);
+                value = AK::max(__data[i], value);
             return value;
         }
-
-        [[nodiscard]] constexpr T min() requires(requires(T x, T y) { x > y; })
+    
+        [[nodiscard]] constexpr T min() const requires(requires(T x, T y) { x > y; })
         {
-            static_assert(Size > 0, "min() values doesn't meet the requirement");
+            static_assert(Size > 0, "No values to min() over");
 
             T value = __data[0];
             for (size_t i = 1; i < Size; ++i)
-                value = Mods::min(__data[i], value);
+                value = AK::min(__data[i], value);
             return value;
         }
 
         T __data[Size];
-    }; // struct Array
+    };
 
     /**
      * @tparam T 
@@ -239,10 +251,9 @@ namespace Mods
         template<typename T, size_t... Is>
         constexpr auto integer_sequence_generate_array([[maybe_unused]] T const offset, IntegerSequence<T, Is...>) -> Array<T, sizeof...(Is)>
         {
-            return 
-            { { (offset + Is)... } };
+            return { { (offset + Is)... } };
         }
-    } // namespace Detail
+    } // namespace Detail   
 
     /**
      * @tparam T 
@@ -253,7 +264,7 @@ namespace Mods
     template<typename T, T N>
     constexpr static auto iota_array(T const offset = {})
     {
-        static_assert(N >= T {}, "iota_array: Negative sizes not allowed");
+        static_assert(N >= T {}, "Negative sizes not allowed in iota_array()");
         return Detail::integer_sequence_generate_array<T>(offset, MakeIntegerSequence<T, N>());
     }
 
