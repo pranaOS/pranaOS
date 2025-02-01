@@ -37,6 +37,28 @@ namespace Mods
             return T(this->value() << other);
         }
 
+        template<Integral X>
+        [[nodiscard]] constexpr bool operator==(X other) const
+        {
+            return this->value() == T(other);
+        }
+
+        [[nodiscard]] constexpr bool operator==(ArbitrarySizedEnum<T> const& other)
+        {
+            return this->value() == other.value();
+        }
+
+        constexpr ArbitrarySizedEnum<T>& operator|=(ArbitrarySizedEnum<T> const& other)
+        {
+            this->value() |= other.value();
+            return *this;
+        }
+        
+        constexpr ArbitrarySizedEnum<T>& operator&=(ArbitrarySizedEnum<T> const& other)
+        {
+            this->value() &= other.value();
+            return *this;
+        }
 
     }; // struct ArbitrarySizedEnum : public T
 
