@@ -24,4 +24,4 @@ jobs:
       - name: Deps Installing
         run: |
           sudo apt-get update  
-          sudo apt install build-essential autopoint bison gperf texi2html texinfo qemu nasm xorriso qemu-system-i386
+          sudo apt install build-essential autopoint bison gperf texi2html texinfo nasm xorriso qemu-system-i386
