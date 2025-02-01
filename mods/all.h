@@ -11,12 +11,12 @@
 
 #pragma once
 
-#include "concept.h"
-#include "find.h"
-#include "iterator.h"
+#include <mods/concept.h>
+#include <mods/find.h>
+#include <mods/iterator.h>
 
 namespace Mods 
-{   
+{
     /**
      * @tparam TEndIterator 
      * @tparam TIterator 
@@ -27,7 +27,10 @@ namespace Mods
      * @return false 
      */
     template<typename TEndIterator, IteratorPairWith<TEndIterator> TIterator>
-    constexpr bool all_of(TIterator const& begin, TEndIterator const& end, auto const& predicate)
+    constexpr bool all_of(
+        TIterator const& begin,
+        TEndIterator const& end,
+        auto const& predicate)
     {
         constexpr auto negated_predicate = [](auto const& pred) {
             return [&](auto const& elem) { return !pred(elem); };
