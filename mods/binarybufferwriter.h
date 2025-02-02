@@ -28,6 +28,24 @@ namespace Mods
             : m_target(target)
         {}
 
+        template<typename T>
+        requires(Mods::Detail::IsTriviallyConstructible<T>) T& append_structure()
+        {
+            VERIFY((reinterpret_cast<FlatPtr>(m_target.data()) + offset))
+            T* allocated = new (m_target.data() + m_offset) T;
+            m_offset += sizeof(T);
+            return *allocated;
+        }
+
+        /**
+         * @param num_bytes 
+         */
+        void skip_bytes(size_t num_bytes)
+        {
+            VERIFY(m_offset + num_bytes <= m_target.size());
+            m_offset += num_bytes;
+        }
+
     private:
         Bytes m_target;
         size_t m_offset { 0 };
