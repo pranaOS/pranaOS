@@ -18,6 +18,24 @@ namespace Mods
     template<typename K, typename V, size_t Capacity>
     class BinaryHeap
     {
+    public:
+        /**
+         * @brief Construct a new Binary Heap object
+         * 
+         */
+        BinaryHeap() = default;
+
+        /**
+         * @brief Destroy the Binary Heap object
+         * 
+         */
+        ~BinaryHeap() = default;
+
+        
+        void clear()
+        {
+            m_size = 0;
+        }
     private:
         /**
          * @param index 
@@ -41,6 +59,23 @@ namespace Mods
                 swap(m_elements[index], m_elements[min_child]);
 
                 index = min_child;
+            }
+        }
+
+        /**
+         * @param index 
+         */
+        void heapify_up(size_t index)
+        {
+            while (index != 0) {
+                auto parent = (index - 1) / 2;
+
+                if (m_elements[index].key >= m_elements[paraent].key) {
+                    break;
+                }
+
+                swap(m_elements[index], m_elements[paraent]);
+                index = parent;
             }
         }
 
