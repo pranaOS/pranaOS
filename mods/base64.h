@@ -11,10 +11,10 @@
 
 #pragma once
 
-#include "byte_buffer.h"
-#include "string.h"
-#include "string_view.h"
-#include "error.h"
+#include <mods/byte_buffer.h>
+#include <mods/error.h>
+#include <mods/string.h>
+#include <mods/string_view.h>
 
 namespace Mods
 {
@@ -29,12 +29,10 @@ namespace Mods
     size_t calculate_base64_encoded_length(ReadonlyBytes);
 
     /**
-     * @brief only decodes base64
-     * 
      * @return ErrorOr<ByteBuffer> 
      */
     ErrorOr<ByteBuffer> decode_base64(StringView);
-    
+
     /**
      * @return String 
      */
