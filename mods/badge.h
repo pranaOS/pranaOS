@@ -11,9 +11,8 @@
 
 #pragma once
 
-namespace Mods
+namespace Mods 
 {
-
     /**
      * @tparam T 
      */
@@ -32,12 +31,12 @@ namespace Mods
          * @brief Construct a new Badge object
          * 
          */
-        Badge(const Badge&) = delete;
+        Badge(Badge const&) = delete;
 
         /**
          * @return Badge& 
          */
-        Badge& operator=(const Badge&) = delete;
+        Badge& operator=(Badge const&) = delete;
 
         /**
          * @brief Construct a new Badge object
