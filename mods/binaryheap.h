@@ -31,6 +31,25 @@ namespace Mods
          */
         ~BinaryHeap() = default;
 
+        BinaryHeap(K keys[], V values[], size_t size)
+        {
+            VERIFY(size <= Capacity);
+            m_size = size;
+
+            for (size_t i = 0; i < size; i++) {
+                m_elements[i].key = keys[i];
+                m_elements[i].value = values[i];
+            }
+
+            for(ssize_t i = size / 2; i >= 0; i--) {
+                heapfiy_down(i);
+            }
+        }
+
+        [[nodiscard]] size_t size() const 
+        {
+            return m_size;
+        }
         
         void clear()
         {
