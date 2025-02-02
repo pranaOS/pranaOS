@@ -9,52 +9,47 @@
  * 
  */
 
-#pragma once
-
 #include <mods/array.h>
 #include <mods/base64.h>
-#include <mods/byte_buffer.h>
-#include <mods/string.h>
+#include <mods/charactertypes.h>
 #include <mods/string_builder.h>
-#include <mods/string_view.h>
-#include <mods/vector.h>
 #include <mods/types.h>
+#include <mods/vector.h>
 
-
-namespace Mods {
-
-    static constexpr auto make_alphabet() {
-        Array alphabet = {
-            'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
-            'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
-            'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X',
-            'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f',
-            'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n',
-            'o', 'p', 'q', 'r', 's', 't', 'u', 'v',
-            'w', 'x', 'y', 'z', '0', '1', '2', '3',
-            '4', '5', '6', '7', '8', '9', '+', '/'
-        };
-
-        return alphabet;
-    }
+namespace Mods 
+{
+    static constexpr Array alphabet = {
+        'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
+        'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
+        'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X',
+        'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f',
+        'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n',
+        'o', 'p', 'q', 'r', 's', 't', 'u', 'v',
+        'w', 'x', 'y', 'z', '0', '1', '2', '3',
+        '4', '5', '6', '7', '8', '9', '+', '/'
+    };
 
     /**
-     * @return constexpr auto 
+     * @return consteval 
      */
-    static constexpr auto make_lookup_table() {
-        constexpr auto alphabet = make_alphabet();
-        Array<u8, 256> table {};
+    static consteval auto make_lookup_table()
+    {
+        Array<i16, 256> table;
+        table.fill(-1);
         for (size_t i = 0; i < alphabet.size(); ++i) {
-            table[alphabet[i]] = i;
+            table[alphabet[i]] = static_cast<i16>(i);
         }
         return table;
     }
+
+    static constexpr auto alphabet_lookup_table = make_lookup_table();
 
     /**
      * @param input 
      * @return size_t 
      */
-    size_t calculate_base64_decoded_length(const StringView& input) {
+    size_t calculate_base64_decoded_length(StringView input)
+    {
         return input.length() * 3 / 4;
     }
 
@@ -62,38 +57,54 @@ namespace Mods {
      * @param input 
      * @return size_t 
      */
-    size_t calculate_base64_encoded_length(ReadonlyBytes input) {
+    size_t calculate_base64_encoded_length(ReadonlyBytes input)
+    {
         return ((4 * input.size() / 3) + 3) & ~3;
     }
-    
+
     /**
      * @param input 
-     * @return ByteBuffer 
+     * @return ErrorOr<ByteBuffer> 
      */
-    ByteBuffer decode_base64(const StringView& input) {
-        auto get = [&](const size_t offset, bool* is_padding = nullptr) -> u8 {
-            constexpr auto table = make_lookup_table();
+    ErrorOr<ByteBuffer> decode_base64(StringView input)
+    {
+        auto get = [&](size_t& offset, bool* is_padding, bool& parsed_something) -> ErrorOr<u8> {
+            while (offset < input.length() && is_ascii_space(input[offset]))
+                ++offset;
             if (offset >= input.length())
                 return 0;
-            if (input[offset] == '=') {
-                if (is_padding)
-                    *is_padding = true;
+            auto ch = static_cast<unsigned char>(input[offset++]);
+            parsed_something = true;
+            if (ch == '=') {
+                if (!is_padding)
+                    return Error::from_string_literal("Invalid '=' character outside of padding in base64 data");
+                *is_padding = true;
                 return 0;
             }
-            return table[input[offset]];
+            i16 result = alphabet_lookup_table[ch];
+            if (result < 0)
+                return Error::from_string_literal("Invalid character in base64 data");
+            VERIFY(result < 256);
+            return { result };
         };
 
         Vector<u8> output;
         output.ensure_capacity(calculate_base64_decoded_length(input));
 
-        for (size_t i = 0; i < input.length(); i += 4) {
+        size_t offset = 0;
+        while (offset < input.length()) {
             bool in2_is_padding = false;
             bool in3_is_padding = false;
 
-            const u8 in0 = get(i);
-            const u8 in1 = get(i + 1);
-            const u8 in2 = get(i + 2, &in2_is_padding);
-            const u8 in3 = get(i + 3, &in3_is_padding);
+            bool parsed_something = false;
+
+            const u8 in0 = TRY(get(offset, nullptr, parsed_something));
+            const u8 in1 = TRY(get(offset, nullptr, parsed_something));
+            const u8 in2 = TRY(get(offset, &in2_is_padding, parsed_something));
+            const u8 in3 = TRY(get(offset, &in3_is_padding, parsed_something));
+
+            if (!parsed_something)
+                break;
 
             const u8 out0 = (in0 << 2) | ((in1 >> 4) & 3);
             const u8 out1 = ((in1 & 0xf) << 4) | ((in2 >> 2) & 0xf);
@@ -106,12 +117,16 @@ namespace Mods {
                 output.append(out2);
         }
 
-        return ByteBuffer::copy(output.data(), output.size());
+        return ByteBuffer::copy(output);
     }
 
-    String encode_base64(ReadonlyBytes input) {
-        constexpr auto alphabet = make_alphabet();
-        StringBuilder output(calculate_base64_decoded_length(input));
+    /**
+     * @param input 
+     * @return String 
+     */
+    String encode_base64(ReadonlyBytes input)
+    {
+        StringBuilder output(calculate_base64_encoded_length(input));
 
         auto get = [&](const size_t offset, bool* need_padding = nullptr) -> u8 {
             if (offset >= input.size()) {
@@ -119,6 +134,7 @@ namespace Mods {
                     *need_padding = true;
                 return 0;
             }
+
             return input[offset];
         };
 
@@ -135,10 +151,10 @@ namespace Mods {
             const u8 index2 = ((in1 << 2) | (in2 >> 6)) & 0x3f;
             const u8 index3 = in2 & 0x3f;
 
-            const u8 out0 = alphabet[index0];
-            const u8 out1 = alphabet[index1];
-            const u8 out2 = is_16bit ? '=' : alphabet[index2];
-            const u8 out3 = is_8bit ? '=' : alphabet[index3];
+            char const out0 = alphabet[index0];
+            char const out1 = alphabet[index1];
+            char const out2 = is_16bit ? '=' : alphabet[index2];
+            char const out3 = is_8bit ? '=' : alphabet[index3];
 
             output.append(out0);
             output.append(out1);
@@ -149,4 +165,4 @@ namespace Mods {
         return output.to_string();
     }
 
-}
+} // namespace Mods
