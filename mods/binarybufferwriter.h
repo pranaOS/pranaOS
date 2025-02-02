@@ -16,7 +16,7 @@
 
 namespace Mods
 {
-    class BinaryBufferWriter
+    class BinaryBufferWriter 
     {
     public:
         /**
@@ -26,12 +26,17 @@ namespace Mods
          */
         BinaryBufferWriter(Bytes target)
             : m_target(target)
-        {}
+        {
+        }
 
+        /**
+         * @tparam T 
+         */
         template<typename T>
         requires(Mods::Detail::IsTriviallyConstructible<T>) T& append_structure()
         {
-            VERIFY((reinterpret_cast<FlatPtr>(m_target.data()) + offset))
+            VERIFY((reinterpret_cast<FlatPtr>(m_target.data()) + m_offset) % alignof(T) == 0);
+            VERIFY(m_offset + sizeof(T) <= m_target.size());
             T* allocated = new (m_target.data() + m_offset) T;
             m_offset += sizeof(T);
             return *allocated;
@@ -46,8 +51,16 @@ namespace Mods
             m_offset += num_bytes;
         }
 
+        /**
+         * @return size_t 
+         */
+        [[nodiscard]] size_t current_offset() const
+        {
+            return m_offset;
+        }
+
     private:
         Bytes m_target;
         size_t m_offset { 0 };
-    }; // class BinaryBufferWriter
+    }; // class BinaryBufferWriter 
 } // namespace Mods
