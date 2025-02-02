@@ -11,9 +11,9 @@
 
 #pragma once
 
-#include "concept.h"
-#include "platform.h"
-#include "types.h"
+#include <mods/concept.h>
+#include <mods/platform.h>
+#include <mods/types.h>
 
 namespace Mods
 {
@@ -24,7 +24,7 @@ namespace Mods
     {
         return __atomic_signal_fence(order);
     }
-
+    
     /**
      * @param order 
      */
@@ -33,6 +33,10 @@ namespace Mods
         return __atomic_thread_fence(order);
     }
 
+    /**
+     * @brief full memory barrier
+     * 
+     */
     static inline void full_memory_barrier() noexcept
     {
         atomic_signal_fence(Mods::MemoryOrder::memory_order_acq_rel);
@@ -51,7 +55,7 @@ namespace Mods
     {
         return __atomic_exchange_n(var, desired, order);
     }
-
+    
     /**
      * @tparam T 
      * @tparam V 
@@ -93,10 +97,12 @@ namespace Mods
     {
         if (order == memory_order_acq_rel || order == memory_order_release)
             return __atomic_compare_exchange_n(var, &expected, desired, false, memory_order_release, memory_order_acquire);
+
         return __atomic_compare_exchange_n(var, &expected, desired, false, order, order);
     }
 
     /**
+
      * @tparam T 
      * @tparam V 
      * @param var 
@@ -111,6 +117,7 @@ namespace Mods
     {
         if (order == memory_order_acq_rel || order == memory_order_release)
             return __atomic_compare_exchange_n(var, &expected, desired, false, memory_order_release, memory_order_acquire);
+
         return __atomic_compare_exchange_n(var, &expected, desired, false, order, order);
     }
 
@@ -128,6 +135,7 @@ namespace Mods
     {
         if (order == memory_order_acq_rel || order == memory_order_release)
             return __atomic_compare_exchange_n(const_cast<V**>(var), &expected, nullptr, false, memory_order_release, memory_order_acquire);
+
         return __atomic_compare_exchange_n(const_cast<V**>(var), &expected, nullptr, false, order, order);
     }
 
@@ -231,7 +239,7 @@ namespace Mods
     static inline void atomic_store(volatile T* var, T desired, MemoryOrder order = memory_order_seq_cst) noexcept
     {
         __atomic_store_n(var, desired, order);
-    }
+    }   
 
     /**
      * @tparam T 
@@ -277,6 +285,7 @@ namespace Mods
     template<typename T, MemoryOrder DefaultMemoryOrder = Mods::MemoryOrder::memory_order_seq_cst>
     class Atomic 
     {
+        static_assert(IsFundamental<T> | IsEnum<T>, "Atomic doesn't support non-primitive types, because it relies on compiler intrinsics. If you put non-primitives into it, you'll get linker errors like \"undefined reference to __atomic_store\".");
         T m_value { 0 };
 
     public:
@@ -289,28 +298,24 @@ namespace Mods
         /**
          * @return Atomic& 
          */
-        Atomic& operator=(const Atomic&) volatile = delete;
+        Atomic& operator=(Atomic const&) volatile = delete;
 
         /**
-         * @return * Atomic& 
+         * @return Atomic& 
          */
         Atomic& operator=(Atomic&&) volatile = delete;
 
-        /**
-         * @brief Construct a new Atomic object
-         * 
-         */
-        Atomic(const Atomic&) = delete;
-
-        /**
-         * @brief Construct a new Atomic object
-         * 
-         */
+        Atomic(Atomic const&) = delete;
+        
         Atomic(Atomic&&) = delete;
 
+        /**
+         * @return val
+         */
         constexpr Atomic(T val) noexcept
             : m_value(val)
-        { }
+        {
+        }
 
         /**
          * @return volatile* 
@@ -330,6 +335,7 @@ namespace Mods
             alignas(T) u8 buffer[sizeof(T)];
             T* ret = reinterpret_cast<T*>(buffer);
             __atomic_exchange(&m_value, &desired, ret, order);
+
             return *ret;
         }
 
@@ -344,6 +350,7 @@ namespace Mods
         {
             if (order == memory_order_acq_rel || order == memory_order_release)
                 return __atomic_compare_exchange(&m_value, &expected, &desired, false, memory_order_release, memory_order_acquire);
+
             return __atomic_compare_exchange(&m_value, &expected, &desired, false, order, order);
         }
 
@@ -364,6 +371,7 @@ namespace Mods
             alignas(T) u8 buffer[sizeof(T)];
             T* ret = reinterpret_cast<T*>(buffer);
             __atomic_load(&m_value, ret, order);
+
             return *ret;
         }
 
@@ -394,8 +402,8 @@ namespace Mods
         {
             return __atomic_is_lock_free(sizeof(m_value), &m_value);
         }
-    }; // class Atomic
-    
+    }; // class Atomic 
+
     /**
      * @tparam T 
      * @tparam DefaultMemoryOrder 
@@ -415,7 +423,7 @@ namespace Mods
         /**
          * @return Atomic& 
          */
-        Atomic& operator=(const Atomic&) volatile = delete;
+        Atomic& operator=(Atomic const&) volatile = delete;
 
         /**
          * @return Atomic& 
@@ -426,7 +434,7 @@ namespace Mods
          * @brief Construct a new Atomic object
          * 
          */
-        Atomic(const Atomic&) = delete;
+        Atomic(Atomic const&) = delete;
 
         /**
          * @brief Construct a new Atomic object
@@ -436,7 +444,8 @@ namespace Mods
 
         constexpr Atomic(T val) noexcept
             : m_value(val)
-        { }
+        {
+        }
 
         /**
          * @return volatile* 
@@ -467,6 +476,7 @@ namespace Mods
         {
             if (order == memory_order_acq_rel || order == memory_order_release)
                 return __atomic_compare_exchange_n(&m_value, &expected, desired, false, memory_order_release, memory_order_acquire);
+
             return __atomic_compare_exchange_n(&m_value, &expected, desired, false, order, order);
         }
 
@@ -476,7 +486,7 @@ namespace Mods
         ALWAYS_INLINE T operator++() volatile noexcept
         {
             return fetch_add(1) + 1;
-        }
+        }   
 
         /**
          * @return ALWAYS_INLINE 
@@ -521,6 +531,10 @@ namespace Mods
             return fetch_sub(1);
         }
 
+        /**
+         * @param val 
+         * @return ALWAYS_INLINE 
+         */
         ALWAYS_INLINE T operator-=(T val) volatile noexcept
         {
             return fetch_sub(val) - val;
@@ -592,14 +606,14 @@ namespace Mods
         {
             return __atomic_fetch_xor(&m_value, val, order);
         }
-        
+
         /**
          * @return T 
          */
         ALWAYS_INLINE operator T() const volatile noexcept
         {
             return load();
-        }
+        }   
 
         /**
          * @param order 
@@ -638,7 +652,7 @@ namespace Mods
             return __atomic_is_lock_free(sizeof(m_value), &m_value);
         }
     }; // class Atomic<T, DefaultMemoryOrder> 
-
+    
     /**
      * @tparam T 
      * @tparam DefaultMemoryOrder 
@@ -658,7 +672,7 @@ namespace Mods
         /**
          * @return Atomic& 
          */
-        Atomic& operator=(const Atomic&) volatile = delete;
+        Atomic& operator=(Atomic const&) volatile = delete;
 
         /**
          * @return Atomic& 
@@ -669,7 +683,7 @@ namespace Mods
          * @brief Construct a new Atomic object
          * 
          */
-        Atomic(const Atomic&) = delete;
+        Atomic(Atomic const&) = delete;
 
         /**
          * @brief Construct a new Atomic object
@@ -677,9 +691,14 @@ namespace Mods
          */
         Atomic(Atomic&&) = delete;
 
+        /**
+         * @return val
+         * 
+         */
         constexpr Atomic(T* val) noexcept
             : m_value(val)
-        { }
+        {
+        }
 
         /**
          * @return volatile** 
@@ -688,7 +707,7 @@ namespace Mods
         {
             return &m_value;
         }
-        
+
         /**
          * @param desired 
          * @param order 
@@ -710,14 +729,21 @@ namespace Mods
         {
             if (order == memory_order_acq_rel || order == memory_order_release)
                 return __atomic_compare_exchange_n(&m_value, &expected, desired, false, memory_order_release, memory_order_acquire);
+
             return __atomic_compare_exchange_n(&m_value, &expected, desired, false, order, order);
         }
 
+        /**
+         * @return T* 
+         */
         T* operator++() volatile noexcept
         {
             return fetch_add(1) + 1;
         }
 
+        /**
+         * @return T* 
+         */
         T* operator++(int) volatile noexcept
         {
             return fetch_add(1);
@@ -742,11 +768,17 @@ namespace Mods
             return __atomic_fetch_add(&m_value, val * sizeof(*m_value), order);
         }
 
+        /**
+         * @return T* 
+         */
         T* operator--() volatile noexcept
         {
             return fetch_sub(1) - 1;
         }
 
+        /**
+         * @return T* 
+         */
         T* operator--(int) volatile noexcept
         {
             return fetch_sub(1);
@@ -796,7 +828,7 @@ namespace Mods
         {
             store(desired);
             return desired;
-        }
+        }   
 
         /**
          * @param desired 
@@ -814,9 +846,8 @@ namespace Mods
         bool is_lock_free() const volatile noexcept
         {
             return __atomic_is_lock_free(sizeof(m_value), &m_value);
-        }
+        } 
     }; // class Atomic<T*, DefaultMemoryOrder> 
-
 } // namespace Mods
 
 using Mods::Atomic;
