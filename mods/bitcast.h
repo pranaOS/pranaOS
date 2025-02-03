@@ -33,6 +33,6 @@ namespace Mods
     #endif
     }
 
-}
+} // namspace Mods
 
 using Mods::bit_cast;
