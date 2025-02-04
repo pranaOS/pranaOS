@@ -14,9 +14,10 @@
 #include <mods/concept.h>
 #include <mods/math.h>
 
-#ifndef __cplusplus
-#define COMPLEX_NOEXCEPT noexcept
-#endif
+#ifdef __cplusplus
+#    if __cplusplus >= 201103L
+#        define COMPLEX_NOEXCEPT noexcept
+#    endif
 
 namespace Mods
 {
@@ -52,6 +53,32 @@ namespace Mods
         constexpr T magnitude_squared() const COMPLEX_NOEXCEPT
         {
             return m_real * m_real + m_imag;
+        }
+
+        constexpr T magnitude() const COMPLEX_NOEXCEPT
+        {
+            return hypot(m_real, m_imag);
+        }
+
+        constexpr T phase() const COMPLEX_NOEXCEPT
+        {
+            return atan2(m_imag, m_real);
+        }
+
+        /**
+         * @tparam U 
+         * @tparam V 
+         * @param magnitude 
+         * @param phase 
+         * @return constexpr Complex<T> 
+         */
+        template<Mods::Concepts::Arithmetic U, Mods::Concepts::Arithmetic V>
+        static constexpr Complex<T> from_polar(U magnitude, V phase)
+        {
+            V s, c;
+            sincos(phase, s, c);
+
+            return Complex<T>(magnitude * c, magnitude * s);
         }
 
     private:
