@@ -4,7 +4,7 @@
  * @brief Concept
  * @version 6.0
  * 
- * @copyright Copyright (c) 2021-2024 Patrick, pranaOS Developers, Krisna Pranav
+ * @copyright Copyright (c) 2021-2025 Patrick, pranaOS Developers, Krisna Pranav
  * 
  */
 
