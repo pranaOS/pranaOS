@@ -19,6 +19,13 @@
 #include <mods/kmalloc.h>
 
 namespace Mods
-{
+{   
+    template<typename StreamType, size_t Size = 4096>
+    class Buffered;
 
+    template<typename StreamType, size_t Size>
+    requires(IsBaseOf<InputStream, StreamType>) class Buffered<StreamType, Size> final : public InputStream 
+    {
+        MOD_MAKE_NONCOPYABLE(Buffered);
+    };
 } // namespace Mods
