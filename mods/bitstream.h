@@ -74,7 +74,49 @@ namespace Mods
 
     class OutputBitStream final : public OutputStream
     {
-        
+    public:
+        /**
+         * @param bytes 
+         * @return size_t 
+         */
+        size_t write(ReadonlyBytes bytes) override
+        {
+            if (has_any_error()) 
+                return 0;
+            
+            align_to_byte_boundary();
+
+            if (has_fatal_error()) 
+                return 0;
+            
+            return m_stream.write(bytes);
+        }
+
+        bool write_or_error(ReadonlyBytes bytes) override
+        {
+            if (write(bytes) < bytes.size()) {
+                set_fatal_error();
+                return false;
+            }
+
+            return true;
+        }
+
+        void align_to_byte_boundary()
+        {
+            if (m_next_byte.m_has_value()) {
+                if (!m_stream.write_or_error(ReadonlyBytes)) {
+                    set_fatal_error();
+                }
+
+                m_next_byte.clear();
+            }
+        }
+
+        size_t bit_offset() const
+        {
+            return m_bit_offset;
+        }
     private:
         Optional<u8> m_next_byte;
         size_t m_bit_offset { 0 };
