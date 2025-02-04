@@ -10,32 +10,75 @@
 
 #pragma once
 
-#include "forward.h"
-#include "stdlibextra.h"
-#include "iteration.h"
+#include <mods/forward.h>
+#include <mods/iterationdecision.h>
+#include <mods/stdlibextra.h>
 
 namespace Mods::Concepts 
 {
+
+    /**
+     * @tparam T 
+     */
     template<typename T>
     concept Integral = IsIntegral<T>;
 
+    /**
+     * @tparam T 
+     */
     template<typename T>
     concept FloatingPoint = IsFloatingPoint<T>;
 
+    /**
+     * @tparam T 
+     */
+    template<typename T>
+    concept Fundamental = IsFundamental<T>;
+
+    /**
+     * @tparam T 
+     */
     template<typename T>
     concept Arithmetic = IsArithmetic<T>;
 
+    /**
+     * @tparam T 
+     */
     template<typename T>
     concept Signed = IsSigned<T>;
 
+    /**
+     * @tparam T 
+     */
     template<typename T>
     concept Unsigned = IsUnsigned<T>;
 
+    /**
+     * @tparam T 
+     */
     template<typename T>
     concept Enum = IsEnum<T>;
 
+    /**
+     * @tparam T 
+     * @tparam U 
+     */
     template<typename T, typename U>
     concept SameAs = IsSame<T, U>;
+
+    /**
+     * @tparam U 
+     * @tparam Ts 
+     */
+    template<typename U, typename... Ts>
+    concept OneOf = IsOneOf<U, Ts...>;
+
+    /**
+     * @tparam U 
+     * @tparam Ts 
+     */
+    template<typename U, typename... Ts>
+    concept OneOfIgnoringCV = IsOneOfIgnoringCV<U, Ts...>;
 
     /**
      * @tparam T 
@@ -44,6 +87,9 @@ namespace Mods::Concepts
     template<typename T, template<typename...> typename S>
     concept SpecializationOf = IsSpecializationOf<T, S>;
 
+    /**
+     * @tparam T 
+     */
     template<typename T>
     concept AnyString = Detail::IsConstructible<StringView, T>;
 
@@ -129,17 +175,19 @@ namespace Mods::Concepts
     {
         { declval<T>().begin() } -> IteratorPairWith<decltype(declval<T>().end())>;
     };
-
-} // namespace Mods::Concepts
+} // namespace Mods
 
 using Mods::Concepts::Arithmetic;
 using Mods::Concepts::ArrayLike;
 using Mods::Concepts::Enum;
 using Mods::Concepts::FloatingPoint;
+using Mods::Concepts::Fundamental;
 using Mods::Concepts::Integral;
 using Mods::Concepts::IterableContainer;
 using Mods::Concepts::IteratorFunction;
 using Mods::Concepts::IteratorPairWith;
+using Mods::Concepts::OneOf;
+using Mods::Concepts::OneOfIgnoringCV;
 using Mods::Concepts::SameAs;
 using Mods::Concepts::Signed;
 using Mods::Concepts::SpecializationOf;
