@@ -28,6 +28,18 @@ namespace Mods
     {
         MOD_MAKE_NONCOPYABLE(Buffered);
     public:
+        template<typename... Parameters>
+        explicit Buffered(Parameters&&... parameters)
+            : m_stream(forward<Parameters>(parameters)...)
+        {}
+
+        Buffered(Buffered&& other)
+            : m_stream(move(other.m_stream))
+        {
+            other.buffer().copy_to(buffer());
+            m_buffered = exchange(other.m_buffered, 0);
+        }
+
         size_t read(Bytes bytes) override
         {
             if (has_any_error())
