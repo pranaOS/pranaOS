@@ -27,7 +27,42 @@ namespace Mods
     requires(IsBaseOf<InputStream, StreamType>) class Buffered<StreamType, Size> final : public InputStream 
     {
         MOD_MAKE_NONCOPYABLE(Buffered);
-    public: 
+    public:
+        size_t read(Bytes bytes) override
+        {
+            if (has_any_error())
+                return 0;
+
+            auto nread = buffer().trim(m_buffered).copy_trimmed_to(bytes);
+
+            m_buffered -= nread;
+
+            if (m_buffered > 0)
+                buffer().slice(nread, m_buffered).copy_to(buffer());
+
+            if (nread < bytes.size()) {
+                nread += m_stream.read(bytes.slice(nread));
+
+                m_buffered = m_stream.read(buffer());
+            }
+
+            return nread;
+        }
+
+        /**
+         * @param bytes 
+         * @return true 
+         * @return false 
+         */
+        bool read_or_error(Bytes bytes) override
+        {
+            if (read(bytes) < bytes.size()) {
+                set_fatal_error();
+                return false;
+            }
+
+            return true;
+        }
 
         bool unreliable_eof() const override 
         { 
