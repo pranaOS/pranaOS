@@ -27,5 +27,24 @@ namespace Mods
     requires(IsBaseOf<InputStream, StreamType>) class Buffered<StreamType, Size> final : public InputStream 
     {
         MOD_MAKE_NONCOPYABLE(Buffered);
-    };
+    public:
+        size_t buffered() const
+        {
+            return m_buffered;
+        }
+
+        StreamType& underlying_stream() 
+        {
+            return m_stream;
+        }
+    private:
+        Bytes buffer() const
+        {
+            return { m_buffer, Size };
+        }
+
+        mutable StreamType m_stream;
+        mutable u8 m_buffer[Size];
+        mutable size_t m_buffered { 0 };
+    }; // class Buffered<StreamType, Size> final : public InputStream 
 } // namespace Mods
