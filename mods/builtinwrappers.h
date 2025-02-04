@@ -30,6 +30,7 @@ inline constexpr int popcount(IntType value)
     if constexpr (sizeof(IntType) == sizeof(unsigned long long))
         return __builtin_popcountll(value);
     VERIFY_NOT_REACHED();
+    
 #else
     int ones = 0;
     for (size_t i = 0; i < 8 * sizeof(IntType); ++i) {
@@ -58,6 +59,7 @@ inline constexpr int count_trailing_zeroes(IntType value)
     if constexpr (sizeof(IntType) == sizeof(unsigned long long))
         return __builtin_ctzll(value);
     VERIFY_NOT_REACHED();
+
 #else
     for (size_t i = 0; i < 8 * sizeof(IntType); ++i) {
         if ((val >> i) & 1) {
@@ -78,6 +80,7 @@ inline constexpr int count_trailing_zeroes_safe(IntType value)
 {
     if (value == 0)
         return 8 * sizeof(IntType);
+
     return count_trailing_zeroes(value);
 }
 
@@ -104,6 +107,7 @@ inline constexpr int count_leading_zeroes(IntType value)
             return i;
         }
     }
+
     return 8 * sizeof(IntType);
 #endif
 }
