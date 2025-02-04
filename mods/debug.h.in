@@ -5,7 +5,7 @@
  * @version 6.0
  * @date 2024-10-26
  *
- * @copyright Copyright (c) 2021-2024 pranaOS Developers, Krisna Pranav
+ * @copyright Copyright (c) 2021-2025 pranaOS Developers, Krisna Pranav
  *
  */
 
@@ -29,6 +29,10 @@
 
 #ifndef CALLBACK_MACHINE_DEBUG
 #cmakedefine01 CALLBACK_MACHINE_DEBUG
+#endif
+
+#ifndef CANVAS_RENDERING_CONTEXT_2D_DEBUG
+#cmakedefine01 CANVAS_RENDERING_CONTEXT_2D_DEBUG
 #endif
 
 #ifndef COMPOSE_DEBUG
@@ -319,8 +323,8 @@
 #cmakedefine01 OCCLUSIONS_DEBUG
 #endif
 
-#ifndef PARSER_DEBUG
-#cmakedefine01 PARSER_DEBUG
+#ifndef HTML_PARSER_DEBUG
+#cmakedefine01 HTML_PARSER_DEBUG
 #endif
 
 #ifndef PATH_DEBUG
@@ -385,6 +389,10 @@
 
 #ifndef SH_LANGUAGE_SERVER_DEBUG
 #cmakedefine01 SH_LANGUAGE_SERVER_DEBUG
+#endif
+
+#ifndef SHARED_QUEUE_DEBUG
+#cmakedefine01 SHARED_QUEUE_DEBUG
 #endif
 
 #ifndef SHELL_JOB_DEBUG
@@ -459,6 +467,10 @@
 #cmakedefine01 URL_PARSER_DEBUG
 #endif
 
+#ifndef UTF8_DEBUG
+#cmakedefine01 UTF8_DEBUG
+#endif
+
 #ifndef WASM_BINPARSER_DEBUG
 #cmakedefine01 WASM_BINPARSER_DEBUG
 #endif
@@ -493,4 +505,8 @@
 
 #ifndef WSSCREEN_DEBUG
 #cmakedefine01 WSSCREEN_DEBUG
+#endif
+
+#ifndef XML_PARSER_DEBUG
+#cmakedefine01 XML_PARSER_DEBUG
 #endif
