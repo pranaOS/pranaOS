@@ -12,7 +12,7 @@
 #include <mods/array.h>
 #include <mods/base64.h>
 #include <mods/charactertypes.h>
-#include <mods/string_builder.h>
+#include <mods/stringbuilder.h>
 #include <mods/types.h>
 #include <mods/vector.h>
 
