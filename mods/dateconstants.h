@@ -12,7 +12,7 @@
 #pragma once
 
 #include <mods/array.h>
-#include <mods/string_view.h>
+#include <mods/stringview.h>
 
 namespace Mods
 {
