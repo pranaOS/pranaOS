@@ -68,7 +68,69 @@ namespace Mods
             
             return FixedArray<T>(size, elements);
         }
-        
+
+        /**
+         * @param index 
+         * @return T& 
+         */
+        T& at(size_t index)
+        {
+            VERIFY(index < m_size);
+            return m_elements[index];
+        }
+
+        /**
+         * @param index 
+         * @return T const& 
+         */
+        T const& at(size_t index) const
+        {
+            VERIFY(index < m_size);
+            return m_elements[index];
+        }
+
+        /**
+         * @param index 
+         * @return T& 
+         */
+        T& operator[](size_t index)
+        {
+            return at(index);
+            
+        }
+
+        /**
+         * @param index 
+         * @return T const& 
+         */
+        T const& operator[](size_t index) const
+        {
+            return at(index);
+        }
+
+        /**
+         * @param value 
+         * @return true 
+         * @return false 
+         */
+        bool contains_slow(T const& value) const
+        {
+            for (size_t i = 0; i < m_size; ++i) {
+                if (m_elements[i] == value)
+                    return true;
+            }
+
+            return false
+        }
+
+        /**
+         * @param other 
+         */
+        void swap(FixedArray<T>& other)
+        {
+            ::swap(m_size, other.m_size);
+            ::swap(m_elements, other.m_elements);
+        }
     private:
         /**
          * @brief Construct a new Fixed Array object
