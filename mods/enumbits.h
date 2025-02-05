@@ -13,13 +13,13 @@
 
 #include "mods/stdlibextra.h"
 
-#define MOD_ENUM_BITWISE_OPERATORS(Enum) \
-    _MOD_ENUM_BITWISE_OPERATORS_INTERNAL(Enum, )
+#define MODS_ENUM_BITWISE_OPERATORS(Enum) \
+    _MODS_ENUM_BITWISE_OPERATORS_INTERNAL(Enum, )
 
-#define MOD_ENUM_BITWISE_FRIEND_OPERATORS(Enum) \
-    _MOD_ENUM_BITWISE_OPERATORS_INTERNAL(Enum, friend)
+#define MODS_ENUM_BITWISE_FRIEND_OPERATORS(Enum) \
+    _MODS_ENUM_BITWISE_OPERATORS_INTERNAL(Enum, friend)
 
-#define _MOD_ENUM_BITWISE_OPERATORS_INTERNAL(Enum, Prefix)                  \
+#define _MODS_ENUM_BITWISE_OPERATORS_INTERNAL(Enum, Prefix)                  \
                                                                            \
     [[nodiscard]] Prefix constexpr Enum operator|(Enum lhs, Enum rhs)      \
     {                                                                      \
