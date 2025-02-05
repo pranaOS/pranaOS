@@ -11,39 +11,66 @@
 
 #pragma once
 
-#include "forward.h"
-#include "platform.h"
+#include <mods/format.h>
+#include <mods/forward.h>
+#include <mods/platform.h>
 
-namespace Mods {
-    
-    /** 
-     * @tparam T 
-     * @param value 
-     * @return ALWAYS_INLINE constexpr 
-     */
-    template<typename T>
-    ALWAYS_INLINE constexpr T convert_between_host_and_little_endian(T value) {
-    #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-        return value;
-    #elif __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
-        if constexpr (sizeof(T) == 8)
-            return __builtin_bswap64(value);
-        if constexpr (sizeof(T) == 4)
-            return __builtin_bswap32(value);
-        if constexpr (sizeof(T) == 2)
-            return __builtin_bswap16(value);
-        if constexpr (sizeof(T) == 1)
-            return value;
-    #endif
-    }
-    
+#if defined(MODS_OS_MACOS)
+#    include <libkern/OSByteOrder.h>
+#    include <machine/endian.h>
+
+#    define htobe16(x) OSSwapHostToBigInt16(x)
+#    define htole16(x) OSSwapHostToLittleInt16(x)
+#    define be16toh(x) OSSwapBigToHostInt16(x)
+#    define le16toh(x) OSSwapLittleToHostInt16(x)
+
+#    define htobe32(x) OSSwapHostToBigInt32(x)
+#    define htole32(x) OSSwapHostToLittleInt32(x)
+#    define be32toh(x) OSSwapBigToHostInt32(x)
+#    define le32toh(x) OSSwapLittleToHostInt32(x)
+
+#    define htobe64(x) OSSwapHostToBigInt64(x)
+#    define htole64(x) OSSwapHostToLittleInt64(x)
+#    define be64toh(x) OSSwapBigToHostInt64(x)
+#    define le64toh(x) OSSwapLittleToHostInt64(x)
+
+#    define __BIG_ENDIAN BIG_ENDIAN
+#    define __LITTLE_ENDIAN LITTLE_ENDIAN
+#    define __BYTE_ORDER BYTE_ORDER
+#endif
+
+namespace Mods 
+{
     /**
      * @tparam T 
      * @param value 
      * @return ALWAYS_INLINE constexpr 
      */
     template<typename T>
-    ALWAYS_INLINE constexpr T convert_between_host_and_big_endian(T value) {
+    ALWAYS_INLINE constexpr T convert_between_host_and_little_endian(T value)
+    {
+    #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+        return value;
+    #elif __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
+        if constexpr (sizeof(T) == 8)
+            return __builtin_bswap64(value);
+        if constexpr (sizeof(T) == 4)
+            return __builtin_bswap32(value);
+        if constexpr (sizeof(T) == 2)
+            return __builtin_bswap16(value);
+        if constexpr (sizeof(T) == 1)
+            return value;
+    #endif
+    }
+
+    /**
+     * @tparam T 
+     * @param value 
+     * @return ALWAYS_INLINE constexpr 
+     */
+    template<typename T>
+    ALWAYS_INLINE constexpr T convert_between_host_and_big_endian(T value)
+    {
     #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
         if constexpr (sizeof(T) == 8)
             return __builtin_bswap64(value);
@@ -57,17 +84,21 @@ namespace Mods {
         return value;
     #endif
     }
-
+    
     /**
      * @tparam T 
      * @param value 
      * @return ALWAYS_INLINE 
      */
     template<typename T>
-    ALWAYS_INLINE T convert_between_host_and_network_endian(T value) {
+    ALWAYS_INLINE T convert_between_host_and_network_endian(T value)
+    {
         return convert_between_host_and_big_endian(value);
     }
 
+    /**
+     * @tparam T 
+     */
     template<typename T>
     class LittleEndian;
 
@@ -85,10 +116,13 @@ namespace Mods {
     template<typename T>
     OutputStream& operator<<(OutputStream&, LittleEndian<T>);
 
+    /**
+     * @tparam T 
+     */
     template<typename T>
-    class [[gnu::packed]] LittleEndian {
+    class [[gnu::packed]] LittleEndian 
+    {
     public:
-
         /**
          * @return InputStream& 
          */
@@ -97,25 +131,30 @@ namespace Mods {
         /**
          * @return OutputStream& 
          */
-        friend OutputStream& operator<<<T>(OutputStream&, LittleEndian<T>);
+        friend OutputStream& operator<< <T>(OutputStream&, LittleEndian<T>);
 
-        constexpr LittleEndian() {}
+        constexpr LittleEndian() = default;
 
-        constexpr LittleEndian(T value) : m_value(convert_between_host_and_little_endian(value))
+        constexpr LittleEndian(T value)
+            : m_value(convert_between_host_and_little_endian(value))
         {
         }
 
         /**
          * @return T 
          */
-        constexpr operator T() const { 
+        constexpr operator T() const 
+        { 
             return convert_between_host_and_little_endian(m_value); 
         }
 
     private:
         T m_value { 0 };
-    };
+    }; // class [[gnu::packed]] LittleEndian
 
+    /**
+     * @tparam T 
+     */
     template<typename T>
     class BigEndian;
 
@@ -132,9 +171,13 @@ namespace Mods {
      */
     template<typename T>
     OutputStream& operator<<(OutputStream&, BigEndian<T>);
-
+    
+    /**
+     * @tparam T 
+     */
     template<typename T>
-    class [[gnu::packed]] BigEndian {
+    class [[gnu::packed]] BigEndian 
+    {
     public:
 
         /**
@@ -145,29 +188,48 @@ namespace Mods {
         /**
          * @return OutputStream& 
          */
-        friend OutputStream& operator<<<T>(OutputStream&, BigEndian<T>);
+        friend OutputStream& operator<< <T>(OutputStream&, BigEndian<T>);
 
         constexpr BigEndian() = default;
 
-        constexpr BigEndian(T value) : m_value(convert_between_host_and_big_endian(value))
+        constexpr BigEndian(T value)
+            : m_value(convert_between_host_and_big_endian(value))
         {
         }
 
-        /**
-         * @return T 
-         */
-        constexpr operator T() const { 
+        constexpr operator T() const 
+        { 
             return convert_between_host_and_big_endian(m_value); 
         }
 
     private:
         T m_value { 0 };
-    };
+    }; // class [[gnu::packed]] BigEndian 
 
+    /**
+     * @tparam T 
+     */
     template<typename T>
     using NetworkOrdered = BigEndian<T>;
 
-}
+    /**
+     * @brief Construct a new requires object
+     * 
+     * @tparam T 
+     */
+    template<typename T>
+    requires(HasFormatter<T>) struct Formatter<LittleEndian<T>> : Formatter<T> {
+    };
+
+    /**
+     * @brief Construct a new requires object
+     * 
+     * @tparam T 
+     */
+    template<typename T>
+    requires(HasFormatter<T>) struct Formatter<BigEndian<T>> : Formatter<T> {
+    };
+} // namespace Mods
 
 using Mods::BigEndian;
 using Mods::LittleEndian;
