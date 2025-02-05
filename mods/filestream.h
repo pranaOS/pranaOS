@@ -95,4 +95,57 @@ namespace Mods
         FILE* m_file { nullptr };
         bool m_owned { false };
     };  // class InputFileStream : public InputStream
+
+    class OutputFileStream : public OutputStream
+    {
+    public:
+        explicit OutputFileStream(int fd)
+            : m_file(fdopen(fd, "w"))
+            , m_owned(true)
+        {
+            if (!m_file)
+                set_fatal_error();
+        }
+
+        /**
+         * @brief Construct a new Output File Stream object
+         * 
+         * @param fp 
+         */
+        explicit OutputFileStream(FILE* fp)
+            : m_file(fp)
+        {
+            if (!m_file)
+                set_fatal_error();
+        }
+
+        /**
+         * @brief Destroy the Output File Stream object
+         * 
+         */
+        ~OutputFileStream()
+        {
+            if (m_file) {
+                fflush(m_file);
+
+                if (m_owned)
+                    fclose(m_file);
+            }
+        }
+
+        /**
+         * @param bytes 
+         * @return size_t 
+         */
+        size_t write(ReadonlyBytes bytes) override
+        {
+            auto nwritten = fwrite(bytes.data(), sizeof(u8));
+            m_bytes_write += nwritten;
+            return nwritten;
+        }
+    private:
+        FILE* m_file { nullptr };
+        size_t m_bytes_write { 0 };
+        bool m_owned { false };
+    }; // class OutputFileStream : public OutputStream
 } // namespace Mods
