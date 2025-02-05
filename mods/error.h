@@ -12,9 +12,9 @@
 #pragma once
 
 #include <mods/optional.h>
+#include <mods/stringview.h>
 #include <mods/try.h>
 #include <mods/variant.h>
-#include <mods/string_view.h>
 
 #if defined(__pranaos__) && defined(KERNEL)
 #    include <libc/errno_codes.h>
@@ -23,7 +23,7 @@
 #    include <string.h>
 #endif
 
-namespace Mods
+namespace Mods 
 {
     class Error 
     {
@@ -53,7 +53,7 @@ namespace Mods
          */
         static Error from_string_literal(StringView string_literal) 
         { 
-            return Error(string_literal); 
+            return Error(string_literal);
         }
 
         /**
@@ -65,12 +65,18 @@ namespace Mods
             return m_code != 0; 
         }
 
-
+        /**
+         * @return true 
+         * @return false 
+         */
         bool is_syscall() const 
         { 
             return m_syscall; 
         }
 
+        /**
+         * @return int 
+         */
         int code() const 
         { 
             return m_code; 
@@ -112,7 +118,7 @@ namespace Mods
          * @param syscall_name 
          * @param rc 
          */
-        Error(StringView syscall_name, int rc)
+        Error(StringView syscall_name, int rc)  
             : m_code(-rc)
             , m_string_literal(syscall_name)
             , m_syscall(true)
@@ -120,11 +126,9 @@ namespace Mods
         }
 
         int m_code { 0 };
-
         StringView m_string_literal;
-
         bool m_syscall { false };
-    }; // class Error 
+    }; // class Error
 
     /**
      * @tparam T 
@@ -147,6 +151,8 @@ namespace Mods
 
     #ifdef __pranaos__
         /**
+         * @brief Construct a new Error Or object
+         * 
          * @param code 
          */
         ErrorOr(ErrnoCode code)
@@ -194,7 +200,7 @@ namespace Mods
         bool is_error() const 
         { 
             return this->template has<ErrorType>(); 
-        }
+        }   
 
         /**
          * @return T 
@@ -211,7 +217,7 @@ namespace Mods
         { 
             return move(error()); 
         }
-
+        
         /**
          * @return T 
          */
@@ -254,21 +260,30 @@ namespace Mods
         }
     #endif
 
+        /**
+         * @brief Construct a new Error Or object
+         * 
+         */
         ErrorOr() = default;
 
         /**
-         * @brief Construct a new ErrorOr object
+         * @brief Construct a new Error Or object
          * 
          * @param other 
          */
         ErrorOr(ErrorOr&& other) = default;
 
         /**
-         * @brief Construct a new ErrorOr object
+         * @brief Construct a new Error Or object
          * 
          * @param other 
          */
         ErrorOr(ErrorOr const& other) = default;
+
+        /**
+         * @brief Destroy the Error Or object
+         * 
+         */
         ~ErrorOr() = default;
 
         /**
@@ -312,8 +327,7 @@ namespace Mods
 
     private:
         Optional<ErrorType> m_error;
-    }; // class [[nodiscard]] ErrorOr<void, ErrorType> 
-
+    }; // class [[nodiscard]] ErrorOr final : public Variant<T, ErrorType>  
 } // namespace Mods
 
 using Mods::Error;
