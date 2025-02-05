@@ -11,25 +11,23 @@
 
 #pragma once
 
-#include <mods/checkformatstring.h>
-#include <mods/any.h>
+#include <mods/checkedformatstring.h>
 #include <mods/all.h>
+#include <mods/any.h>
 #include <mods/array.h>
 #include <mods/error.h>
 #include <mods/fixedpoint.h>
 #include <mods/forward.h>
 #include <mods/optional.h>
-#include <mods/string_view.h>
-
+#include <mods/stringview.h>
 
 #ifndef KERNEL
 #    include <stdio.h>
-#   include <string.h>
+#    include <string.h>
 #endif
 
-namespace Mods
+namespace Mods 
 {
-
     class TypeErasedFormatParams;
     class FormatParser;
     class FormatBuilder;
@@ -42,8 +40,8 @@ namespace Mods
     struct Formatter 
     {
         using __no_formatter_defined = void;
-    };
-    
+    }; // struct Formatter 
+
     /**
      * @tparam T 
      * @tparam typename 
@@ -72,9 +70,11 @@ namespace Mods
             Int32,
             Int64,
             Custom
-        };
+        }; // enum class Type
 
         /**
+         * @brief Get the type from size object
+         * 
          * @tparam size 
          * @tparam is_unsigned 
          * @return consteval 
@@ -82,8 +82,7 @@ namespace Mods
         template<size_t size, bool is_unsigned>
         static consteval Type get_type_from_size()
         {
-            if constexpr (is_unsigned) 
-            {
+            if constexpr (is_unsigned) {
                 if constexpr (size == 1)
                     return Type::UInt8;
                 if constexpr (size == 2)
@@ -104,9 +103,11 @@ namespace Mods
             }
 
             VERIFY_NOT_REACHED();
-        }
+        }   
 
         /**
+         * @brief Get the type object
+         * 
          * @tparam T 
          * @return consteval 
          */
@@ -129,21 +130,21 @@ namespace Mods
         {
             switch (type) {
             case TypeErasedParameter::Type::UInt8:
-                return visitor(*static_cast<const u8*>(value));
+                return visitor(*static_cast<u8 const*>(value));
             case TypeErasedParameter::Type::UInt16:
-                return visitor(*static_cast<const u16*>(value));
+                return visitor(*static_cast<u16 const*>(value));
             case TypeErasedParameter::Type::UInt32:
-                return visitor(*static_cast<const u32*>(value));
+                return visitor(*static_cast<u32 const*>(value));
             case TypeErasedParameter::Type::UInt64:
-                return visitor(*static_cast<const u64*>(value));
+                return visitor(*static_cast<u64 const*>(value));
             case TypeErasedParameter::Type::Int8:
-                return visitor(*static_cast<const i8*>(value));
+                return visitor(*static_cast<i8 const*>(value));
             case TypeErasedParameter::Type::Int16:
-                return visitor(*static_cast<const i16*>(value));
+                return visitor(*static_cast<i16 const*>(value));
             case TypeErasedParameter::Type::Int32:
-                return visitor(*static_cast<const i32*>(value));
+                return visitor(*static_cast<i32 const*>(value));
             case TypeErasedParameter::Type::Int64:
-                return visitor(*static_cast<const i64*>(value));
+                return visitor(*static_cast<i64 const*>(value));
             default:
                 TODO();
             }
@@ -163,10 +164,11 @@ namespace Mods
             });
         }
 
-        const void* value;
+
+        void const* value;
         Type type;
         ErrorOr<void> (*formatter)(TypeErasedFormatParams&, FormatBuilder&, FormatParser&, void const* value);
-    };
+    }; // struct TypeErasedParameter
 
     class FormatBuilder 
     {
@@ -177,7 +179,7 @@ namespace Mods
             Left,
             Center,
             Right,
-        };
+        }; // enum class Align
 
         enum class SignMode 
         {
@@ -185,9 +187,11 @@ namespace Mods
             Always,
             Reserved,
             Default = OnlyIfNeeded,
-        };
+        }; // enum class SignMode
 
         /**
+         * @brief Construct a new Format Builder object
+         * 
          * @param builder 
          */
         explicit FormatBuilder(StringBuilder& builder)
@@ -344,12 +348,20 @@ namespace Mods
             SignMode sign_mode = SignMode::OnlyIfNeeded);
     #endif
 
+        /**
+         * @param width 
+         * @param fill 
+         * @return ErrorOr<void> 
+         */
         ErrorOr<void> put_hexdump(
             ReadonlyBytes,
             size_t width,
             char fill = ' ');
 
-        const StringBuilder& builder() const
+        /**
+         * @return StringBuilder const& 
+         */
+        StringBuilder const& builder() const
         {
             return m_builder;
         }
@@ -357,11 +369,14 @@ namespace Mods
         /**
          * @return StringBuilder& 
          */
-        StringBuilder& builder() { return m_builder; }
+        StringBuilder& builder() 
+        { 
+            return m_builder; 
+        }
 
     private:
         StringBuilder& m_builder;
-    };
+    }; // class FormatBuilder
 
     class TypeErasedFormatParams 
     {
@@ -375,6 +390,8 @@ namespace Mods
         }
 
         /**
+         * @brief Set the parameters object
+         * 
          * @param parameters 
          */
         void set_parameters(Span<const TypeErasedParameter> parameters) 
@@ -393,8 +410,8 @@ namespace Mods
     private:
         Span<const TypeErasedParameter> m_parameters;
         size_t m_next_index { 0 };
-    }; // class TypeErasedFormatParams
-
+    }; // class TypeErasedFormatParams 
+    
     /**
      * @tparam T 
      * @param params 
@@ -404,7 +421,7 @@ namespace Mods
      * @return ErrorOr<void> 
      */
     template<typename T>
-    ErrorOr<void> __format_value(TypeErasedFormatParams& params, FormatBuilder& builder, FormatParser& parser, const void* value)
+    ErrorOr<void> __format_value(TypeErasedFormatParams& params, FormatBuilder& builder, FormatParser& parser, void const* value)
     {
         Formatter<T> formatter;
 
@@ -422,9 +439,11 @@ namespace Mods
         static_assert(sizeof...(Parameters) <= max_format_arguments);
 
         /**
+         * @brief Construct a new Variadic Format Params object
+         * 
          * @param parameters 
          */
-        explicit VariadicFormatParams(const Parameters&... parameters)
+        explicit VariadicFormatParams(Parameters const&... parameters)
             : m_data({ TypeErasedParameter { &parameters, TypeErasedParameter::get_type<Parameters>(), __format_value<Parameters> }... })
         {
             this->set_parameters(m_data);
@@ -432,7 +451,7 @@ namespace Mods
 
     private:
         Array<TypeErasedParameter, sizeof...(Parameters)> m_data;
-    };
+    }; // class VariadicFormatParams : public TypeErasedFormatParams 
 
     struct StandardFormatter 
     {
@@ -452,7 +471,7 @@ namespace Mods
             Hexfloat,
             HexfloatUppercase,
             HexDump,
-        };
+        }; // enum class Mode 
 
         FormatBuilder::Align m_align = FormatBuilder::Align::Default;
         FormatBuilder::SignMode m_sign_mode = FormatBuilder::SignMode::OnlyIfNeeded;
@@ -469,8 +488,8 @@ namespace Mods
     /**
      * @tparam T 
      */
-    template<typename T>
-    struct Formatter<T, typename EnableIf<IsIntegral<T>>::Type> : StandardFormatter 
+    template<Integral T>
+    struct Formatter<T> : StandardFormatter 
     {
         /**
          * @brief Construct a new Formatter object
@@ -479,6 +498,8 @@ namespace Mods
         Formatter() = default;
 
         /**
+         * @brief Construct a new Formatter object
+         * 
          * @param formatter 
          */
         explicit Formatter(StandardFormatter formatter)
@@ -486,9 +507,12 @@ namespace Mods
         {
         }
 
+        /**
+         * @return ErrorOr<void> 
+         */
         ErrorOr<void> format(FormatBuilder&, T);
-    };
-
+    }; // struct Formatter<T> : StandardFormatter 
+    
     /**
      * @tparam  
      */
@@ -502,24 +526,30 @@ namespace Mods
         Formatter() = default;
 
         /**
+         * @brief Construct a new Formatter object
+         * 
          * @param formatter 
          */
         explicit Formatter(StandardFormatter formatter)
             : StandardFormatter(move(formatter))
         {
-        }
+        }       
 
+        /**
+         * @return ErrorOr<void> 
+         */
         ErrorOr<void> format(FormatBuilder&, StringView);
-    };
+    }; // struct Formatter<StringView> : StandardFormatter 
 
     /**
+     * @brief Construct a new requires object
+     * 
      * @tparam T 
      * @tparam inline_capacity 
      */
     template<typename T, size_t inline_capacity>
     requires(HasFormatter<T>) struct Formatter<Vector<T, inline_capacity>> : StandardFormatter 
     {
-
         /**
          * @brief Construct a new Formatter object
          * 
@@ -527,6 +557,8 @@ namespace Mods
         Formatter() = default;
 
         /**
+         * @brief Construct a new Formatter object
+         * 
          * @param formatter 
          */
         explicit Formatter(StandardFormatter formatter)
@@ -576,10 +608,13 @@ namespace Mods
             return {};
         }
     };
-    
+
+    /**
+     * @tparam  
+     */
     template<>
     struct Formatter<ReadonlyBytes> : Formatter<StringView> 
-    {   
+    {
         /**
          * @param builder 
          * @param value 
@@ -591,28 +626,31 @@ namespace Mods
                 Formatter<FlatPtr> formatter { *this };
                 return formatter.format(builder, reinterpret_cast<FlatPtr>(value.data()));
             }
+
             if (m_mode == Mode::Default || m_mode == Mode::HexDump) {
                 m_mode = Mode::HexDump;
                 return Formatter<StringView>::format(builder, value);
             }
+
             return Formatter<StringView>::format(builder, value);
         }
     };
 
+    /**
+     * @tparam  
+     */
     template<>
-    struct Formatter<Bytes> : Formatter<ReadonlyBytes> 
-    {
-    };
+    struct Formatter<Bytes> : Formatter<ReadonlyBytes> { };
 
     template<>
-    struct Formatter<const char*> : Formatter<StringView> 
+    struct Formatter<char const*> : Formatter<StringView> 
     {
         /**
          * @param builder 
          * @param value 
          * @return ErrorOr<void> 
          */
-        ErrorOr<void> format(FormatBuilder& builder, const char* value)
+        ErrorOr<void> format(FormatBuilder& builder, char const* value)
         {
             if (m_mode == Mode::Pointer) {
                 Formatter<FlatPtr> formatter { *this };
@@ -622,21 +660,14 @@ namespace Mods
         }
     };
 
-    /**
-     * @tparam  
-     */
     template<>
-    struct Formatter<char*> : Formatter<const char*> 
-    {
-    };
+    struct Formatter<char*> : Formatter<char const*> { };
 
     /**
      * @tparam Size 
      */
     template<size_t Size>
-    struct Formatter<char[Size]> : Formatter<const char*> 
-    {
-    };
+    struct Formatter<char[Size]> : Formatter<char const*> { };
 
     /**
      * @tparam Size 
@@ -649,10 +680,9 @@ namespace Mods
          * @param value 
          * @return ErrorOr<void> 
          */
-        ErrorOr<void> format(FormatBuilder& builder, const unsigned char* value)
+        ErrorOr<void> format(FormatBuilder& builder, unsigned char const* value)
         {
-            if (m_mode == Mode::Pointer) 
-            {
+            if (m_mode == Mode::Pointer) {
                 Formatter<FlatPtr> formatter { *this };
                 return formatter.format(builder, reinterpret_cast<FlatPtr>(value));
             }
@@ -661,13 +691,10 @@ namespace Mods
     };
 
     template<>
-    struct Formatter<String> : Formatter<StringView> 
-    {
-    };
+    struct Formatter<String> : Formatter<StringView> { };
 
     template<>
-    struct Formatter<FlyString> : Formatter<StringView> 
-    {
+    struct Formatter<FlyString> : Formatter<StringView> {
     };
 
     /**
@@ -689,30 +716,26 @@ namespace Mods
             Formatter<FlatPtr> formatter { *this };
             return formatter.format(builder, reinterpret_cast<FlatPtr>(value));
         }
-    };
+    }; // struct Formatter<T*> : StandardFormatter 
 
     template<>
-    struct Formatter<char> : StandardFormatter 
-    {
+    struct Formatter<char> : StandardFormatter {
         ErrorOr<void> format(FormatBuilder&, char);
     };
 
     template<>
-    struct Formatter<wchar_t> : StandardFormatter 
-    {
+    struct Formatter<wchar_t> : StandardFormatter {
         ErrorOr<void> format(FormatBuilder& builder, wchar_t);
     };
 
     template<>
-    struct Formatter<bool> : StandardFormatter 
-    {
+    struct Formatter<bool> : StandardFormatter {
         ErrorOr<void> format(FormatBuilder&, bool);
     };
 
     #ifndef KERNEL
     template<>
-    struct Formatter<float> : StandardFormatter 
-    {
+    struct Formatter<float> : StandardFormatter {
         ErrorOr<void> format(FormatBuilder&, float value);
     };
 
@@ -735,22 +758,39 @@ namespace Mods
         {
         }
 
+        /**
+         * @return ErrorOr<void> 
+         */
         ErrorOr<void> format(FormatBuilder&, double);
-    };
+    }; // struct Formatter<double> : StandardFormatter 
 
     template<>
     struct Formatter<long double> : StandardFormatter 
     {
+        /**
+         * @brief Construct a new Formatter object
+         * 
+         */
         Formatter() = default;
+
+        /**
+         * @brief Construct a new Formatter object
+         * 
+         * @param formatter 
+         */
         explicit Formatter(StandardFormatter formatter)
             : StandardFormatter(formatter)
         {
         }
 
+        /**
+         * @param value 
+         * @return ErrorOr<void> 
+         */
         ErrorOr<void> format(FormatBuilder&, long double value);
-    };
+    }; // struct Formatter<long double> : StandardFormatter 
     #endif
-
+    
     /**
      * @tparam precision 
      * @tparam Underlying 
@@ -783,6 +823,7 @@ namespace Mods
         {
             u8 base;
             bool upper_case;
+
             if (m_mode == Mode::Default || m_mode == Mode::Float) {
                 base = 10;
                 upper_case = false;
@@ -804,7 +845,7 @@ namespace Mods
             u64 fraction_raw = value.raw() & (one - 1);
             return builder.put_fixed_point(integer, fraction_raw, one, base, upper_case, m_zero_pad, m_align, m_width.value(), m_precision.value(), m_fill, m_sign_mode);
         }
-    };
+    }; // struct Formatter<FixedPoint<precision, Underlying>> : StandardFormatter 
 
     template<>
     struct Formatter<std::nullptr_t> : Formatter<FlatPtr> 
@@ -820,7 +861,7 @@ namespace Mods
 
             return Formatter<FlatPtr>::format(builder, 0);
         }
-    };
+    }; // struct Formatter<std::nullptr_t> : Formatter<FlatPtr> 
 
     /**
      * @param fmtstr 
@@ -829,7 +870,6 @@ namespace Mods
     ErrorOr<void> vformat(StringBuilder&, StringView fmtstr, TypeErasedFormatParams&);
 
     #ifndef KERNEL
-
     /**
      * @param fmtstr 
      * @param newline 
@@ -843,7 +883,7 @@ namespace Mods
      * @param parameters 
      */
     template<typename... Parameters>
-    void out(FILE* file, CheckedFormatString<Parameters...>&& fmtstr, const Parameters&... parameters)
+    void out(FILE* file, CheckedFormatString<Parameters...>&& fmtstr, Parameters const&... parameters)
     {
         VariadicFormatParams variadic_format_params { parameters... };
         vout(file, fmtstr.view(), variadic_format_params);
@@ -856,7 +896,7 @@ namespace Mods
      * @param parameters 
      */
     template<typename... Parameters>
-    void outln(FILE* file, CheckedFormatString<Parameters...>&& fmtstr, const Parameters&... parameters)
+    void outln(FILE* file, CheckedFormatString<Parameters...>&& fmtstr, Parameters const&... parameters)
     {
         VariadicFormatParams variadic_format_params { parameters... };
         vout(file, fmtstr.view(), variadic_format_params, true);
@@ -876,18 +916,18 @@ namespace Mods
      * @param parameters 
      */
     template<typename... Parameters>
-    void out(CheckedFormatString<Parameters...>&& fmtstr, const Parameters&... parameters) 
+    void out(CheckedFormatString<Parameters...>&& fmtstr, Parameters const&... parameters) 
     { 
         out(stdout, move(fmtstr), parameters...); 
     }
-    
+
     /**
      * @tparam Parameters 
      * @param fmtstr 
      * @param parameters 
      */
     template<typename... Parameters>
-    void outln(CheckedFormatString<Parameters...>&& fmtstr, const Parameters&... parameters) 
+    void outln(CheckedFormatString<Parameters...>&& fmtstr, Parameters const&... parameters) 
     { 
         outln(stdout, move(fmtstr), parameters...); 
     }
@@ -906,7 +946,7 @@ namespace Mods
      * @param parameters 
      */
     template<typename... Parameters>
-    void warn(CheckedFormatString<Parameters...>&& fmtstr, const Parameters&... parameters)
+    void warn(CheckedFormatString<Parameters...>&& fmtstr, Parameters const&... parameters)
     {
         out(stderr, move(fmtstr), parameters...);
     }
@@ -917,20 +957,17 @@ namespace Mods
      * @param parameters 
      */
     template<typename... Parameters>
-    void warnln(CheckedFormatString<Parameters...>&& fmtstr, const Parameters&... parameters) 
+    void warnln(CheckedFormatString<Parameters...>&& fmtstr, Parameters const&... parameters) 
     { 
         outln(stderr, move(fmtstr), parameters...); 
     }
-    
-    inline void warnln() 
-    { 
-        outln(stderr); 
-    }
 
-    #    define warnln_if(flag, fmt, ...)      \
-            do {                               \
-                if constexpr (flag)            \
-                    outln(fmt, ##__VA_ARGS__); \
+    inline void warnln() { outln(stderr); }
+
+    #    define warnln_if(flag, fmt, ...)       \
+            do {                                \
+                if constexpr (flag)             \
+                    warnln(fmt, ##__VA_ARGS__); \
             } while (0)
 
     #endif
@@ -946,7 +983,7 @@ namespace Mods
      * @param parameters 
      */
     template<typename... Parameters>
-    void dbgln(CheckedFormatString<Parameters...>&& fmtstr, const Parameters&... parameters)
+    void dbgln(CheckedFormatString<Parameters...>&& fmtstr, Parameters const&... parameters)
     {
         VariadicFormatParams variadic_format_params { parameters... };
         vdbgln(fmtstr.view(), variadic_format_params);
@@ -960,7 +997,6 @@ namespace Mods
     void set_debug_enabled(bool);
 
     #ifdef KERNEL
-
     /**
      * @param fmtstr 
      */
@@ -972,7 +1008,7 @@ namespace Mods
      * @param parameters 
      */
     template<typename... Parameters>
-    void dmesgln(CheckedFormatString<Parameters...>&& fmt, const Parameters&... parameters)
+    void dmesgln(CheckedFormatString<Parameters...>&& fmt, Parameters const&... parameters)
     {
         VariadicFormatParams variadic_format_params { parameters... };
         vdmesgln(fmt.view(), variadic_format_params);
@@ -989,7 +1025,7 @@ namespace Mods
      * @param parameters 
      */
     template<typename... Parameters>
-    void critical_dmesgln(CheckedFormatString<Parameters...>&& fmt, const Parameters&... parameters)
+    void critical_dmesgln(CheckedFormatString<Parameters...>&& fmt, Parameters const&... parameters)
     {
         VariadicFormatParams variadic_format_params { parameters... };
         v_critical_dmesgln(fmt.view(), variadic_format_params);
@@ -1012,7 +1048,10 @@ namespace Mods
             : m_value(value)
         {
         }
-    
+
+        /**
+         * @return const T& 
+         */
         const T& value() const 
         { 
             return m_value; 
@@ -1020,7 +1059,7 @@ namespace Mods
 
     private:
         const T& m_value;
-    }; //  class FormatIfSupported 
+    }; // class FormatIfSupported 
 
     /**
      * @tparam T 
@@ -1037,7 +1076,7 @@ namespace Mods
         {
             return Formatter<StringView>::format(builder, "?");
         }
-    };
+    }; // struct __FormatIfSupported : Formatter<StringView> 
 
     /**
      * @tparam T 
@@ -1054,20 +1093,18 @@ namespace Mods
         {
             return Formatter<T>::format(builder, value.value());
         }
-    };
-
-    template<typename T>
-    struct Formatter<FormatIfSupported<T>> : __FormatIfSupported<T, HasFormatter<T>> 
-    {
-    };
-
-    struct FormatString 
-    {
-    };
+    }; // struct __FormatIfSupported<T, true> : Formatter<T> 
 
     /**
-     * @tparam  
+     * @tparam T 
      */
+    template<typename T>
+    struct Formatter<FormatIfSupported<T>> : __FormatIfSupported<T, HasFormatter<T>> {
+    };
+
+    struct FormatString {
+    };
+
     template<>
     struct Formatter<FormatString> : Formatter<StringView> 
     {
@@ -1079,12 +1116,12 @@ namespace Mods
          * @return ErrorOr<void> 
          */
         template<typename... Parameters>
-        ErrorOr<void> format(FormatBuilder& builder, StringView fmtstr, const Parameters&... parameters)
+        ErrorOr<void> format(FormatBuilder& builder, StringView fmtstr, Parameters const&... parameters)
         {
             VariadicFormatParams variadic_format_params { parameters... };
             return vformat(builder, fmtstr, variadic_format_params);
         }
-        
+
         /**
          * @param builder 
          * @param fmtstr 
@@ -1092,11 +1129,8 @@ namespace Mods
          * @return ErrorOr<void> 
          */
         ErrorOr<void> vformat(FormatBuilder& builder, StringView fmtstr, TypeErasedFormatParams& params);
-    };
+    }; // struct Formatter<FormatString> : Formatter<StringView> 
 
-    /**
-     * @tparam  
-     */
     template<>
     struct Formatter<Error> : Formatter<FormatString> 
     {
@@ -1120,7 +1154,7 @@ namespace Mods
             return Formatter<FormatString>::format(builder, "{}", error.string_literal());
     #endif
         }
-    };
+    }; // struct Formatter<Error> : Formatter<FormatString> 
 
     /**
      * @tparam T 
@@ -1140,8 +1174,7 @@ namespace Mods
                 return Formatter<FormatString>::format(builder, "{}", error_or.error());
             return Formatter<FormatString>::format(builder, "{{{}}}", error_or.value());
         }
-    };
-
+    }; // struct Formatter<ErrorOr<T, ErrorType>> : Formatter<FormatString> 
 } // namespace Mods
 
 #ifdef KERNEL
@@ -1150,13 +1183,11 @@ using Mods::dmesgln;
 #else
 using Mods::out;
 using Mods::outln;
-
 using Mods::warn;
 using Mods::warnln;
 #endif
 
 using Mods::dbgln;
-
 using Mods::CheckedFormatString;
 using Mods::FormatIfSupported;
 using Mods::FormatString;
