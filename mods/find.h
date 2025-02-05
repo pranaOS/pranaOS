@@ -15,7 +15,7 @@
 #include <mods/traits.h>
 #include <mods/types.h>
 
-namespace Mods
+namespace Mods 
 {
     /**
      * @tparam TEndIterator 
@@ -34,9 +34,10 @@ namespace Mods
                 return first;
             }
         }
+
         return last;
     }
-    
+
     /**
      * @tparam TEndIterator 
      * @tparam TIterator 
@@ -62,5 +63,4 @@ namespace Mods
     {
         return find_if(first, last, [&](auto const& v) { return Traits<T>::equals(value, v); }).index();
     }
-
-} // namespace Mods 
+} // namespace Mods
