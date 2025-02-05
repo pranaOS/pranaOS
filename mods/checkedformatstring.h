@@ -15,7 +15,7 @@
 #include <mods/any.h>
 #include <mods/array.h>
 #include <mods/stdlibextra.h>
-#include <mods/string_view.h>
+#include <mods/stringview.h>
 
 
 #ifdef ENABLE_COMPILETIME_FORMAT_CHECK
