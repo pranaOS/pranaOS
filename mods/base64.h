@@ -11,10 +11,10 @@
 
 #pragma once
 
-#include <mods/byte_buffer.h>
+#include <mods/bytebuffer.h>
 #include <mods/error.h>
 #include <mods/string.h>
-#include <mods/string_view.h>
+#include <mods/stringview.h>
 
 namespace Mods
 {
