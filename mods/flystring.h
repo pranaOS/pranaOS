@@ -11,10 +11,10 @@
 
 #pragma once
 
-#include "mods/string_utils.h"
+#include "mods/stringutils.h"
 #include <mods/string.h>
 
-namespace Mods
+namespace Mods 
 {
     class FlyString 
     {
@@ -30,7 +30,7 @@ namespace Mods
          * 
          * @param other 
          */
-        FlyString(const FlyString& other)
+        FlyString(FlyString const& other)
             : m_impl(other.impl())
         {
         }
@@ -49,8 +49,12 @@ namespace Mods
          * @brief Construct a new Fly String object
          * 
          */
-        FlyString(const String&);
+        FlyString(String const&);
 
+        /**
+         * @brief Construct a new Fly String object
+         * 
+         */
         FlyString(StringView);
 
         /**
@@ -58,7 +62,7 @@ namespace Mods
          * 
          * @param string 
          */
-        FlyString(const char* string)
+        FlyString(char const* string)
             : FlyString(static_cast<String>(string))
         {
         }
@@ -79,7 +83,7 @@ namespace Mods
          * @param other 
          * @return FlyString& 
          */
-        FlyString& operator=(const FlyString& other)
+        FlyString& operator=(FlyString const& other)
         {
             m_impl = other.m_impl;
             return *this;
@@ -95,11 +99,19 @@ namespace Mods
             return *this;
         }
 
+        /**
+         * @return true 
+         * @return false 
+         */
         bool is_empty() const 
         { 
             return !m_impl || !m_impl->length(); 
         }
 
+        /**
+         * @return true 
+         * @return false 
+         */
         bool is_null() const 
         { 
             return !m_impl; 
@@ -110,7 +122,7 @@ namespace Mods
          * @return true 
          * @return false 
          */
-        bool operator==(const FlyString& other) const 
+        bool operator==(FlyString const& other) const 
         { 
             return m_impl == other.m_impl; 
         }
@@ -120,7 +132,7 @@ namespace Mods
          * @return true 
          * @return false 
          */
-        bool operator!=(const FlyString& other) const 
+        bool operator!=(FlyString const& other) const 
         { 
             return m_impl != other.m_impl; 
         }
@@ -129,18 +141,22 @@ namespace Mods
          * @return true 
          * @return false 
          */
-        bool operator==(const String&) const;
+        bool operator==(String const&) const;
 
         /**
          * @param string 
          * @return true 
          * @return false 
          */
-        bool operator!=(const String& string) const 
+        bool operator!=(String const& string) const 
         { 
             return !(*this == string); 
         }
 
+        /**
+         * @return true 
+         * @return false 
+         */
         bool operator==(StringView) const;
 
         /**
@@ -153,30 +169,34 @@ namespace Mods
             return !(*this == string); 
         }
 
-        bool operator==(const char*) const;
+        /**
+         * @return true 
+         * @return false 
+         */
+        bool operator==(char const*) const;
 
         /**
          * @param string 
          * @return true 
          * @return false 
          */
-        bool operator!=(const char* string) const 
+        bool operator!=(char const* string) const 
         { 
             return !(*this == string); 
         }
 
         /**
-         * @return const StringImpl* 
+         * @return StringImpl const* 
          */
-        const StringImpl* impl() const 
+        StringImpl const* impl() const 
         { 
             return m_impl; 
         }
 
         /**
-         * @return const char* 
+         * @return char const* 
          */
-        const char* characters() const 
+        char const* characters() const 
         { 
             return m_impl ? m_impl->characters() : nullptr; 
         }
@@ -189,16 +209,25 @@ namespace Mods
             return m_impl ? m_impl->length() : 0; 
         }
 
+        /**
+         * @return ALWAYS_INLINE 
+         */
         ALWAYS_INLINE u32 hash() const 
         { 
             return m_impl ? m_impl->existing_hash() : 0; 
         }
 
+        /**
+         * @return ALWAYS_INLINE 
+         */
         ALWAYS_INLINE StringView view() const 
         { 
             return m_impl ? m_impl->view() : StringView {}; 
         }
 
+        /**
+         * @return FlyString 
+         */
         FlyString to_lowercase() const;
 
         /**
@@ -215,10 +244,22 @@ namespace Mods
         template<typename T = unsigned>
         Optional<T> to_uint(TrimWhitespace = TrimWhitespace::Yes) const;
 
+        /**
+         * @return true 
+         * @return false 
+         */
         bool equals_ignoring_case(StringView) const;
 
+        /**
+         * @return true 
+         * @return false 
+         */
         bool starts_with(StringView, CaseSensitivity = CaseSensitivity::CaseSensitive) const;
 
+        /**
+         * @return true 
+         * @return false 
+         */
         bool ends_with(StringView, CaseSensitivity = CaseSensitivity::CaseSensitive) const;
 
         static void did_destroy_impl(Badge<StringImpl>, StringImpl&);
@@ -238,18 +279,14 @@ namespace Mods
         RefPtr<StringImpl> m_impl;
     }; // class FlyString
 
+    /**
+     * @tparam  
+     */
     template<>
     struct Traits<FlyString> : public GenericTraits<FlyString> 
     {
-        /**
-         * @param s 
-         * @return unsigned 
-         */
-        static unsigned hash(const FlyString& s) 
-        { 
-            return s.hash(); 
-        }
-    }; 
+        static unsigned hash(FlyString const& s) { return s.hash(); }
+    };
 } // namespace Mods
 
 using Mods::FlyString;
