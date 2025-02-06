@@ -11,12 +11,11 @@
 
 #pragma once
 
-#include "doublelinkedlist.h"
-#include "types.h"
+#include <mods/types.h>
 
-
-namespace Mods 
+namespace Mods
 {
+
     namespace Detail 
     {
         /**
@@ -25,9 +24,11 @@ namespace Mods
         template<size_t inline_capacity>
         class ByteBuffer;
     } // namespace Detail
-
+ 
     class Bitmap;
+    
     using ByteBuffer = Mods::Detail::ByteBuffer<32>;
+
     class Error;
     class GenericLexer;
     class IPv4Address;
@@ -44,6 +45,7 @@ namespace Mods
     class FlyString;
     class Utf16View;
     class Utf32View;
+    class Utf8CodePointIterator;
     class Utf8View;
     class InputStream;
     class InputMemoryStream;
@@ -59,6 +61,9 @@ namespace Mods
     template<size_t Capacity>
     class CircularDuplexStream;
 
+    /**
+     * @tparam T 
+     */
     template<typename T>
     class Span;
 
@@ -77,7 +82,6 @@ namespace Mods
     class SimpleIterator;
 
     using ReadonlyBytes = Span<const u8>;
-
     using Bytes = Span<u8>;
 
     /**
@@ -92,6 +96,10 @@ namespace Mods
      */
     template<typename T>
     class SinglyLinkedList;
+
+    /**
+     * @tparam T 
+     */
     template<typename T>
     class DoublyLinkedList;
 
@@ -102,9 +110,12 @@ namespace Mods
     template<typename T, size_t capacity>
     class CircularQueue;
 
+    /**
+     * @tparam T 
+     */
     template<typename T>
     struct Traits;
-    
+
     /**
      * @tparam T 
      * @tparam TraitsForT 
@@ -142,9 +153,13 @@ namespace Mods
      */
     template<typename T>
     class Badge;
+
+    /**
+     * @tparam T 
+     */
     template<typename T>
     class FixedArray;
-
+    
     /**
      * @tparam precision 
      * @tparam Underlying 
@@ -152,6 +167,9 @@ namespace Mods
     template<size_t precision, typename Underlying = i32>
     class FixedPoint;
 
+    /**
+     * @tparam ypename 
+     */
     template<typename>
     class Function;
 
@@ -167,6 +185,10 @@ namespace Mods
      */
     template<typename T>
     class NonnullRefPtr;
+
+    /**
+     * @tparam T 
+     */
     template<typename T>
     class NonnullOwnPtr;
 
@@ -176,6 +198,11 @@ namespace Mods
      */
     template<typename T, size_t inline_capacity = 0>
     class NonnullRefPtrVector;
+
+    /**
+     * @tparam T 
+     * @tparam inline_capacity 
+     */
     template<typename T, size_t inline_capacity = 0>
     class NonnullOwnPtrVector;
 
@@ -184,6 +211,10 @@ namespace Mods
      */
     template<typename T>
     class Optional;
+
+    /**
+     * @tparam T 
+     */
     template<typename T>
     struct RefPtrTraits;
 
@@ -194,16 +225,18 @@ namespace Mods
     template<typename T, typename PtrTraits = RefPtrTraits<T>>
     class RefPtr;
 
+    /**
+     * @tparam T 
+     */
     template<typename T>
     class OwnPtr;
 
+    /**
+     * @tparam T 
+     */
     template<typename T>
     class WeakPtr;
 
-    /**
-     * @tparam T 
-     * @tparam inline_capacity 
-     */
     template<typename T, size_t inline_capacity = 0>
     requires(!IsRvalueReference<T>) class Vector;
 
@@ -213,8 +246,7 @@ namespace Mods
      */
     template<typename T, typename ErrorType = Error>
     class [[nodiscard]] ErrorOr;
-
-} // namespace Mods
+}
 
 using Mods::Array;
 using Mods::Atomic;
@@ -265,5 +297,6 @@ using Mods::Traits;
 using Mods::URL;
 using Mods::Utf16View;
 using Mods::Utf32View;
+using Mods::Utf8CodePointIterator;
 using Mods::Utf8View;
 using Mods::Vector;
