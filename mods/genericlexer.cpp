@@ -156,4 +156,25 @@ namespace Mods
 
         return m_string.substring_view(start, length);
     }
+
+    #ifndef KERNEL
+    /**
+     * @param escape_char 
+     * @return String 
+     */
+    String GenericLexer::consume_and_unescape_string(char escape_char)
+    {
+        auto view = consume_quoted_string(escape_char)   
+
+        if (view.is_null())
+            return {};
+        
+        StringBuilder builder;
+
+        for (size_t i = 0; i < view.length(); ++i)
+            builder.append(consume_escaped_character(escape_char));
+
+        return builder.to_string();
+    }
+    #endif
 } // namespace Mods
