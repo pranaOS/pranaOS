@@ -30,5 +30,19 @@ namespace Mods
         m_index += length;
 
         return m_input.substring_view(start, length);
+    }   
+
+    /**
+     * @return StringView 
+     */
+    StringView GenericLexer::consume_all()
+    {
+        if (is_eof())
+            return {};
+        
+        auto rest = m_input.substring_view(m_index, m_input.length() - m_index);
+        m_index = m_input.length();
+
+        return rest;
     }
 } // namespace Mods
