@@ -14,6 +14,11 @@
 #include <mods/genericlexer.h>
 #include <mods/stringbuilder.h>
 
+#ifndef KERNEL
+#   include <mods/string.h>
+#   include <mods/utf16view.h>
+#endif
+
 namespace Mods
 {
     /**
@@ -60,6 +65,21 @@ namespace Mods
 
         consume_specific('\r');
         consume_specific('\n');
+
+        if (length == 0)
+            return {};
+        
+        return m_input.substring_view(start, length);
+    }
+
+    StringView GenericLexer::consume_until(StringView stop)
+    {
+        size_t start = m_index;
+        
+        while (!is_eof() && !next_is(stop))
+            m_index++;
+        
+        size_t length = m_index - start;
 
         if (length == 0)
             return {};
