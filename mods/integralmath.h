@@ -11,57 +11,58 @@
 
 #pragma once
 
-#include <mods/forward.h>
-#include <mods/hashtable.h>
-#include <mods/random.h>
+#include <mods/builtinwrappers.h>
+#include <mods/concept.h>
+#include <mods/types.h>
 
 namespace Mods
 {
-    class IDAllocator
+    /**
+     * @tparam T 
+     * @param exponent 
+     * @return constexpr T 
+     */
+    template <Integral T>
+    constexpr T exp2(T exponent)
     {
-    public:
-        /**
-         * @brief Construct a new IDAllocator object
-         * 
-         */
-        IDAllocator() = default;
+        return 1u << exponent;
+    }
 
-        /**
-         * @brief Destroy the IDAllocator object
-         * 
-         */
-        ~IDAllocator() = default;
+    /**
+     * @tparam T 
+     * @param x 
+     * @return constexpr T 
+     */
+    template <Integral T>
+    constexpr T log2(T x)
+    {
+        return x ? (8 * sizeof(T) - 1) - count_leading_zeroes(static_cast<MakeUnsigned<T>>(x)) : 0;
+    }
 
-        /**
-         * @return int 
-         */
-        int allocate()
+    /**
+     * @tparam I 
+     * @param base 
+     * @param exponent 
+     * @return constexpr I 
+     */
+    template <Integral I>
+    constexpr I pow(I base, I exponent)
+    {
+        if(exponent < 0)
+            return 0;
+
+        if(exponent == 0)
+            return 1;
+
+        I res = 1;
+
+        while(exponent > 0)
         {
-            VERIFY(m_allocated_ids.size() < (INT32_MAX - 2));
-            int id = 0;
-
-            for(;;)
-            {
-                id = static_cast<int>(get_random_uniform(NumericLimits<int>::max()));
-                if(id == 0)
-                    continue;
-                if(m_allocated_ids.set(id) == AK::HashSetResult::InsertedNewEntry)
-                    break;
-            }
-            return id;
+            if(exponent & 1)
+                res *= base;
+            base *= base;
+            exponent /= 2u;
         }
-
-        /**
-         * @param id 
-         */
-        void deallocate(int id)
-        {
-            m_allocated_ids.remove(id);
-        }
-
-    private:
-        HashTable<int> m_allocated_ids;
-    }; // class IDAllocator
+        return res;
+    }
 } // namespace Mods
-
-using Mods::IDAllocator;
