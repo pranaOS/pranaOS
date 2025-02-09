@@ -86,4 +86,42 @@ namespace Mods
         
         return m_input.substring_view(start, length);
     }
+
+    /**
+     * @param stop 
+     * @return StringView 
+     */
+    StringView GenericLexer::consume_until(char stop)
+    {
+        size_t start = m_index;
+
+        while (!is_eof() && peek() != stop)
+            m_index++;
+        
+        size_t length = m_index - start;
+
+        if (length == 0)
+            return {};
+        
+        return m_input.substring_view(start, length);
+    }
+
+    /**
+     * @param stop 
+     * @return StringView 
+     */
+    StringView GenericLexer::consume_until(char const* stop)
+    {
+        size_t start = m_index;
+
+        while (!is_eof() && !next_is(stop))
+            m_index++;
+        
+        size_t length = m_index - start;
+
+        if (length == 0)
+            return {};
+        
+        return m_input.substring_view(start, length);
+    }
 } // namespace Mods
