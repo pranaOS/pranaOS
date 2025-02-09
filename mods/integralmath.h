@@ -31,6 +31,16 @@ namespace Mods
          * 
          */
         ~IDAllocator() = default;
+
+        void allocate() {}
+
+        /**
+         * @param id 
+         */
+        void deallocate(int id)
+        {
+            m_allocated_ids.remove(id);
+        }
     private:
         HashTable<int> m_allocated_ids;
     }; // class IDAllocator
