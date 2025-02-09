@@ -45,4 +45,25 @@ namespace Mods
 
         return rest;
     }
+
+    /**
+     * @return StringView 
+     */
+    StringView GenericLexer::consume_line()
+    {
+        size_t start = m_index;
+
+        while (!is_eof() && peek() != '\r' && peek() != '\n')
+            m_index++;
+    
+        size_t length = m_index - start;
+
+        consume_specific('\r');
+        consume_specific('\n');
+
+        if (length == 0)
+            return {};
+        
+        return m_input.substring_view(start, length);
+    }
 } // namespace Mods
