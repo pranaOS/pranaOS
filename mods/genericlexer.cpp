@@ -124,4 +124,36 @@ namespace Mods
         
         return m_input.substring_view(start, length);
     }
+
+    /**
+     * @param escape_char 
+     * @return StringView 
+     */
+    StringView GenericLexer::consume_quoted_string(char escape_char)
+    {
+        if (!next_is(is_quote))
+            return {};
+        
+        char quote_char = consume();
+        size_t start = m_index;
+
+        while (!is_eof()) {
+            if (next_is(escape_char))
+                m_index++;
+            else if (next_is(quote_char))
+                break;
+            m_index++;
+        }
+
+        size_t length = m_index - start;
+
+        if (peek() != quote_char) {
+            m_index = start - 1;
+            return {};
+        }
+
+        ignore();
+
+        return m_string.substring_view(start, length);
+    }
 } // namespace Mods
