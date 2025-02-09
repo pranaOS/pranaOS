@@ -106,7 +106,7 @@ namespace TimeZone
      */
     ErrorOr<void> change_time_zone([[maybe_unused]] StringView time_zone)
     {
-    #ifdef __serenity__
+    #ifdef __pranaos__
         TimeZoneFile time_zone_file("w");
 
         if (auto new_time_zone = canonicalize_time_zone(time_zone); new_time_zone.has_value())
