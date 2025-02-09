@@ -4,28 +4,27 @@
  * @brief Intrusive RB Tree
  * @version 6.0
  * @date 2024-10-20
- * 
+ *
  * @copyright Copyright (c) 2021-2024 pranaOS Developers, Krisna Pranav
- * 
+ *
  */
 
 #pragma once
 
 #include <mods/intrusivedetails.h>
-#include <mods/rbtree.h>
+#include <mods/redblacktree.h>
 
-namespace Mods::Detail 
+namespace Mods::Detail
 {
-
     /**
      * @tparam K 
      * @tparam V 
      * @tparam Container 
      */
-    template<Integral K, typename V, typename Container = RawPtr<V>>
+    template <Integral K, typename V, typename Container = RawPtr<V>>
     class IntrusiveRedBlackTreeNode;
 
-    struct ExtractIntrusiveRedBlackTreeTypes 
+    struct ExtractIntrusiveRedBlackTreeTypes
     {
         /**
          * @tparam K 
@@ -35,8 +34,8 @@ namespace Mods::Detail
          * @param x 
          * @return K 
          */
-        template<typename K, typename V, typename Container, typename T>
-        static K key(IntrusiveRedBlackTreeNode<K, V, Container> T::*x);
+        template <typename K, typename V, typename Container, typename T>
+        static K key(IntrusiveRedBlackTreeNode<K, V, Container> T::* x);
 
         /**
          * @tparam K 
@@ -46,8 +45,8 @@ namespace Mods::Detail
          * @param x 
          * @return V 
          */
-        template<typename K, typename V, typename Container, typename T>
-        static V value(IntrusiveRedBlackTreeNode<K, V, Container> T::*x);
+        template <typename K, typename V, typename Container, typename T>
+        static V value(IntrusiveRedBlackTreeNode<K, V, Container> T::* x);
 
         /**
          * @tparam K 
@@ -57,26 +56,26 @@ namespace Mods::Detail
          * @param x 
          * @return Container 
          */
-        template<typename K, typename V, typename Container, typename T>
-        static Container container(IntrusiveRedBlackTreeNode<K, V, Container> T::*x);
-    }; // struct ExtractIntrusiveRedBlackTreeTypes 
+        template <typename K, typename V, typename Container, typename T>
+        static Container container(IntrusiveRedBlackTreeNode<K, V, Container> T::* x);
+    }; // struct ExtractIntrusiveRedBlackTreeTypes
 
     /**
      * @tparam K 
      * @tparam V 
      * @tparam Container 
      */
-    template<Integral K, typename V, typename Container = RawPtr<V>>
+    template <Integral K, typename V, typename Container = RawPtr<V>>
     using SubstitutedIntrusiveRedBlackTreeNode = IntrusiveRedBlackTreeNode<K, V, typename Detail::SubstituteIntrusiveContainerType<V, Container>::Type>;
 
     /**
      * @tparam K 
      * @tparam V 
      * @tparam Container 
-     * @tparam V::*member 
+     * @tparam member 
      */
-    template<Integral K, typename V, typename Container, SubstitutedIntrusiveRedBlackTreeNode<K, V, Container> V::*member>
-    class IntrusiveRedBlackTree : public BaseRedBlackTree<K> 
+    template <Integral K, typename V, typename Container, SubstitutedIntrusiveRedBlackTreeNode<K, V, Container> V::* member>
+    class IntrusiveRedBlackTree : public BaseRedBlackTree<K>
     {
     public:
         /**
@@ -85,10 +84,6 @@ namespace Mods::Detail
          */
         IntrusiveRedBlackTree() = default;
 
-        /**
-         * @brief Destroy the Intrusive Red Black Tree object
-         * 
-         */
         virtual ~IntrusiveRedBlackTree() override
         {
             clear();
@@ -104,11 +99,8 @@ namespace Mods::Detail
         Container find(K key)
         {
             auto* node = static_cast<TreeNode*>(BaseTree::find(this->m_root, key));
-
-            if (!node) {
+            if(!node)
                 return nullptr;
-            }
-
             return node_to_value(*node);
         }
 
@@ -119,11 +111,20 @@ namespace Mods::Detail
         Container find_largest_not_above(K key)
         {
             auto* node = static_cast<TreeNode*>(BaseTree::find_largest_not_above(this->m_root, key));
-
-            if (!node) {
+            if(!node)
                 return nullptr;
-            }
+            return node_to_value(*node);
+        }
 
+        /**
+         * @param key 
+         * @return Container 
+         */
+        Container find_smallest_not_below(K key)
+        {
+            auto* node = static_cast<TreeNode*>(BaseTree::find_smallest_not_below(this->m_root, key));
+            if(!node)
+                return nullptr;
             return node_to_value(*node);
         }
 
@@ -138,9 +139,8 @@ namespace Mods::Detail
             static_cast<typename BaseTree::Node&>(node).key = key;
             BaseTree::insert(&node);
 
-            if constexpr (!TreeNode::IsRaw) {
+            if constexpr(!TreeNode::IsRaw)
                 node.m_self.reference = &value; 
-            }
 
             node.m_in_tree = true;
         }
@@ -148,8 +148,8 @@ namespace Mods::Detail
         /**
          * @tparam ElementType 
          */
-        template<typename ElementType>
-        class BaseIterator 
+        template <typename ElementType>
+        class BaseIterator
         {
         public:
             /**
@@ -163,9 +163,9 @@ namespace Mods::Detail
              * @return true 
              * @return false 
              */
-            bool operator!=(const BaseIterator& other) const 
-            { 
-                return m_node != other.m_node; 
+            bool operator!=(BaseIterator const& other) const
+            {
+                return m_node != other.m_node;
             }
 
             /**
@@ -173,12 +173,10 @@ namespace Mods::Detail
              */
             BaseIterator& operator++()
             {
-                if (!m_node) {
+                if(!m_node)
                     return *this;
-                }
-                
                 m_prev = m_node;
-                
+
                 m_node = static_cast<TreeNode*>(BaseTree::successor(m_node));
                 return *this;
             }
@@ -188,13 +186,10 @@ namespace Mods::Detail
              */
             BaseIterator& operator--()
             {
-                if (!m_prev) {
+                if(!m_prev)
                     return *this;
-                }
-
                 m_node = m_prev;
                 m_prev = static_cast<TreeNode*>(BaseTree::predecessor(m_prev));
-
                 return *this;
             }
 
@@ -205,7 +200,7 @@ namespace Mods::Detail
             {
                 VERIFY(m_node);
                 return *node_to_value(*m_node);
-            }   
+            }
 
             /**
              * @return auto 
@@ -216,19 +211,23 @@ namespace Mods::Detail
                 return node_to_value(*m_node);
             }
 
-            [[nodiscard]] bool is_end() const 
-            { 
-                return !m_node; 
+            /**
+             * @return true 
+             * @return false 
+             */
+            [[nodiscard]] bool is_end() const
+            {
+                return !m_node;
             }
 
-            [[nodiscard]] bool is_begin() const 
-            { 
-                return !m_prev; 
+            [[nodiscard]] bool is_begin() const
+            {
+                return !m_prev;
             }
 
-            [[nodiscard]] auto key() const 
-            { 
-                return m_node->key; 
+            [[nodiscard]] auto key() const
+            {
+                return m_node->key;
             }
 
         private:
@@ -241,56 +240,72 @@ namespace Mods::Detail
              * @param prev 
              */
             explicit BaseIterator(TreeNode* node, TreeNode* prev = nullptr)
-                : m_node(node)
-                , m_prev(prev)
+                : m_node(node), m_prev(prev)
             {
             }
 
-            TreeNode* m_node { nullptr };
-            TreeNode* m_prev { nullptr };
-        }; // class BaseIterator 
+            TreeNode* m_node{nullptr};
+            TreeNode* m_prev{nullptr};
+        }; // class BaseIterator
 
         using Iterator = BaseIterator<V>;
 
-        Iterator begin() 
-        { 
-            return Iterator(static_cast<TreeNode*>(this->m_minimum)); 
+        Iterator begin()
+        {
+            return Iterator(static_cast<TreeNode*>(this->m_minimum));
         }
 
-        Iterator end() 
-        { 
-            return {}; 
+        Iterator end()
+        {
+            return {};
         }
 
         /**
          * @param key 
          * @return Iterator 
          */
-        Iterator begin_from(K key) 
-        { 
-            return Iterator(static_cast<TreeNode*>(BaseTree::find(this->m_root, key))); 
+        Iterator begin_from(K key)
+        {
+            return Iterator(static_cast<TreeNode*>(BaseTree::find(this->m_root, key)));
+        }
+
+        /**
+         * @param value 
+         * @return Iterator 
+         */
+        Iterator begin_from(V& value)
+        {
+            return Iterator(&(value.*member));
         }
 
         using ConstIterator = BaseIterator<const V>;
 
-        
-        ConstIterator begin() const 
-        { 
-            return ConstIterator(static_cast<TreeNode*>(this->m_minimum)); 
+        ConstIterator begin() const
+        {
+            return ConstIterator(static_cast<TreeNode*>(this->m_minimum));
         }
-        
-        ConstIterator end() const 
-        { 
-            return {}; 
+
+        ConstIterator end() const
+        {
+            return {};
         }
 
         /**
          * @param key 
          * @return ConstIterator 
          */
-        ConstIterator begin_from(K key) const 
-        { 
-            return ConstIterator(static_cast<TreeNode*>(BaseTree::find(this->m_rootF, key))); 
+        ConstIterator begin_from(K key) const
+        {
+            return ConstIterator(static_cast<TreeNode*>(BaseTree::find(this->m_rootF, key)));
+        }
+
+        /**
+         * @param value 
+         * @return ConstIterator 
+         */
+        ConstIterator begin_from(V const& value) const
+        {
+            return Iterator(&(value.*member));
         }
 
         /**
@@ -302,9 +317,8 @@ namespace Mods::Detail
         {
             auto* node = static_cast<TreeNode*>(BaseTree::find(this->m_root, key));
 
-            if (!node) {
+            if(!node)
                 return false;
-            }
 
             BaseTree::remove(node);
 
@@ -312,7 +326,7 @@ namespace Mods::Detail
             node->left_child = nullptr;
             node->m_in_tree = false;
 
-            if constexpr (!TreeNode::IsRaw)
+            if constexpr(!TreeNode::IsRaw)
                 node->m_self.reference = nullptr;
 
             return true;
@@ -332,20 +346,15 @@ namespace Mods::Detail
          */
         static void clear_nodes(TreeNode* node)
         {
-            if (!node) {
+            if(!node)
                 return;
-            }
-
             clear_nodes(static_cast<TreeNode*>(node->right_child));
             node->right_child = nullptr;
-
             clear_nodes(static_cast<TreeNode*>(node->left_child));
             node->left_child = nullptr;
             node->m_in_tree = false;
-
-            if constexpr (!TreeNode::IsRaw) {
+            if constexpr(!TreeNode::IsRaw)
                 node->m_self.reference = nullptr;
-            }
         }
 
         /**
@@ -356,15 +365,15 @@ namespace Mods::Detail
         {
             return bit_cast<V*>(bit_cast<u8*>(&node) - bit_cast<u8*>(member));
         }
-    }; // class IntrusiveRedBlackTree : public BaseRedBlackTree<K> 
+    };
 
     /**
      * @tparam K 
      * @tparam V 
      * @tparam Container 
      */
-    template<Integral K, typename V, typename Container>
-    class IntrusiveRedBlackTreeNode : public BaseRedBlackTree<K>::Node 
+    template <Integral K, typename V, typename Container>
+    class IntrusiveRedBlackTreeNode : public BaseRedBlackTree<K>::Node
     {
     public:
         /**
@@ -376,10 +385,6 @@ namespace Mods::Detail
             VERIFY(!is_in_tree());
         }
 
-        /**
-         * @return true 
-         * @return false 
-         */
         [[nodiscard]] bool is_in_tree() const
         {
             return m_in_tree;
@@ -394,63 +399,71 @@ namespace Mods::Detail
 
     #ifndef __clang__
     private:
-        template<Integral TK, typename TV, typename TContainer, SubstitutedIntrusiveRedBlackTreeNode<TK, TV, TContainer> TV::*member>
+        template <Integral TK, typename TV, typename TContainer, SubstitutedIntrusiveRedBlackTreeNode<TK, TV, TContainer> TV::* member>
         friend class ::Mods::Detail::IntrusiveRedBlackTree;
     #endif
 
-        bool m_in_tree { false };
+        bool m_in_tree{false};
         [[no_unique_address]] SelfReferenceIfNeeded<Container, IsRaw> m_self;
-    }; // class IntrusiveRedBlackTreeNode : public BaseRedBlackTree<K>::Node 
+    }; // class IntrusiveRedBlackTreeNode : public BaseRedBlackTree<K>::Node
 
     /**
      * @tparam K 
      * @tparam V 
-     * @tparam V::*member 
+     * @tparam member 
      */
-    template<Integral K, typename V, SubstitutedIntrusiveRedBlackTreeNode<K, V, NonnullRefPtr<V>> V::*member>
-    class IntrusiveRedBlackTree<K, V, NonnullRefPtr<V>, member> : public IntrusiveRedBlackTree<K, V, RefPtr<V>, member> 
+    template <Integral K, typename V, SubstitutedIntrusiveRedBlackTreeNode<K, V, NonnullRefPtr<V>> V::* member>
+    class IntrusiveRedBlackTree<K, V, NonnullRefPtr<V>, member> : public IntrusiveRedBlackTree<K, V, RefPtr<V>, member>
     {
     public:
         /**
          * @param key 
          * @return NonnullRefPtr<V> 
          */
-        [[nodiscard]] NonnullRefPtr<V> find(K key) const 
-        { 
-            return IntrusiveRedBlackTree<K, V, RefPtr<V>, member>::find(key).release_nonnull(); 
+        [[nodiscard]] NonnullRefPtr<V> find(K key) const
+        {
+            return IntrusiveRedBlackTree<K, V, RefPtr<V>, member>::find(key).release_nonnull();
         }
 
         /**
          * @param key 
          * @return NonnullRefPtr<V> 
          */
-        [[nodiscard]] NonnullRefPtr<V> find_largest_not_above(K key) const 
-        { 
-            return IntrusiveRedBlackTree<K, V, RefPtr<V>, member>::find_largest_not_above(key).release_nonnull(); 
+        [[nodiscard]] NonnullRefPtr<V> find_largest_not_above(K key) const
+        {
+            return IntrusiveRedBlackTree<K, V, RefPtr<V>, member>::find_largest_not_above(key).release_nonnull();
         }
-    }; // class IntrusiveRedBlackTree<K, V, NonnullRefPtr<V>, member> : public IntrusiveRedBlackTree<K, V, RefPtr<V>, member> 
 
+        /**
+         * @param key 
+         * @return NonnullRefPtr<V> 
+         */
+        [[nodiscard]] NonnullRefPtr<V> find_smallest_not_below(K key) const
+        {
+            return IntrusiveRedBlackTree<K, V, RefPtr<V>, member>::find_smallest_not_below(key).release_nonnull();
+        }
+    }; // class IntrusiveRedBlackTree<K, V, NonnullRefPtr<V>, member> : public IntrusiveRedBlackTree<K, V, RefPtr<V>, member>
 } // namespace Mods::Detail
 
-namespace Mods 
+namespace Mods
 {
-    /**
-     * @tparam K 
-     * @tparam V 
-     * @tparam Container 
-     */
-    template<Integral K, typename V, typename Container = RawPtr<K>>
-    using IntrusiveRedBlackTreeNode = Detail::SubstitutedIntrusiveRedBlackTreeNode<K, V, Container>;
+/**
+ * @tparam K 
+ * @tparam V 
+ * @tparam Container 
+ */
+template <Integral K, typename V, typename Container = RawPtr<K>>
+using IntrusiveRedBlackTreeNode = Detail::SubstitutedIntrusiveRedBlackTreeNode<K, V, Container>;
 
-    /**
-     * @tparam member 
-     */
-    template<auto member>
-    using IntrusiveRedBlackTree = Detail::IntrusiveRedBlackTree<
-        decltype(Detail::ExtractIntrusiveRedBlackTreeTypes::key(member)),
-        decltype(Detail::ExtractIntrusiveRedBlackTreeTypes::value(member)),
-        decltype(Detail::ExtractIntrusiveRedBlackTreeTypes::container(member)),
-        member>;
+/**
+ * @tparam member 
+ */
+template <auto member>
+using IntrusiveRedBlackTree = Detail::IntrusiveRedBlackTree<
+    decltype(Detail::ExtractIntrusiveRedBlackTreeTypes::key(member)),
+    decltype(Detail::ExtractIntrusiveRedBlackTreeTypes::value(member)),
+    decltype(Detail::ExtractIntrusiveRedBlackTreeTypes::container(member)),
+    member>;
 
 } // namespace Mods
 
