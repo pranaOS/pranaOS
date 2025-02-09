@@ -4,51 +4,47 @@
  * @brief IDAllocator
  * @version 6.0
  * @date 2023-07-20
- * 
+ *
  * @copyright Copyright (c) 2021-2024 pranaOS Developers, Krisna Pranav
- * 
+ *
  */
 
 #pragma once
 
-#include "hashtable.h"
-#include <stdlib.h>
+#include <mods/forward.h>
+#include <mods/hashtable.h>
+#include <mods/random.h>
 
-namespace Mods 
+namespace Mods
 {
-
-    class IDAllocator {
-
+    class IDAllocator
+    {
     public:
-
         /**
          * @brief Construct a new IDAllocator object
          * 
          */
-        IDAllocator() { }
+        IDAllocator() = default;
 
         /**
          * @brief Destroy the IDAllocator object
          * 
          */
-        ~IDAllocator() { }
+        ~IDAllocator() = default;
 
-        /**
-         * @return int 
-         */
         int allocate()
         {
-            int r = rand();
-            for (int i = 0; i < 100000; ++i) {
-                int allocated_id = r + i;
-                if (allocated_id == 0)
-                    ++allocated_id;
-                if (!m_allocated_ids.contains(allocated_id)) {
-                    m_allocated_ids.set(allocated_id);
-                    return allocated_id;
-                }
+            VERIFY(m_allocated_ids.size() < (INT32_MAX - 2));
+            int id = 0;
+            for(;;)
+            {
+                id = static_cast<int>(get_random_uniform(NumericLimits<int>::max()));
+                if(id == 0)
+                    continue;
+                if(m_allocated_ids.set(id) == AK::HashSetResult::InsertedNewEntry)
+                    break;
             }
-            ASSERT_NOT_REACHED();
+            return id;
         }
 
         /**
@@ -61,7 +57,7 @@ namespace Mods
 
     private:
         HashTable<int> m_allocated_ids;
-    };
-}
+    }; // class IDAllocator
+} // namespace Mods
 
 using Mods::IDAllocator;
