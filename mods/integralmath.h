@@ -9,7 +9,7 @@
  *
  */
 
-#pragma once 
+#pragma once
 
 #include <mods/forward.h>
 #include <mods/hashtable.h>
@@ -32,7 +32,24 @@ namespace Mods
          */
         ~IDAllocator() = default;
 
-        void allocate() {}
+        /**
+         * @return int 
+         */
+        int allocate()
+        {
+            VERIFY(m_allocated_ids.size() < (INT32_MAX - 2));
+            int id = 0;
+
+            for(;;)
+            {
+                id = static_cast<int>(get_random_uniform(NumericLimits<int>::max()));
+                if(id == 0)
+                    continue;
+                if(m_allocated_ids.set(id) == AK::HashSetResult::InsertedNewEntry)
+                    break;
+            }
+            return id;
+        }
 
         /**
          * @param id 
@@ -41,6 +58,7 @@ namespace Mods
         {
             m_allocated_ids.remove(id);
         }
+
     private:
         HashTable<int> m_allocated_ids;
     }; // class IDAllocator
