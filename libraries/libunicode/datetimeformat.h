@@ -5,7 +5,7 @@
  * @version 6.0
  * @date 2024-11-06
  * 
- * @copyright Copyright (c) 2021-2024 pranaOS Developers, Krisna Pranav
+ * @copyright Copyright (c) 2021-2025 pranaOS Developers, Krisna Pranav
  * 
  */
 
@@ -13,7 +13,7 @@
 
 #include <mods/optional.h>
 #include <mods/string.h>
-#include <mods/string_view.h>
+#include <mods/stringview.h>
 #include <mods/time.h>
 #include <mods/types.h>
 #include <mods/vector.h>
