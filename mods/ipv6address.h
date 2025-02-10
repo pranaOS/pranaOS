@@ -146,4 +146,30 @@ namespace Mods
     }; // class [[gnu::packed]] IPv6Address
 
     static_assert(sizeof(IPv6Address) == 16);
+
+    template<>
+    struct Traits<IPv6Address> : public GenericTraits<IPv6Address> 
+    {
+        /**
+         * @param address 
+         * @return constexpr unsigned 
+         */
+        static constexpr unsigned hash(IPv6Address const& address)
+        {
+            unsigned h = 0;
+
+            for (int group = 0; group < 8; group += 2) {
+                u32 two_groups = ((u32)address[group] << 16);
+
+                if (group == 0)
+                    h = int_hash(two_groups);
+                else
+                    h = pair_int_hash(h, two_groups);
+            };
+
+            return h;
+        }
+    };
 } // namespace Mods
+
+using Mods::IPv6Address;
