@@ -51,5 +51,63 @@ namespace Mods
             m_data[14] = ipv4_address[2];
             m_data[15] = ipv4_address[3];
         }
+
+        constexpr u16 operator[](int i) const
+        {
+            return group(i);
+        }
+
+        #ifndef KERNEL
+            ErrorOr<NonnullOwnPtr<Kernel::KString> to_string() const
+        #else
+            String to_string() const
+        #endif
+            {
+                if (is_zero()) 
+                {
+        #ifndef KERNEL
+                    return Kernel::KString::try_create("::"sv);
+        #else
+                    return "::"sv;
+        #endif
+                }
+            }
+
+        /**
+         * @return constexpr in6_addr_t const& 
+         */
+        constexpr in6_addr_t const& to_in6_addr_t() const
+        {
+            return m_data;
+        }
+
+        /**
+         * @param other 
+         * @return true 
+         * @return false 
+         */
+        constexpr bool operator==(IPv6Address const& other) const = default;
+
+        /**
+         * @param other 
+         * @return true 
+         * @return false 
+         */
+        constexpr bool operator!=(IPv6Address const& other) const = default;
+
+        /**
+         * @return true 
+         * @return false 
+         */
+        constexpr bool is_zero() const
+        {
+            for (auto& d : m_data) {
+                if (d != 0) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
     }; // class [[gnu::packed]] IPv6Address
 } // namespace Mods
