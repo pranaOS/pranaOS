@@ -401,7 +401,7 @@ namespace Unicode
      * @param time 
      * @return String 
      */
-    String format_time_zone(StringView locale, StringView time_zone, CalendarPatternStyle style, AK::Time time);
+    String format_time_zone(StringView locale, StringView time_zone, CalendarPatternStyle style, Mods::Time time);
 
     /**
      * @brief Get the time zone name object
