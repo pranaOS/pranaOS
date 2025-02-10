@@ -41,7 +41,7 @@ namespace Mods
                 id = static_cast<int>(get_random_uniform(NumericLimits<int>::max()));
                 if(id == 0)
                     continue;
-                if(m_allocated_ids.set(id) == AK::HashSetResult::InsertedNewEntry)
+                if(m_allocated_ids.set(id) == Mods::HashSetResult::InsertedNewEntry)
                     break;
             }
             return id;
