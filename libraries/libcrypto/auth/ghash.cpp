@@ -33,7 +33,7 @@ namespace
     static void to_u8s(u8* b, const u32* w)
     {
         for (auto i = 0; i < 4; ++i) {
-            ByteReader::store(b + i * 4, AK::convert_between_host_and_big_endian(w[i]));
+            ByteReader::store(b + i * 4, Mods::convert_between_host_and_big_endian(w[i]));
         }
     }
 
