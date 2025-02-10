@@ -4,14 +4,14 @@
  * @brief Iterator
  * @version 6.0
  * @date 2023-06-28
- * 
+ *
  * @copyright Copyright (c) 2021-2024 pranaOS Developers, Krisna Pranav
- * 
+ *
  */
 
 #pragma once
 
-#include "forward.h"
+#include <mods/forward.h>
 
 namespace Mods
 {
@@ -19,8 +19,8 @@ namespace Mods
      * @tparam Container 
      * @tparam ValueType 
      */
-    template<typename Container, typename ValueType>
-    class SimpleIterator 
+    template <typename Container, typename ValueType>
+    class SimpleIterator
     {
     public:
         friend Container;
@@ -29,17 +29,17 @@ namespace Mods
          * @return true 
          * @return false 
          */
-        constexpr bool is_end() const 
-        { 
-            return m_index == SimpleIterator::end(m_container).m_index; 
+        constexpr bool is_end() const
+        {
+            return m_index == SimpleIterator::end(m_container).m_index;
         }
 
         /**
          * @return constexpr size_t 
          */
-        constexpr size_t index() const 
-        { 
-            return m_index; 
+        constexpr size_t index() const
+        {
+            return m_index;
         }
 
         /**
@@ -47,9 +47,9 @@ namespace Mods
          * @return true 
          * @return false 
          */
-        constexpr bool operator==(SimpleIterator other) const 
-        { 
-            return m_index == other.m_index; 
+        constexpr bool operator==(SimpleIterator other) const
+        {
+            return m_index == other.m_index;
         }
 
         /**
@@ -57,9 +57,9 @@ namespace Mods
          * @return true 
          * @return false 
          */
-        constexpr bool operator!=(SimpleIterator other) const 
-        { 
-            return m_index != other.m_index; 
+        constexpr bool operator!=(SimpleIterator other) const
+        {
+            return m_index != other.m_index;
         }
 
         /**
@@ -67,9 +67,9 @@ namespace Mods
          * @return true 
          * @return false 
          */
-        constexpr bool operator<(SimpleIterator other) const 
-        { 
-            return m_index < other.m_index; 
+        constexpr bool operator<(SimpleIterator other) const
+        {
+            return m_index < other.m_index;
         }
 
         /**
@@ -77,9 +77,9 @@ namespace Mods
          * @return true 
          * @return false 
          */
-        constexpr bool operator>(SimpleIterator other) const 
-        { 
-            return m_index > other.m_index; 
+        constexpr bool operator>(SimpleIterator other) const
+        {
+            return m_index > other.m_index;
         }
 
         /**
@@ -87,9 +87,9 @@ namespace Mods
          * @return true 
          * @return false 
          */
-        constexpr bool operator<=(SimpleIterator other) const 
-        { 
-            return m_index <= other.m_index; 
+        constexpr bool operator<=(SimpleIterator other) const
+        {
+            return m_index <= other.m_index;
         }
 
         /**
@@ -97,40 +97,39 @@ namespace Mods
          * @return true 
          * @return false 
          */
-        constexpr bool operator>=(SimpleIterator other) const 
-        { 
-            return m_index >= other.m_index; 
+        constexpr bool operator>=(SimpleIterator other) const
+        {
+            return m_index >= other.m_index;
         }
 
         /**
          * @param delta 
          * @return constexpr SimpleIterator 
          */
-        constexpr SimpleIterator operator+(ptrdiff_t delta) const 
-        { 
-            return SimpleIterator { m_container, m_index + delta }; 
+        constexpr SimpleIterator operator+(ptrdiff_t delta) const
+        {
+            return SimpleIterator{m_container, m_index + delta};
         }
 
         /**
          * @param delta 
          * @return constexpr SimpleIterator 
          */
-        constexpr SimpleIterator operator-(ptrdiff_t delta) const 
-        { 
-            return SimpleIterator { m_container, m_index - delta }; 
+        constexpr SimpleIterator operator-(ptrdiff_t delta) const
+        {
+            return SimpleIterator{m_container, m_index - delta};
         }
 
         /**
          * @param other 
          * @return constexpr ptrdiff_t 
          */
-        constexpr ptrdiff_t operator-(SimpleIterator other) const 
-        { 
-            return static_cast<ptrdiff_t>(m_index) - other.m_index; 
+        constexpr ptrdiff_t operator-(SimpleIterator other) const
+        {
+            return static_cast<ptrdiff_t>(m_index) - other.m_index;
         }
 
         /**
-
          * @return constexpr SimpleIterator 
          */
         constexpr SimpleIterator operator++()
@@ -145,8 +144,8 @@ namespace Mods
         constexpr SimpleIterator operator++(int)
         {
             ++m_index;
-            return SimpleIterator { m_container, m_index - 1 };
-        }   
+            return SimpleIterator{m_container, m_index - 1};
+        }
 
         /**
          * @return constexpr SimpleIterator 
@@ -163,38 +162,38 @@ namespace Mods
         constexpr SimpleIterator operator--(int)
         {
             --m_index;
-            return SimpleIterator { m_container, m_index + 1 };
+            return SimpleIterator{m_container, m_index + 1};
         }
 
         /**
          * @return ALWAYS_INLINE constexpr const& 
          */
-        ALWAYS_INLINE constexpr ValueType const& operator*() const 
-        { 
-            return m_container[m_index]; 
+        ALWAYS_INLINE constexpr ValueType const& operator*() const
+        {
+            return m_container[m_index];
         }
 
         /**
          * @return ALWAYS_INLINE constexpr& 
          */
-        ALWAYS_INLINE constexpr ValueType& operator*() 
-        { 
-            return m_container[m_index]; 
+        ALWAYS_INLINE constexpr ValueType& operator*()
+        {
+            return m_container[m_index];
         }
 
         /**
          * @return ALWAYS_INLINE constexpr const* 
          */
-        ALWAYS_INLINE constexpr ValueType const* operator->() const 
-        { 
-            return &m_container[m_index]; 
+        ALWAYS_INLINE constexpr ValueType const* operator->() const
+        {
+            return &m_container[m_index];
         }
 
         /**
          * @return ALWAYS_INLINE constexpr* 
          */
-        ALWAYS_INLINE constexpr ValueType* operator->() 
-        { 
+        ALWAYS_INLINE constexpr ValueType* operator->()
+        {
             return &m_container[m_index];
         }
 
@@ -202,24 +201,28 @@ namespace Mods
          * @param other 
          * @return SimpleIterator& 
          */
-        SimpleIterator& operator=(const SimpleIterator& other)
+        SimpleIterator& operator=(SimpleIterator const& other)
         {
             m_index = other.m_index;
             return *this;
         }
 
         /**
+         * @brief Construct a new Simple Iterator object
+         * 
          * @param obj 
          */
-        SimpleIterator(const SimpleIterator& obj) = default;
+        SimpleIterator(SimpleIterator const& obj) = default;
 
     private:
-
         /**
          * @param container 
          * @return constexpr SimpleIterator 
          */
-        static constexpr SimpleIterator begin(Container& container) { return { container, 0 }; }
+        static constexpr SimpleIterator begin(Container& container)
+        {
+            return {container, 0};
+        }
 
         /**
          * @param container 
@@ -229,19 +232,22 @@ namespace Mods
         {
             using RawContainerType = RemoveCV<Container>;
 
-            if constexpr (IsSame<StringView, RawContainerType> || IsSame<String, RawContainerType>)
-                return { container, container.length() };
+            if constexpr(IsSame<StringView, RawContainerType> || IsSame<String, RawContainerType>)
+                return {container, container.length()};
             else
-                return { container, container.size() };
+                return {container, container.size()};
         }
 
+        /**
+         * @param container
+         * @param index
+         */
         constexpr SimpleIterator(Container& container, size_t index)
-            : m_container(container)
-            , m_index(index)
-        { }
+            : m_container(container), m_index(index)
+        {
+        }
 
         Container& m_container;
         size_t m_index;
     }; // class SimpleIterator
-
 } // namespace Mods
