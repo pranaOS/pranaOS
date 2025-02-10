@@ -4,37 +4,49 @@
  * @brief json array
  * @version 6.0
  * @date 2023-09-09
- * 
+ *
  * @copyright Copyright (c) 2021-2024 pranaOS Developers, Krisna Pranav
- * 
+ *
  */
 
-#pragma once 
+#pragma once
 
+#include <mods/concept.h>
 #include <mods/jsonarrayserializer.h>
-#include <mods/jsonval.h>
+#include <mods/jsonvalue.h>
 #include <mods/vector.h>
 
-namespace Mods 
+namespace Mods
 {
-
-    class JsonArray 
+    class JsonArray
     {
     public:
-        /// @brief Construct a new Json Array object
-        JsonArray() { }
-        ~JsonArray() { }
+        /**
+         * @brief Construct a new Json Array object
+         *
+         */
+        JsonArray() = default;
 
         /**
-         * @param other 
+         * @brief Destroy the Json Array object
+         *
          */
-        JsonArray(const JsonArray& other)
+        ~JsonArray() = default;
+
+        /**
+         * @brief Construct a new Json Array object
+         *
+         * @param other
+         */
+        JsonArray(JsonArray const& other)
             : m_values(other.m_values)
         {
         }
 
         /**
-         * @param other 
+         * @brief Construct a new Json Array object
+         *
+         * @param other
          */
         JsonArray(JsonArray&& other)
             : m_values(move(other.m_values))
@@ -42,124 +54,143 @@ namespace Mods
         }
 
         /**
-         * @param other 
-         * @return JsonArray& 
+         * @brief Construct a new Json Array object
+         *
+         * @tparam ContainerT
+         * @param source
          */
-        JsonArray& operator=(const JsonArray& other)
+        template <IterableContainer ContainerT>
+        JsonArray(ContainerT const& source)
         {
-            if (this != &other)
-                m_values = other.m_values;
+            for(auto& value : source)
+                m_values.append(move(value));
+        }
 
+        /**
+         * @param other
+         * @return JsonArray&
+         */
+        JsonArray& operator=(JsonArray const& other)
+        {
+            if(this != &other)
+                m_values = other.m_values;
             return *this;
         }
 
         /**
-         * @param other 
-         * @return JsonArray& 
+         * @param other
+         * @return JsonArray&
          */
         JsonArray& operator=(JsonArray&& other)
         {
-            if (this != &other)
+            if(this != &other)
                 m_values = move(other.m_values);
-
             return *this;
         }
 
         /**
-         * @return int 
+         * @return size_t
          */
-        int size() const 
-        { 
-            return m_values.size(); 
+        [[nodiscard]] size_t size() const
+        {
+            return m_values.size();
         }
 
         /**
-         * @return true 
-         * @return false 
+         * @return true
+         * @return false
          */
-        bool is_empty() const 
-        { 
-            return m_values.is_empty(); 
+        [[nodiscard]] bool is_empty() const
+        {
+            return m_values.is_empty();
         }
 
         /**
-         * @param index 
-         * @return const JsonValue& 
+         * @param index
+         * @return JsonValue const&
          */
-        const JsonValue& at(int index) const 
-        { 
-            return m_values.at(index); 
+        [[nodiscard]] JsonValue const& at(size_t index) const
+        {
+            return m_values.at(index);
         }
 
         /**
-         * @param index 
-         * @return const JsonValue& 
+         * @param index
+         * @return JsonValue const&
          */
-        const JsonValue& operator[](int index) const 
-        { 
-            return at(index); 
+        [[nodiscard]] JsonValue const& operator[](size_t index) const
+        {
+            return at(index);
         }
 
-        /// @breif: clear
-        void clear() 
-        { 
-            m_values.clear(); 
-        }
-
-        /**
-         * @param value 
-         */
-        void append(JsonValue value) 
-        { 
-            m_values.append(move(value)); 
+        void clear()
+        {
+            m_values.clear();
         }
 
         /**
-         * @tparam Builder 
-         * @return Builder::OutputType 
+         * @param value
          */
-        template<typename Builder>
+        void append(JsonValue value)
+        {
+            m_values.append(move(value));
+        }
+
+        /**
+         * @param index
+         * @param value
+         */
+        void set(size_t index, JsonValue value)
+        {
+            m_values[index] = move(value);
+        }
+
+        /**
+         * @tparam Builder
+         * @return Builder::OutputType
+         */
+        template <typename Builder>
         typename Builder::OutputType serialized() const;
 
         /**
-         * @tparam Builder 
+         * @tparam Builder
          */
-        template<typename Builder>
+        template <typename Builder>
         void serialize(Builder&) const;
 
         /**
-         * @return String 
+         * @return String
          */
-        String to_string() const 
-        { 
-            return serialized<StringBuilder>(); 
+        [[nodiscard]] String to_string() const
+        {
+            return serialized<StringBuilder>();
         }
 
         /**
-         * @tparam Callback 
-         * @param callback 
+         * @tparam Callback
+         * @param callback
          */
-        template<typename Callback>
+        template <typename Callback>
         void for_each(Callback callback) const
         {
-            for (auto& value : m_values)
+            for(auto const& value : m_values)
                 callback(value);
         }
 
         /**
-         * @return const Vector<JsonValue>& 
+         * @return Vector<JsonValue> const&
          */
-        const Vector<JsonValue>& values() const 
-        { 
-            return m_values; 
+        [[nodiscard]] Vector<JsonValue> const& values() const
+        {
+            return m_values;
         }
 
         /**
-         * @param capacity 
+         * @param capacity
          */
-        void ensure_capacity(int capacity) 
-        { 
-            m_values.ensure_capacity(capacity); 
+        void ensure_capacity(size_t capacity)
+        {
+            m_values.ensure_capacity(capacity);
         }
 
     private:
@@ -167,21 +198,23 @@ namespace Mods
     }; // class JsonArray
 
     /**
-     * @tparam Builder 
-     * @param builder 
+     * @tparam Builder
+     * @param builder
      */
-    template<typename Builder>
+    template <typename Builder>
     inline void JsonArray::serialize(Builder& builder) const
     {
-        JsonArraySerializer serializer { builder };
-        for_each([&](auto& value) { serializer.add(value); });
+        auto serializer = MUST(JsonArraySerializer<>::try_create(builder));
+        for_each([&](auto& value)
+                { MUST(serializer.add(value)); });
+        MUST(serializer.finish());
     }
-    
+
     /**
-     * @tparam Builder 
-     * @return Builder::OutputType 
+     * @tparam Builder
+     * @return Builder::OutputType
      */
-    template<typename Builder>
+    template <typename Builder>
     inline typename Builder::OutputType JsonArray::serialized() const
     {
         Builder builder;
