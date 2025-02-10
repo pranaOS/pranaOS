@@ -109,5 +109,41 @@ namespace Mods
 
             return true;
         }
+
+        /**
+         * @return true 
+         * @return false 
+         */
+        constexpr bool is_ipv4_mapped() const
+        {
+            if (m_data[0] || m_data[1] || m_data[2] || m_data[3])
+                return false;
+            
+            if (m_data[10] != 0xff || m_data[11] != 0xff)
+                return false;
+            
+            return true;
+        }
+
+        /**
+         * @return Optional<IPv4Address> 
+         */
+        Optional<IPv4Address> ipv4_mapped_address() const
+        {
+            if (is_ipv4_mapped())
+                return IPv4Address(m_data[12], m_data[13], m_data[14], m_data[15]);
+            
+            return {};
+        }
+    private:
+        constexpr u16 group(unsigned i) const
+        {
+            VERIFY(i < 8);
+            return ((u16)m_data[i * sizeof]);
+        }
+
+        in6_addr_t m_data {};
     }; // class [[gnu::packed]] IPv6Address
+
+    static_assert(sizeof(IPv6Address) == 16);
 } // namespace Mods
