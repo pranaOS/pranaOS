@@ -183,7 +183,7 @@ namespace regex
      */
     ALWAYS_INLINE bool Parser::lookahead_any(StringView str)
     {
-        return AK::any_of(str, [this](auto ch) { return match(ch); });
+        return Mods::any_of(str, [this](auto ch) { return match(ch); });
     }
 
     ALWAYS_INLINE unsigned char Parser::skip()
@@ -1326,7 +1326,7 @@ namespace regex
             if (max_count > 0 && count >= max_count)
                 break;
 
-            if (hex && !AK::StringUtils::convert_to_uint_from_hex(c).has_value())
+            if (hex && !Mods::StringUtils::convert_to_uint_from_hex(c).has_value())
                 break;
             if (!hex && !c.to_uint().has_value())
                 break;
@@ -1354,7 +1354,7 @@ namespace regex
         if (str.is_empty())
             return {};
         if (hex)
-            return AK::StringUtils::convert_to_uint_from_hex(str);
+            return Mods::StringUtils::convert_to_uint_from_hex(str);
         return str.to_uint();
     }
 
