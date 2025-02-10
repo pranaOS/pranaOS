@@ -216,7 +216,7 @@ namespace Mods
 
             T value = __data[0];
             for (size_t i = 1; i < Size; ++i)
-                value = AK::max(__data[i], value);
+                value = Mods::max(__data[i], value);
             return value;
         }
     
@@ -226,7 +226,7 @@ namespace Mods
 
             T value = __data[0];
             for (size_t i = 1; i < Size; ++i)
-                value = AK::min(__data[i], value);
+                value = Mods::min(__data[i], value);
             return value;
         }
 
