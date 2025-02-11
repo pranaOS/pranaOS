@@ -4,124 +4,197 @@
  * @brief lexical path
  * @version 6.0
  * @date 2023-07-11
- * 
+ *
  * @copyright Copyright (c) 2021-2024 pranaOS Developers, Krisna Pranav
- * 
+ *
  */
 
 #pragma once
 
-#include "string.h"
-#include "vector.h"
+#include <mods/string.h>
+#include <mods/vector.h>
 
-
-namespace Mods 
+namespace Mods
 {
-
-    class LexicalPath 
+    class LexicalPath
     {
     public:
-        LexicalPath() { }
-        explicit LexicalPath(const StringView&);
+        /**
+         * @brief Construct a new Lexical Path object
+         * 
+         */
+        explicit LexicalPath(String);
 
         /**
          * @return true 
          * @return false 
          */
-        bool is_valid() const 
-        { 
-            return m_is_valid; 
+        bool is_absolute() const
+        {
+            return !m_string.is_empty() && m_string[0] == '/';
         }
 
         /**
-         * @return true 
-         * @return false 
+         * @return String const& 
          */
-        bool is_absolute() const 
-        { 
-            return m_is_absolute; 
+        String const& string() const
+        {
+            return m_string;
         }
 
         /**
-         * @return const String& 
+         * @return StringView 
          */
-        const String& string() const 
-        { 
-            return m_string; 
+        StringView dirname() const
+        {
+            return m_dirname;
         }
 
         /**
-         * @return const String& 
+         * @return StringView 
          */
-        const String& dirname() const 
-        { 
-            return m_dirname; 
+        StringView basename() const
+        {
+            return m_basename;
         }
 
         /**
-         * @return const String& 
+         * @return StringView 
          */
-        const String& basename() const 
-        { 
-            return m_basename; 
+        StringView title() const
+        {
+            return m_title;
         }
 
         /**
-         * @return const String& 
+         * @return StringView 
          */
-        const String& title() const 
-        { 
-            return m_title; 
+        StringView extension() const
+        {
+            return m_extension;
         }
 
         /**
-         * @return const String& 
+         * @return Vector<StringView> const& 
          */
-        const String& extension() const 
-        { 
-            return m_extension; 
+        Vector<StringView> const& parts_view() const
+        {
+            return m_parts;
         }
 
-        /**
-         * @return const Vector<String>& 
-         */
-        const Vector<String>& parts() const 
-        { 
-            return m_parts; 
-        }
+        [[nodiscard]] Vector<String> parts() const;
+
+        bool has_extension(StringView) const;
 
         /**
-         * @return true 
-         * @return false 
+         * @return LexicalPath 
          */
-        bool has_extension(const StringView&) const;
+        [[nodiscard]] LexicalPath append(StringView) const;
+        [[nodiscard]] LexicalPath prepend(StringView) const;
+        [[nodiscard]] LexicalPath parent() const;
 
         /**
          * @return String 
          */
-        static String canonicalized_path(const StringView&);
+        [[nodiscard]] static String canonicalized_path(String);
+
+        /**
+         * @param dir_path 
+         * @param target 
+         * @return String 
+         */
+        [[nodiscard]] static String absolute_path(String dir_path, String target);
+
+        /**
+         * @param absolute_path 
+         * @param prefix 
+         * @return String 
+         */
+        [[nodiscard]] static String relative_path(StringView absolute_path, StringView prefix);
+
+        /**
+         * @tparam S 
+         * @param first 
+         * @param rest 
+         * @return LexicalPath 
+         */
+        template <typename... S>
+        [[nodiscard]] static LexicalPath join(StringView first, S&&... rest)
+        {
+            StringBuilder builder;
+            builder.append(first);
+
+            ((builder.append('/'), builder.append(forward<S>(rest))), ...);
+
+            return LexicalPath{builder.to_string()};
+        }
+
+        /**
+         * @param path 
+         * @return String 
+         */
+        [[nodiscard]] static String dirname(String path)
+        {
+            auto lexical_path = LexicalPath(move(path));
+            return lexical_path.dirname();
+        }
+
+        /**
+         * @param path 
+         * @return String 
+         */
+        [[nodiscard]] static String basename(String path)
+        {
+            auto lexical_path = LexicalPath(move(path));
+            return lexical_path.basename();
+        }
+
+        /**
+         * @param path 
+         * @return String 
+         */
+        [[nodiscard]] static String title(String path)
+        {
+            auto lexical_path = LexicalPath(move(path));
+            return lexical_path.title();
+        }
+
+        /**
+         * @param path 
+         * @return String 
+         */
+        [[nodiscard]] static String extension(String path)
+        {
+            auto lexical_path = LexicalPath(move(path));
+            return lexical_path.extension();
+        }
 
     private:
-        void canonicalize();
-
-        Vector<String> m_parts;
+        Vector<StringView> m_parts;
         String m_string;
-        String m_dirname;
-        String m_basename;
-        String m_title;
-        String m_extension;
-        bool m_is_valid { false };
-        bool m_is_absolute { false };
-    };
+        StringView m_dirname;
+        StringView m_basename;
+        StringView m_title;
+        StringView m_extension;
+    }; // class LexicalPath
 
-    template<>
-    struct Formatter<LexicalPath> : Formatter<StringView> {
-        void format(TypeErasedFormatParams& params, FormatBuilder& builder, const LexicalPath& value)
+    /**
+     * @tparam  
+     */
+    template <>
+    struct Formatter<LexicalPath> : Formatter<StringView>
+    {
+        /**
+         * @param builder 
+         * @param value 
+         * @return ErrorOr<void> 
+         */
+        ErrorOr<void> format(FormatBuilder& builder, LexicalPath const& value)
         {
-            Formatter<StringView>::format(params, builder, value.string());
+            return Formatter<StringView>::format(builder, value.string());
         }
-    };
+    }; // struct Formatter<LexicalPath> : Formatter<StringView>
 
-};
+}; // namespace Mods
 
 using Mods::LexicalPath;
