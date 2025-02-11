@@ -34,5 +34,14 @@ namespace Mods
         {}
     }; // class JsonPathElement
 
-    
+    class JsonPath : public Vector<JsonPathElement>
+    {
+    public:
+        /**
+         * @return JsonValue 
+         */
+        JsonValue resolve(JsonValue const&) const;
+
+        String to_string() const;
+    }; // class JsonPath : public Vector<JsonPathElement
 } // namespace Mods
