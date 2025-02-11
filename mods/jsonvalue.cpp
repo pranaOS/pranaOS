@@ -20,5 +20,36 @@
 
 namespace Mods
 {
-    
+    /**
+     * @brief Construct a new Json Value:: Json Value object
+     * 
+     * @param type 
+     */
+    JsonValue::JsonValue(Type type)
+        : m_type(type)
+    {}
+
+    /**
+     * @brief Construct a new Json Value:: Json Value object
+     * 
+     * @param other 
+     */
+    JsonValue::JsonValue(JsonValue const& other)
+    {
+        copy_from(other);
+    }   
+
+    /**
+     * @param other 
+     * @return JsonValue& 
+     */
+    JsonValue& JsonValue::operator=(JsonValue const& other)
+    {
+        if (this != other) {
+            clear();
+            copy_from(other);
+        }
+
+        return *this;
+    }
 }
