@@ -4,25 +4,27 @@
  * @brief json value
  * @version 6.0
  * @date 2023-09-08
- * 
+ *
  * @copyright Copyright (c) 2021-2024 pranaOS Developers, Krisna Pranav
- * 
+ *
  */
 
-#pragma once 
+#pragma once
 
 #include <mods/forward.h>
-#include <mods/ipv4address.h>
 #include <mods/optional.h>
-#include <mods/string.h>
-#include <mods/string_builder.h>
+#include <mods/stringbuilder.h>
 
-namespace Mods 
+#ifndef KERNEL
+#include <mods/string.h>
+#endif
+
+namespace Mods
 {
-    class JsonValue 
+    class JsonValue
     {
     public:
-        enum class Type 
+        enum class Type
         {
             Null,
             Int32,
@@ -36,23 +38,45 @@ namespace Mods
             String,
             Array,
             Object,
-        };
+        }; // enum class Type
 
-        static Optional<JsonValue> from_string(const StringView&);
-
-        /// @brief Construct a new Json Value object
+        static ErrorOr<JsonValue> from_string(StringView);
+        
+        /**
+         * @brief Construct a new Json Value object
+         * 
+         */
         explicit JsonValue(Type = Type::Null);
 
-        /// @brief Destroy the Json Value object
-        ~JsonValue() 
-        { 
-            clear(); 
+        /**
+         * @brief Destroy the Json Value object
+         * 
+         */
+        ~JsonValue()
+        {
+            clear();
         }
 
-        JsonValue(const JsonValue&);
+        /**
+         * @brief Construct a new Json Value object
+         * 
+         */
+        JsonValue(JsonValue const&);
+
+        /**
+         * @brief Construct a new Json Value object
+         * 
+         */
         JsonValue(JsonValue&&);
 
-        JsonValue& operator=(const JsonValue&);
+        /**
+         * @return JsonValue& 
+         */
+        JsonValue& operator=(JsonValue const&);
+
+        /**
+         * @return JsonValue& 
+         */
         JsonValue& operator=(JsonValue&&);
 
         JsonValue(int);
@@ -65,42 +89,50 @@ namespace Mods
     #if !defined(KERNEL)
         JsonValue(double);
     #endif
-
         JsonValue(bool);
-        JsonValue(const char*);
-        JsonValue(const String&);
-        JsonValue(const IPv4Address&);
-        JsonValue(const JsonArray&);
-        JsonValue(const JsonObject&);
+        JsonValue(char const*);
+    #ifndef KERNEL
+        JsonValue(String const&);
+    #endif
+        JsonValue(StringView);
+        JsonValue(JsonArray const&);
+        JsonValue(JsonObject const&);
 
         JsonValue(JsonArray&&);
         JsonValue(JsonObject&&);
 
+        /**
+         * @return JsonValue& 
+         */
         JsonValue& operator=(JsonArray&&) = delete;
+
+        /**
+         * @return JsonValue& 
+         */
         JsonValue& operator=(JsonObject&&) = delete;
 
         /**
          * @tparam Builder 
          * @return Builder::OutputType 
          */
-        template<typename Builder>
+        template <typename Builder>
         typename Builder::OutputType serialized() const;
 
         /**
          * @tparam Builder 
          */
-        template<typename Builder>
+        template <typename Builder>
         void serialize(Builder&) const;
 
+    #ifndef KERNEL
         /**
          * @param alternative 
          * @return String 
          */
-        String as_string_or(const String& alternative)
+        String as_string_or(String const& alternative) const
         {
-            if (is_string())
+            if(is_string())
                 return as_string();
-
             return alternative;
         }
 
@@ -109,59 +141,100 @@ namespace Mods
          */
         String to_string() const
         {
-            if (is_string())
+            if(is_string())
                 return as_string();
-
             return serialized<StringBuilder>();
         }
-
-        /**
-         * @return Optional<IPv4Address> 
-         */
-        Optional<IPv4Address> to_ipv4_address() const
-        {
-            if (!is_string())
-                return {};
-
-            return IPv4Address::from_string(as_string());
-        }
+    #endif
 
         /**
          * @param default_value 
          * @return int 
          */
-        int to_int(int default_value = 0) const 
-        { 
-            return to_i32(default_value); 
+        int to_int(int default_value = 0) const
+        {
+            return to_i32(default_value);
         }
 
         /**
          * @param default_value 
          * @return i32 
          */
-        i32 to_i32(i32 default_value = 0) const 
-        { 
-            return to_number<i32>(default_value); 
+        i32 to_i32(i32 default_value = 0) const
+        {
+            return to_number<i32>(default_value);
+        }
+
+        /**
+         * @param default_value 
+         * @return i64 
+         */
+        i64 to_i64(i64 default_value = 0) const
+        {
+            return to_number<i64>(default_value);
         }
 
         /**
          * @param default_value 
          * @return unsigned 
          */
-        unsigned to_uint(unsigned default_value = 0) const 
-        { 
-            return to_u32(default_value); 
+        unsigned to_uint(unsigned default_value = 0) const
+        {
+            return to_u32(default_value);
         }
 
         /**
          * @param default_value 
          * @return u32 
          */
-        u32 to_u32(u32 default_value = 0) const 
-        { 
-            return to_number<u32>(default_value); 
+        u32 to_u32(u32 default_value = 0) const
+        {
+            return to_number<u32>(default_value);
         }
-    
+
+        /**
+         * @param default_value 
+         * @return u64 
+         */
+        u64 to_u64(u64 default_value = 0) const
+        {
+            return to_number<u64>(default_value);
+        }
+    #if !defined(KERNEL)
+        /**
+         * @param default_value 
+         * @return float 
+         */
+        float to_float(float default_value = 0) const
+        {
+            return to_number<float>(default_value);
+        }
+
+        /**
+         * @param default_value 
+         * @return double 
+         */
+        double to_double(double default_value = 0) const
+        {
+            return to_number<double>(default_value);
+        }
+    #endif
+
+        /**
+         * @brief 
+         * 
+         * @param default_value 
+         * @return FlatPtr 
+         */
+        FlatPtr to_addr(FlatPtr default_value = 0) const
+        {
+    #ifdef __LP64__
+            return to_u64(default_value);
+    #else
+            return to_u32(default_value);
+    #endif
+        }
+
         /**
          * @param default_value 
          * @return true 
@@ -169,9 +242,8 @@ namespace Mods
          */
         bool to_bool(bool default_value = false) const
         {
-            if (!is_bool())
+            if(!is_bool())
                 return default_value;
-
             return as_bool();
         }
 
@@ -180,7 +252,7 @@ namespace Mods
          */
         i32 as_i32() const
         {
-            ASSERT(is_i32());
+            VERIFY(is_i32());
             return m_value.as_i32;
         }
 
@@ -189,16 +261,16 @@ namespace Mods
          */
         u32 as_u32() const
         {
-            ASSERT(is_u32());
+            VERIFY(is_u32());
             return m_value.as_u32;
-        }
+        }   
 
         /**
          * @return i64 
          */
         i64 as_i64() const
         {
-            ASSERT(is_i64());
+            VERIFY(is_i64());
             return m_value.as_i64;
         }
 
@@ -207,41 +279,50 @@ namespace Mods
          */
         u64 as_u64() const
         {
-            ASSERT(is_u64());
+            VERIFY(is_u64());
             return m_value.as_u64;
         }
 
-        int as_bool() const
+        /**
+         * @return true 
+         * @return false 
+         */
+        bool as_bool() const
         {
-            ASSERT(is_bool());
+            VERIFY(is_bool());
             return m_value.as_bool;
         }
 
+    #ifndef KERNEL
         String as_string() const
         {
-            ASSERT(is_string());
+            VERIFY(is_string());
             return *m_value.as_string;
         }
+    #endif
 
-        const JsonObject& as_object() const
+        /**
+         * @return JsonObject const& 
+         */
+        JsonObject const& as_object() const
         {
-            ASSERT(is_object());
+            VERIFY(is_object());
             return *m_value.as_object;
         }
 
         /**
-         * @return const JsonArray& 
+         * @return JsonArray const& 
          */
-        const JsonArray& as_array() const
+        JsonArray const& as_array() const
         {
-            ASSERT(is_array());
+            VERIFY(is_array());
             return *m_value.as_array;
         }
 
     #if !defined(KERNEL)
         double as_double() const
         {
-            ASSERT(is_double());
+            VERIFY(is_double());
             return m_value.as_double;
         }
     #endif
@@ -258,73 +339,67 @@ namespace Mods
          * @return true 
          * @return false 
          */
-        bool is_null() const 
-        { 
-            return m_type == Type::Null; 
+        bool is_null() const
+        {
+            return m_type == Type::Null;
         }
 
-        bool is_bool() const 
-        { 
-            return m_type == Type::Bool; 
-        }
-        
-        bool is_string() const 
-        { 
-            return m_type == Type::String; 
-        }
-
-        bool is_i32() const 
-        { 
-            return m_type == Type::Int32; 
+        /**
+         * @return true 
+         * @return false 
+         */
+        bool is_bool() const
+        {
+            return m_type == Type::Bool;
         }
 
-        bool is_u32() const 
-        { 
-            return m_type == Type::UnsignedInt32; 
+        /**
+         * @return true 
+         * @return false 
+         */
+        bool is_string() const
+        {
+            return m_type == Type::String;
         }
 
-        bool is_i64() const 
-        { 
-            return m_type == Type::Int64; 
+        bool is_i32() const
+        {
+            return m_type == Type::Int32;
         }
 
-        bool is_u64() const 
-        { 
-            return m_type == Type::UnsignedInt64; 
+        bool is_u32() const
+        {
+            return m_type == Type::UnsignedInt32;
         }
-        
+
+        bool is_i64() const
+        {
+            return m_type == Type::Int64;
+        }
+
+        bool is_u64() const
+        {
+            return m_type == Type::UnsignedInt64;
+        }
     #if !defined(KERNEL)
         bool is_double() const
         {
             return m_type == Type::Double;
         }
     #endif
-
-        /**
-         * @return true 
-         * @return false 
-         */
         bool is_array() const
         {
             return m_type == Type::Array;
         }
 
-        /**
-         * @return true 
-         * @return false 
-         */
-        bool is_object() const 
-        { 
-            return m_type == Type::Object; 
+        bool is_object() const
+        {
+            return m_type == Type::Object;
         }
 
-        /**
-         * @return true 
-         * @return false 
-         */
         bool is_number() const
         {
-            switch (m_type) 
+            switch(m_type)
             {
             case Type::Int32:
             case Type::UnsignedInt32:
@@ -344,20 +419,20 @@ namespace Mods
          * @param default_value 
          * @return T 
          */
-        template<typename T>
+        template <typename T>
         T to_number(T default_value = 0) const
         {
     #if !defined(KERNEL)
-            if (is_double())
+            if(is_double())
                 return (T)as_double();
     #endif
-            if (type() == Type::Int32)
+            if(type() == Type::Int32)
                 return (T)as_i32();
-            if (type() == Type::UnsignedInt32)
+            if(type() == Type::UnsignedInt32)
                 return (T)as_u32();
-            if (type() == Type::Int64)
+            if(type() == Type::Int64)
                 return (T)as_i64();
-            if (type() == Type::UnsignedInt64)
+            if(type() == Type::UnsignedInt64)
                 return (T)as_u64();
             return default_value;
         }
@@ -367,18 +442,20 @@ namespace Mods
          * @return true 
          * @return false 
          */
-        bool equals(const JsonValue& other) const;
+        bool equals(JsonValue const& other) const;
 
     private:
         void clear();
-        
-        void copy_from(const JsonValue&);
 
-        Type m_type { Type::Null };
+        void copy_from(JsonValue const&);
 
-        union 
+        Type m_type{Type::Null};
+
+        union
         {
-            StringImpl* as_string { nullptr };
+    #ifndef KERNEL
+            StringImpl* as_string{nullptr};
+    #endif
             JsonArray* as_array;
             JsonObject* as_object;
     #if !defined(KERNEL)
@@ -390,25 +467,18 @@ namespace Mods
             u64 as_u64;
             bool as_bool;
         } m_value;
-    }; // class JsonValue
+    };
 
-    /**
-     * @tparam -
-     */
-    template<>
-    struct Formatter<JsonValue> : Formatter<StringView> 
+    #ifndef KERNEL
+    template <>
+    struct Formatter<JsonValue> : Formatter<StringView>
     {
-        /**
-         * @param params 
-         * @param builder 
-         * @param value 
-         */
-        void format(TypeErasedFormatParams& params, FormatBuilder& builder, const JsonValue& value)
+        ErrorOr<void> format(FormatBuilder& builder, JsonValue const& value)
         {
-            Formatter<StringView>::format(params, builder, value.to_string());
+            return Formatter<StringView>::format(builder, value.to_string());
         }
-    }; // template
-
+    };
+    #endif
 } // namespace Mods
 
 using Mods::JsonValue;
