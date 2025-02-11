@@ -19,6 +19,34 @@ namespace Mods
 {
     class JsonPathElement
     {
+    public:
+        enum class Kind
+        {
+            Key,
+            Index,
+            AnyIndex,
+            AnyKey,
+        }; // enum class Kind
+
+        /**
+         * @brief Construct a new Json Path Element object
+         * 
+         * @param index 
+         */
+        JsonPathElement(size_t index)
+            : m_kind(Kind::Index)
+            , m_index(index)
+        {}
+
+        /**
+         * @brief Construct a new Json Path Element object
+         * 
+         * @param key 
+         */
+        JsonPathElement(StringView key)
+            : m_kind(Kind::Key)
+            , m_key(key)
+        { }
     private:
         Kind m_kind;
         String m_key;
