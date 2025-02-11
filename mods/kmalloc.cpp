@@ -25,9 +25,49 @@ void* operator new(size_t size)
     return ptr;
 }
 
+/**
+ * @param size 
+ * @return void* 
+ */
 void* operator new(size_t size, std::nothrow_t const&) noexcept
 {
     return malloc(size);
+}
+
+/**
+ * @param size 
+ * @return void* 
+ */
+void* operator new[](size_t size)
+{
+    void* ptr = malloc(size);
+    VERIFY(ptr);
+    return ptr;
+}
+
+/**
+ * @param size 
+ * @return void* 
+ */
+void* operator new[](size_t size, std::nothrow_t const&) noexcept
+{
+    return malloc(size);
+}
+
+/**
+ * @param ptr 
+ */
+void operator delete[](void* ptr) noexcept
+{
+    return free(ptr);
+}
+
+/**
+ * @param ptr 
+ */
+void operator delete[](void* ptr, size_t) noexcept
+{
+    return free(ptr);
 }
 
 #endif
