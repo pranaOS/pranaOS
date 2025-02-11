@@ -47,6 +47,51 @@ namespace Mods
             : m_kind(Kind::Key)
             , m_key(key)
         { }
+
+        /**
+         * @return String 
+         */
+        String to_string() const
+        {
+            switch (m_kind) {
+            case Kind::Key:
+                return key();
+            case Kind::Index:
+                return String::number(index());
+            default:
+                return "*";
+            }
+        }   
+
+        /**
+         * @param other 
+         * @return true 
+         * @return false 
+         */
+        bool operator==(JsonPathElement const& other) const
+        {
+            switch (other.kind()) {
+            case Kind::Key:
+                return (m_kind == Kind::Key && other.key());
+            case Kind::Index:
+                return (m_kind == Kind::Index && other.index() == index());
+            case Kind::AnyKey:
+                return m_kind == Kind::Key;
+            case Kind::AnyIndex:
+                return m_kind == Kind::Index;
+            }
+        }
+
+        /**
+         * @param other 
+         * @return true 
+         * @return false 
+         */
+        bool operator!=(JsonPathElement const& other) const
+        {
+            return !(*this == other);
+        }
+
     private:
         Kind m_kind;
         String m_key;
