@@ -4,24 +4,24 @@
  * @brief kmalloc[kernel]
  * @version 6.0
  * @date 2023-06-29
- * 
+ *
  * @copyright Copyright (c) 2021-2024 pranaOS Developers, Krisna Pranav
- * 
+ *
  */
-
 
 #pragma once
 
-#include <mods/check.h>
+#include <mods/checked.h>
 
 #if defined(KERNEL)
-#    include <kernel/heap/kmalloc.h>
+#include <kernel/heap/kmalloc.h>
 #else
-#    include <new>
-#    include <stdlib.h>
+#include <new>
+#include <stdlib.h>
 
-#    define kmalloc malloc
-#    define kmalloc_good_size malloc_good_size
+#define kcalloc calloc
+#define kmalloc malloc
+#define kmalloc_good_size malloc_good_size
 
 /**
  * @param ptr 
@@ -33,23 +33,23 @@ inline void kfree_sized(void* ptr, size_t)
 #endif
 
 #ifndef __pranaos__
-#    include <mods/types.h>
+#include <mods/types.h>
 
-#    ifndef MODS_OS_MACOS
-extern "C" 
+#ifndef MODS_OS_MACOS
+extern "C"
 {
     /**
      * @param size 
      * @return size_t 
      */
-    inline size_t malloc_good_size(size_t size) 
-    { 
-        return size; 
+    inline size_t malloc_good_size(size_t size)
+    {
+        return size;
     }
 }
-#    else
-#        include <malloc/malloc.h>
-#    endif
+#else
+#include <malloc/malloc.h>
+#endif
 #endif
 
 using std::nothrow;
