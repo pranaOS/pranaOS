@@ -4,101 +4,117 @@
  * @brief ownptr
  * @version 6.0
  * @date 2023-07-10
- * 
+ *
  * @copyright Copyright (c) 2021-2024 pranaOS Developers, Krisna Pranav
- * 
+ *
  */
 
 #pragma once
 
-#include "nonnullrefptr.h"
-#include "refcounted.h"
+#include <mods/error.h>
+#include <mods/nonnullownptr.h>
+#include <mods/refcounted.h>
 
-namespace Mods 
+#define OWNPTR_SCRUB_BYTE 0xf0
+
+namespace Mods
 {
-
-    template<typename T>
-    class OwnPtr 
+    /**
+     * @tparam T 
+     */
+    template <typename T>
+    class [[nodiscard]] OwnPtr
     {
     public:
+        OwnPtr() = default;
 
         /**
          * @brief Construct a new Own Ptr object
          * 
          */
-        OwnPtr() { }
-
-        /**
-         * @param ptr 
-         */
-        explicit OwnPtr(T* ptr) : m_ptr(ptr) {
-            static_assert(
-                requires { requires typename T::AllowOwnPtr()(); } || !requires(T obj) { requires !typename T::AllowOwnPtr()(); obj.ref(); obj.unref(); },
-                "Use RefPtr<> for RefCounted types");
-        }
-
-        /**
-         * @param other 
-         */
-        OwnPtr(OwnPtr&& other) : m_ptr(other.leak_ptr())
+        OwnPtr(decltype(nullptr))
+            : m_ptr(nullptr)
         {
         }
 
         /**
+         * @brief Construct a new Own Ptr object
+         * 
+         * @param other 
+         */
+        OwnPtr(OwnPtr&& other)
+            : m_ptr(other.leak_ptr())
+        {
+        }   
+
+        /**
+         * @brief Construct a new Own Ptr object
+         * 
          * @tparam U 
          * @param other 
          */
-        template<typename U>
-        OwnPtr(NonnullOwnPtr<U>&& other) : m_ptr(other.leak_ptr())
+        template <typename U>
+        OwnPtr(NonnullOwnPtr<U>&& other)
+            : m_ptr(other.leak_ptr())
         {
         }
 
         /**
+         * @brief Construct a new Own Ptr object
+         * 
          * @tparam U 
          * @param other 
          */
-        template<typename U>
-        OwnPtr(OwnPtr<U>&& other) : m_ptr(other.leak_ptr())
+        template <typename U>
+        OwnPtr(OwnPtr<U>&& other)
+            : m_ptr(other.leak_ptr())
         {
         }
 
-
-        OwnPtr(std::nullptr_t) {};
-
+        /**
+         * @brief Destroy the Own Ptr object
+         * 
+         */
         ~OwnPtr()
         {
             clear();
     #ifdef SANITIZE_PTRS
-            if constexpr (sizeof(T*) == 8)
-                m_ptr = (T*)(0xe1e1e1e1e1e1e1e1);
-            else
-                m_ptr = (T*)(0xe1e1e1e1);
+            m_ptr = (T*)(explode_byte(OWNPTR_SCRUB_BYTE));
     #endif
         }
 
-        OwnPtr(const OwnPtr&) = delete;
-        template<typename U>
-        OwnPtr(const OwnPtr<U>&) = delete;
-        OwnPtr& operator=(const OwnPtr&) = delete;
-        template<typename U>
-        OwnPtr& operator=(const OwnPtr<U>&) = delete;
+        OwnPtr(OwnPtr const&) = delete;
+        template <typename U>
+        OwnPtr(OwnPtr<U> const&) = delete;
+        OwnPtr& operator=(OwnPtr const&) = delete;
+        template <typename U>
+        OwnPtr& operator=(OwnPtr<U> const&) = delete;
 
-        template<typename U>
-        OwnPtr(const NonnullOwnPtr<U>&) = delete;
-        template<typename U>
-        OwnPtr& operator=(const NonnullOwnPtr<U>&) = delete;
-        template<typename U>
-        OwnPtr(const RefPtr<U>&) = delete;
-        template<typename U>
-        OwnPtr(const NonnullRefPtr<U>&) = delete;
-        template<typename U>
-        OwnPtr(const WeakPtr<U>&) = delete;
-        template<typename U>
-        OwnPtr& operator=(const RefPtr<U>&) = delete;
-        template<typename U>
-        OwnPtr& operator=(const NonnullRefPtr<U>&) = delete;
-        template<typename U>
-        OwnPtr& operator=(const WeakPtr<U>&) = delete;
+        template <typename U>
+        OwnPtr(NonnullOwnPtr<U> const&) = delete;
+        template <typename U>
+        OwnPtr& operator=(NonnullOwnPtr<U> const&) = delete;
+        template <typename U>
+        OwnPtr(RefPtr<U> const&) = delete;
+        template <typename U>
+        OwnPtr(NonnullRefPtr<U> const&) = delete;
+        template <typename U>
+        OwnPtr(WeakPtr<U> const&) = delete;
+        template <typename U>
+        OwnPtr& operator=(RefPtr<U> const&) = delete;
+        /**
+         * @tparam U 
+         * @return OwnPtr& 
+         */
+        template <typename U>
+        OwnPtr& operator=(NonnullRefPtr<U> const&) = delete;
+
+        /**
+         * @tparam U 
+         * @return OwnPtr& 
+         */
+        template <typename U>
+        OwnPtr& operator=(WeakPtr<U> const&) = delete;
 
         /**
          * @param other 
@@ -116,25 +132,25 @@ namespace Mods
          * @param other 
          * @return OwnPtr& 
          */
-        template<typename U>
+        template <typename U>
         OwnPtr& operator=(OwnPtr<U>&& other)
         {
             OwnPtr ptr(move(other));
             swap(ptr);
             return *this;
         }
-        
+
         /**
          * @tparam U 
          * @param other 
          * @return OwnPtr& 
          */
-        template<typename U>
+        template <typename U>
         OwnPtr& operator=(NonnullOwnPtr<U>&& other)
         {
             OwnPtr ptr(move(other));
             swap(ptr);
-            ASSERT(m_ptr);
+            VERIFY(m_ptr);
             return *this;
         }
 
@@ -142,13 +158,7 @@ namespace Mods
          * @param ptr 
          * @return OwnPtr& 
          */
-        OwnPtr& operator=(T* ptr)
-        {
-            if (m_ptr != ptr)
-                delete m_ptr;
-            m_ptr = ptr;
-            return *this;
-        }
+        OwnPtr& operator=(T* ptr) = delete;
 
         /**
          * @return OwnPtr& 
@@ -169,9 +179,9 @@ namespace Mods
          * @return true 
          * @return false 
          */
-        bool operator!() const 
-        { 
-            return !m_ptr; 
+        bool operator!() const
+        {
+            return !m_ptr;
         }
 
         /**
@@ -189,7 +199,7 @@ namespace Mods
          */
         NonnullOwnPtr<T> release_nonnull()
         {
-            ASSERT(m_ptr);
+            VERIFY(m_ptr);
             return NonnullOwnPtr<T>(NonnullOwnPtr<T>::Adopt, *leak_ptr());
         }
 
@@ -197,27 +207,27 @@ namespace Mods
          * @tparam U 
          * @return NonnullOwnPtr<U> 
          */
-        template<typename U>
+        template <typename U>
         NonnullOwnPtr<U> release_nonnull()
         {
-            ASSERT(m_ptr);
+            VERIFY(m_ptr);
             return NonnullOwnPtr<U>(NonnullOwnPtr<U>::Adopt, static_cast<U&>(*leak_ptr()));
         }
 
         /**
          * @return T* 
          */
-        T* ptr() 
-        { 
-            return m_ptr; 
+        T* ptr()
+        {
+            return m_ptr;
         }
 
         /**
          * @return const T* 
          */
-        const T* ptr() const 
-        { 
-            return m_ptr; 
+        const T* ptr() const
+        {
+            return m_ptr;
         }
 
         /**
@@ -225,7 +235,7 @@ namespace Mods
          */
         T* operator->()
         {
-            ASSERT(m_ptr);
+            VERIFY(m_ptr);
             return m_ptr;
         }
 
@@ -234,7 +244,7 @@ namespace Mods
          */
         const T* operator->() const
         {
-            ASSERT(m_ptr);
+            VERIFY(m_ptr);
             return m_ptr;
         }
 
@@ -243,7 +253,7 @@ namespace Mods
          */
         T& operator*()
         {
-            ASSERT(m_ptr);
+            VERIFY(m_ptr);
             return *m_ptr;
         }
 
@@ -252,34 +262,34 @@ namespace Mods
          */
         const T& operator*() const
         {
-            ASSERT(m_ptr);
+            VERIFY(m_ptr);
             return *m_ptr;
         }
 
         /**
          * @return const T* 
          */
-        operator const T*() const 
-        { 
-            return m_ptr; 
+        operator const T*() const
+        {
+            return m_ptr;
         }
 
         /**
          * @return T* 
          */
-        operator T*() 
-        { 
-            return m_ptr; 
+        operator T*()
+        {
+            return m_ptr;
         }
 
         /**
          * @return true 
          * @return false 
          */
-        operator bool() 
-        { 
-            return !!m_ptr; 
-        }
+        operator bool()
+        {
+            return !!m_ptr;
+        }   
 
         /**
          * @param other 
@@ -293,15 +303,37 @@ namespace Mods
          * @tparam U 
          * @param other 
          */
-        template<typename U>
+        template <typename U>
         void swap(OwnPtr<U>& other)
         {
             ::swap(m_ptr, other.m_ptr);
         }
 
+        /**
+         * @param ptr 
+         * @return OwnPtr 
+         */
+        static OwnPtr lift(T* ptr)
+        {
+            return OwnPtr{ptr};
+        }
+
+    protected:
+        /**
+         * @brief Construct a new Own Ptr object
+         * 
+         * @param ptr 
+         */
+        explicit OwnPtr(T* ptr)
+            : m_ptr(ptr)
+        {
+            static_assert(
+                requires { requires typename T::AllowOwnPtr()(); } || !requires { requires !typename T::AllowOwnPtr()(); declval<T>().ref(); declval<T>().unref(); }, "Use RefPtr<> for RefCounted types");
+        }
+
     private:
         T* m_ptr = nullptr;
-    };
+    }; // class [[nodiscard]] OwnPtr
 
     /**
      * @tparam T 
@@ -309,7 +341,7 @@ namespace Mods
      * @param a 
      * @param b 
      */
-    template<typename T, typename U>
+    template <typename T, typename U>
     inline void swap(OwnPtr<T>& a, OwnPtr<U>& b)
     {
         a.swap(b);
@@ -317,26 +349,75 @@ namespace Mods
 
     /**
      * @tparam T 
+     * @param object 
+     * @return OwnPtr<T> 
      */
-    template<typename T>
-    struct Traits<OwnPtr<T>> : public GenericTraits<OwnPtr<T>> {
-        using PeekType = const T*;
-        static unsigned hash(const OwnPtr<T>& p) { return ptr_hash(p.ptr()); }
-        static bool equals(const OwnPtr<T>& a, const OwnPtr<T>& b) { return a.ptr() == b.ptr(); }
-    };
-    
+    template <typename T>
+    inline OwnPtr<T> adopt_own_if_nonnull(T* object)
+    {
+        if(object)
+            return OwnPtr<T>::lift(object);
+        return {};
+    }
+
     /**
      * @tparam T 
-     * @param stream 
-     * @param value 
-     * @return const LogStream& 
+     * @param object 
+     * @return ErrorOr<NonnullOwnPtr<T>> 
      */
-    template<typename T>
-    inline const LogStream& operator<<(const LogStream& stream, const OwnPtr<T>& value)
+    template <typename T>
+    inline ErrorOr<NonnullOwnPtr<T>> adopt_nonnull_own_or_enomem(T* object)
     {
-        return stream << value.ptr();
+        auto result = adopt_own_if_nonnull(object);
+        if(!result)
+            return Error::from_errno(ENOMEM);
+        return result.release_nonnull();
     }
+
+    /**
+     * @tparam T 
+     * @tparam Args 
+     */
+    template <typename T, class... Args>
+        requires(IsConstructible<T, Args...>)
+    inline ErrorOr<NonnullOwnPtr<T>> try_make(Args&&... args)
+    {
+        return adopt_nonnull_own_or_enomem(new(nothrow) T(forward<Args>(args)...));
+    }
+
+    /**
+     * @tparam T 
+     * @tparam Args 
+     * @param args 
+     * @return ErrorOr<NonnullOwnPtr<T>> 
+     */
+    template <typename T, class... Args>
+    inline ErrorOr<NonnullOwnPtr<T>> try_make(Args&&... args)
+    {
+        return adopt_nonnull_own_or_enomem(new(nothrow) T{forward<Args>(args)...});
+    }
+
+    /**
+     * @tparam T 
+     */
+    template <typename T>
+    struct Traits<OwnPtr<T>> : public GenericTraits<OwnPtr<T>>
+    {
+        using PeekType = T*;
+        using ConstPeekType = const T*;
+        static unsigned hash(OwnPtr<T> const& p)
+        {
+            return ptr_hash(p.ptr());
+        }
+        static bool equals(OwnPtr<T> const& a, OwnPtr<T> const& b)
+        {
+            return a.ptr() == b.ptr();
+        }
+    };
 
 } // namespace Mods
 
+using Mods::adopt_nonnull_own_or_enomem;
+using Mods::adopt_own_if_nonnull;
 using Mods::OwnPtr;
+using Mods::try_make;
