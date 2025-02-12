@@ -4,36 +4,37 @@
  * @brief nonnullrefptr
  * @version 6.0
  * @date 2023-07-01
- * 
+ *
  * @copyright Copyright (c) 2021-2024 pranaOS Developers, Krisna Pranav
- * 
+ *
  */
 
 #pragma once
 
-#include "assertions.h"
-#include "atomic.h"
-#include "logstream.h"
-#include "stdlibextra.h"
-#include "types.h"
-#include "format.h"
+#define NONNULLREFPTR_SCRUB_BYTE 0xe1
+
 #ifdef KERNEL
-#   include <kernel/arch/i386/cpu.h>
-#endif
+#include <kernel/library/threadsafenonnullrefptr.h>
+#else
+#include <mods/assertions.h>
+#include <mods/atomic.h>
+#include <mods/format.h>
+#include <mods/traits.h>
+#include <mods/types.h>
 
-namespace Mods {
-
+namespace Mods
+{
     /**
      * @tparam T 
      */
-    template<typename T>
+    template <typename T>
     class OwnPtr;
-    
+
     /**
      * @tparam T 
      * @tparam PtrTraits 
      */
-    template<typename T, typename PtrTraits>
+    template <typename T, typename PtrTraits>
     class RefPtr;
 
     /**
@@ -41,9 +42,10 @@ namespace Mods {
      * @param ptr 
      * @return ALWAYS_INLINE 
      */
-    template<typename T>
-    ALWAYS_INLINE void ref_if_not_null(T* ptr) {
-        if (ptr)
+    template <typename T>
+    ALWAYS_INLINE void ref_if_not_null(T* ptr)
+    {
+        if(ptr)
             ptr->ref();
     }
 
@@ -52,177 +54,181 @@ namespace Mods {
      * @param ptr 
      * @return ALWAYS_INLINE 
      */
-    template<typename T>
-    ALWAYS_INLINE void unref_if_not_null(T* ptr) {
-        if (ptr)
+    template <typename T>
+    ALWAYS_INLINE void unref_if_not_null(T* ptr)
+    {
+        if(ptr)
             ptr->unref();
     }
 
-    template<typename T>
-    class NonnullRefPtr {
-
+    /**
+     * @tparam T 
+     */
+    template <typename T>
+    class [[nodiscard]] NonnullRefPtr
+    {
         /**
          * @tparam U 
          * @tparam P 
          */
-        template<typename U, typename P>
+        template <typename U, typename P>
         friend class RefPtr;
 
         /**
          * @tparam U 
          */
-        template<typename U>
+        template <typename U>
         friend class NonnullRefPtr;
 
         /**
          * @tparam U 
          */
-        template<typename U>
+        template <typename U>
         friend class WeakPtr;
 
     public:
         using ElementType = T;
 
-        enum AdoptTag { Adopt };
+        enum AdoptTag
+        {
+            Adopt
+        }; // enum AdoptTag
 
         /**
          * @param object 
          * @return ALWAYS_INLINE 
          */
-        ALWAYS_INLINE NonnullRefPtr(const T& object) : m_bits((FlatPtr)&object) {
-            ASSERT(!(m_bits & 1));
-            const_cast<T&>(object).ref();
+        ALWAYS_INLINE NonnullRefPtr(T const& object)
+            : m_ptr(const_cast<T*>(&object))
+        {
+            m_ptr->ref();
         }
 
         /**
          * @tparam U 
+         */
+        template <typename U>
+        ALWAYS_INLINE NonnullRefPtr(U const& object)
+            requires(IsConvertible<U*, T*>)
+            : m_ptr(const_cast<T*>(static_cast<T const*>(&object)))
+        {
+            m_ptr->ref();
+        }
+
+        /**
          * @param object 
          * @return ALWAYS_INLINE 
          */
-        template<typename U>
-        ALWAYS_INLINE NonnullRefPtr(const U& object) : m_bits((FlatPtr) static_cast<const T*>(&object))
+        ALWAYS_INLINE NonnullRefPtr(AdoptTag, T& object)
+            : m_ptr(&object)
         {
-            ASSERT(!(m_bits & 1));
-            const_cast<T&>(static_cast<const T&>(object)).ref();
-        }
-
-        /**
-         * @param object 
-         * @return ALWAYS_INLINE 
-         */
-        ALWAYS_INLINE NonnullRefPtr(AdoptTag, T& object) : m_bits((FlatPtr)&object)
-        {
-            ASSERT(!(m_bits & 1));
         }
 
         /**
          * @param other 
          * @return ALWAYS_INLINE 
          */
-        ALWAYS_INLINE NonnullRefPtr(NonnullRefPtr&& other) : m_bits((FlatPtr)&other.leak_ref())
+        ALWAYS_INLINE NonnullRefPtr(NonnullRefPtr&& other)
+            : m_ptr(&other.leak_ref())
         {
-            ASSERT(!(m_bits & 1));
         }
 
         /**
          * @tparam U 
-         * @param other 
-         * @return ALWAYS_INLINE 
          */
-        template<typename U>
-        ALWAYS_INLINE NonnullRefPtr(NonnullRefPtr<U>&& other) : m_bits((FlatPtr)&other.leak_ref())
+        template <typename U>
+        ALWAYS_INLINE NonnullRefPtr(NonnullRefPtr<U>&& other)
+            requires(IsConvertible<U*, T*>)
+            : m_ptr(static_cast<T*>(&other.leak_ref()))
         {
-            ASSERT(!(m_bits & 1));
         }
 
-        /** 
+        /**
          * @param other 
          * @return ALWAYS_INLINE 
          */
-        ALWAYS_INLINE NonnullRefPtr(const NonnullRefPtr& other) : m_bits((FlatPtr)other.add_ref())
+        ALWAYS_INLINE NonnullRefPtr(NonnullRefPtr const& other)
+            : m_ptr(const_cast<T*>(other.ptr()))
         {
-            ASSERT(!(m_bits & 1));
+            m_ptr->ref();
         }
 
         /**
          * @tparam U 
-         * @param other 
-         * @return ALWAYS_INLINE 
          */
-        template<typename U>
-        ALWAYS_INLINE NonnullRefPtr(const NonnullRefPtr<U>& other) : m_bits((FlatPtr)other.add_ref())
+        template <typename U>
+        ALWAYS_INLINE NonnullRefPtr(NonnullRefPtr<U> const& other)
+            requires(IsConvertible<U*, T*>)
+            : m_ptr(const_cast<T*>(static_cast<T const*>(other.ptr())))
         {
-            ASSERT(!(m_bits & 1));
-        }  
-        
+            m_ptr->ref();
+        }
+
         /**
          * @return ALWAYS_INLINE 
          */
-        ALWAYS_INLINE ~NonnullRefPtr() {
-            assign(nullptr);
+        ALWAYS_INLINE ~NonnullRefPtr()
+        {
+            unref_if_not_null(m_ptr);
+            m_ptr = nullptr;
     #ifdef SANITIZE_PTRS
-            if constexpr (sizeof(T*) == 8)
-                m_bits.store(0xb0b0b0b0b0b0b0b0, Mods::MemoryOrder::memory_order_relaxed);
-            else
-                m_bits.store(0xb0b0b0b0, Mods::MemoryOrder::memory_order_relaxed);
+            m_ptr = reinterpret_cast<T*>(explode_byte(NONNULLREFPTR_SCRUB_BYTE));
     #endif
         }
 
         /**
+         * @brief Construct a new Nonnull Ref Ptr object
+         * 
          * @tparam U 
          */
-        template<typename U>
-        NonnullRefPtr(const OwnPtr<U>&) = delete;
+        template <typename U>
+        NonnullRefPtr(OwnPtr<U> const&) = delete;
 
         /**
          * @tparam U 
          * @return NonnullRefPtr& 
          */
-        template<typename U>
-        NonnullRefPtr& operator=(const OwnPtr<U>&) = delete;
-
-        /**
-         * @tparam U 
-         */
-        template<typename U>
-        NonnullRefPtr(const RefPtr<U>&) = delete;
-
-        /**
-         * @tparam U 
-         * @return NonnullRefPtr& 
-         */
-        template<typename U>
-        NonnullRefPtr& operator=(const RefPtr<U>&) = delete;
+        template <typename U>
+        NonnullRefPtr& operator=(OwnPtr<U> const&) = delete;
 
         /**
          * @brief Construct a new Nonnull Ref Ptr object
          * 
+         * @tparam U 
          */
-        NonnullRefPtr(const RefPtr<T>&) = delete;
-
-        /**
-         * @return NonnullRefPtr& 
-         */
-        NonnullRefPtr& operator=(const RefPtr<T>&) = delete;
-
-        /**
-         * @param other 
-         * @return NonnullRefPtr& 
-         */
-        NonnullRefPtr& operator=(const NonnullRefPtr& other) {
-            if (this != &other)
-                assign(other.add_ref());
-            return *this;
-        }
+        template <typename U>
+        NonnullRefPtr(RefPtr<U> const&) = delete;
 
         /**
          * @tparam U 
+         * @return NonnullRefPtr& 
+         */
+        template <typename U>
+        NonnullRefPtr& operator=(RefPtr<U> const&) = delete;
+        
+        NonnullRefPtr(RefPtr<T> const&) = delete;
+        NonnullRefPtr& operator=(RefPtr<T> const&) = delete;
+
+        /**
          * @param other 
          * @return NonnullRefPtr& 
          */
-        template<typename U>    
-        NonnullRefPtr& operator=(const NonnullRefPtr<U>& other) {
-            assign(other.add_ref());
+        NonnullRefPtr& operator=(NonnullRefPtr const& other)
+        {
+            NonnullRefPtr tmp{other};
+            swap(tmp);
+            return *this;
+        }   
+
+        /**
+         * @tparam U 
+         */
+        template <typename U>
+        NonnullRefPtr& operator=(NonnullRefPtr<U> const& other)
+            requires(IsConvertible<U*, T*>)
+        {
+            NonnullRefPtr tmp{other};
+            swap(tmp);
             return *this;
         }
 
@@ -230,20 +236,22 @@ namespace Mods {
          * @param other 
          * @return ALWAYS_INLINE& 
          */
-        ALWAYS_INLINE NonnullRefPtr& operator=(NonnullRefPtr&& other) {
-            if (this != &other)
-                assign(&other.leak_ref());
+        ALWAYS_INLINE NonnullRefPtr& operator=(NonnullRefPtr&& other)
+        {
+            NonnullRefPtr tmp{move(other)};
+            swap(tmp);
             return *this;
         }
 
         /**
          * @tparam U 
-         * @param other 
-         * @return NonnullRefPtr& 
          */
-        template<typename U>
-        NonnullRefPtr& operator=(NonnullRefPtr<U>&& other) {
-            assign(&other.leak_ref());
+        template <typename U>
+        NonnullRefPtr& operator=(NonnullRefPtr<U>&& other)
+            requires(IsConvertible<U*, T*>)
+        {
+            NonnullRefPtr tmp{move(other)};
+            swap(tmp);
             return *this;
         }
 
@@ -251,88 +259,100 @@ namespace Mods {
          * @param object 
          * @return NonnullRefPtr& 
          */
-        NonnullRefPtr& operator=(const T& object) {
-            const_cast<T&>(object).ref();
-            assign(const_cast<T*>(&object));
+        NonnullRefPtr& operator=(T const& object)
+        {
+            NonnullRefPtr tmp{object};
+            swap(tmp);
             return *this;
         }
 
         /**
          * @return ALWAYS_INLINE& 
          */
-        [[nodiscard]] ALWAYS_INLINE T& leak_ref() {
-            T* ptr = exchange(nullptr);
-            ASSERT(ptr);
+        [[nodiscard]] ALWAYS_INLINE T& leak_ref()
+        {
+            T* ptr = exchange(m_ptr, nullptr);
+            VERIFY(ptr);
             return *ptr;
         }
 
         /**
          * @return ALWAYS_INLINE* 
          */
-        ALWAYS_INLINE T* ptr() {
+        ALWAYS_INLINE RETURNS_NONNULL T* ptr()
+        {
             return as_nonnull_ptr();
         }
 
         /**
          * @return ALWAYS_INLINE const* 
          */
-        ALWAYS_INLINE const T* ptr() const {
+        ALWAYS_INLINE RETURNS_NONNULL const T* ptr() const
+        {
             return as_nonnull_ptr();
         }
 
         /**
          * @return ALWAYS_INLINE* 
          */
-        ALWAYS_INLINE T* operator->() {
+        ALWAYS_INLINE RETURNS_NONNULL T* operator->()
+        {
             return as_nonnull_ptr();
         }
 
         /**
          * @return ALWAYS_INLINE const* 
          */
-        ALWAYS_INLINE const T* operator->() const {
+        ALWAYS_INLINE RETURNS_NONNULL const T* operator->() const
+        {
             return as_nonnull_ptr();
         }
 
         /**
          * @return ALWAYS_INLINE& 
          */
-        ALWAYS_INLINE T& operator*() {
+        ALWAYS_INLINE T& operator*()
+        {
             return *as_nonnull_ptr();
-        }   
+        }
 
         /**
          * @return ALWAYS_INLINE const& 
          */
-        ALWAYS_INLINE const T& operator*() const {
+        ALWAYS_INLINE const T& operator*() const
+        {
             return *as_nonnull_ptr();
         }
 
         /**
          * @return T* 
          */
-        ALWAYS_INLINE operator T*() {
+        ALWAYS_INLINE RETURNS_NONNULL operator T*()
+        {
             return as_nonnull_ptr();
-        }  
-        
+        }
+
         /**
          * @return const T* 
          */
-        ALWAYS_INLINE operator const T*() const {
+        ALWAYS_INLINE RETURNS_NONNULL operator const T*() const
+        {
             return as_nonnull_ptr();
         }
 
         /**
          * @return T& 
          */
-        ALWAYS_INLINE operator T&() {
+        ALWAYS_INLINE operator T&()
+        {
             return *as_nonnull_ptr();
-        }   
-        
+        }
+
         /**
          * @return const T& 
          */
-        ALWAYS_INLINE operator const T&() const {
+        ALWAYS_INLINE operator const T&() const
+        {
             return *as_nonnull_ptr();
         }
 
@@ -342,173 +362,120 @@ namespace Mods {
         /**
          * @param other 
          */
-        void swap(NonnullRefPtr& other) {
-            if (this == &other)
-                return;
-
-            T* other_ptr = other.exchange(nullptr);
-            T* ptr = exchange(other_ptr);
-            other.exchange(ptr);
+        void swap(NonnullRefPtr& other)
+        {
+            Mods::swap(m_ptr, other.m_ptr);
         }
 
         /**
+
          * @tparam U 
-         * @param other 
          */
-        template<typename U>
-        void swap(NonnullRefPtr<U>& other) {
-            U* other_ptr = other.exchange(nullptr);
-            T* ptr = exchange(other_ptr);
-            other.exchange(ptr);
+        template <typename U>
+        void swap(NonnullRefPtr<U>& other)
+            requires(IsConvertible<U*, T*>)
+        {
+            Mods::swap(m_ptr, other.m_ptr);
         }
 
     private:
-        /**
-         * @brief Construct a new Nonnull Ref Ptr object
-         * 
-         */
         NonnullRefPtr() = delete;
-
+        
         /**
          * @return ALWAYS_INLINE* 
          */
-        ALWAYS_INLINE T* as_ptr() const {
-            return (T*)(m_bits.load(Mods::MemoryOrder::memory_order_relaxed) & ~(FlatPtr)1);
+        ALWAYS_INLINE RETURNS_NONNULL T* as_nonnull_ptr() const
+        {
+            VERIFY(m_ptr);
+            return m_ptr;
         }
 
-        /**
-         * @return ALWAYS_INLINE* 
-         */
-        ALWAYS_INLINE T* as_nonnull_ptr() const {
-            T* ptr = (T*)(m_bits.load(Mods::MemoryOrder::memory_order_relaxed) & ~(FlatPtr)1);
-            ASSERT(ptr);
-            return ptr;
-        }
-
-        /**
-         * @tparam F 
-         * @param f 
-         */
-        template<typename F>
-        void do_while_locked(F f) const {
-    #ifdef KERNEL
-            Kernel::ScopedCritical critical;
-    #endif
-            FlatPtr bits;
-            for (;;) {
-                bits = m_bits.fetch_or(1, Mods::MemoryOrder::memory_order_acq_rel);
-                if (!(bits & 1))
-                    break;
-    #ifdef KERNEL
-                Kernel::Processor::wait_check();
-    #endif
-            }
-            ASSERT(!(bits & 1));
-            f((T*)bits);
-            m_bits.store(bits, Mods::MemoryOrder::memory_order_release);
-        }   
-
-        /**
-         * @param new_ptr 
-         * @return ALWAYS_INLINE 
-         */
-        ALWAYS_INLINE void assign(T* new_ptr) {
-            T* prev_ptr = exchange(new_ptr);
-            unref_if_not_null(prev_ptr);
-        }
-
-        /**
-         * @param new_ptr 
-         * @return ALWAYS_INLINE* 
-         */
-        ALWAYS_INLINE T* exchange(T* new_ptr) {
-            ASSERT(!((FlatPtr)new_ptr & 1));
-    #ifdef KERNEL
-            Kernel::ScopedCritical critical;
-    #endif
-            FlatPtr expected = m_bits.load(Mods::MemoryOrder::memory_order_relaxed);
-            for (;;) {
-                expected &= ~(FlatPtr)1; 
-                if (m_bits.compare_exchange_strong(expected, (FlatPtr)new_ptr, Mods::MemoryOrder::memory_order_acq_rel))
-                    break;
-    #ifdef KERNEL
-                Kernel::Processor::wait_check();
-    #endif
-            }
-            ASSERT(!(expected & 1));
-            return (T*)expected;
-        }
-
-        /**
-         * @return T* 
-         */
-        T* add_ref() const {
-    #ifdef KERNEL
-            Kernel::ScopedCritical critical;
-    #endif
-            FlatPtr expected = m_bits.load(Mods::MemoryOrder::memory_order_relaxed);
-            for (;;) {
-                expected &= ~(FlatPtr)1; 
-                if (m_bits.compare_exchange_strong(expected, expected | 1, Mods::MemoryOrder::memory_order_acq_rel))
-                    break;
-    #ifdef KERNEL
-                Kernel::Processor::wait_check();
-    #endif
-            }
-
-            ref_if_not_null((T*)expected);
-
-            m_bits.store(expected, Mods::MemoryOrder::memory_order_release);
-            return (T*)expected;
-        }
-
-        mutable Atomic<FlatPtr> m_bits { 0 };
-    };
+        T* m_ptr{nullptr};
+    }; // class [[nodiscard]] NonnullRefPtr
 
     /**
      * @tparam T 
      * @param object 
      * @return NonnullRefPtr<T> 
      */
-    template<typename T>
-    inline NonnullRefPtr<T> adopt(T& object) {
+    template <typename T>
+    inline NonnullRefPtr<T> adopt_ref(T& object)
+    {
         return NonnullRefPtr<T>(NonnullRefPtr<T>::Adopt, object);
     }
 
     /**
      * @tparam T 
-     * @param stream 
-     * @param value 
-     * @return const LogStream& 
      */
-    template<typename T>
-    inline const LogStream& operator<<(const LogStream& stream, const NonnullRefPtr<T>& value) {
-        return stream << value.ptr();
-    }
-
-    /**
-     * @tparam T 
-     */
-    template<typename T>
-    struct Formatter<NonnullRefPtr<T>> : Formatter<const T*> {
-        void format(TypeErasedFormatParams& params, FormatBuilder& builder, const NonnullRefPtr<T>& value)
+    template <typename T>
+    struct Formatter<NonnullRefPtr<T>> : Formatter<const T*>
+    {
+        /**
+         * @param builder 
+         * @param value 
+         * @return ErrorOr<void> 
+         */
+        ErrorOr<void> format(FormatBuilder& builder, NonnullRefPtr<T> const& value)
         {
-            Formatter<const T*>::format(params, builder, value.ptr());
+            return Formatter<const T*>::format(builder, value.ptr());
         }
     };
 
     /**
      * @tparam T 
      * @tparam U 
-     * @param a 
-     * @param b 
      */
-    template<typename T, typename U>
-    inline void swap(NonnullRefPtr<T>& a, NonnullRefPtr<U>& b) {
+    template <typename T, typename U>
+    inline void swap(NonnullRefPtr<T>& a, NonnullRefPtr<U>& b)
+        requires(IsConvertible<U*, T*>)
+    {
         a.swap(b);
     }
 
-}
+    /**
+     * @tparam T 
+     * @tparam Args 
+     */
+    template <typename T, class... Args>
+        requires(IsConstructible<T, Args...>)
+    inline NonnullRefPtr<T> make_ref_counted(Args&&... args)
+    {
+        return NonnullRefPtr<T>(NonnullRefPtr<T>::Adopt, *new T(forward<Args>(args)...));
+    }
 
-using Mods::adopt;
+    /**
+     * @tparam T 
+     * @tparam Args 
+     * @param args 
+     * @return NonnullRefPtr<T> 
+     */
+    template <typename T, class... Args>
+    inline NonnullRefPtr<T> make_ref_counted(Args&&... args)
+    {
+        return NonnullRefPtr<T>(NonnullRefPtr<T>::Adopt, *new T{forward<Args>(args)...});
+    }
+} // namespace Mods
+
+/**
+ * @tparam T 
+ */
+template <typename T>
+struct Traits<NonnullRefPtr<T>> : public GenericTraits<NonnullRefPtr<T>>
+{
+    using PeekType = T*;
+    using ConstPeekType = const T*;
+    static unsigned hash(NonnullRefPtr<T> const& p)
+    {
+        return ptr_hash(p.ptr());
+    }
+    static bool equals(NonnullRefPtr<T> const& a, NonnullRefPtr<T> const& b)
+    {
+        return a.ptr() == b.ptr();
+    }
+};
+
+using Mods::adopt_ref;
+using Mods::make_ref_counted;
 using Mods::NonnullRefPtr;
+
+#endif
