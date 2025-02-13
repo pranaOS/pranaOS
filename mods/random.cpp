@@ -13,5 +13,14 @@
 
 namespace Mods
 {
+    /**
+     * @brief Get the random uniform object
+     * 
+     * @param max_bounds 
+     * @return u32 
+     */
+    u32 get_random_uniform(u32 max_bounds)
+    {
 
+    }
 } // namespace Mods
