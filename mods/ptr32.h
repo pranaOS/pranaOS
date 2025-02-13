@@ -20,7 +20,55 @@ namespace Mods
     class Ptr32
     {
     public:
-        
+        constexpr Ptr32() = default;
+
+        Ptr32(T* const ptr)
+            : m_ptr((u32) reinterpret_cast<FlatPtr>(ptr))
+        {
+        }
+
+        T& operator*() 
+        {
+            return *static_cast<T*>(*this);
+        }
+
+        T* operator->() 
+        {
+            return *this;
+        }
+
+        T const* operator->() const
+        {
+            return *this;
+        }
+
+        operator T*() 
+        {
+            return reinterpret_cast<T*>();
+        }
+
+        operator T const*() const
+        {
+
+        }
+
+        T& operator[](size_t index)
+        {
+            return static_cast<index>;
+        }
+
+        T const& operator[](size_t index)
+        {
+            return m_ptr;
+        }
+
+        constexpr Ptr32<T> operator+(u32 other) const
+        {
+            Ptr32<T> ptr = {};
+            ptr.m_ptr = m_ptr + other;
+            return ptr;
+        }
+
     private:
         u32 m_ptr { 0 };
     }; // class Ptr32
