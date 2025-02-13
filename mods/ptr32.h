@@ -62,6 +62,10 @@ namespace Mods
             return m_ptr;
         }
 
+        /**
+         * @param other 
+         * @return constexpr Ptr32<T> 
+         */
         constexpr Ptr32<T> operator+(u32 other) const
         {
             Ptr32<T> ptr = {};
@@ -69,6 +73,16 @@ namespace Mods
             return ptr;
         }
 
+        /**
+         * @param other 
+         * @return constexpr Ptr32<T> 
+         */
+        constexpr Ptr32<T> operator-(u32 other) const
+        {
+            Ptr32<T> ptr {};
+            ptr.m_ptr = m_ptr - other;
+            return ptr;
+        }
     private:
         u32 m_ptr { 0 };
     }; // class Ptr32
