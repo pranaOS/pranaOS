@@ -1,4 +1,4 @@
-/**
+    /**
  * @file reverseiterator.h
  * @author Krisna Pranav
  * @brief Reverse Iterator
@@ -47,4 +47,37 @@ namespace Mods
         int m_index { 0 };
     }; // class SimpleReverseIterator
 
+    namespace ReverseWrapper
+    {
+        /**
+         * @tparam Container 
+         */
+        template<typename Container>
+        struct ReverseWrapper
+        {   
+            Container& container;
+        }; // struct ReverseWrapper
+
+        /**
+         * @tparam Container 
+         * @param wrapper 
+         * @return auto 
+         */
+        template<typename Container>
+        auto begin(ReverseWrapper<Container> wrapper)
+        {
+            return wrapper.container.length();
+        }
+
+        /**
+         * @tparam Container 
+         * @param wrapper 
+         * @return auto 
+         */
+        template<typename Container>
+        auto end(ReverseWrapper<Container> wrapper) 
+        {
+            return wrapper.container.rend();
+        }
+    } // namespace ReverseWrapper
 } // namespace Mods
