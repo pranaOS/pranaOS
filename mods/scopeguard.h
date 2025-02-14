@@ -4,23 +4,26 @@
  * @brief scope_guard
  * @version 6.0
  * @date 2023-07-01
- * 
+ *
  * @copyright Copyright (c) 2021-2024 pranaOS Developers, Krisna Pranav
- * 
+ *
  */
 
 #pragma once
 
-#include "stdlibextra.h"
+#include <mods/stdlibextra.h>
 
-
-namespace Mods {
-    template<typename Callback>
-    class ScopeGuard {
+namespace Mods
+{
+    /**
+     * @tparam Callback 
+     */
+    template <typename Callback>
+    class ScopeGuard
+    {
     public:
-
         /**
-         * @brief Construct a new Scope Guard object
+         * @brief Construct a new ScopeGuard object
          * 
          * @param callback 
          */
@@ -30,22 +33,27 @@ namespace Mods {
         }
 
         /**
-         * @brief Destroy the Scope Guard object
+         * @brief Destroy the ScopeGuard object
          * 
          */
-        ~ScopeGuard() {
+        ~ScopeGuard()
+        {
             m_callback();
         }
 
     private:
         Callback m_callback;
-    };
+    }; // class ScopeGuard
 
-    template<typename Callback>
-    class ArmedScopeGuard {
+    /**
+     * @tparam Callback 
+     */
+    template <typename Callback>
+    class ArmedScopeGuard
+    {
     public:
         /**
-         * @brief Construct a new Armed Scope Guard object
+         * @brief Construct a new ArmedScopeGuard object
          * 
          * @param callback 
          */
@@ -55,28 +63,25 @@ namespace Mods {
         }
 
         /**
-         * @brief Destroy the Armed Scope Guard object
+         * @brief Destroy the ArmedScopeGuard object
          * 
          */
-        ~ArmedScopeGuard() {
-            if (m_armed)
+        ~ArmedScopeGuard()
+        {
+            if(m_armed)
                 m_callback();
         }
 
-        /**
-         * @brief disarm[false]
-         * 
-         */
-        void disarm() {
-            m_armed = false; 
+        void disarm()
+        {
+            m_armed = false;
         }
 
     private:
         Callback m_callback;
-        bool m_armed { true };
-    };
-
-}
+        bool m_armed{true};
+    }; // class ArmedScopeGuard
+} // namespace Mods
 
 using Mods::ArmedScopeGuard;
 using Mods::ScopeGuard;
