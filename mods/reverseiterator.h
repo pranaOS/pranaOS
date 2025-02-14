@@ -26,6 +26,38 @@ namespace Mods
         friend Container;   
 
         /**
+         * @return true 
+         * @return false 
+         */
+        constexpr bool is_end() const
+        {
+            return m_index == SimpleReverseIterator::rend(m_container);
+        }
+
+        constexpr int index() const
+        {
+            return m_index;
+        }   
+
+        /**
+         * @param delta 
+         * @return constexpr SimpleReverseIterator 
+         */
+        constexpr SimpleReverseIterator operator+(int delta) const
+        {
+            return SimpleReverseIterator(delta);
+        }
+
+        /**
+         * @param delta 
+         * @return constexpr SimpleReverseIterator 
+         */
+        constexpr SimpleReverseIterator operator-(int delta) const
+        {
+            return SimpleReverseIterator(delta);
+        }
+
+        /**
          * @return constexpr SimpleReverseIterator 
          */
         constexpr SimpleReverseIterator operator--()
