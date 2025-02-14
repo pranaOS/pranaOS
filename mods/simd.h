@@ -4,16 +4,16 @@
  * @brief SIMD
  * @version 6.0
  * @date 2023-07-25
- * 
+ *
  * @copyright Copyright (c) 2021-2024 pranaOS Developers, Krisna Pranav
- * 
+ *
  */
 
 #pragma once
 
 #include <mods/types.h>
 
-namespace Mods::SIMD 
+namespace Mods::SIMD
 {
     using i8x2 = i8 __attribute__((vector_size(2)));
     using i8x4 = i8 __attribute__((vector_size(4)));
@@ -63,4 +63,5 @@ namespace Mods::SIMD
 
     using f64x2 = double __attribute__((vector_size(16)));
     using f64x4 = double __attribute__((vector_size(32)));
+    
 } // namespace Mods::SIMD
