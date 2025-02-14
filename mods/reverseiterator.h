@@ -15,9 +15,59 @@
 
 namespace Mods
 {
+    /**
+     * @tparam Container 
+     * @tparam ValueType 
+     */
     template<typename Container, typename ValueType>
     class SimpleReverseIterator
     {
+    public:
+        friend Container;   
+
+        /**
+         * @return constexpr SimpleReverseIterator 
+         */
+        constexpr SimpleReverseIterator operator--()
+        {
+            ++m_index;
+            return *this;
+        }
+
+        /**
+         * @return constexpr SimpleReverseIterator 
+         */
+        constexpr SimpleReverseIterator operator--(int)
+        {
+            ++m_index;
+            return SimpleReverseIterator { m_container, m_index - 1 };
+        }
+
+        /**
+         * @return ALWAYS_INLINE constexpr const& 
+         */
+        ALWAYS_INLINE constexpr ValueType const& operator*() const
+        {
+
+        }
+
+        /**
+         * @param other 
+         * @return SimpleReverseIterator& 
+         */
+        SimpleReverseIterator& operator=(SimpleReverseIterator const& other)
+        {
+            m_index = other.m_index;
+            return *this;
+        }
+
+        /**
+         * @brief Construct a new Simple Reverse Iterator object
+         * 
+         * @param obj 
+         */
+        SimpleReverseIterator(SimpleReverseIterator const& obj) = default;
+
     private:
         /**
          * @param container 
@@ -78,6 +128,17 @@ namespace Mods
         auto end(ReverseWrapper<Container> wrapper) 
         {
             return wrapper.container.rend();
+        }   
+
+        /**
+         * @tparam Container 
+         * @param container 
+         * @return ReverseWrapper<Container> 
+         */
+        template<typename Container>
+        ReverseWrapper<Container> in_reverse(Container& container)
+        {
+            return { container };
         }
     } // namespace ReverseWrapper
 } // namespace Mods
