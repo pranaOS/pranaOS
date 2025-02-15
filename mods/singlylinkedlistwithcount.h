@@ -4,9 +4,9 @@
  * @brief Singly Linked List With Count
  * @version 6.0
  * @date 2025-02-15
- * 
+ *
  * @copyright Copyright (c) 2021-2025 pranaOS Developers, Krisna Pranav
- * 
+ *
  */
 
 #pragma once
@@ -18,16 +18,21 @@ namespace Mods
     /**
      * @tparam T 
      */
-    template<typename T>
-    class SinglyLinkedListWithCount : private SinglyLinkedListWithCount
+    template <typename T>
+    class SinglyLinkedListWithCount : private SinglyLinkedList<T>
     {
-    public:
+
+    public: 
         /**
-         * @brief Construct a new Singly Linked List With Count object
+         * @brief Construct a new SinglyLinkedListWithCount object
          * 
          */
         SinglyLinkedListWithCount() = default;
 
+        /**
+         * @brief Destroy the SinglyLinkedListWithCount object
+         * 
+         */
         ~SinglyLinkedListWithCount() = default;
 
         using List = SinglyLinkedList<T>;
@@ -67,7 +72,7 @@ namespace Mods
         /**
          * @return T& 
          */
-        T& last() 
+        T& last()
         {
             return List::last();
         }
@@ -93,7 +98,7 @@ namespace Mods
          * @tparam U 
          * @param value 
          */
-        template<typename U = T>
+        template <typename U = T>
         void append(U&& value)
         {
             m_count++;
@@ -113,11 +118,17 @@ namespace Mods
         using Iterator = typename List::Iterator;
         friend Iterator;
 
-        Iterator begin() 
+        /**
+         * @return Iterator 
+         */
+        Iterator begin()
         {
             return List::begin();
         }
 
+        /**
+         * @return Iterator 
+         */
         Iterator end()
         {
             return List::end();
@@ -126,11 +137,17 @@ namespace Mods
         using ConstIterator = typename List::ConstIterator;
         friend ConstIterator;
 
+        /**
+         * @return ConstIterator 
+         */
         ConstIterator begin() const
         {
             return List::begin();
         }
 
+        /**
+         * @return ConstIterator 
+         */
         ConstIterator end() const
         {
             return List::end();
@@ -141,7 +158,7 @@ namespace Mods
          * @param pred 
          * @return ConstIterator 
          */
-        template<typename TUnaryPredicate>
+        template <typename TUnaryPredicate>
         ConstIterator find(TUnaryPredicate&& pred) const
         {
             return List::find_if(forward<TUnaryPredicate>(pred));
@@ -152,13 +169,66 @@ namespace Mods
          * @param pred 
          * @return Iterator 
          */
-        template<typenme TUnaryPredicate>
+        template <typename TUnaryPredicate>
         Iterator find(TUnaryPredicate&& pred)
         {
             return List::find_if(forward<TUnaryPredicate>(pred));
         }
 
+        /**
+         * @param value 
+         * @return ConstIterator 
+         */
+        ConstIterator find(const T& value) const
+        {
+            return List::find(value);
+        }
+
+        /**
+         * @param value 
+         * @return Iterator 
+         */
+        Iterator find(const T& value)
+        {
+            return List::find(value);
+        }
+
+        /**
+         * @param iterator 
+         */
+        void remove(Iterator iterator)
+        {
+            m_count--;
+            return List::remove(iterator);
+        }
+
+        /**
+         * @tparam U 
+         * @param iterator 
+         * @param value 
+         */
+        template <typename U = T>
+        void insert_before(Iterator iterator, U&& value)
+        {
+            m_count++;
+            List::insert_before(iterator, forward<T>(value));
+        }
+
+        /**
+         * @tparam U 
+         * @param iterator 
+         * @param value 
+         */
+        template <typename U = T>
+        void insert_after(Iterator iterator, U&& value)
+        {
+            m_count++;
+            List::insert_after(iterator, forward<T>(value));
+        }
+
     private:
-        size_t m_count { 0 };
-    };
+        size_t m_count{0};
+    }; // class SinglyLinkedListWithCount : private SinglyLinkedList<T>
 } // namespace Mods
+
+using Mods::SinglyLinkedListWithCount;
