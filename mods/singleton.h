@@ -4,83 +4,105 @@
  * @brief Singleton
  * @version 6.0
  * @date 2023-07-26
- * 
+ *
  * @copyright Copyright (c) 2021-2024 pranaOS Developers, Krisna Pranav
- * 
+ *
  */
 
-#pragma once 
+#pragma once
 
-#include "kmalloc.h"
-#include "assertions.h"
-#include "atomic.h"
-#include "noncopyable.h"
-
-#ifndef KERNEL
-#   include <kernel/arch/i386/cpu.h>
+#include <mods/assertions.h>
+#include <mods/atomic.h>
+#include <mods/noncopyable.h>
+#ifdef KERNEL
+#include <kernel/arch/processor.h>
+#include <kernel/arch/scopedcritical.h>
+#else
+#include <sched.h>
 #endif
 
-#ifndef __prana__
-#   include <new>
+#ifndef __pranaos__
+#include <new>
 #endif
 
-namespace Mods 
+namespace Mods
 {
-
     /**
      * @tparam T 
      */
-    template<typename T>
-    struct SingletonInstanceCreator 
+    template <typename T>
+    struct SingletonInstanceCreator
     {
-        /**
-         * @return T* 
-         */
         static T* create()
         {
             return new T();
         }
-    };
+    }; // struct SingletonInstanceCreator
 
-    template<typename T, T* (*InitFunction)() = SingletonInstanceCreator<T>::create>
-    class Singleton 
+    /**
+     * @tparam T 
+     */
+    template <typename T, T* (*InitFunction)() = SingletonInstanceCreator<T>::create>
+    class Singleton
     {
         MOD_MAKE_NONCOPYABLE(Singleton);
         MOD_MAKE_NONMOVABLE(Singleton);
 
     public:
+        /**
+         * @brief Construct a new Singleton object
+         * 
+         */
         Singleton() = default;
+
+        /**
+         * @tparam allow_create 
+         * @param obj_var 
+         * @return T* 
+         */
+        template <bool allow_create = true>
+        static T* get(Atomic<T*>& obj_var)
+        {
+            T* obj = obj_var.load(Mods::memory_order_acquire);
+            if(FlatPtr(obj) <= 0x1)
+            {
+    #ifdef KERNEL
+                Kernel::ScopedCritical critical;
+    #endif
+                if constexpr(allow_create)
+                {
+                    if(obj == nullptr && obj_var.compare_exchange_strong(obj, (T*)0x1, Mods::memory_order_acq_rel))
+                    {
+                        obj = InitFunction();
+                        obj_var.store(obj, Mods::memory_order_release);
+                        return obj;
+                    }
+                }
+                
+                while(obj == (T*)0x1)
+                {
+    #ifdef KERNEL
+                    Kernel::Processor::wait_check();
+    #else
+                    sched_yield();
+    #endif
+                    obj = obj_var.load(Mods::memory_order_acquire);
+                }
+                if constexpr(allow_create)
+                {
+                    VERIFY(obj != nullptr);
+                }
+                VERIFY(obj != (T*)0x1);
+            }
+            return obj;
+        }
 
         /**
          * @return T* 
          */
         T* ptr() const
         {
-            T* obj = Mods::atomic_load(&m_obj, Mods::memory_order_consume);
-            if (FlatPtr(obj) <= 0x1) {
-    #ifdef KERNEL
-                Kernel::ScopedCritical critical;
-    #endif
-                if (obj == nullptr && Mods::atomic_compare_exchange_strong(&m_obj, obj, (T*)0x1, Mods::memory_order_acq_rel)) {
-                    // We're the first one
-                    obj = InitFunction();
-                    Mods::atomic_store(&m_obj, obj, Mods::memory_order_release);
-                } else {
-                    // Someone else was faster, wait until they're done
-                    while (obj == (T*)0x1) {
-    #ifdef KERNEL
-                        Kernel::Processor::wait_check();
-    #else
-                /// TODO:
-    #endif
-                        obj = Mods::atomic_load(&m_obj, Mods::memory_order_consume);
-                    }
-                }
-
-                ASSERT(obj != nullptr);
-                ASSERT(obj != (T*)0x1);
-            }
-            return obj;
+            return get(m_obj);
         }
 
         /**
@@ -121,19 +143,18 @@ namespace Mods
          */
         bool is_initialized() const
         {
-            T* obj = Mods::atomic_load(&m_obj, Mods::memory_order_consume);
+            T* obj = m_obj.load(Mods::MemoryOrder::memory_order_consume);
             return FlatPtr(obj) > 0x1;
         }
 
-        /// @brief ensure_instance[ptr]
         void ensure_instance()
         {
-            (void)ptr();
+            ptr();
         }
 
     private:
-        mutable T* m_obj { nullptr }; 
-    }; // class Singleton 
-
+        mutable Atomic<T*> m_obj{nullptr};
+    }; // class Singleton
 } // namespace Mods
- 
+
+using Mods::Singleton;
