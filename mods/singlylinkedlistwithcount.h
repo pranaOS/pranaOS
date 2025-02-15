@@ -109,7 +109,22 @@ namespace Mods
         {
             return List::contains_slow(value);
         }
-        private:
+
+        using Iterator = typename List::Iterator;
+        friend Iterator;
+
+        Iterator begin() 
+        {
+            return List::begin();
+        }
+
+        Iterator end()
+        {
+            return List::end();
+        }
+
+
+    private:
         size_t m_count { 0 };
     };
 } // namespace Mods
