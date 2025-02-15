@@ -32,4 +32,29 @@ namespace Mods::SIMD
     {
         return to_f32x4(to_i32x4(v));
     }
+
+    /**
+     * @param v 
+     * @return ALWAYS_INLINE 
+     */
+    ALWAYS_INLINE static f32x4 floor_int_range(f32x4 v)
+    {
+        auto t = truncate_int_range(v);
+        return t > v ? t - 1.0f : t;
+    }
+
+    /**
+     * @param v 
+     * @return ALWAYS_INLINE 
+     */
+    ALWAYS_INLINE static f32x4 ciel_int_range(f32x4 v)
+    {
+        auto t = truncate_int_range(v);
+        return t < v ? t + 1.0f : t;
+    }
+
+    ALWAYS_INLINE static f32x4 clamp(f32x4 v, f32x4 min, f32x4 max)
+    {   
+        return v < min ? min : (v > max ? max : v);
+    }
 } // namespace Mods::SIMD 
