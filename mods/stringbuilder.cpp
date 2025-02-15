@@ -59,4 +59,37 @@ namespace Mods
         TRY(m_buffer.try_append(string.characters_without_null_termination()));
         return {};
     }
+
+    /**
+     * @param ch 
+     */
+    void StringBuilder::append_as_lowercase(char ch)
+    {
+        if (ch >= 'A' && ch <= 'Z')
+            append(ch + 0x20);
+        else
+            append(ch);
+    }
+
+    /**
+     * @param string 
+     */
+    void StringBuilder::append_escaped_for_json(StringView string)
+    {
+        MUST(try_append_escaped_for_json(string));
+    }
+
+    /**
+     * @param string 
+     * @return ErrorOr<void> 
+     */
+    ErrorOr<void> StringBuilder::try_append_escaped_for_json(StringView string)
+    {
+        for (auto ch : string) {
+            switch (ch) {
+
+            }
+        }
+    }
+
 } // namespace Mods
