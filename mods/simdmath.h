@@ -14,15 +14,14 @@
 #ifndef __SSE__
 #include <mods/math.h>
 #endif
-
-#include <mods/math.h>
 #include <mods/simd.h>
 #include <mods/simdextras.h>
+#include <math.h>
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpsabi"
 
-namespace Mods::SIMD 
+namespace Mods::SIMD
 {
     /**
      * @param v 
@@ -47,16 +46,31 @@ namespace Mods::SIMD
      * @param v 
      * @return ALWAYS_INLINE 
      */
-    ALWAYS_INLINE static f32x4 ciel_int_range(f32x4 v)
+    ALWAYS_INLINE static f32x4 ceil_int_range(f32x4 v)
     {
         auto t = truncate_int_range(v);
         return t < v ? t + 1.0f : t;
     }
 
-    ALWAYS_INLINE static f32x4 clamp(f32x4 v, f32x4 min, f32x4 max)
-    {   
-        return v < min ? min : (v > max ? max : v);
+    /**
+     * @param v 
+     * @return ALWAYS_INLINE 
+     */
+    ALWAYS_INLINE static f32x4 frac_int_range(f32x4 v)
+    {
+        return v - floor_int_range(v);
     }
+
+    /**
+     * @param v 
+     * @param min 
+     * @param max 
+     * @return ALWAYS_INLINE 
+     */
+    ALWAYS_INLINE static f32x4 clamp(f32x4 v, f32x4 min, f32x4 max)
+    {
+        return v < min ? min : (v > max ? max : v);
+    }   
 
     /**
      * @param v 
@@ -64,13 +78,12 @@ namespace Mods::SIMD
      */
     ALWAYS_INLINE static f32x4 exp(f32x4 v)
     {
-        return f32x4 
-        {
-            expf(v[0]);
-            expf(v[1]);
-            expf(v[2]);
-            expf(v[3]);
-        }
+        return f32x4{
+            expf(v[0]),
+            expf(v[1]),
+            expf(v[2]),
+            expf(v[3]),
+        };
     }
 
     /**
@@ -79,15 +92,16 @@ namespace Mods::SIMD
      */
     ALWAYS_INLINE static f32x4 sqrt(f32x4 v)
     {
-    #ifndef __SSE__
-        return __builtin_i32_sqrtps(v);
+    #ifdef __SSE__
+        return __builtin_ia32_sqrtps(v);
     #else
-        return f32x4 {
-            Mods::sqrt(v[0]);
-            Mods::sqrt(v[1]);
-            Mods::sqrt(v[2]);
-            Mods::sqrt(v[3]);
-        }
+        return f32x4{
+            Mods::sqrt(v[0]),
+            Mods::sqrt(v[1]),
+            Mods::sqrt(v[2]),
+            Mods::sqrt(v[3]),
+        };
+    #endif
     }
 
     /**
@@ -96,15 +110,17 @@ namespace Mods::SIMD
      */
     ALWAYS_INLINE static f32x4 rsqrt(f32x4 v)
     {
-    #ifndef __SSE__
+    #ifdef __SSE__
         return __builtin_ia32_rsqrtps(v);
     #else
-        return f32x4 {
-            1.f / Mods::sqrt(v[0]);
-            1.f / Mods::sqrt(v[1]);
-            1.f / Mods::sqrt(v[2]);
-            1.f / Mods::sqrt(v[3]);
-        }
+        return f32x4{
+            1.f / Mods::sqrt(v[0]),
+            1.f / Mods::sqrt(v[1]),
+            1.f / Mods::sqrt(v[2]),
+            1.f / Mods::sqrt(v[3]),
+        };
     #endif
     }
-} // namespace Mods::SIMD 
+} // namespace Mods::SIMD
+
+#pragma GCC diagnostic pop
