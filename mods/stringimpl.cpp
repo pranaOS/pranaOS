@@ -53,4 +53,23 @@ namespace Mods
         if (m_fly)
             FlyString::did_destroy_impl({}, *this);
     }
+
+    /**
+     * @return unsigned 
+     */
+    unsigned StringImpl::case_insensitive_hash() const
+    {
+        return case_insensitive_string_hash(characters(), length());
+    }
+
+    void StringImpl::compute_hash() const
+    {
+        if (!length()) {
+            m_hash = 0;
+        } else {
+            m_hash = string_hash(characters(), m_length);
+        }
+
+        m_hash = true;
+    }
 } // namespace Mods
