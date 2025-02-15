@@ -4,140 +4,111 @@
  * @brief StringUtils
  * @version 6.0
  * @date 2023-06-28
- * 
+ *
  * @copyright Copyright (c) 2021-2024 pranaOS Developers, Krisna Pranav
- * 
+ *
  */
 
 #pragma once
 
-#include "forward.h"
+#include <mods/concept.h>
+#include <mods/forward.h>
 
-namespace Mods {
+namespace Mods
+{
+    namespace Detail
+    {
+        template <Concepts::AnyString T, Concepts::AnyString U>
+        inline constexpr bool IsHashCompatible<T, U> = true;
+    } // namespace Detail
 
-    /**
-     * @brief CaseSensitivity
-     * 
-     */
-    enum class CaseSensitivity {
+    enum class CaseSensitivity
+    {
         CaseInsensitive,
         CaseSensitive,
-    };
+    }; // enum class CaseSensitivity
 
-    // TrimMode
-    enum class TrimMode {
+    enum class TrimMode
+    {
         Left,
         Right,
         Both
-    };
+    }; // enum class TrimMode
 
-    // MarkSpan
-    struct MaskSpan {
+    enum class TrimWhitespace
+    {
+        Yes,
+        No,
+    }; // enum class TrimWhitespace
+
+    struct MaskSpan
+    {
         size_t start;
         size_t length;
 
         /**
-         * @brief ==
-         * 
          * @param other 
          * @return true 
          * @return false 
          */
-        bool operator==(const MaskSpan& other) const {
+        bool operator==(MaskSpan const& other) const
+        {
             return start == other.start && length == other.length;
         }
 
         /**
-         * @brief !=
-         * 
          * @param other 
          * @return true 
          * @return false 
          */
-        bool operator!=(const MaskSpan& other) const
+        bool operator!=(MaskSpan const& other) const
         {
             return !(*this == other);
         }
-    };
+    }; // struct MaskSpan
 
-    namespace StringUtils {
-        /**
-         * @brief matches
-         * 
-         * @param str 
-         * @param mask 
-         * @param match_spans 
-         * @return true 
-         * @return false 
-         */
-        bool matches(const StringView& str, const StringView& mask, CaseSensitivity = CaseSensitivity::CaseInsensitive, Vector<MaskSpan>* match_spans = nullptr);
+    namespace StringUtils
+    {
 
-        /**
-         * @brief convert_to_int
-         * 
-         * @return Optional<int> 
-         */
-        Optional<int> convert_to_int(const StringView&);
+        bool matches(StringView str, StringView mask, CaseSensitivity = CaseSensitivity::CaseInsensitive, Vector<MaskSpan>* match_spans = nullptr);
+        template <typename T = int>
+        Optional<T> convert_to_int(StringView, TrimWhitespace = TrimWhitespace::Yes);
+        template <typename T = unsigned>
+        Optional<T> convert_to_uint(StringView, TrimWhitespace = TrimWhitespace::Yes);
+        template <typename T = unsigned>
+        Optional<T> convert_to_uint_from_hex(StringView, TrimWhitespace = TrimWhitespace::Yes);
+        template <typename T = unsigned>
+        Optional<T> convert_to_uint_from_octal(StringView, TrimWhitespace = TrimWhitespace::Yes);
+        bool equals_ignoring_case(StringView, StringView);
+        bool ends_with(StringView a, StringView b, CaseSensitivity);
+        bool starts_with(StringView, StringView, CaseSensitivity);
+        bool contains(StringView, StringView, CaseSensitivity);
+        bool is_whitespace(StringView);
+        StringView trim(StringView string, StringView characters, TrimMode mode);
+        StringView trim_whitespace(StringView string, TrimMode mode);
 
-        /**
-         * @brief convert_to_uint
-         * 
-         * @return Optional<unsigned> 
-         */
-        Optional<unsigned> convert_to_uint(const StringView&);
+        Optional<size_t> find(StringView haystack, char needle, size_t start = 0);
+        Optional<size_t> find(StringView haystack, StringView needle, size_t start = 0);
+        Optional<size_t> find_last(StringView haystack, char needle);
+        Vector<size_t> find_all(StringView haystack, StringView needle);
+        
+        enum class SearchDirection
+        {
+            Forward,
+            Backward
+        }; // enum class SearchDirection
 
-        /**
-         * @brief convert_to_uint_from_hex
-         * 
-         * @return Optional<unsigned> 
-         */
-        Optional<unsigned> convert_to_uint_from_hex(const StringView&);
+        Optional<size_t> find_any_of(StringView haystack, StringView needles, SearchDirection);
 
-        /**
-         * @brief equals_ignoring_case
-         * 
-         * @return true 
-         * @return false 
-         */
-        bool equals_ignoring_case(const StringView&, const StringView&);
+        String to_snakecase(StringView);
+        String to_titlecase(StringView);
 
-        /**
-         * @brief ends_with
-         * 
-         * @param a 
-         * @param b 
-         * @return true 
-         * @return false 
-         */
-        bool ends_with(const StringView& a, const StringView& b, CaseSensitivity);
+        String replace(StringView, StringView needle, StringView replacement, bool all_occurrences = false);
+        size_t count(StringView, StringView needle);
 
-        /**
-         * @brief starts_with
-         * 
-         * @return true 
-         * @return false 
-         */
-        bool starts_with(const StringView&, const StringView&, CaseSensitivity);
+    } // namespace StringUtils
+} // namespace Mods
 
-        /**
-         * @brief contains
-         * 
-         * @return true 
-         * @return false 
-         */
-        bool contains(const StringView&, const StringView&, CaseSensitivity);
-
-        /**
-         * @brief trim_whitespace
-         * 
-         * @param mode 
-         * @return StringView 
-         */
-        StringView trim_whitespace(const StringView&, TrimMode mode);
-    }
-
-}
-
-// using mods
 using Mods::CaseSensitivity;
 using Mods::TrimMode;
+using Mods::TrimWhitespace;
