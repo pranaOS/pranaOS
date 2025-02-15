@@ -123,6 +123,18 @@ namespace Mods
             return List::end();
         }
 
+        using ConstIterator = typename List::ConstIterator;
+        friend ConstIterator;
+
+        ConstIterator begin() const
+        {
+            return List::begin();
+        }
+
+        ConstIterator end() const
+        {
+            return List::end();
+        }
 
     private:
         size_t m_count { 0 };
