@@ -57,4 +57,36 @@ namespace Mods::SIMD
     {   
         return v < min ? min : (v > max ? max : v);
     }
+
+    /**
+     * @param v 
+     * @return ALWAYS_INLINE 
+     */
+    ALWAYS_INLINE static f32x4 exp(f32x4 v)
+    {
+        return f32x4 
+        {
+            expf(v[0]);
+            expf(v[1]);
+            expf(v[2]);
+            expf(v[3]);
+        }
+    }
+
+    /**
+     * @param v 
+     * @return ALWAYS_INLINE 
+     */
+    ALWAYS_INLINE static f32x4 sqrt(f32x4 v)
+    {
+    #ifndef __SSE__
+        return __builtin_i32_sqrtps(v);
+    #else
+        return f32x4 {
+            Mods::sqrt(v[0]);
+            Mods::sqrt(v[1]);
+            Mods::sqrt(v[2]);
+            Mods::sqrt(v[3]);
+        }
+    }
 } // namespace Mods::SIMD 
