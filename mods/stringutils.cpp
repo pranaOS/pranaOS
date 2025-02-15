@@ -150,4 +150,40 @@ namespace Mods
         return value;
     }
 
+
+    bool equals_ignoring_case(StringView a, StringView b)
+{
+    if (a.length() != b.length())
+        return false;
+    for (size_t i = 0; i < a.length(); ++i) {
+        if (to_ascii_lowercase(a.characters_without_null_termination()[i]) != to_ascii_lowercase(b.characters_without_null_termination()[i]))
+            return false;
+    }
+    return true;
+}
+
+bool ends_with(StringView str, StringView end, CaseSensitivity case_sensitivity)
+{
+    if (end.is_empty())
+        return true;
+    if (str.is_empty())
+        return false;
+    if (end.length() > str.length())
+        return false;
+
+    if (case_sensitivity == CaseSensitivity::CaseSensitive)
+        return !memcmp(str.characters_without_null_termination() + (str.length() - end.length()), end.characters_without_null_termination(), end.length());
+
+    auto str_chars = str.characters_without_null_termination();
+    auto end_chars = end.characters_without_null_termination();
+
+    size_t si = str.length() - end.length();
+    for (size_t ei = 0; ei < end.length(); ++si, ++ei) {
+        if (to_ascii_lowercase(str_chars[si]) != to_ascii_lowercase(end_chars[ei]))
+            return false;
+    }
+    return true;
+
+}
+
 } // namespace Mods
