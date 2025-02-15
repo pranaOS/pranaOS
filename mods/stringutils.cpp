@@ -113,4 +113,11 @@ namespace Mods
         }
         return value;
     }
+
+
+    template Optional<u8> convert_to_uint_from_hex(StringView str, TrimWhitespace);
+    template Optional<u16> convert_to_uint_from_hex(StringView str, TrimWhitespace);
+    template Optional<u32> convert_to_uint_from_hex(StringView str, TrimWhitespace);
+    template Optional<u64> convert_to_uint_from_hex(StringView str, TrimWhitespace);
+
 } // namespace Mods
