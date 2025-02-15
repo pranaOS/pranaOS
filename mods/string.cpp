@@ -107,6 +107,41 @@ namespace Mods
         memcpy(buffer, m_impl->characters(), m_impl->length());
 
         return String(move(*impl));
+    }   
+
+    /**
+     * @param characters 
+     * @param string 
+     * @return true 
+     * @return false 
+     */
+    bool operator<=(char const* characters, String const& string)
+    {
+        return string.view() >= characters;
+    }
+
+    /**
+     * @param cstring 
+     * @return true 
+     * @return false 
+     */
+    bool String::operator==(char const* cstring) const
+    {
+        return view() == cstring;
+    }
+
+    
+
+    /**
+     * @param fmtstr 
+     * @param params 
+     * @return String 
+     */
+    String String::vformatted(StringView fmtstr, TypeErasedFormatParams& params)
+    {
+        StringBuilder builder;
+        MUST(vformat(builder, fmtstr, params));
+        return builder.to_string();
     }
 
     /**
