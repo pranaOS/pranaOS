@@ -11,10 +11,10 @@
 
 #pragma once
 
-#include <mods/byte_buffer.h>
+#include <mods/bytebuffer.h>
 #include <mods/format.h>
 #include <mods/forward.h>
-#include <mods/string_view.h>
+#include <mods/stringview.h>
 #include <stdarg.h>
 
 namespace Mods
@@ -37,12 +37,23 @@ namespace Mods
          */
         ~StringBuilder() = default;
 
+        /**
+         * @return ErrorOr<void> 
+         */
         ErrorOr<void> try_append(StringView);
     #ifndef KERNEL
         ErrorOr<void> try_append(Utf16View const&);
     #endif
         ErrorOr<void> try_append(Utf32View const&);
+
+        /**
+         * @return ErrorOr<void> 
+         */
         ErrorOr<void> try_append_code_point(u32);
+
+        /**
+         * @return ErrorOr<void> 
+         */
         ErrorOr<void> try_append(char);
 
         /**
@@ -62,6 +73,11 @@ namespace Mods
          * @return ErrorOr<void> 
          */
         ErrorOr<void> try_append(char const*, size_t);
+
+        /**
+         * @return ErrorOr<void> 
+         */
+        ErrorOr<void> try_append_escaped_for_json(StringView);
 
         void append(StringView);
     #ifndef KERNEL
@@ -102,12 +118,11 @@ namespace Mods
         {
             return m_buffer.size();
         }
-
         [[nodiscard]] bool is_empty() const
         {
             return m_buffer.is_empty();
         }
-
+        
         /**
          * @param count 
          */
@@ -121,30 +136,39 @@ namespace Mods
          * @tparam CollectionType 
          * @param separator 
          * @param collection 
+         * @param fmtstr 
          */
         template <class SeparatorType, class CollectionType>
-        void join(SeparatorType const& separator, CollectionType const& collection)
+        void join(SeparatorType const& separator, CollectionType const& collection, StringView fmtstr = "{}"sv)
         {
             bool first = true;
-
             for(auto& item : collection)
             {
                 if(first)
                     first = false;
                 else
                     append(separator);
-                appendff("{}", item);
+                appendff(fmtstr, item);
             }
         }
 
     private:
+        /**
+         * @return ErrorOr<void> 
+         */
         ErrorOr<void> will_append(size_t);
 
+        /**
+         * @return u8* 
+         */
         u8* data()
         {
             return m_buffer.data();
         }
-        
+
+        /**
+         * @return u8 const* 
+         */
         u8 const* data() const
         {
             return m_buffer.data();
@@ -152,8 +176,7 @@ namespace Mods
 
         static constexpr size_t inline_capacity = 256;
         Mods::Detail::ByteBuffer<inline_capacity> m_buffer;
-    };
-
+    }; // class StringBuilder
 } // namespace Mods
 
 using Mods::StringBuilder;
