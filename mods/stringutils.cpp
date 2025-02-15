@@ -59,4 +59,25 @@ namespace Mods
             }
         }
     }
+
+    template<typename T>
+    Optional<T> convert_to_int(StringView str, TrimWhitespace trim_whitespace)
+    {
+        auto string = trim_whitespace == TrimWhitespace::Yes ? str.trim_whitespace() : str;
+        
+        if (string.is_empty())
+            return {};
+        
+        T sign = 1;
+        size_t i = 0;
+    }
+
+    template Optional<u8> convert_to_uint(StringView str, TrimWhitespace);
+    template Optional<u16> convert_to_uint(StringView str, TrimWhitespace);
+    template Optional<u32> convert_to_uint(StringView str, TrimWhitespace);
+    template Optional<unsigned long> convert_to_uint(StringView str, TrimWhitespace);
+    template Optional<unsigned long long> convert_to_uint(StringView str, TrimWhitespace);
+    template Optional<long> convert_to_uint(StringView str, TrimWhitespace);
+    template Optional<long long> convert_to_uint(StringView str, TrimWhitespace);
+
 } // namespace Mods
