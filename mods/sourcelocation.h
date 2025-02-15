@@ -19,6 +19,23 @@ namespace Mods
 {
     class SourceLocation
     {
+    public:
+        constexpr SourceLocation() = default;
+
+        [[nodiscard]] constexpr StringView function_name() const
+        {
+        }
+
+        /**
+         * @param file 
+         * @param line 
+         * @param function 
+         * @return constexpr SourceLocation 
+         */
+        [[nodiscard]] static constexpr SourceLocation current(const char* const file, u32 line, char* function)
+        {
+            return SourceLocation(file, line, function);
+        }
     private:
         constexpr SourceLocation(char const* const file, u32 line, char* function)
             : m_function(function)
