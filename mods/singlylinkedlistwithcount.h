@@ -136,6 +136,28 @@ namespace Mods
             return List::end();
         }
 
+        /**
+         * @tparam TUnaryPredicate 
+         * @param pred 
+         * @return ConstIterator 
+         */
+        template<typename TUnaryPredicate>
+        ConstIterator find(TUnaryPredicate&& pred) const
+        {
+            return List::find_if(forward<TUnaryPredicate>(pred));
+        }
+
+        /**
+         * @tparam TUnaryPredicate 
+         * @param pred 
+         * @return Iterator 
+         */
+        template<typenme TUnaryPredicate>
+        Iterator find(TUnaryPredicate&& pred)
+        {
+            return List::find_if(forward<TUnaryPredicate>(pred));
+        }
+
     private:
         size_t m_count { 0 };
     };
