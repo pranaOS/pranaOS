@@ -4,16 +4,16 @@
  * @brief statistics
  * @version 6.0
  * @date 2025-02-15
- * 
+ *
  * @copyright Copyright (c) 2021-2025 pranaOS Developers, Krisna Pranav
- * 
+ *
  */
 
 #pragma once
 
 #include <mods/math.h>
 #include <mods/quicksort.h>
-#include <mods/stdlibextra.h>
+#include <mods/stdlibextradetail.h>
 #include <mods/vector.h>
 
 namespace Mods
@@ -23,8 +23,9 @@ namespace Mods
      * 
      * @tparam T 
      */
-    template<typename T = float>
-    requires(IsArithmetic<T>) class Statistics 
+    template <typename T = float>
+        requires(IsArithmetic<T>)
+    class Statistics
     {
     public:
         /**
@@ -63,27 +64,90 @@ namespace Mods
         {
             return (float)sum() / size();
         }
-        
+
+        /**
+         * @return T const 
+         */
+        T const min() const
+        {
+            T minimum = m_values[0];
+            for(T number : values())
+            {
+                if(number < minimum)
+                {
+                    minimum = number;
+                }
+            }
+            return minimum;
+        }
+
+        /**
+         * @return T const 
+         */
+        T const max() const
+        {
+            T maximum = m_values[0];
+            for(T number : values())
+            {
+                if(number > maximum)
+                {
+                    maximum = number;
+                }
+            }
+            return maximum;
+        }
+
+        /**
+         * @return T const 
+         */
+        T const median()
+        {
+            quick_sort(m_values);
+            return m_values.at(size() / 2);
+        }   
+
+        /**
+         * @return float 
+         */
+        float standard_deviation() const
+        {
+            return sqrt(variance());
+        }
+
+        /**
+         * @return float 
+         */
         float variance() const
         {
             float summation = 0;
             float avg = average();
-
-            for (T number : values()) {
+            for(T number : values())
+            {
                 float difference = (float)number - avg;
                 summation += (difference * difference);
             }
-
             summation = summation / size();
             return summation;
         }
 
+        /**
+         * @return Vector<T> const& 
+         */
         Vector<T> const& values() const
         {
             return m_values;
         }
+
+        /**
+         * @return size_t 
+         */
+        size_t size() const
+        {
+            return m_values.size();
+        }
+
     private:
         Vector<T> m_values;
-        T m_sum {};
-    }; // requires(IsArithmetic<T>) class Statistics 
+        T m_sum{};
+    }; // class Statistics
 } // namespace Mods
