@@ -4,49 +4,58 @@
  * @brief String Impl
  * @version 6.0
  * @date 2023-07-02
- * 
+ *
  * @copyright Copyright (c) 2021-2024 pranaOS Developers, Krisna Pranav
- * 
+ *
  */
 
 #pragma once
 
-#include "badge.h"
-#include "refcounted.h"
-#include "refptr.h"
-#include "span.h"
-#include "types.h"
-#include "kmalloc.h"
+#include <mods/badge.h>
+#include <mods/refcounted.h>
+#include <mods/refptr.h>
+#include <mods/span.h>
+#include <mods/types.h>
+#include <mods/kmalloc.h>
 
-namespace Mods {
-
-    enum ShouldChomp {
+namespace Mods
+{
+    enum ShouldChomp
+    {
         NoChomp,
         Chomp
-    };
+    }; // enum ShouldChomp
 
-    class StringImpl : public RefCounted<StringImpl> {
+    /**
+     * @param length 
+     * @return size_t 
+     */
+    size_t allocation_size_for_stringimpl(size_t length);
+
+    class StringImpl : public RefCounted<StringImpl>
+    {
     public:
-
-        /** 
+        /**
+         * @brief Create a uninitialized object
+         * 
          * @param length 
          * @param buffer 
          * @return NonnullRefPtr<StringImpl> 
          */
         static NonnullRefPtr<StringImpl> create_uninitialized(size_t length, char*& buffer);
-        
+
         /**
          * @param cstring 
          * @return RefPtr<StringImpl> 
          */
-        static RefPtr<StringImpl> create(const char* cstring, ShouldChomp = NoChomp);
+        static RefPtr<StringImpl> create(char const* cstring, ShouldChomp = NoChomp);
 
         /**
          * @param cstring 
          * @param length 
          * @return RefPtr<StringImpl> 
          */
-        static RefPtr<StringImpl> create(const char* cstring, size_t length, ShouldChomp = NoChomp);
+        static RefPtr<StringImpl> create(char const* cstring, size_t length, ShouldChomp = NoChomp);
 
         /**
          * @return RefPtr<StringImpl> 
@@ -54,20 +63,32 @@ namespace Mods {
         static RefPtr<StringImpl> create(ReadonlyBytes, ShouldChomp = NoChomp);
 
         /**
-         * @return NonnullRefPtr<StringImpl> 
+         * @brief Create a lowercased object
+         * 
+         * @param cstring 
+         * @param length 
+         * @return RefPtr<StringImpl> 
          */
-        NonnullRefPtr<StringImpl> to_lowercase() const;
+        static RefPtr<StringImpl> create_lowercased(char const* cstring, size_t length);
 
         /**
-         * @return NonnullRefPtr<StringImpl> 
+         * @brief Create a uppercased object
+         * 
+         * @param cstring 
+         * @param length 
+         * @return RefPtr<StringImpl> 
          */
+        static RefPtr<StringImpl> create_uppercased(char const* cstring, size_t length);
+
+        NonnullRefPtr<StringImpl> to_lowercase() const;
         NonnullRefPtr<StringImpl> to_uppercase() const;
 
         /**
          * @param ptr 
          */
-        void operator delete(void* ptr) {
-            kfree(ptr);
+        void operator delete(void* ptr)
+        {
+            kfree_sized(ptr, allocation_size_for_stringimpl(static_cast<StringImpl*>(ptr)->m_length));
         }
 
         /**
@@ -75,35 +96,41 @@ namespace Mods {
          */
         static StringImpl& the_empty_stringimpl();
 
+        /**
+         * @brief Destroy the String Impl object
+         * 
+         */
         ~StringImpl();
 
-        /**
-         * @return size_t 
-         */
-        size_t length() const { 
-            return m_length; 
+        size_t length() const
+        {
+            return m_length;
         }
         
-        /**
-         * @return const char* 
-         */
-        const char* characters() const { 
-            return &m_inline_buffer[0]; 
+        char const* characters() const
+        {
+            return &m_inline_buffer[0];
         }
 
         /**
          * @return ALWAYS_INLINE 
          */
-        ALWAYS_INLINE ReadonlyBytes bytes() const { 
-            return { characters(), length() }; 
+        ALWAYS_INLINE ReadonlyBytes bytes() const
+        {
+            return {characters(), length()};
+        }
+        ALWAYS_INLINE StringView view() const
+        {
+            return {characters(), length()};
         }
 
         /**
          * @param i 
-         * @return const char& 
+         * @return char const& 
          */
-        const char& operator[](size_t i) const {
-            ASSERT(i < m_length);
+        char const& operator[](size_t i) const
+        {
+            VERIFY(i < m_length);
             return characters()[i];
         }
 
@@ -112,105 +139,103 @@ namespace Mods {
          * @return true 
          * @return false 
          */
-        bool operator==(const StringImpl& other) const {
-            if (length() != other.length())
+        bool operator==(StringImpl const& other) const
+        {
+            if(length() != other.length())
                 return false;
-            return !__builtin_memcmp(characters(), other.characters(), length());
+            return __builtin_memcmp(characters(), other.characters(), length()) == 0;
         }
 
-        /**
-         * @return unsigned 
-         */
-        unsigned hash() const {
-            if (!m_has_hash)
+        unsigned hash() const
+        {
+            if(!m_has_hash)
                 compute_hash();
             return m_hash;
         }
 
-        /**
-         * @return unsigned 
-         */
-        unsigned existing_hash() const {
+        unsigned existing_hash() const
+        {
             return m_hash;
         }
 
-        /**
-         * @return true 
-         * @return false 
-         */
-        bool is_fly() const { 
-            return m_fly; 
+        unsigned case_insensitive_hash() const;
+
+        bool is_fly() const
+        {
+            return m_fly;
         }
 
         /**
+         * @brief Set the fly object
+         * 
          * @param fly 
          */
-        void set_fly(Badge<FlyString>, bool fly) const { 
-            m_fly = fly; 
+        void set_fly(Badge<FlyString>, bool fly) const
+        {
+            m_fly = fly;
         }
 
     private:
-        enum ConstructTheEmptyStringImplTag {
+        enum ConstructTheEmptyStringImplTag
+        {
             ConstructTheEmptyStringImpl
-        };
+        }; // enum ConstructTheEmptyStringImplTag
 
         /**
          * @brief Construct a new String Impl object
          * 
          */
-        explicit StringImpl(ConstructTheEmptyStringImplTag) : m_fly(true)
+        explicit StringImpl(ConstructTheEmptyStringImplTag)
+            : m_fly(true)
         {
             m_inline_buffer[0] = '\0';
         }
 
-        enum ConstructWithInlineBufferTag {
+        enum ConstructWithInlineBufferTag
+        {
             ConstructWithInlineBuffer
-        };
+        }; // enum ConstructWithInlineBufferTag
 
         /**
+         * @brief Construct a new String Impl object
+         * 
          * @param length 
          */
         StringImpl(ConstructWithInlineBufferTag, size_t length);
 
         void compute_hash() const;
 
-        size_t m_length { 0 };
-
-        mutable unsigned m_hash { 0 };
-        mutable bool m_has_hash { false };
-        mutable bool m_fly { false };
-
+        size_t m_length{0};
+        mutable unsigned m_hash{0};
+        mutable bool m_has_hash{false};
+        mutable bool m_fly{false};
         char m_inline_buffer[0];
-    };
+    }; // class StringImpl : public RefCounted<StringImpl>
 
     /**
-     * @param characters 
      * @param length 
-     * @return constexpr u32 
+     * @return size_t 
      */
-    constexpr u32 string_hash(const char* characters, size_t length) {
-        u32 hash = 0;
-        for (size_t i = 0; i < length; ++i) {
-            hash += (u32)characters[i];
-            hash += (hash << 10);
-            hash ^= (hash >> 6);
-        }
-        hash += hash << 3;
-        hash ^= hash >> 11;
-        hash += hash << 15;
-        return hash;
+    inline size_t allocation_size_for_stringimpl(size_t length)
+    {
+        return sizeof(StringImpl) + (sizeof(char) * length) + sizeof(char);
     }
 
-    template<>
-    struct Formatter<StringImpl> : Formatter<StringView> {
-        void format(TypeErasedFormatParams& params, FormatBuilder& builder, const StringImpl& value) {
-            Formatter<StringView>::format(params, builder, { value.characters(), value.length() });
+    template <>
+    struct Formatter<StringImpl> : Formatter<StringView>
+    {
+        /**
+         * @param builder 
+         * @param value 
+         * @return ErrorOr<void> 
+         */
+        ErrorOr<void> format(FormatBuilder& builder, StringImpl const& value)
+        {
+            return Formatter<StringView>::format(builder, {value.characters(), value.length()});
         }
-    };
-
-}
+    }; // struct Formatter<StringImpl> : Formatter<StringView>
+} // namespace Mods
 
 using Mods::Chomp;
 using Mods::NoChomp;
-using Mods::string_hash;
 using Mods::StringImpl;
