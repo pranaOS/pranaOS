@@ -296,4 +296,35 @@ StringView trim(StringView str, StringView characters, TrimMode mode)
     return str.substring_view(substring_start, substring_length);
 }
 
+Optional<size_t> find(StringView haystack, char needle, size_t start)
+{
+    if(start >= haystack.length())
+        return {};
+    for(size_t i = start; i < haystack.length(); ++i)
+    {
+        if(haystack[i] == needle)
+            return i;
+    }
+    return {};
+}
+
+Optional<size_t> find(StringView haystack, StringView needle, size_t start)
+{
+    if(start > haystack.length())
+        return {};
+    auto index = Mods::memmem_optional(
+        haystack.characters_without_null_termination() + start, haystack.length() - start, needle.characters_without_null_termination(), needle.length());
+    return index.has_value() ? (*index + start) : index;
+}
+
+Optional<size_t> find_last(StringView haystack, char needle)
+{
+    for(size_t i = haystack.length(); i > 0; --i)
+    {
+        if(haystack[i - 1] == needle)
+            return i - 1;
+    }
+    return {};
+}
+
 } // namespace Mods
