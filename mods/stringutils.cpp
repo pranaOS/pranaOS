@@ -48,6 +48,15 @@ namespace Mods
                 record_span(0, str.length());
                 return true;
             }
+            char const* string_ptr = str.characters_without_null_termination();
+            char const* string_start = str.characters_without_null_termination();
+            char const* string_end = string_ptr + str.length();
+            char const* mask_ptr = mask.characters_without_null_termination();
+            char const* mask_end = mask_ptr + mask.length();
+
+            while (string_ptr < string_end && mask_ptr < mask_end) {
+                auto string_start_ptr = string_ptr;
+            }
         }
     }
 } // namespace Mods
