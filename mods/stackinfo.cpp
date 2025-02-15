@@ -4,60 +4,64 @@
  * @brief StackInfo source
  * @version 6.0
  * @date 2023-07-25
- * 
+ *
  * @copyright Copyright (c) 2021-2024 pranaOS Developers, Krisna Pranav
- * 
+ *
  */
 
-#include "assertions.h"
-#include "stackinfo.h"
+#include <mods/assertions.h>
+#include <mods/platform.h>
+#include <mods/stackinfo.h>
 #include <stdio.h>
+#include <string.h>
 
-#ifdef __prana__
-#    include <prana.h>
-#elif defined(__linux__) or defined(__APPLE__)
-#    include <pthread.h>
+#ifdef __pranaos__
+#include <pranaos.h>
+#elif defined(__linux__) or defined(MODS_OS_MACOS)
+#include <pthread.h>
 #endif
 
-namespace Mods 
+namespace Mods
 {
-
     /**
-     * @brief Construct a new Stack Info:: Stack Info object
+     * @brief Construct a new StackInfo::StackInfo object
      * 
      */
     StackInfo::StackInfo()
     {
-    #ifdef __prana__
-        if (get_stack_bounds(&m_base, &m_size) < 0) {
+    #ifdef __pranaos__
+        if(get_stack_bounds(&m_base, &m_size) < 0)
+        {
             perror("get_stack_bounds");
-            ASSERT_NOT_REACHED();
+            VERIFY_NOT_REACHED();
         }
-    #elif __linux__
+    #elif defined(__linux__)
+        int rc;
         pthread_attr_t attr = {};
-        if (int rc = pthread_getattr_np(pthread_self(), &attr) != 0) {
+        if((rc = pthread_getattr_np(pthread_self(), &attr)) != 0)
+        {
             fprintf(stderr, "pthread_getattr_np: %s\n", strerror(-rc));
-            ASSERT_NOT_REACHED();
+            VERIFY_NOT_REACHED();
         }
-        if (int rc = pthread_attr_getstack(&attr, (void**)&m_base, &m_size) != 0) {
+        if((rc = pthread_attr_getstack(&attr, (void**)&m_base, &m_size)) != 0)
+        {
             fprintf(stderr, "pthread_attr_getstack: %s\n", strerror(-rc));
-            ASSERT_NOT_REACHED();
+            VERIFY_NOT_REACHED();
         }
         pthread_attr_destroy(&attr);
-    #elif __APPLE__
-        m_base = (FlatPtr)pthread_get_stackaddr_np(pthread_self());
-        pthread_attr_t attr = {};
-        if (int rc = pthread_attr_getstacksize(&attr, &m_size) != 0) {
-            fprintf(stderr, "pthread_attr_getstacksize: %s\n", strerror(-rc));
-            ASSERT_NOT_REACHED();
+    #elif defined(MODS_OS_MACOS)
+        FlatPtr top_of_stack = (FlatPtr)pthread_get_stackaddr_np(pthread_self());
+        m_size = (size_t)pthread_get_stacksize_np(pthread_self());
+        constexpr size_t eight_megabytes = 0x800000;
+        if(pthread_main_np() == 1 && m_size < eight_megabytes)
+        {
+            m_size = eight_megabytes;
         }
-        pthread_attr_destroy(&attr);
+        m_base = top_of_stack - m_size;
     #else
-        ASSERT_NOT_REACHED();
+        VERIFY_NOT_REACHED();
     #endif
-        
-        // top = base + size.
-        m_top = m_base + m_size;
-    }
 
-}
+        m_top = m_base + m_size;
+    } // StackInfo::StackInfo()
+} // namespace Mods
