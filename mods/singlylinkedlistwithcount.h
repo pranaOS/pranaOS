@@ -42,6 +42,43 @@ namespace Mods
             return m_count;
         }
 
+        void clear()
+        {
+            List::clear();
+            m_count = 0;
+        }
+
+        /**
+         * @return T& 
+         */
+        T& first()
+        {
+            return List::first();
+        }
+
+        /**
+         * @return const T& 
+         */
+        const T& first() const
+        {
+            return List::first();
+        }
+
+        /**
+         * @return T& 
+         */
+        T& last() 
+        {
+            return List::last();
+        }
+
+        /**
+         * @return const T& 
+         */
+        const T& last() const
+        {
+            return List::last();
+        }
     private:
         size_t m_count { 0 };
     };
