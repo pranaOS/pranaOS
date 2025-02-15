@@ -79,7 +79,37 @@ namespace Mods
         {
             return List::last();
         }
-    private:
+
+        /**
+         * @return T 
+         */
+        T take_first()
+        {
+            m_count--;
+            return List::take_first();
+        }
+
+        /**
+         * @tparam U 
+         * @param value 
+         */
+        template<typename U = T>
+        void append(U&& value)
+        {
+            m_count++;
+            return List::append(forward<T>(value));
+        }
+
+        /**
+         * @param value 
+         * @return true 
+         * @return false 
+         */
+        bool contains_slow(const T& value) const
+        {
+            return List::contains_slow(value);
+        }
+        private:
         size_t m_count { 0 };
     };
 } // namespace Mods
