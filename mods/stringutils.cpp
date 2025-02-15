@@ -26,5 +26,28 @@ namespace Mods
 {
     namespace StringUtils
     {
+        /**
+         * @param str 
+         * @param mask 
+         * @param senstivity 
+         * @return true 
+         * @return false 
+         */
+        bool matches(StringView str, StringView mask, CaseSensitivity senstivity)
+        {
+            auto record_span = [&match_spans](size_t start, size_t length) {
+                if (match_spans) {
+                    match_spans->append({ start, length });
+                }
+            }
+
+            if (str.is_null() || mask.is_null())
+                return str.is_null() && mask.is_null();
+            
+            if (mask == "*"sv) {
+                record_span(0, str.length());
+                return true;
+            }
+        }
     }
 } // namespace Mods
