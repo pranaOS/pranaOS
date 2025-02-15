@@ -258,4 +258,42 @@ bool contains(StringView str, StringView needle, CaseSensitivity case_sensitivit
     return false;
 }
 
+bool is_whitespace(StringView str)
+{
+    return all_of(str, is_ascii_space);
+}
+
+StringView trim(StringView str, StringView characters, TrimMode mode)
+{
+    size_t substring_start = 0;
+    size_t substring_length = str.length();
+
+    if(mode == TrimMode::Left || mode == TrimMode::Both)
+    {
+        for(size_t i = 0; i < str.length(); ++i)
+        {
+            if(substring_length == 0)
+                return "";
+            if(!characters.contains(str[i]))
+                break;
+            ++substring_start;
+            --substring_length;
+        }
+    }
+
+    if(mode == TrimMode::Right || mode == TrimMode::Both)
+    {
+        for(size_t i = str.length() - 1; i > 0; --i)
+        {
+            if(substring_length == 0)
+                return "";
+            if(!characters.contains(str[i]))
+                break;
+            --substring_length;
+        }
+    }
+
+    return str.substring_view(substring_start, substring_length);
+}
+
 } // namespace Mods
