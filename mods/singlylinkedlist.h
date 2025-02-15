@@ -4,36 +4,43 @@
  * @brief Single Linked List
  * @version 6.0
  * @date 2023-07-25
- * 
+ *
  * @copyright Copyright (c) 2021-2024 pranaOS Developers, Krisna Pranav
- * 
+ *
  */
 
 #pragma once
 
-#include "assertions.h"
-#include "forward.h"
-#include "traits.h"
-#include "types.h"
-#include "stdlibextra.h"
+#include <mods/assertions.h>
+#include <mods/find.h>
+#include <mods/stdlibextra.h>
+#include <mods/traits.h>
+#include <mods/types.h>
 
-namespace Mods 
+namespace Mods
 {
-
-    template<typename ListType, typename ElementType>
-    class SinglyLinkedListIterator 
+    /**
+     * @tparam ListType 
+     * @tparam ElementType 
+     */
+    template <typename ListType, typename ElementType>
+    class SinglyLinkedListIterator
     {
     public:
-        SinglyLinkedListIterator() { }
+        /**
+         * @brief Construct a new Singly Linked List Iterator object
+         * 
+         */
+        SinglyLinkedListIterator() = default;
 
         /**
          * @param other 
          * @return true 
          * @return false 
          */
-        bool operator!=(const SinglyLinkedListIterator& other) const 
-        { 
-            return m_node != other.m_node; 
+        bool operator!=(SinglyLinkedListIterator const& other) const
+        {
+            return m_node != other.m_node;
         }
 
         /**
@@ -41,110 +48,168 @@ namespace Mods
          */
         SinglyLinkedListIterator& operator++()
         {
-            m_prev = m_node;
-            m_node = m_node->next;
+            if(m_removed)
+                m_removed = false;
+            else
+                m_prev = m_node;
+            m_node = m_next;
+            if(m_next)
+                m_next = m_next->next;
             return *this;
         }
 
         /**
          * @return ElementType& 
          */
-        ElementType& operator*() 
-        { 
-            return m_node->value; 
+        ElementType& operator*()
+        {
+            VERIFY(!m_removed);
+            return m_node->value;
         }
 
         /**
          * @return ElementType* 
          */
-        ElementType* operator->() 
-        { 
-            return &m_node->value; 
+        ElementType* operator->()
+        {
+            VERIFY(!m_removed);
+            return &m_node->value;
+        }
+
+        bool is_end() const
+        {
+            return !m_node;
+        }
+
+        bool is_begin() const
+        {
+            return !m_prev;
         }
 
         /**
-         * @return true 
-         * @return false 
+         * @param list 
          */
-        bool is_end() const 
-        { 
-            return !m_node; 
-        }
-
-        /**
-         * @return true 
-         * @return false 
-         */
-        bool is_begin() const 
-        { 
-            return !m_prev; 
-        }
+        void remove(ListType& list)
+        {
+            m_removed = true;
+            list.remove(*this);
+        };
 
     private:
         friend ListType;
 
         /**
+         * @brief Construct a new Singly Linked List Iterator object
+         * 
          * @param node 
          * @param prev 
          */
         explicit SinglyLinkedListIterator(typename ListType::Node* node, typename ListType::Node* prev = nullptr)
-            : m_node(node)
-            , m_prev(prev)
-        {}
-
-        /// @brief m_node + m_prev
-        typename ListType::Node* m_node { nullptr };
-        typename ListType::Node* m_prev { nullptr };
+            : m_node(node), m_prev(prev), m_next(node ? node->next : nullptr)
+        {
+        }
+        typename ListType::Node* m_node{nullptr};
+        typename ListType::Node* m_prev{nullptr};
+        typename ListType::Node* m_next{nullptr};
+        bool m_removed{false};
     }; // class SinglyLinkedListIterator
-
-    template<typename T>
-    class SinglyLinkedList 
+    
+    /**
+     * @tparam T 
+     */
+    template <typename T>
+    class SinglyLinkedList
     {
     private:
-        struct Node 
+        struct Node
         {
+            /**
+             * @brief Construct a new Node object
+             * 
+             * @param v 
+             */
             explicit Node(T&& v)
                 : value(move(v))
-            {}
+            {
+            }
 
             /**
+             * @brief Construct a new Node object
+             * 
              * @param v 
              */
             explicit Node(const T& v)
                 : value(v)
-            {}
+            {
+            }
 
             T value;
-            Node* next { nullptr };
-        };
+            Node* next{nullptr};
+        }; // struct Node
 
     public:
-        SinglyLinkedList() { }
-        ~SinglyLinkedList() { clear(); }
+        /**
+         * @brief Construct a new Singly Linked List object
+         * 
+         */
+        SinglyLinkedList() = default;
 
         /**
-         * @return true 
-         * @return false 
+         * @brief Construct a new Singly Linked List object
+         * 
+         * @param other 
          */
-        bool is_empty() const 
-        { 
-            return !head(); 
+        SinglyLinkedList(SinglyLinkedList const& other) = delete;
+
+        /**
+         * @brief Construct a new Singly Linked List object
+         * 
+         * @param other 
+         */
+        SinglyLinkedList(SinglyLinkedList&& other)
+            : m_head(other.m_head), m_tail(other.m_tail)
+        {
+            other.m_head = nullptr;
+            other.m_tail = nullptr;
         }
 
         /**
-         * @return size_t 
+         * @param other 
+         * @return SinglyLinkedList& 
          */
+        SinglyLinkedList& operator=(SinglyLinkedList const& other) = delete;
+
+        /**
+         * @return SinglyLinkedList& 
+         */
+        SinglyLinkedList& operator=(SinglyLinkedList&&) = delete;
+
+        /**
+         * @brief Destroy the Singly Linked List object
+         * 
+         */
+        ~SinglyLinkedList()
+        {
+            clear();
+        }
+
+        bool is_empty() const
+        {
+            return !head();
+        }
+
         inline size_t size_slow() const
         {
             size_t size = 0;
-            for (auto* node = m_head; node; node = node->next)
+            for(auto* node = m_head; node; node = node->next)
                 ++size;
             return size;
         }
 
         void clear()
         {
-            for (auto* node = m_head; node;) {
+            for(auto* node = m_head; node;)
+            {
                 auto* next = node->next;
                 delete node;
                 node = next;
@@ -158,7 +223,7 @@ namespace Mods
          */
         T& first()
         {
-            ASSERT(head());
+            VERIFY(head());
             return head()->value;
         }
 
@@ -167,7 +232,7 @@ namespace Mods
          */
         const T& first() const
         {
-            ASSERT(head());
+            VERIFY(head());
             return head()->value;
         }
 
@@ -176,7 +241,7 @@ namespace Mods
          */
         T& last()
         {
-            ASSERT(head());
+            VERIFY(head());
             return tail()->value;
         }
 
@@ -185,7 +250,7 @@ namespace Mods
          */
         const T& last() const
         {
-            ASSERT(head());
+            VERIFY(head());
             return tail()->value;
         }
 
@@ -194,31 +259,28 @@ namespace Mods
          */
         T take_first()
         {
-            ASSERT(m_head);
+            VERIFY(m_head);
             auto* prev_head = m_head;
             T value = move(first());
-            if (m_tail == m_head)
+
+            if(m_tail == m_head)
                 m_tail = nullptr;
+
             m_head = m_head->next;
             delete prev_head;
             return value;
         }
 
         /**
+         * @tparam U 
          * @param value 
          */
-        void append(const T& value)
+        template <typename U = T>
+        void append(U&& value)
         {
-            append(T(value));
-        }
-
-        /**
-         * @param value 
-         */
-        void append(T&& value)
-        {
-            auto* node = new Node(move(value));
-            if (!m_head) {
+            auto* node = new Node(forward<U>(value));
+            if(!m_head)
+            {
                 m_head = node;
                 m_tail = node;
                 return;
@@ -243,17 +305,17 @@ namespace Mods
         /**
          * @return Iterator 
          */
-        Iterator begin() 
-        { 
-            return Iterator(m_head); 
+        Iterator begin()
+        {
+            return Iterator(m_head);
         }
 
         /**
          * @return Iterator 
          */
-        Iterator end() 
-        { 
-            return {}; 
+        Iterator end()
+        {
+            return {};
         }
 
         using ConstIterator = SinglyLinkedListIterator<const SinglyLinkedList, const T>;
@@ -262,51 +324,35 @@ namespace Mods
         /**
          * @return ConstIterator 
          */
-        ConstIterator begin() const 
-        { 
-            return ConstIterator(m_head); 
-        }
-
-        /**
-         * @return ConstIterator 
-         */
-        ConstIterator end() const 
-        { 
-            return {}; 
-        }
-
-        /**
-         * @tparam Finder 
-         * @param finder 
-         * @return ConstIterator 
-         */
-        template<typename Finder>
-        ConstIterator find(Finder finder) const
+        ConstIterator begin() const
         {
-            Node* prev = nullptr;
-            for (auto* node = m_head; node; node = node->next) {
-                if (finder(node->value))
-                    return ConstIterator(node, prev);
-                prev = node;
-            }
-            return end();
+            return ConstIterator(m_head);
+        }
+        ConstIterator end() const
+        {
+            return {};
         }
 
         /**
-         * @tparam Finder 
-         * @param finder 
+         * @tparam TUnaryPredicate 
+         * @param pred 
+         * @return ConstIterator 
+         */
+        template <typename TUnaryPredicate>
+        ConstIterator find_if(TUnaryPredicate&& pred) const
+        {
+            return Mods::find_if(begin(), end(), forward<TUnaryPredicate>(pred));
+        }
+
+        /**
+         * @tparam TUnaryPredicate 
+         * @param pred 
          * @return Iterator 
          */
-        template<typename Finder>
-        Iterator find(Finder finder)
+        template <typename TUnaryPredicate>
+        Iterator find_if(TUnaryPredicate&& pred)
         {
-            Node* prev = nullptr;
-            for (auto* node = m_head; node; node = node->next) {
-                if (finder(node->value))
-                    return Iterator(node, prev);
-                prev = node;
-            }
-            return end();
+            return Mods::find_if(begin(), end(), forward<TUnaryPredicate>(pred));
         }
 
         /**
@@ -315,8 +361,9 @@ namespace Mods
          */
         ConstIterator find(const T& value) const
         {
-            return find([&](auto& other) { return Traits<T>::equals(value, other); });
-        }
+            return find_if([&](auto& other)
+                        { return Traits<T>::equals(value, other); });
+        }   
 
         /**
          * @param value 
@@ -324,114 +371,89 @@ namespace Mods
          */
         Iterator find(const T& value)
         {
-            return find([&](auto& other) { return Traits<T>::equals(value, other); });
+            return find_if([&](auto& other)
+                        { return Traits<T>::equals(value, other); });
         }
 
         /**
-         * @param iterator 
-         */
-        void remove(Iterator iterator)
-        {
-            ASSERT(!iterator.is_end());
-            if (m_head == iterator.m_node)
-                m_head = iterator.m_node->next;
-            if (m_tail == iterator.m_node)
-                m_tail = iterator.m_prev;
-            if (iterator.m_prev)
-                iterator.m_prev->next = iterator.m_node->next;
-            delete iterator.m_node;
-        }
-
-        /**
+         * @tparam U 
          * @param iterator 
          * @param value 
          */
-        void insert_before(Iterator iterator, const T& value)
+        template <typename U = T>
+        void insert_before(Iterator iterator, U&& value)
         {
-            insert_before(iterator, T(value));
-        }
-
-        /**
-         * @param iterator 
-         * @param value 
-         */
-        void insert_before(Iterator iterator, T&& value)
-        {
-            auto* node = new Node(move(value));
+            auto* node = new Node(forward<U>(value));
             node->next = iterator.m_node;
-            if (m_head == iterator.m_node)
+            if(m_head == iterator.m_node)
                 m_head = node;
-            if (iterator.m_prev)
+            if(iterator.m_prev)
                 iterator.m_prev->next = node;
         }
 
         /**
+         * @tparam U 
          * @param iterator 
          * @param value 
          */
-        void insert_after(Iterator iterator, const T& value)
+        template <typename U = T>
+        void insert_after(Iterator iterator, U&& value)
         {
-            insert_after(iterator, T(value));
-        }
-
-        /**
-         * @param iterator 
-         * @param value 
-         */
-        void insert_after(Iterator iterator, T&& value)
-        {
-            if (iterator.is_end()) {
+            if(iterator.is_end())
+            {
                 append(value);
                 return;
             }
 
-            auto* node = new Node(move(value));
+            auto* node = new Node(forward<U>(value));
             node->next = iterator.m_node->next;
 
             iterator.m_node->next = node;
 
-            if (m_tail == iterator.m_node)
+            if(m_tail == iterator.m_node)
                 m_tail = node;
         }
 
+        /**
+         * @param iterator 
+         */
+        void remove(Iterator& iterator)
+        {
+            VERIFY(!iterator.is_end());
+
+            if(m_head == iterator.m_node)
+                m_head = iterator.m_node->next;
+            if(m_tail == iterator.m_node)
+                m_tail = iterator.m_prev;
+            if(iterator.m_prev)
+                iterator.m_prev->next = iterator.m_node->next;
+            delete iterator.m_node;
+        }
+
     private:
-
-        /**
-         * @return Node* 
-         */
-        Node* head() 
-        { 
-            return m_head; 
+        Node* head()
+        {
+            return m_head;
         }
 
-        /**
-         * @return const Node* 
-         */
-        const Node* head() const 
-        { 
-            return m_head; 
+        Node const* head() const
+        {
+            return m_head;
         }
 
-        /**
-         * @return Node* 
-         */
-        Node* tail() 
-        { 
-            return m_tail; 
+        Node* tail()
+        {
+            return m_tail;
         }
 
-        /**
-         * @return const Node* 
-         */
-        const Node* tail() const 
-        { 
-            return m_tail; 
+        Node const* tail() const
+        {
+            return m_tail;
         }
 
-        Node* m_head { nullptr };
-        Node* m_tail { nullptr };
+        Node* m_head{nullptr};
+        Node* m_tail{nullptr};
     }; // class SinglyLinkedList
-
 } // namespace Mods
 
 using Mods::SinglyLinkedList;
