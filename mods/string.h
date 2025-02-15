@@ -1,12 +1,12 @@
 /**
  * @file string.h
  * @author Krisna Pranav
- * @brief string 
+ * @brief string
  * @version 6.0
  * @date 2023-07-04
- * 
+ *
  * @copyright Copyright (c) 2021-2024 pranaOS Developers, Krisna Pranav
- * 
+ *
  */
 
 #pragma once
@@ -15,14 +15,14 @@
 #include <mods/forward.h>
 #include <mods/refptr.h>
 #include <mods/stream.h>
-#include <mods/string_builder.h>
-#include <mods/string_impl.h>
-#include <mods/string_utils.h>
+#include <mods/stringbuilder.h>
+#include <mods/stringimpl.h>
+#include <mods/stringutils.h>
 #include <mods/traits.h>
 
 namespace Mods
 {
-    class String 
+    class String
     {
     public:
         /**
@@ -52,7 +52,7 @@ namespace Mods
          * 
          * @param other 
          */
-        String(const String& other)
+        String(String const& other)
             : m_impl(const_cast<String&>(other).m_impl)
         {
         }
@@ -73,7 +73,7 @@ namespace Mods
          * @param cstring 
          * @param shouldChomp 
          */
-        String(const char* cstring, ShouldChomp shouldChomp = NoChomp)
+        String(char const* cstring, ShouldChomp shouldChomp = NoChomp)
             : m_impl(StringImpl::create(cstring, shouldChomp))
         {
         }
@@ -85,7 +85,7 @@ namespace Mods
          * @param length 
          * @param shouldChomp 
          */
-        String(const char* cstring, size_t length, ShouldChomp shouldChomp = NoChomp)
+        String(char const* cstring, size_t length, ShouldChomp shouldChomp = NoChomp)
             : m_impl(StringImpl::create(cstring, length, shouldChomp))
         {
         }
@@ -99,14 +99,14 @@ namespace Mods
         explicit String(ReadonlyBytes bytes, ShouldChomp shouldChomp = NoChomp)
             : m_impl(StringImpl::create(bytes, shouldChomp))
         {
-        }   
+        }
 
         /**
          * @brief Construct a new String object
          * 
          * @param impl 
          */
-        String(const StringImpl& impl)
+        String(StringImpl const& impl)
             : m_impl(const_cast<StringImpl&>(impl))
         {
         }
@@ -116,7 +116,7 @@ namespace Mods
          * 
          * @param impl 
          */
-        String(const StringImpl* impl)
+        String(StringImpl const* impl)
             : m_impl(const_cast<StringImpl*>(impl))
         {
         }
@@ -141,7 +141,11 @@ namespace Mods
         {
         }
 
-        String(const FlyString&);
+        /**
+         * @brief Construct a new String object
+         * 
+         */
+        String(FlyString const&);
 
         /**
          * @param count 
@@ -174,13 +178,14 @@ namespace Mods
          * @tparam CollectionType 
          * @param separator 
          * @param collection 
+         * @param fmtstr 
          * @return String 
          */
-        template<class SeparatorType, class CollectionType>
-        [[nodiscard]] static String join(const SeparatorType& separator, const CollectionType& collection)
+        template <class SeparatorType, class CollectionType>
+        [[nodiscard]] static String join(SeparatorType const& separator, CollectionType const& collection, StringView fmtstr = "{}"sv)
         {
             StringBuilder builder;
-            builder.join(separator, collection);
+            builder.join(separator, collection, fmtstr);
             return builder.build();
         }
 
@@ -198,24 +203,38 @@ namespace Mods
          */
         [[nodiscard]] bool matches(StringView mask, Vector<MaskSpan>&, CaseSensitivity = CaseSensitivity::CaseInsensitive) const;
 
-        template<typename T = int>
+        /**
+         * @tparam T 
+         * @return Optional<T> 
+         */
+        template <typename T = int>
         [[nodiscard]] Optional<T> to_int(TrimWhitespace = TrimWhitespace::Yes) const;
 
-        template<typename T = unsigned>
+        /**
+         * @tparam T 
+         * @return Optional<T> 
+         */
+        template <typename T = unsigned>
         [[nodiscard]] Optional<T> to_uint(TrimWhitespace = TrimWhitespace::Yes) const;
 
+        /**
+         * @return String 
+         */
         [[nodiscard]] String to_lowercase() const;
         [[nodiscard]] String to_uppercase() const;
         [[nodiscard]] String to_snakecase() const;
         [[nodiscard]] String to_titlecase() const;
 
-        [[nodiscard]] bool is_whitespace() const 
-        { 
-            return StringUtils::is_whitespace(*this); 
+        /**
+         * @return true 
+         * @return false 
+         */
+        [[nodiscard]] bool is_whitespace() const
+        {
+            return StringUtils::is_whitespace(*this);
         }
 
-    #ifndef KERNEL
-        /**         
+        /**
          * @param characters 
          * @param mode 
          * @return String 
@@ -223,11 +242,11 @@ namespace Mods
         [[nodiscard]] String trim(StringView characters, TrimMode mode = TrimMode::Both) const
         {
             auto trimmed_view = StringUtils::trim(view(), characters, mode);
-            if (view() == trimmed_view)
+            if(view() == trimmed_view)
                 return *this;
             return trimmed_view;
         }
-        
+
         /**
          * @param mode 
          * @return String 
@@ -235,15 +254,27 @@ namespace Mods
         [[nodiscard]] String trim_whitespace(TrimMode mode = TrimMode::Both) const
         {
             auto trimmed_view = StringUtils::trim_whitespace(view(), mode);
-            if (view() == trimmed_view)
+            if(view() == trimmed_view)
                 return *this;
             return trimmed_view;
         }
-    #endif
 
+        /**
+         * @return true 
+         * @return false 
+         */
         [[nodiscard]] bool equals_ignoring_case(StringView) const;
 
+        /**
+         * @return true 
+         * @return false 
+         */
         [[nodiscard]] bool contains(StringView, CaseSensitivity = CaseSensitivity::CaseSensitive) const;
+
+        /**
+         * @return true 
+         * @return false 
+         */
         [[nodiscard]] bool contains(char, CaseSensitivity = CaseSensitivity::CaseSensitive) const;
 
         /**
@@ -269,13 +300,20 @@ namespace Mods
         [[nodiscard]] Vector<StringView> split_view(char separator, bool keep_empty = false) const;
 
         /**
+         * @param separator 
+         * @param keep_empty 
+         * @return Vector<StringView> 
+         */
+        [[nodiscard]] Vector<StringView> split_view(Function<bool(char)> separator, bool keep_empty = false) const;
+
+        /**
          * @param needle 
          * @param start 
          * @return Optional<size_t> 
          */
-        [[nodiscard]] Optional<size_t> find(char needle, size_t start = 0) const 
-        { 
-            return StringUtils::find(*this, needle, start); 
+        [[nodiscard]] Optional<size_t> find(char needle, size_t start = 0) const
+        {
+            return StringUtils::find(*this, needle, start);
         }
 
         /**
@@ -283,26 +321,25 @@ namespace Mods
          * @param start 
          * @return Optional<size_t> 
          */
-        [[nodiscard]] Optional<size_t> find(StringView needle, size_t start = 0) const 
-        { 
-            return StringUtils::find(*this, needle, start); 
+        [[nodiscard]] Optional<size_t> find(StringView needle, size_t start = 0) const
+        {
+            return StringUtils::find(*this, needle, start);
         }
 
         /**
          * @param needle 
          * @return Optional<size_t> 
          */
-        [[nodiscard]] Optional<size_t> find_last(char needle) const 
-        { 
-            return StringUtils::find_last(*this, needle); 
+        [[nodiscard]] Optional<size_t> find_last(char needle) const
+        {
+            return StringUtils::find_last(*this, needle);
         }
-
+        
         /**
          * @param needle 
          * @return Vector<size_t> 
          */
         Vector<size_t> find_all(StringView needle) const;
-
         using SearchDirection = StringUtils::SearchDirection;
 
         /**
@@ -310,7 +347,10 @@ namespace Mods
          * @param direction 
          * @return Optional<size_t> 
          */
-        [[nodiscard]] Optional<size_t> find_any_of(StringView needles, SearchDirection direction) const { return StringUtils::find_any_of(*this, needles, direction); }
+        [[nodiscard]] Optional<size_t> find_any_of(StringView needles, SearchDirection direction) const
+        {
+            return StringUtils::find_any_of(*this, needles, direction);
+        }
 
         /**
          * @param start 
@@ -338,24 +378,37 @@ namespace Mods
          */
         [[nodiscard]] StringView substring_view(size_t start) const;
 
-        [[nodiscard]] bool is_null() const 
-        { 
-            return !m_impl; 
+        /**
+         * @return true 
+         * @return false 
+         */
+        [[nodiscard]] bool is_null() const
+        {
+            return !m_impl;
         }
 
-        [[nodiscard]] ALWAYS_INLINE bool is_empty() const 
-        { 
-            return length() == 0; 
+        /**
+         * @return ALWAYS_INLINE 
+         */
+        [[nodiscard]] ALWAYS_INLINE bool is_empty() const
+        {
+            return length() == 0;
         }
 
-        [[nodiscard]] ALWAYS_INLINE size_t length() const 
-        { 
-            return m_impl ? m_impl->length() : 0; 
+        /**
+         * @return ALWAYS_INLINE 
+         */
+        [[nodiscard]] ALWAYS_INLINE size_t length() const
+        {
+            return m_impl ? m_impl->length() : 0;
         }
         
-        [[nodiscard]] ALWAYS_INLINE const char* characters() const 
-        { 
-            return m_impl ? m_impl->characters() : nullptr; 
+        /**
+         * @return ALWAYS_INLINE const* 
+         */
+        [[nodiscard]] ALWAYS_INLINE char const* characters() const
+        {
+            return m_impl ? m_impl->characters() : nullptr;
         }
 
         /**
@@ -371,7 +424,8 @@ namespace Mods
          */
         [[nodiscard]] ALWAYS_INLINE ReadonlyBytes bytes() const
         {
-            if (m_impl) {
+            if(m_impl)
+            {
                 return m_impl->bytes();
             }
             return {};
@@ -381,44 +435,60 @@ namespace Mods
          * @param i 
          * @return ALWAYS_INLINE const& 
          */
-        [[nodiscard]] ALWAYS_INLINE const char& operator[](size_t i) const
+        [[nodiscard]] ALWAYS_INLINE char const& operator[](size_t i) const
         {
             VERIFY(!is_null());
             return (*m_impl)[i];
         }
 
-        using ConstIterator = SimpleIterator<const String, const char>;
+        using ConstIterator = SimpleIterator<const String, char const>;
 
-        [[nodiscard]] constexpr ConstIterator begin() const 
-        { 
-            return ConstIterator::begin(*this); 
+        /**
+         * @return constexpr ConstIterator 
+         */
+        [[nodiscard]] constexpr ConstIterator begin() const
+        {
+            return ConstIterator::begin(*this);
+        }
+        [[nodiscard]] constexpr ConstIterator end() const
+        {
+            return ConstIterator::end(*this);
         }
 
-        [[nodiscard]] constexpr ConstIterator end() const 
-        { 
-            return ConstIterator::end(*this); 
-        }
-
+        /**
+         * @return true 
+         * @return false 
+         */
         [[nodiscard]] bool starts_with(StringView, CaseSensitivity = CaseSensitivity::CaseSensitive) const;
-
         [[nodiscard]] bool ends_with(StringView, CaseSensitivity = CaseSensitivity::CaseSensitive) const;
 
+        /**
+         * @return true 
+         * @return false 
+         */
         [[nodiscard]] bool starts_with(char) const;
-
         [[nodiscard]] bool ends_with(char) const;
 
-        bool operator==(const String&) const;
+        /**
+         * @return true 
+         * @return false 
+         */
+        bool operator==(String const&) const;
 
         /**
          * @param other 
          * @return true 
          * @return false 
          */
-        bool operator!=(const String& other) const 
-        { 
-            return !(*this == other); 
+        bool operator!=(String const& other) const
+        {
+            return !(*this == other);
         }
 
+        /**
+         * @return true 
+         * @return false 
+         */
         bool operator==(StringView) const;
 
         /**
@@ -426,63 +496,47 @@ namespace Mods
          * @return true 
          * @return false 
          */
-        bool operator!=(StringView other) const 
-        { 
-            return !(*this == other); 
+        bool operator!=(StringView other) const
+        {
+            return !(*this == other);
         }
 
-        bool operator==(const FlyString&) const;
+        /**
+         * @return true 
+         * @return false 
+         */
+        bool operator==(FlyString const&) const;
 
         /**
          * @param other 
          * @return true 
          * @return false 
          */
-        bool operator!=(const FlyString& other) const 
-        { 
-            return !(*this == other); 
+        bool operator!=(FlyString const& other) const
+        {
+            return !(*this == other);
         }
 
-        bool operator<(const String&) const;
+        /**
+         * @return true 
+         * @return false 
+         */
+        bool operator<(String const&) const;
 
-        bool operator<(const char*) const;
+        /**
+         * @return true 
+         * @return false 
+         */
+        bool operator<(char const*) const;
 
         /**
          * @param other 
          * @return true 
          * @return false 
          */
-        bool operator>=(const String& other) const 
-        { 
-            return !(*this < other); 
-        }
-
-        /**
-         * @param other 
-         * @return true 
-         * @return false 
-         */
-        bool operator>=(const char* other) const 
-        { 
-            return !(*this < other); 
-        }
-
-        bool operator>(const String&) const;
-
-        /**
-         * @return true 
-         * @return false 
-         */
-        bool operator>(const char*) const;
-        
-        /**
-         * @param other 
-         * @return true 
-         * @return false 
-         */
-        bool operator<=(const String& other) const 
-        { 
-            return !(*this > other); 
+        bool operator>=(String const& other) const
+        {
+            return !(*this < other);
         }
 
         /**
@@ -490,9 +544,41 @@ namespace Mods
          * @return true 
          * @return false 
          */
-        bool operator<=(const char* other) const 
-        { 
-            return !(*this > other); 
+        bool operator>=(char const* other) const
+        {
+            return !(*this < other);
+        }
+
+        /**
+         * @return true 
+         * @return false 
+         */
+        bool operator>(String const&) const;
+
+        /**
+         * @return true 
+         * @return false 
+         */
+        bool operator>(char const*) const;
+
+        /**
+         * @param other 
+         * @return true 
+         * @return false 
+         */
+        bool operator<=(String const& other) const
+        {
+            return !(*this > other);
+        }
+
+        /**
+         * @param other 
+         * @return true 
+         * @return false 
+         */
+        bool operator<=(char const* other) const
+        {
+            return !(*this > other);
         }
 
         /**
@@ -500,34 +586,46 @@ namespace Mods
          * @return true 
          * @return false 
          */
-        bool operator==(const char* cstring) const;
+        bool operator==(char const* cstring) const;
 
         /**
          * @param cstring 
          * @return true 
          * @return false 
          */
-        bool operator!=(const char* cstring) const 
-        { 
-            return !(*this == cstring); 
+        bool operator!=(char const* cstring) const
+        {
+            return !(*this == cstring);
         }
 
+        /**
+         * @return String 
+         */
         [[nodiscard]] String isolated_copy() const;
 
+        /**
+         * @return String 
+         */
         [[nodiscard]] static String empty()
         {
             return StringImpl::the_empty_stringimpl();
         }
 
-        [[nodiscard]] StringImpl* impl() 
-        { 
-            return m_impl.ptr(); 
+        /**
+         * @return StringImpl* 
+         */
+        [[nodiscard]] StringImpl* impl()
+        {
+            return m_impl.ptr();
         }
 
-        [[nodiscard]] const StringImpl* impl() const 
-        { 
-            return m_impl.ptr(); 
-        }
+        /**
+         * @return StringImpl const* 
+         */
+        [[nodiscard]] StringImpl const* impl() const
+        {
+            return m_impl.ptr();
+        }   
 
         /**
          * @param other 
@@ -535,18 +633,18 @@ namespace Mods
          */
         String& operator=(String&& other)
         {
-            if (this != &other)
+            if(this != &other)
                 m_impl = move(other.m_impl);
             return *this;
-        }       
+        }   
 
         /**
          * @param other 
          * @return String& 
          */
-        String& operator=(const String& other)
+        String& operator=(String const& other)
         {
-            if (this != &other)
+            if(this != &other)
                 m_impl = const_cast<String&>(other).m_impl;
             return *this;
         }
@@ -570,13 +668,19 @@ namespace Mods
             return *this;
         }
 
+        /**
+         * @return u32 
+         */
         [[nodiscard]] u32 hash() const
         {
-            if (!m_impl)
+            if(!m_impl)
                 return 0;
             return m_impl->hash();
         }
 
+        /**
+         * @return ByteBuffer 
+         */
         [[nodiscard]] ByteBuffer to_byte_buffer() const;
 
         /**
@@ -585,12 +689,12 @@ namespace Mods
          * @param should_chomp 
          * @return String 
          */
-        template<typename BufferType>
-        [[nodiscard]] static String copy(const BufferType& buffer, ShouldChomp should_chomp = NoChomp)
+        template <typename BufferType>
+        [[nodiscard]] static String copy(BufferType const& buffer, ShouldChomp should_chomp = NoChomp)
         {
-            if (buffer.is_empty())
+            if(buffer.is_empty())
                 return empty();
-            return String((const char*)buffer.data(), buffer.size(), should_chomp);
+            return String((char const*)buffer.data(), buffer.size(), should_chomp);
         }
 
         /**
@@ -605,10 +709,10 @@ namespace Mods
          * @param parameters 
          * @return String 
          */
-        template<typename... Parameters>
-        [[nodiscard]] static String formatted(CheckedFormatString<Parameters...>&& fmtstr, const Parameters&... parameters)
+        template <typename... Parameters>
+        [[nodiscard]] static String formatted(CheckedFormatString<Parameters...>&& fmtstr, Parameters const&... parameters)
         {
-            VariadicFormatParams variadic_format_parameters { parameters... };
+            VariadicFormatParams variadic_format_parameters{parameters...};
             return vformatted(fmtstr.view(), variadic_format_parameters);
         }
 
@@ -617,16 +721,20 @@ namespace Mods
          * @param value 
          * @return String 
          */
-        template<typename T>
-        [[nodiscard]] static String number(T value) requires IsArithmetic<T>
+        template <typename T>
+        [[nodiscard]] static String number(T value)
+            requires IsArithmetic<T>
         {
             return formatted("{}", value);
         }
 
+        /**
+         * @return StringView 
+         */
         [[nodiscard]] StringView view() const
         {
-            return { characters(), length() };
-        }
+            return {characters(), length()};
+        }   
 
         /**
          * @param needle 
@@ -634,20 +742,20 @@ namespace Mods
          * @param all_occurrences 
          * @return String 
          */
-        [[nodiscard]] String replace(StringView needle, StringView replacement, bool all_occurrences = false) const 
-        { 
-            return StringUtils::replace(*this, needle, replacement, all_occurrences); 
+        [[nodiscard]] String replace(StringView needle, StringView replacement, bool all_occurrences = false) const
+        {
+            return StringUtils::replace(*this, needle, replacement, all_occurrences);
         }
 
         /**
          * @param needle 
          * @return size_t 
          */
-        [[nodiscard]] size_t count(StringView needle) const 
-        { 
-            return StringUtils::count(*this, needle); 
+        [[nodiscard]] size_t count(StringView needle) const
+        {
+            return StringUtils::count(*this, needle);
         }
-
+        
         [[nodiscard]] String reverse() const;
 
         /**
@@ -655,38 +763,56 @@ namespace Mods
          * @param strings 
          * @return ALWAYS_INLINE constexpr 
          */
-        template<typename... Ts>
+        template <typename... Ts>
         [[nodiscard]] ALWAYS_INLINE constexpr bool is_one_of(Ts&&... strings) const
         {
             return (... || this->operator==(forward<Ts>(strings)));
+        }
+
+        /**
+         * @tparam Ts 
+         * @param strings 
+         * @return ALWAYS_INLINE constexpr 
+         */
+        template <typename... Ts>
+        [[nodiscard]] ALWAYS_INLINE constexpr bool is_one_of_ignoring_case(Ts&&... strings) const
+        {
+            return (... ||
+                        [this, &strings]() -> bool
+                    {
+                        if constexpr(requires(Ts a) { a.view()->StringView; })
+                            return this->equals_ignoring_case(forward<Ts>(strings.view()));
+                        else
+                            return this->equals_ignoring_case(forward<Ts>(strings));
+                    }());
         }
 
     private:
         RefPtr<StringImpl> m_impl;
     }; // class String
 
-    template<>
-    struct Traits<String> : public GenericTraits<String> 
+    template <>
+    struct Traits<String> : public GenericTraits<String>
     {
         /**
          * @param s 
          * @return unsigned 
          */
-        static unsigned hash(const String& s) 
-        { 
-            return s.impl() ? s.impl()->hash() : 0; 
+        static unsigned hash(String const& s)
+        {
+            return s.impl() ? s.impl()->hash() : 0;
         }
-    };
+    }; // struct Traits<String> : public GenericTraits<String>
 
-    struct CaseInsensitiveStringTraits : public Traits<String> 
+    struct CaseInsensitiveStringTraits : public Traits<String>
     {
         /**
          * @param s 
          * @return unsigned 
          */
-        static unsigned hash(String const& s) 
-        { 
-            return s.impl() ? s.impl()->case_insensitive_hash() : 0; 
+        static unsigned hash(String const& s)
+        {
+            return s.impl() ? s.impl()->case_insensitive_hash() : 0;
         }
 
         /**
@@ -695,16 +821,25 @@ namespace Mods
          * @return true 
          * @return false 
          */
-        static bool equals(String const& a, String const& b) 
-        { 
-            return a.equals_ignoring_case(b); 
+        static bool equals(String const& a, String const& b)
+        {
+            return a.equals_ignoring_case(b);
         }
-    };
+    }; // struct CaseInsensitiveStringTraits : public Traits<String>
 
-    bool operator<(const char*, const String&);
-    bool operator>=(const char*, const String&);
-    bool operator>(const char*, const String&);
-    bool operator<=(const char*, const String&);
+    /**
+     * @return true 
+     * @return false 
+     */
+    bool operator<(char const*, String const&);
+
+    /**
+     * @return true 
+     * @return false 
+     */
+    bool operator>=(char const*, String const&);
+    bool operator>(char const*, String const&);
+    bool operator<=(char const*, String const&);
 
     /**
      * @param html 
