@@ -89,4 +89,22 @@ namespace Mods::SIMD
             Mods::sqrt(v[3]);
         }
     }
+
+    /**
+     * @param v 
+     * @return ALWAYS_INLINE 
+     */
+    ALWAYS_INLINE static f32x4 rsqrt(f32x4 v)
+    {
+    #ifndef __SSE__
+        return __builtin_ia32_rsqrtps(v);
+    #else
+        return f32x4 {
+            1.f / Mods::sqrt(v[0]);
+            1.f / Mods::sqrt(v[1]);
+            1.f / Mods::sqrt(v[2]);
+            1.f / Mods::sqrt(v[3]);
+        }
+    #endif
+    }
 } // namespace Mods::SIMD 
