@@ -110,6 +110,55 @@ namespace Mods
     }   
 
     /**
+     * @brief Construct a new String:: String object
+     * 
+     * @param string 
+     */
+    String::String(FlyString const& string)
+        : m_impl(string.impl())
+    {}
+
+    /**
+     * @return String 
+     */
+    String String::to_lowercase() const
+    {
+        if (!m_impl) {
+            return {};
+        }
+
+        return m_impl->to_lowercase();
+    }
+
+    /**
+     * @return String 
+     */
+    String String::to_uppercase() const
+    {
+        if (!m_impl) {
+            return {};
+        }
+
+        return m_impl->to_uppercase();
+    }
+
+    /**
+     * @return String 
+     */
+    String String::to_snakecase() const
+    {
+        return StringUtils::to_snakecase(*this);
+    }
+
+    /**
+     * @return String 
+     */
+    String String::to_titlecase() const
+    {
+        return StringUtils::to_titlecase(*this);
+    }
+
+    /**
      * @param characters 
      * @param string 
      * @return true 
@@ -130,7 +179,33 @@ namespace Mods
         return view() == cstring;
     }
 
-    
+    /**
+     * @param stream 
+     * @param string 
+     * @return InputStream& 
+     */
+    InputStream& operator>>(InputStream& stream, String& string)
+    {
+        StringBuilder builder;
+
+        for (;;) {
+            char next_char;
+            stream >> next_char;
+
+            if (stream.has_any_error()) {
+                stream.set_fatal_error();
+                string = nullptr;
+                return stream;
+            }
+
+            if (next_char) {
+                builder.append(next_char); 
+            } else {
+                string = builder.to_string();
+                return stream;
+            }
+        }
+    }
 
     /**
      * @param fmtstr 
