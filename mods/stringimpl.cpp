@@ -55,6 +55,50 @@ namespace Mods
     }
 
     /**
+     * @param cstring 
+     * @return RefPtr<StringImpl> 
+     */
+    RefPtr<StringImpl> StringImpl::create_uninitialized(char const* cstring)
+    {
+        if (!cstring)
+            return nullptr;
+        
+        char* buffer;
+        auto impl = create_uninitialized(length, buffer);
+
+        for (size_t i = 0; i < length; ++i)
+            buffer[i] = (char)to_ascii_uppercase(cstring[i]);
+        
+
+        return impl;
+    }
+
+    /**
+     * @return NonnullRefPtr<StringImpl> 
+     */
+    NonnullRefPtr<StringImpl> StringImpl::to_lowercase() const
+    {
+        for (size_t i = 0; i < m_length; ++i) {
+            if (is_ascii_upper_alpha(characters()[i]))
+                return create_lowercased(characters(), m_length);
+        }
+
+        return const_cast<StringImpl&>(*this);
+    }
+
+    /**
+     * @return NonnullRefPtr<StringImpl> 
+     */
+    NonnullRefPtr<StringImpl> StringImpl::to_uppercase() const
+    {
+        for (size_t i = 0; i < m_length; ++i) {
+
+        }
+
+        return const_cast<StringImpl&>(*this);
+    }
+
+    /**
      * @return unsigned 
      */
     unsigned StringImpl::case_insensitive_hash() const
