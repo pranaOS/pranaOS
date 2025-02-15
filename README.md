@@ -1,5 +1,5 @@
 # pranaOS
-- Graphical Operating System Built For x86, ARM, watch & mobile platforms.
+pranaOS is a modern and flexible operating system designed for x86, ARM, mobile, and watch platforms. It provides a robust kernel, a graphical user interface, and a comprehensive set of libraries for application development. With a focus on performance, security, and modularity, pranaOS aims to be a versatile OS for various computing environments.
 
 <p align="center">
 <img src="https://raw.githubusercontent.com/pranaOS/pranaOS/master/docs/eagle.jpeg" width="200" height="200">
@@ -13,36 +13,45 @@
 - operating system for all, there are many features at this operating system, you can able to create frameworks, applications, and many more for the os(watch, mobile & desktopOS).
 - we have specialized ui & other runtime libraries so that developers can able to develop many things using it (or) they can create they're own framework or application for the pranaOS.
 
-# Kernel Features:
-- mobile/watch/OS kernel.
-- x86 kernel with multi-threading feature.
-- IPV4 stacks(ARP, TCP, UDP, ICMP Protocols).
-- ext2 filesystem.
-- POSIX signals.
-- /proc typo filesystems.
-- ps2 mouse and keyboard.
-- Harware Security
-- Filesystem Notifiers
-- Profilers
-- Sound 16 bit drivers
-- Mouse Integeration for Virtual Machines
+## Kernel
+- **Multi-threaded Kernel**: Optimized for x86, ARM, mobile, and watch architectures.
+- **Memory Management**: Efficient handling of system memory with paging support.
+- **Filesystem Support**: Implements Ext2 with `/proc` virtual filesystem.
+- **Networking**: Supports IPv4 with ARP, TCP, UDP, and ICMP protocols.
+- **Device Drivers**:
+  - PS/2 Mouse & Keyboard support
+  - 16-bit sound drivers
+  - Mouse integration for Virtual Machines
 
-# Libraries:
+## Libraries:
 - gateway & entrypoint **(mods)**
 - objective-c runtime support **(libobjc)**
 - swift runtime support **(libswift)**
 - java runtime and support for kernel **(libjava)**
 - Application runtime(swift/c++)
 
-# Userland:
-- simple terminal and some apps
+## Userland
+- **POSIX Compatibility**: Supports standard Unix utilities, signals, and `/proc` filesystem.
+- **Graphical User Interface**: A fully customizable UI with theming support.
+- **Essential System Applications**: Includes a terminal, file manager, text editor, and calculator.
+- **Security & Performance**:
+  - Hardware security integration
+  - Filesystem notifiers
+  - System profiling tools
+
+## Development & Libraries
+- **Custom UI & Runtime Libraries**: Provides a specialized UI toolkit and runtime libraries for application development.
+- **Multi-language Support**:
+  - **libobjc**: Objective-C runtime support
+  - **libswift**: Swift runtime support
+  - **libjava**: Java runtime with kernel integration
+- **Application Development**:
+  - Supports Swift and C++ applications
+  - Provides a gateway and entry point library (Mods)
 
 # Requirements:
 - you need prana compiler 
 - to build prana check out the [doc]()
-
-# Building:
-- ```prana``` to build the iso
 
 ## Todo:
 - check out the [todo's](https://github.com/pranaOS/pranaOS/projects/6)
