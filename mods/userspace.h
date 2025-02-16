@@ -4,122 +4,141 @@
  * @brief usrspace
  * @version 6.0
  * @date 2023-07-07
- * 
+ *
  * @copyright Copyright (c) 2021-2024 pranaOS Developers, Krisna Pranav
- * 
+ *
  */
 
+#pragma once
 
-#pragma once 
+#include <mods/assertions.h>
+#include <mods/stdlibextra.h>
+#include <mods/types.h>
 
-#include "types.h"
-#include "stdlibextra.h"
+#ifdef KERNEL
+#include <kernel/virtualaddress.h>
+#endif
 
-namespace Mods {
+namespace Mods
+{
+    /**
+     * @tparam T 
+     */
+    template <typename T>
+    concept PointerTypeName = IsPointer<T>;
 
-    #if defined(__cpp_concepts) && !defined(__COVERITY__)
-    template<typename T>
-    concept PointerTypeName = IsPointer<T>::value;
-    template<PointerTypeName T>
-    #else
-    template<typename T, typename EnableIf<IsPointer<T>::value, int>::Type = 0>
-    #endif
-
-    class Userspace {
+    /**
+     * @tparam T 
+     */
+    template <PointerTypeName T>
+    class Userspace
+    {
     public:
-        Userspace() { }
+        /**
+         * @brief Construct a new Userspace object
+         * 
+         */
+        Userspace() = default;
 
         /**
          * @return true 
          * @return false 
          */
-        operator bool() const { 
-            return m_ptr; 
-        }
-
-        /**
-         * @return FlatPtr 
-         */
-        operator FlatPtr() const { 
-            return (FlatPtr)m_ptr; 
-        }
-
-        /**
-         * @return true 
-         * @return false 
-         */
-        bool operator==(const Userspace&) const = delete;
-
-        /**
-         * @return true 
-         * @return false 
-         */
-        bool operator<=(const Userspace&) const = delete;
-
-        /**
-         * @return true 
-         * @return false 
-         */
-        bool operator>=(const Userspace&) const = delete;
-
-        /**
-         * @return true 
-         * @return false 
-         */
-        bool operator<(const Userspace&) const = delete;
-
-        /**
-         * @return true 
-         * @return false 
-         */
-        bool operator>(const Userspace&) const = delete;
+        bool operator==(Userspace const&) const = delete;
+        bool operator<=(Userspace const&) const = delete;
+        bool operator>=(Userspace const&) const = delete;
+        bool operator<(Userspace const&) const = delete;
+        bool operator>(Userspace const&) const = delete;
 
     #ifdef KERNEL
         /**
+         * @brief Construct a new Userspace object
+         * 
          * @param ptr 
          */
-        Userspace(FlatPtr ptr) : m_ptr(ptr)
-        { }
+        Userspace(FlatPtr ptr)
+            : m_ptr(ptr)
+        {
+        }
+
+        /**
+         * @return true 
+         * @return false 
+         */
+        explicit operator bool() const
+        {
+            return m_ptr != 0;
+        }
 
         /**
          * @return FlatPtr 
          */
-        FlatPtr ptr() const { 
-            return m_ptr; 
+        FlatPtr ptr() const
+        {
+            return m_ptr;
+        }
+
+        /**
+         * @return VirtualAddress 
+         */
+        VirtualAddress vaddr() const
+        {
+            return VirtualAddress(m_ptr);
         }
 
         /**
          * @return T 
          */
-        T unsafe_userspace_ptr() const { 
-            return (T)m_ptr; 
+        T unsafe_userspace_ptr() const
+        {
+            return reinterpret_cast<T>(m_ptr);
         }
-
-    #else   
+    #else
         /**
+         * @brief Construct a new Userspace object
+         * 
          * @param ptr 
          */
-        Userspace(T ptr) : m_ptr(ptr)
-        { }
+        Userspace(T ptr)
+            : m_ptr(ptr)
+        {
+        }
+
+        /**
+         * @return true 
+         * @return false 
+         */
+        explicit operator bool() const
+        {
+            return m_ptr != nullptr;
+        }
 
         /**
          * @return T 
          */
-        T ptr() const { 
-            return m_ptr; 
+        T ptr() const
+        {
+            return m_ptr;
         }
     #endif
 
     private:
     #ifdef KERNEL
-        FlatPtr m_ptr { 0 };
+        FlatPtr m_ptr{0};
     #else
-        T m_ptr { nullptr };
+        T m_ptr{nullptr};
     #endif
-    };
+    }; // class Userspace
 
-    template<typename T, typename U>
-    inline Userspace<T> static_ptr_cast(const Userspace<U>& ptr) {
+    /**
+     * @tparam T 
+     * @tparam U 
+     * @param ptr 
+     * @return Userspace<T> 
+     */
+    template <typename T, typename U>
+    inline Userspace<T> static_ptr_cast(Userspace<U> const& ptr)
+    {
     #ifdef KERNEL
         auto casted_ptr = static_cast<T>(ptr.unsafe_userspace_ptr());
     #else
@@ -128,7 +147,7 @@ namespace Mods {
         return Userspace<T>((FlatPtr)casted_ptr);
     }
 
-}
+} // namespace Mods
 
 using Mods::static_ptr_cast;
 using Mods::Userspace;
