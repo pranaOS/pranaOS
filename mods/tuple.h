@@ -9,3 +9,36 @@
  * 
  */
 
+#pragma once
+
+#include <mods/stdlibextra.h>
+#include <mods/typelist.h>
+
+namespace Mods::Detail
+{
+    /**
+     * @tparam Ts 
+     */
+    template<typename... Ts>
+    struct Tuple {};
+
+    template<typename T>
+    struct Tuple<T> {
+        Tuple(T&& value) requires(!IsSame<T&&, const T&>)
+            : value(forward<T>(value))
+        {}
+
+        /**
+         * @brief Construct a new Tuple object
+         * 
+         * @param value 
+         */
+        Tuple(const T& value)
+            : value(value)
+        {}  
+        
+    
+    private:
+        T value;
+    }
+} // namespace Mods::Detail
