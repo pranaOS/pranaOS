@@ -4,46 +4,57 @@
  * @brief weakable
  * @version 6.0
  * @date 2023-07-11
- * 
+ *
  * @copyright Copyright (c) 2021-2024 pranaOS Developers, Krisna Pranav
- * 
+ *
  */
 
-#pragma once 
+#pragma once
 
 #include "assertions.h"
 #include "atomic.h"
 #include "refcounted.h"
 #include "refptr.h"
-
-#ifndef WEAKABLE_DEBUG
-#    define WEAKABLE_DEBUG
+#include "stdlibextra.h"
+#ifdef KERNEL
+#include <kernel/arch/processor.h>
+#include <kernel/arch/scopedcritical.h>
+#else
+#include <sched.h>
 #endif
 
-namespace Mods 
+namespace Mods
 {
-
-    template<typename T>
+    /**
+     * @tparam T 
+     */
+    template <typename T>
     class Weakable;
-    template<typename T>
+
+    /**
+     * @tparam T 
+     */
+    template <typename T>
     class WeakPtr;
 
-    class WeakLink : public RefCounted<WeakLink> 
+    class WeakLink : public RefCounted<WeakLink>
     {
-        template<typename T>
+        /**
+         * @tparam T 
+         */
+        template <typename T>
         friend class Weakable;
-
-        template<typename T>
+        template <typename T>
         friend class WeakPtr;
 
     public:
         /**
          * @tparam T 
          * @tparam PtrTraits 
-         * @return RefPtr<T, PtrTraits> 
          */
-        template<typename T, typename PtrTraits = RefPtrTraits<T>>
+        template <typename T, typename PtrTraits = RefPtrTraits<T>>
         RefPtr<T, PtrTraits> strong_ref() const
+            requires(IsBaseOf<RefCountedBase, T>)
         {
             RefPtr<T, PtrTraits> ref;
 
@@ -51,11 +62,13 @@ namespace Mods
     #ifdef KERNEL
                 Kernel::ScopedCritical critical;
     #endif
-                FlatPtr bits = RefPtrTraits<void>::lock(m_bits);
-                T* ptr = static_cast<T*>(RefPtrTraits<void>::as_ptr(bits));
-                if (ptr)
-                    ref = *ptr;
-                RefPtrTraits<void>::unlock(m_bits, bits);
+                if(!(m_consumers.fetch_add(1u << 1, Mods::MemoryOrder::memory_order_acquire) & 1u))
+                {
+                    T* ptr = (T*)m_ptr.load(Mods::MemoryOrder::memory_order_acquire);
+                    if(ptr && ptr->try_ref())
+                        ref = adopt_ref(*ptr);
+                }
+                m_consumers.fetch_sub(1u << 1, Mods::MemoryOrder::memory_order_release);
             }
 
             return ref;
@@ -65,10 +78,13 @@ namespace Mods
          * @tparam T 
          * @return T* 
          */
-        template<typename T>
+        template <typename T>
         T* unsafe_ptr() const
         {
-            return static_cast<T*>(RefPtrTraits<void>::as_ptr(m_bits.load(Mods::MemoryOrder::memory_order_acquire)));
+            if(m_consumers.load(Mods::MemoryOrder::memory_order_relaxed) & 1u)
+                return nullptr;
+            
+            return (T*)m_ptr.load(Mods::MemoryOrder::memory_order_acquire);
         }
 
         /**
@@ -77,77 +93,87 @@ namespace Mods
          */
         bool is_null() const
         {
-            return RefPtrTraits<void>::is_null(m_bits.load(Mods::MemoryOrder::memory_order_relaxed));
+            return unsafe_ptr<void>() == nullptr;
         }
 
-        /**
-         * @brief revoke
-         * 
-         */
         void revoke()
         {
-            RefPtrTraits<void>::exchange(m_bits, RefPtrTraits<void>::default_null_value);
+            auto current_consumers = m_consumers.fetch_or(1u, Mods::MemoryOrder::memory_order_relaxed);
+            VERIFY(!(current_consumers & 1u));
+            
+            while(current_consumers > 0)
+            {
+    #ifdef KERNEL
+                Kernel::Processor::wait_check();
+    #else
+                sched_yield();
+    #endif
+                current_consumers = m_consumers.load(Mods::MemoryOrder::memory_order_acquire) & ~1u;
+            }
+            
+            m_ptr.store(nullptr, Mods::MemoryOrder::memory_order_release);
         }
 
     private:
         /**
+         * @brief Construct a new Weak Link object
+         * 
          * @tparam T 
          * @param weakable 
          */
-        template<typename T>
+        template <typename T>
         explicit WeakLink(T& weakable)
-            : m_bits(RefPtrTraits<void>::as_bits(&weakable))
-        {}
+            : m_ptr(&weakable)
+        {
+        }
 
-        mutable Atomic<FlatPtr> m_bits;
+        mutable Atomic<void*> m_ptr;
+        mutable Atomic<unsigned> m_consumers; 
     };
 
-    template<typename T>
-    class Weakable 
+    /**
+     * @tparam T 
+     */
+    template <typename T>
+    class Weakable
     {
     private:
         class Link;
 
     public:
-        /**
-         * @tparam U 
-         * @return WeakPtr<U> 
-         */
-        template<typename U = T>
-        WeakPtr<U> make_weak_ptr() const;
+    #ifndef KERNEL
+        template <typename U = T>
+        WeakPtr<U> make_weak_ptr() const
+        {
+            return MUST(try_make_weak_ptr<U>());
+        }
+    #endif
+        template <typename U = T>
+        ErrorOr<WeakPtr<U>> try_make_weak_ptr() const;
 
     protected:
-        Weakable() { }
+        Weakable() = default;
 
-        /**
-         * @brief Destroy the Weakable object
-         * 
-         */
         ~Weakable()
         {
-    #ifdef WEAKABLE_DEBUG
-            m_being_destroyed = true;
+    #ifdef KERNEL
+            m_being_destroyed.store(true, Mods::MemoryOrder::memory_order_release);
     #endif
             revoke_weak_ptrs();
         }
 
-        /**
-         * @returns *void
-         * 
-         */
         void revoke_weak_ptrs()
         {
-            if (m_link)
-                m_link->revoke();
+            if(auto link = move(m_link))
+                link->revoke();
         }
 
     private:
         mutable RefPtr<WeakLink> m_link;
-    #ifdef WEAKABLE_DEBUG
-        bool m_being_destroyed { false };
+    #ifdef KERNEL
+        Atomic<bool> m_being_destroyed{false};
     #endif
-    };
-
-}
+    }; // class Weakable
+} // namespace Mods
 
 using Mods::Weakable;
