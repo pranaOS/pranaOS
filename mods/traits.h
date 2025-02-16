@@ -4,225 +4,217 @@
  * @brief Traits
  * @version 6.0
  * @date 2023-06-28
- * 
+ *
  * @copyright Copyright (c) 2021-2024 pranaOS Developers, Krisna Pranav
- * 
+ *
  */
 
 #pragma once
 
-#include "forward.h"
-#include "hashfunctions.h"
+#include <mods/bitcast.h>
+#include <mods/concept.h>
+#include <mods/forward.h>
+#include <mods/hashfunctions.h>
+#include <mods/stringhash.h>
+#include <string.h>
 
-namespace Mods {
-
+namespace Mods
+{   
     /**
-     * @brief GenericTraits
-     * 
      * @tparam T 
      */
-    template<typename T>
-    struct GenericTraits {
-        using PeekType = T;
-        static constexpr bool is_trivial() { return false; }
-        static bool equals(const T& a, const T& b) { return a == b; }
-    };
+    template <typename T>
+    struct GenericTraits
+    {
+        using PeekType = T&;
+        using ConstPeekType = T const&;
 
-    /**
-     * @brief GenericTraits
-     * 
-     * @tparam T 
-     */
-    template<typename T>
-    struct Traits : public GenericTraits<T> {
-    };
-
-    template<>
-    struct Traits<int> : public GenericTraits<int> {
         /**
-         * @brief is_trivial
-         * 
          * @return true 
          * @return false 
          */
-        static constexpr bool is_trivial() { 
-            return true; 
+        static constexpr bool is_trivial()
+        {
+            return false;
         }
 
         /**
-         * @brief hash
-         * 
-         * @param i 
-         * @return unsigned 
-         */
-        static unsigned hash(int i) { 
-            return int_hash(i); 
-        }
-    };
-
-    template<>
-    struct Traits<unsigned> : public GenericTraits<unsigned> {
-        /**
-         * @brief is_trivial
-         * 
-         * @return true 
-         * @return false 
-         */
-        static constexpr bool is_trivial() { 
-            return true; 
-        }
-
-        /**
-         * @brief hash
-         * 
-         * @param u 
-         * @return unsigned 
-         */
-        static unsigned hash(unsigned u) { 
-            return int_hash(u); 
-        }
-    };
-
-    template<>
-    struct Traits<u8> : public GenericTraits<u8> {
-        /**
-         * @brief is_trivial
-         * 
-         * @return true 
-         * @return false 
-         */
-        static constexpr bool is_trivial() { 
-            return true; 
-        }
-
-        /**
-         * @brief int_hash
-         * 
-         * @param u 
-         * @return unsigned 
-         */
-        static unsigned hash(u8 u) { 
-            return int_hash(u); 
-        }
-    };
-
-    template<>
-    struct Traits<u16> : public GenericTraits<u16> {
-        /**
-         * @brief is_trivial
-         * 
-         * @return true 
-         * @return false 
-         */
-        static constexpr bool is_trivial() { 
-            return true; 
-        }
-
-        /**
-         * @brief hash
-         * 
-         * @param u 
-         * @return unsigned 
-         */
-        static unsigned hash(u16 u) { 
-            return int_hash(u); 
-        }
-    };
-
-    template<>
-    struct Traits<u64> : public GenericTraits<u64> {
-
-        /**
-         * @brief is_trivial
-         * 
-         * @return true 
-         * @return false 
-         */
-        static constexpr bool is_trivial() { 
-            return true; 
-        }
-
-        /**
-         * @brief hash
-         * 
-         * @param u 
-         * @return unsigned 
-         */
-        static unsigned hash(u64 u) { 
-            return u64_hash(u); 
-        }
-    };
-
-    /**
-     * @brief Traits
-     * 
-     * @tparam  
-     */
-    template<>
-    struct Traits<char> : public GenericTraits<char> {
-        /**
-         * @brief is_trivial
-         * 
-         * @return true 
-         * @return false 
-         */
-        static constexpr bool is_trivial() { 
-            return true; 
-        }
-
-        /**
-         * @brief hash
-         * 
-         * @param c 
-         * @return unsigned 
-         */
-        static unsigned hash(char c) { 
-            return int_hash(c); 
-        }
-    };
-
-    /**
-     * @brief GenericTraits
-     * 
-     * @tparam T 
-     */
-    template<typename T>
-    struct Traits<T*> : public GenericTraits<T*> {  
-        
-        /**
-         * @brief hash
-         * 
-         * @param p 
-         * @return unsigned 
-         */
-        static unsigned hash(const T* p) {
-            return int_hash((unsigned)(__PTRDIFF_TYPE__)p);
-        }
-
-        /**
-         * @brief is_trivial
-         * 
-         * @return true 
-         * @return false 
-         */
-        static constexpr bool is_trivial() { 
-            return true; 
-        }
-
-        /**
-         * @brief equals
-         * 
          * @param a 
          * @param b 
          * @return true 
          * @return false 
          */
-        static bool equals(const T* a, const T* b) { 
-            return a == b; 
+        static constexpr bool equals(const T& a, const T& b)
+        {
+            return a == b;
         }
+
+        /**
+         * @tparam U 
+         * @param a 
+         * @param b 
+         * @return true 
+         * @return false 
+         */
+        template <Concepts::HashCompatible<T> U>
+        static bool equals(U const& a, T const& b)
+        {
+            return a == b;
+        }
+    }; // struct GenericTraits
+
+    /**
+     * @tparam T 
+     */
+    template <typename T>
+    struct Traits : public GenericTraits<T>
+    {
     };
 
-}
+    /**
+     * @brief Construct a new requires object
+     * 
+     * @tparam T 
+     */
+    template <typename T>
+        requires(IsIntegral<T>)
+    struct Traits<T> : public GenericTraits<T>
+    {
+        /**
+         * @return true 
+         * @return false 
+         */
+        static constexpr bool is_trivial()
+        {
+            return true;
+        }
+
+        /**
+         * @param value 
+         * @return constexpr unsigned 
+         */
+        static constexpr unsigned hash(T value)
+        {
+            if constexpr(sizeof(T) < 8)
+                return int_hash(value);
+            else
+                return u64_hash(value);
+        }
+    }; // struct Traits<T> : public GenericTraits<T>
+
+    #ifndef KERNEL
+    template <typename T>
+        requires(IsFloatingPoint<T>)
+    struct Traits<T> : public GenericTraits<T>
+    {
+        /**
+         * @return true 
+         * @return false 
+         */
+        static constexpr bool is_trivial()
+        {
+            return true;
+        }
+
+        /**
+         * @param value 
+         * @return constexpr unsigned 
+         */
+        static constexpr unsigned hash(T value)
+        {
+            if constexpr(sizeof(T) < 8)
+                return int_hash(bit_cast<u32>(value));
+            else
+                return u64_hash(bit_cast<u64>(value));
+        }
+    };
+    #endif
+
+    /**
+     * @tparam T 
+     */
+    template <typename T>
+        requires(IsPointer<T> && !Detail::IsPointerOfType<char, T>)
+    struct Traits<T> : public GenericTraits<T>
+    {
+        /**
+         * @param p 
+         * @return unsigned 
+         */
+        static unsigned hash(T p)
+        {
+            return ptr_hash((FlatPtr)p);
+        }
+        static constexpr bool is_trivial()
+        {
+            return true;
+        }
+    }; // struct Traits<T> : public GenericTraits<T>
+
+    /**
+     * @tparam T 
+     */
+    template <Enum T>
+    struct Traits<T> : public GenericTraits<T>
+    {
+        /**
+         * @param value 
+         * @return unsigned 
+         */
+        static unsigned hash(T value)
+        {
+            return Traits<UnderlyingType<T>>::hash(to_underlying(value));
+        }
+
+        /**
+         * @return true 
+         * @return false 
+         */
+        static constexpr bool is_trivial()
+        {
+            return Traits<UnderlyingType<T>>::is_trivial();
+        }
+    }; // struct Traits<T> : public GenericTraits<T>
+
+    /**
+     * @brief Construct a new requires object
+     * 
+     * @tparam T 
+     */
+    template <typename T>
+        requires(Detail::IsPointerOfType<char, T>)
+    struct Traits<T> : public GenericTraits<T>
+    {
+        /**
+         * @param value 
+         * @return unsigned 
+         */
+        static unsigned hash(T const value)
+        {
+            return string_hash(value, strlen(value));
+        }
+
+        /**
+         * @param a 
+         * @param b 
+         * @return true 
+         * @return false 
+         */
+        static constexpr bool equals(T const a, T const b)
+        {
+            return strcmp(a, b);
+        }
+
+        /**
+         * @return true 
+         * @return false 
+         */
+        static constexpr bool is_trivial()
+        {
+            return true;
+        }
+    }; // struct Traits<T> : public GenericTraits<T>
+} // namespace Mods
 
 using Mods::GenericTraits;
 using Mods::Traits;
