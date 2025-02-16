@@ -4,9 +4,9 @@
  * @brief Vector
  * @version 6.0
  * @date 2023-07-01
- * 
+ *
  * @copyright Copyright (c) 2021-2024 pranaOS Developers, Krisna Pranav
- * 
+ *
  */
 
 #pragma once
@@ -17,6 +17,7 @@
 #include <mods/forward.h>
 #include <mods/iterator.h>
 #include <mods/optional.h>
+#include <mods/reverseiterator.h>
 #include <mods/span.h>
 #include <mods/stdlibextra.h>
 #include <mods/traits.h>
@@ -24,37 +25,35 @@
 #include <mods/kmalloc.h>
 #include <initializer_list>
 
-namespace Mods 
+namespace Mods
 {
-    namespace Detail 
+
+    namespace Detail
     {
         /**
          * @tparam StorageType 
          * @tparam bool 
          */
-        template<typename StorageType, bool>
+        template <typename StorageType, bool>
         struct CanBePlacedInsideVectorHelper;
 
         /**
          * @tparam StorageType 
          */
-        template<typename StorageType>
-        struct CanBePlacedInsideVectorHelper<StorageType, true> 
+        template <typename StorageType>
+        struct CanBePlacedInsideVectorHelper<StorageType, true>
         {
-            template<typename U>
-            static constexpr bool value = requires(U&& u) { StorageType { &u }; };
+            template <typename U>
+            static constexpr bool value = requires(U&& u) { StorageType{&u}; };
         };
 
         /**
          * @tparam StorageType 
          */
-        template<typename StorageType>
-        struct CanBePlacedInsideVectorHelper<StorageType, false> 
+        template <typename StorageType>
+        struct CanBePlacedInsideVectorHelper<StorageType, false>
         {
-            /**
-             * @tparam U 
-             */
-            template<typename U>
+            template <typename U>
             static constexpr bool value = requires(U&& u) { StorageType(forward<U>(u)); };
         };
     } // namespace Detail
@@ -63,20 +62,22 @@ namespace Mods
      * @tparam T 
      * @tparam inline_capacity 
      */
-    template<typename T, size_t inline_capacity>
-    requires(!IsRvalueReference<T>) class Vector {
+    template <typename T, size_t inline_capacity>
+        requires(!IsRvalueReference<T>)
+    class Vector
+    {
     private:
         static constexpr bool contains_reference = IsLvalueReference<T>;
         using StorageType = Conditional<contains_reference, RawPtr<RemoveReference<T>>, T>;
 
         using VisibleType = RemoveReference<T>;
 
-        template<typename U>
+        template <typename U>
         static constexpr bool CanBePlacedInsideVector = Detail::CanBePlacedInsideVectorHelper<StorageType, contains_reference>::template value<U>;
 
     public:
         using ValueType = T;
-        
+            
         /**
          * @brief Construct a new Vector object
          * 
@@ -86,10 +87,11 @@ namespace Mods
         {
         }
 
-        Vector(std::initializer_list<T> list) requires(!IsLvalueReference<T>)
+        Vector(std::initializer_list<T> list)
+            requires(!IsLvalueReference<T>)
         {
             ensure_capacity(list.size());
-            for (auto& item : list)
+            for(auto& item : list)
                 unchecked_append(item);
         }
 
@@ -99,14 +101,15 @@ namespace Mods
          * @param other 
          */
         Vector(Vector&& other)
-            : m_size(other.m_size)
-            , m_capacity(other.m_capacity)
-            , m_outline_buffer(other.m_outline_buffer)
+            : m_size(other.m_size), m_capacity(other.m_capacity), m_outline_buffer(other.m_outline_buffer)
         {
-            if constexpr (inline_capacity > 0) {
-                if (!m_outline_buffer) {
-                    for (size_t i = 0; i < m_size; ++i) {
-                        new (&inline_buffer()[i]) StorageType(move(other.inline_buffer()[i]));
+            if constexpr(inline_capacity > 0)
+            {
+                if(!m_outline_buffer)
+                {
+                    for(size_t i = 0; i < m_size; ++i)
+                    {
+                        new(&inline_buffer()[i]) StorageType(move(other.inline_buffer()[i]));
                         other.inline_buffer()[i].~StorageType();
                     }
                 }
@@ -128,13 +131,21 @@ namespace Mods
             m_size = other.size();
         }
 
+        explicit Vector(Span<T const> other)
+            requires(!IsLvalueReference<T>)
+        {
+            ensure_capacity(other.size());
+            TypedTransfer<StorageType>::copy(data(), other.data(), other.size());
+            m_size = other.size();
+        }
+
         /**
          * @brief Construct a new Vector object
          * 
          * @tparam other_inline_capacity 
          * @param other 
          */
-        template<size_t other_inline_capacity>
+        template <size_t other_inline_capacity>
         Vector(Vector<T, other_inline_capacity> const& other)
         {
             ensure_capacity(other.size());
@@ -151,51 +162,75 @@ namespace Mods
             clear();
         }
 
-        Span<StorageType> span() 
-        { 
-            return { data(), size() }; 
+        /**
+         * @return Span<StorageType> 
+         */
+        Span<StorageType> span()
+        {
+            return {data(), size()};
         }
 
-        Span<StorageType const> span() const 
-        { 
-            return { data(), size() }; 
+        /**
+         * @return Span<StorageType const> 
+         */
+        Span<StorageType const> span() const
+        {
+            return {data(), size()};
         }
 
-        operator Span<StorageType>() 
-        { 
-            return span(); 
+        /**
+         * @return Span<StorageType> 
+         */
+        operator Span<StorageType>()
+        {
+            return span();
+        }
+        operator Span<StorageType const>() const
+        {
+            return span();
         }
 
-        operator Span<StorageType const>() const 
-        { 
-            return span(); 
-        }
-
+        /**
+         * @return true 
+         * @return false 
+         */
         bool is_empty() const
         {
             return size() == 0;
         }
 
+        /**
+         * @return ALWAYS_INLINE 
+         */
         ALWAYS_INLINE size_t size() const
         {
             return m_size;
         }
 
+        /**
+         * @return size_t 
+         */
         size_t capacity() const
         {
             return m_capacity;
         }
 
+        /**
+         * @return ALWAYS_INLINE* 
+         */
         ALWAYS_INLINE StorageType* data()
         {
-            if constexpr (inline_capacity > 0)
+            if constexpr(inline_capacity > 0)
                 return m_outline_buffer ? m_outline_buffer : inline_buffer();
             return m_outline_buffer;
         }
 
+        /**
+         * @return ALWAYS_INLINE const* 
+         */
         ALWAYS_INLINE StorageType const* data() const
         {
-            if constexpr (inline_capacity > 0)
+            if constexpr(inline_capacity > 0)
                 return m_outline_buffer ? m_outline_buffer : inline_buffer();
             return m_outline_buffer;
         }
@@ -207,7 +242,7 @@ namespace Mods
         ALWAYS_INLINE VisibleType const& at(size_t i) const
         {
             VERIFY(i < m_size);
-            if constexpr (contains_reference)
+            if constexpr(contains_reference)
                 return *data()[i];
             else
                 return data()[i];
@@ -220,7 +255,7 @@ namespace Mods
         ALWAYS_INLINE VisibleType& at(size_t i)
         {
             VERIFY(i < m_size);
-            if constexpr (contains_reference)
+            if constexpr(contains_reference)
                 return *data()[i];
             else
                 return data()[i];
@@ -230,52 +265,63 @@ namespace Mods
          * @param i 
          * @return ALWAYS_INLINE const& 
          */
-        ALWAYS_INLINE VisibleType const& operator[](size_t i) const 
-        { 
-            return at(i); 
+        ALWAYS_INLINE VisibleType const& operator[](size_t i) const
+        {
+            return at(i);
         }
 
         /**
          * @param i 
          * @return ALWAYS_INLINE& 
          */
-        ALWAYS_INLINE VisibleType& operator[](size_t i) 
-        { 
-            return at(i); 
+        ALWAYS_INLINE VisibleType& operator[](size_t i)
+        {
+            return at(i);
         }
 
         /**
          * @return VisibleType const& 
          */
-        VisibleType const& first() const 
-        { 
-            return at(0); 
+        VisibleType const& first() const
+        {
+            return at(0);
         }
 
-        VisibleType& first() 
-        { 
-            return at(0); 
+        /**
+         * @return VisibleType& 
+         */
+        VisibleType& first()
+        {
+            return at(0);
         }
 
-        VisibleType const& last() const 
-        { 
-            return at(size() - 1); 
+        /**
+         * @return VisibleType const& 
+         */
+        VisibleType const& last() const
+        {
+            return at(size() - 1);
         }
 
-        VisibleType& last() 
-        { 
-            return at(size() - 1); 
+        /**
+         * @return VisibleType& 
+         */
+        VisibleType& last()
+        {
+            return at(size() - 1);
         }
 
         /**
          * @tparam TUnaryPredicate 
-         * @param predicate
          */
-        template<typename TUnaryPredicate>
-        Optional<VisibleType> first_matching(TUnaryPredicate predicate) requires(!contains_reference)
+        template <typename TUnaryPredicate>
+        Optional<VisibleType&> first_matching(TUnaryPredicate predicate)
+            requires(!contains_reference)
         {
-            for (size_t i = 0; i < size(); ++i) {
-                if (predicate(at(i))) {
+            for(size_t i = 0; i < size(); ++i)
+            {
+                if(predicate(at(i)))
+                {
                     return at(i);
                 }
             }
@@ -283,14 +329,33 @@ namespace Mods
         }
 
         /**
-         * @param predicate
          * @tparam TUnaryPredicate 
          */
-        template<typename TUnaryPredicate>
-        Optional<VisibleType> last_matching(TUnaryPredicate predicate) requires(!contains_reference)
+        template <typename TUnaryPredicate>
+        Optional<VisibleType const&> first_matching(TUnaryPredicate predicate) const
+            requires(!contains_reference)
         {
-            for (ssize_t i = size() - 1; i >= 0; --i) {
-                if (predicate(at(i))) {
+            for(size_t i = 0; i < size(); ++i)
+            {
+                if(predicate(at(i)))
+                {
+                    return Optional<VisibleType const&>(at(i));
+                }
+            }
+            return {};
+        }
+
+        /**
+         * @tparam TUnaryPredicate 
+         */
+        template <typename TUnaryPredicate>
+        Optional<VisibleType&> last_matching(TUnaryPredicate predicate)
+            requires(!contains_reference)
+        {
+            for(ssize_t i = size() - 1; i >= 0; --i)
+            {
+                if(predicate(at(i)))
+                {
                     return at(i);
                 }
             }
@@ -303,23 +368,26 @@ namespace Mods
          * @return true 
          * @return false 
          */
-        template<typename V>
+        template <typename V>
         bool operator==(V const& other) const
         {
-            if (m_size != other.size())
+            if(m_size != other.size())
                 return false;
             return TypedTransfer<StorageType>::compare(data(), other.data(), size());
         }
 
         /**
+         * @tparam V 
          * @param value 
          * @return true 
          * @return false 
          */
-        bool contains_slow(VisibleType const& value) const
+        template <typename V>
+        bool contains_slow(V const& value) const
         {
-            for (size_t i = 0; i < size(); ++i) {
-                if (Traits<VisibleType>::equals(at(i), value))
+            for(size_t i = 0; i < size(); ++i)
+            {
+                if(Traits<VisibleType>::equals(at(i), value))
                     return true;
             }
             return false;
@@ -336,8 +404,9 @@ namespace Mods
         {
             VERIFY(start <= end);
             VERIFY(end < size());
-            for (size_t i = start; i <= end; ++i) {
-                if (Traits<VisibleType>::equals(at(i), value))
+            for(size_t i = start; i <= end; ++i)
+            {
+                if(Traits<VisibleType>::equals(at(i), value))
                     return true;
             }
             return false;
@@ -347,11 +416,10 @@ namespace Mods
 
         /**
          * @tparam U 
-         * @param index
-         * @param value
          */
-        template<typename U = T>
-        void insert(size_t index, U&& value) requires(CanBePlacedInsideVector<U>)
+        template <typename U = T>
+        void insert(size_t index, U&& value)
+            requires(CanBePlacedInsideVector<U>)
         {
             MUST(try_insert<U>(index, forward<U>(value)));
         }
@@ -360,8 +428,9 @@ namespace Mods
          * @tparam TUnaryPredicate 
          * @tparam U 
          */
-        template<typename TUnaryPredicate, typename U = T>
-        void insert_before_matching(U&& value, TUnaryPredicate predicate, size_t first_index = 0, size_t* inserted_index = nullptr) requires(CanBePlacedInsideVector<U>)
+        template <typename TUnaryPredicate, typename U = T>
+        void insert_before_matching(U&& value, TUnaryPredicate predicate, size_t first_index = 0, size_t* inserted_index = nullptr)
+            requires(CanBePlacedInsideVector<U>)
         {
             MUST(try_insert_before_matching(forward<U>(value), predicate, first_index, inserted_index));
         }
@@ -384,15 +453,20 @@ namespace Mods
 
     #endif
 
+        /**
+         * @param value 
+         * @return ALWAYS_INLINE 
+         */
         ALWAYS_INLINE void append(T&& value)
         {
-            if constexpr (contains_reference)
+            if constexpr(contains_reference)
                 MUST(try_append(value));
             else
                 MUST(try_append(move(value)));
         }
 
-        ALWAYS_INLINE void append(T const& value) requires(!contains_reference)
+        ALWAYS_INLINE void append(T const& value)
+            requires(!contains_reference)
         {
             MUST(try_append(T(value)));
         }
@@ -411,14 +485,15 @@ namespace Mods
         /**
          * @tparam U 
          */
-        template<typename U = T>
-        ALWAYS_INLINE void unchecked_append(U&& value) requires(CanBePlacedInsideVector<U>)
+        template <typename U = T>
+        ALWAYS_INLINE void unchecked_append(U&& value)
+            requires(CanBePlacedInsideVector<U>)
         {
             VERIFY((size() + 1) <= capacity());
-            if constexpr (contains_reference)
-                new (slot(m_size)) StorageType(&value);
+            if constexpr(contains_reference)
+                new(slot(m_size)) StorageType(&value);
             else
-                new (slot(m_size)) StorageType(forward<U>(value));
+                new(slot(m_size)) StorageType(forward<U>(value));
             ++m_size;
         }
 
@@ -429,7 +504,7 @@ namespace Mods
          */
         ALWAYS_INLINE void unchecked_append(StorageType const* values, size_t count)
         {
-            if (count == 0)
+            if(count == 0)
                 return;
             VERIFY((size() + count) <= capacity());
             TypedTransfer<StorageType>::copy(slot(m_size), values, count);
@@ -440,17 +515,19 @@ namespace Mods
         /**
          * @tparam Args 
          */
-        template<class... Args>
-        void empend(Args&&... args) requires(!contains_reference)
+        template <class... Args>
+        void empend(Args&&... args)
+            requires(!contains_reference)
         {
             MUST(try_empend(forward<Args>(args)...));
-        }   
+        }
 
         /**
          * @tparam U 
          */
-        template<typename U = T>
-        void prepend(U&& value) requires(CanBePlacedInsideVector<U>)
+        template <typename U = T>
+        void prepend(U&& value)
+            requires(CanBePlacedInsideVector<U>)
         {
             MUST(try_insert(0, forward<U>(value)));
         }
@@ -480,15 +557,19 @@ namespace Mods
          */
         Vector& operator=(Vector&& other)
         {
-            if (this != &other) {
+            if(this != &other)
+            {
                 clear();
                 m_size = other.m_size;
                 m_capacity = other.m_capacity;
                 m_outline_buffer = other.m_outline_buffer;
-                if constexpr (inline_capacity > 0) {
-                    if (!m_outline_buffer) {
-                        for (size_t i = 0; i < m_size; ++i) {
-                            new (&inline_buffer()[i]) StorageType(move(other.inline_buffer()[i]));
+                if constexpr(inline_capacity > 0)
+                {
+                    if(!m_outline_buffer)
+                    {
+                        for(size_t i = 0; i < m_size; ++i)
+                        {
+                            new(&inline_buffer()[i]) StorageType(move(other.inline_buffer()[i]));
                             other.inline_buffer()[i].~StorageType();
                         }
                     }
@@ -506,7 +587,8 @@ namespace Mods
          */
         Vector& operator=(Vector const& other)
         {
-            if (this != &other) {
+            if(this != &other)
+            {
                 clear();
                 ensure_capacity(other.size());
                 TypedTransfer<StorageType>::copy(data(), other.data(), other.size());
@@ -520,7 +602,7 @@ namespace Mods
          * @param other 
          * @return Vector& 
          */
-        template<size_t other_inline_capacity>
+        template <size_t other_inline_capacity>
         Vector& operator=(Vector<T, other_inline_capacity> const& other)
         {
             clear();
@@ -533,7 +615,8 @@ namespace Mods
         void clear()
         {
             clear_with_capacity();
-            if (m_outline_buffer) {
+            if(m_outline_buffer)
+            {
                 kfree_sized(m_outline_buffer, m_capacity * sizeof(StorageType));
                 m_outline_buffer = nullptr;
             }
@@ -542,7 +625,7 @@ namespace Mods
 
         void clear_with_capacity()
         {
-            for (size_t i = 0; i < m_size; ++i)
+            for(size_t i = 0; i < m_size; ++i)
                 data()[i].~StorageType();
             m_size = 0;
         }
@@ -554,12 +637,16 @@ namespace Mods
         {
             VERIFY(index < m_size);
 
-            if constexpr (Traits<StorageType>::is_trivial()) {
+            if constexpr(Traits<StorageType>::is_trivial())
+            {
                 TypedTransfer<StorageType>::copy(slot(index), slot(index + 1), m_size - index - 1);
-            } else {
+            }
+            else
+            {
                 at(index).~StorageType();
-                for (size_t i = index + 1; i < m_size; ++i) {
-                    new (slot(i - 1)) StorageType(move(at(i)));
+                for(size_t i = index + 1; i < m_size; ++i)
+                {
+                    new(slot(i - 1)) StorageType(move(at(i)));
                     at(i).~StorageType();
                 }
             }
@@ -573,24 +660,28 @@ namespace Mods
          */
         void remove(size_t index, size_t count)
         {
-            if (count == 0)
+            if(count == 0)
                 return;
             VERIFY(index + count > index);
             VERIFY(index + count <= m_size);
 
-            if constexpr (Traits<StorageType>::is_trivial()) {
+            if constexpr(Traits<StorageType>::is_trivial())
+            {
                 TypedTransfer<StorageType>::copy(slot(index), slot(index + count), m_size - index - count);
-            } else {
-                for (size_t i = index; i < index + count; i++)
+            }
+            else
+            {
+                for(size_t i = index; i < index + count; i++)
                     at(i).~StorageType();
-                for (size_t i = index + count; i < m_size; ++i) {
-                    new (slot(i - count)) StorageType(move(at(i)));
+                for(size_t i = index + count; i < m_size; ++i)
+                {
+                    new(slot(i - count)) StorageType(move(at(i)));
                     at(i).~StorageType();
                 }
             }
 
             m_size -= count;
-        }   
+        }
 
         /**
          * @tparam TUnaryPredicate 
@@ -598,11 +689,13 @@ namespace Mods
          * @return true 
          * @return false 
          */
-        template<typename TUnaryPredicate>
+        template <typename TUnaryPredicate>
         bool remove_first_matching(TUnaryPredicate predicate)
         {
-            for (size_t i = 0; i < size(); ++i) {
-                if (predicate(at(i))) {
+            for(size_t i = 0; i < size(); ++i)
+            {
+                if(predicate(at(i)))
+                {
                     remove(i);
                     return true;
                 }
@@ -616,40 +709,50 @@ namespace Mods
          * @return true 
          * @return false 
          */
-        template<typename TUnaryPredicate>
+        template <typename TUnaryPredicate>
         bool remove_all_matching(TUnaryPredicate predicate)
         {
             bool something_was_removed = false;
-            for (size_t i = 0; i < size();) {
-                if (predicate(at(i))) {
+            for(size_t i = 0; i < size();)
+            {
+                if(predicate(at(i)))
+                {
                     remove(i);
                     something_was_removed = true;
-                } else {
+                }
+                else
+                {
                     ++i;
                 }
             }
             return something_was_removed;
         }
 
+        /**
+         * @return ALWAYS_INLINE 
+         */
         ALWAYS_INLINE T take_last()
         {
             VERIFY(!is_empty());
             auto value = move(raw_last());
-            if constexpr (!contains_reference)
+            if constexpr(!contains_reference)
                 last().~T();
             --m_size;
-            if constexpr (contains_reference)
+            if constexpr(contains_reference)
                 return *value;
             else
                 return value;
         }
 
+        /**
+         * @return T 
+         */
         T take_first()
         {
             VERIFY(!is_empty());
             auto value = move(raw_first());
             remove(0);
-            if constexpr (contains_reference)
+            if constexpr(contains_reference)
                 return *value;
             else
                 return value;
@@ -663,7 +766,7 @@ namespace Mods
         {
             auto value = move(raw_at(index));
             remove(index);
-            if constexpr (contains_reference)
+            if constexpr(contains_reference)
                 return *value;
             else
                 return value;
@@ -683,47 +786,55 @@ namespace Mods
         /**
          * @tparam U 
          */
-        template<typename U = T>
-        ErrorOr<void> try_insert(size_t index, U&& value) requires(CanBePlacedInsideVector<U>)
+        template <typename U = T>
+        ErrorOr<void> try_insert(size_t index, U&& value)
+            requires(CanBePlacedInsideVector<U>)
         {
-            if (index > size())
+            if(index > size())
                 return Error::from_errno(EINVAL);
-            if (index == size())
+            if(index == size())
                 return try_append(forward<U>(value));
             TRY(try_grow_capacity(size() + 1));
             ++m_size;
-            if constexpr (Traits<StorageType>::is_trivial()) {
+            if constexpr(Traits<StorageType>::is_trivial())
+            {
                 TypedTransfer<StorageType>::move(slot(index + 1), slot(index), m_size - index - 1);
-            } else {
-                for (size_t i = size() - 1; i > index; --i) {
-                    new (slot(i)) StorageType(move(at(i - 1)));
+            }
+            else
+            {
+                for(size_t i = size() - 1; i > index; --i)
+                {
+                    new(slot(i)) StorageType(move(at(i - 1)));
                     at(i - 1).~StorageType();
                 }
             }
-            if constexpr (contains_reference)
-                new (slot(index)) StorageType(&value);
+            if constexpr(contains_reference)
+                new(slot(index)) StorageType(&value);
             else
-                new (slot(index)) StorageType(forward<U>(value));
+                new(slot(index)) StorageType(forward<U>(value));
             return {};
-        }
-
+        }   
+    
         /**
          * @tparam TUnaryPredicate 
          * @tparam U 
          */
-        template<typename TUnaryPredicate, typename U = T>
-        ErrorOr<void> try_insert_before_matching(U&& value, TUnaryPredicate predicate, size_t first_index = 0, size_t* inserted_index = nullptr) requires(CanBePlacedInsideVector<U>)
+        template <typename TUnaryPredicate, typename U = T>
+        ErrorOr<void> try_insert_before_matching(U&& value, TUnaryPredicate predicate, size_t first_index = 0, size_t* inserted_index = nullptr)
+            requires(CanBePlacedInsideVector<U>)
         {
-            for (size_t i = first_index; i < size(); ++i) {
-                if (predicate(at(i))) {
+            for(size_t i = first_index; i < size(); ++i)
+            {
+                if(predicate(at(i)))
+                {
                     TRY(try_insert(i, forward<U>(value)));
-                    if (inserted_index)
+                    if(inserted_index)
                         *inserted_index = i;
                     return {};
                 }
             }
             TRY(try_append(forward<U>(value)));
-            if (inserted_index)
+            if(inserted_index)
                 *inserted_index = size() - 1;
             return {};
         }
@@ -734,7 +845,8 @@ namespace Mods
          */
         ErrorOr<void> try_extend(Vector&& other)
         {
-            if (is_empty() && capacity() <= other.capacity()) {
+            if(is_empty() && capacity() <= other.capacity())
+            {
                 *this = move(other);
                 return {};
             }
@@ -744,7 +856,7 @@ namespace Mods
             TypedTransfer<StorageType>::move(data() + m_size, tmp.data(), other_size);
             m_size += other_size;
             return {};
-        }       
+        }
 
         /**
          * @param other 
@@ -765,18 +877,16 @@ namespace Mods
         ErrorOr<void> try_append(T&& value)
         {
             TRY(try_grow_capacity(size() + 1));
-            if constexpr (contains_reference)
-                new (slot(m_size)) StorageType(&value);
+            if constexpr(contains_reference)
+                new(slot(m_size)) StorageType(&value);
             else
-                new (slot(m_size)) StorageType(move(value));
+                new(slot(m_size)) StorageType(move(value));
             ++m_size;
             return {};
         }
 
-        /**
-         * @param value 
-         */
-        ErrorOr<void> try_append(T const& value) requires(!contains_reference)
+        ErrorOr<void> try_append(T const& value)
+            requires(!contains_reference)
         {
             return try_append(T(value));
         }
@@ -788,7 +898,7 @@ namespace Mods
          */
         ErrorOr<void> try_append(StorageType const* values, size_t count)
         {
-            if (count == 0)
+            if(count == 0)
                 return {};
             TRY(try_grow_capacity(size() + count));
             TypedTransfer<StorageType>::copy(slot(m_size), values, count);
@@ -799,11 +909,12 @@ namespace Mods
         /**
          * @tparam Args 
          */
-        template<class... Args>
-        ErrorOr<void> try_empend(Args&&... args) requires(!contains_reference)
+        template <class... Args>
+        ErrorOr<void> try_empend(Args&&... args)
+            requires(!contains_reference)
         {
             TRY(try_grow_capacity(m_size + 1));
-            new (slot(m_size)) StorageType { forward<Args>(args)... };
+            new(slot(m_size)) StorageType{forward<Args>(args)...};
             ++m_size;
             return {};
         }
@@ -811,8 +922,9 @@ namespace Mods
         /**
          * @tparam U 
          */
-        template<typename U = T>
-        ErrorOr<void> try_prepend(U&& value) requires(CanBePlacedInsideVector<U>)
+        template <typename U = T>
+        ErrorOr<void> try_prepend(U&& value)
+            requires(CanBePlacedInsideVector<U>)
         {
             return try_insert(0, forward<U>(value));
         }
@@ -823,10 +935,11 @@ namespace Mods
          */
         ErrorOr<void> try_prepend(Vector&& other)
         {
-            if (other.is_empty())
+            if(other.is_empty())
                 return {};
 
-            if (is_empty()) {
+            if(is_empty())
+            {
                 *this = move(other);
                 return {};
             }
@@ -834,8 +947,9 @@ namespace Mods
             auto other_size = other.size();
             TRY(try_grow_capacity(size() + other_size));
 
-            for (size_t i = size() + other_size - 1; i >= other.size(); --i) {
-                new (slot(i)) StorageType(move(at(i - other_size)));
+            for(size_t i = size() + other_size - 1; i >= other.size(); --i)
+            {
+                new(slot(i)) StorageType(move(at(i - other_size)));
                 at(i - other_size).~StorageType();
             }
 
@@ -852,7 +966,7 @@ namespace Mods
          */
         ErrorOr<void> try_prepend(StorageType const* values, size_t count)
         {
-            if (count == 0)
+            if(count == 0)
                 return {};
             TRY(try_grow_capacity(size() + count));
             TypedTransfer<StorageType>::move(slot(count), slot(0), m_size);
@@ -867,7 +981,7 @@ namespace Mods
          */
         ErrorOr<void> try_grow_capacity(size_t needed_capacity)
         {
-            if (m_capacity >= needed_capacity)
+            if(m_capacity >= needed_capacity)
                 return {};
             return try_ensure_capacity(padded_capacity(needed_capacity));
         }
@@ -878,55 +992,54 @@ namespace Mods
          */
         ErrorOr<void> try_ensure_capacity(size_t needed_capacity)
         {
-            if (m_capacity >= needed_capacity)
+            if(m_capacity >= needed_capacity)
                 return {};
             size_t new_capacity = kmalloc_good_size(needed_capacity * sizeof(StorageType)) / sizeof(StorageType);
             auto* new_buffer = static_cast<StorageType*>(kmalloc_array(new_capacity, sizeof(StorageType)));
-            if (new_buffer == nullptr)
+            if(new_buffer == nullptr)
                 return Error::from_errno(ENOMEM);
 
-            if constexpr (Traits<StorageType>::is_trivial()) {
+            if constexpr(Traits<StorageType>::is_trivial())
+            {
                 TypedTransfer<StorageType>::copy(new_buffer, data(), m_size);
-            } else {
-                for (size_t i = 0; i < m_size; ++i) {
-                    new (&new_buffer[i]) StorageType(move(at(i)));
+            }
+            else
+            {
+                for(size_t i = 0; i < m_size; ++i)
+                {
+                    new(&new_buffer[i]) StorageType(move(at(i)));
                     at(i).~StorageType();
                 }
             }
-            if (m_outline_buffer)
+            if(m_outline_buffer)
                 kfree_sized(m_outline_buffer, m_capacity * sizeof(StorageType));
             m_outline_buffer = new_buffer;
             m_capacity = new_capacity;
             return {};
         }
 
-        /**
-         * @param new_size
-         * @param keep_capacity
-         */
-        ErrorOr<void> try_resize(size_t new_size, bool keep_capacity = false) requires(!contains_reference)
+        ErrorOr<void> try_resize(size_t new_size, bool keep_capacity = false)
+            requires(!contains_reference)
         {
-            if (new_size <= size()) {
+            if(new_size <= size())
+            {
                 shrink(new_size, keep_capacity);
                 return {};
             }
 
             TRY(try_ensure_capacity(new_size));
 
-            for (size_t i = size(); i < new_size; ++i)
-                new (slot(i)) StorageType {};
+            for(size_t i = size(); i < new_size; ++i)
+                new(slot(i)) StorageType{};
             m_size = new_size;
             return {};
         }
 
-        /**
-         * @param new_size
-         * 
-         */
-        ErrorOr<void> try_resize_and_keep_capacity(size_t new_size) requires(!contains_reference)
+        ErrorOr<void> try_resize_and_keep_capacity(size_t new_size)
+            requires(!contains_reference)
         {
             return try_resize(new_size, true);
-        }   
+        }
 
         /**
          * @param needed_capacity 
@@ -951,27 +1064,25 @@ namespace Mods
         void shrink(size_t new_size, bool keep_capacity = false)
         {
             VERIFY(new_size <= size());
-            if (new_size == size())
+            if(new_size == size())
                 return;
 
-            if (new_size == 0) {
-                if (keep_capacity)
+            if(new_size == 0)
+            {
+                if(keep_capacity)
                     clear_with_capacity();
                 else
                     clear();
                 return;
             }
 
-            for (size_t i = new_size; i < size(); ++i)
+            for(size_t i = new_size; i < size(); ++i)
                 at(i).~StorageType();
             m_size = new_size;
         }
 
-        /**
-         * @param new_size
-         * @param keep_capacity
-         */
-        void resize(size_t new_size, bool keep_capacity = false) requires(!contains_reference)
+        void resize(size_t new_size, bool keep_capacity = false)
+            requires(!contains_reference)
         {
             MUST(try_resize(new_size, keep_capacity));
         }
@@ -980,32 +1091,95 @@ namespace Mods
          * @param new_size
          * 
          */
-        void resize_and_keep_capacity(size_t new_size) requires(!contains_reference)
+        void resize_and_keep_capacity(size_t new_size)
+            requires(!contains_reference)
         {
             MUST(try_resize_and_keep_capacity(new_size));
         }
 
         using ConstIterator = SimpleIterator<Vector const, VisibleType const>;
         using Iterator = SimpleIterator<Vector, VisibleType>;
+        using ReverseIterator = SimpleReverseIterator<Vector, VisibleType>;
+        using ReverseConstIterator = SimpleReverseIterator<Vector const, VisibleType const>;
 
-        ConstIterator begin() const 
-        { 
-            return ConstIterator::begin(*this); 
+        /**
+         * @return ConstIterator 
+         */
+        ConstIterator begin() const
+        {
+            return ConstIterator::begin(*this);
         }
 
-        Iterator begin() 
-        { 
-            return Iterator::begin(*this); 
+        /**
+         * @return Iterator 
+         */
+        Iterator begin()
+        {
+            return Iterator::begin(*this);
         }
 
-        ConstIterator end() const 
-        { 
-            return ConstIterator::end(*this); 
+        /**
+         * @return ReverseIterator 
+         */
+        ReverseIterator rbegin()
+        {
+            return ReverseIterator::rbegin(*this);
         }
 
-        Iterator end() 
-        { 
-            return Iterator::end(*this); 
+        /**
+         * @return ReverseConstIterator 
+         */
+        ReverseConstIterator rbegin() const
+        {
+            return ReverseConstIterator::rbegin(*this);
+        }
+
+        /**
+         * @return ConstIterator 
+         */
+        ConstIterator end() const
+        {
+            return ConstIterator::end(*this);
+        }
+
+        /**
+         * @return Iterator 
+         */
+        Iterator end()
+        {
+            return Iterator::end(*this);
+        }
+
+        /**
+         * @return ReverseIterator 
+         */
+        ReverseIterator rend()
+        {
+            return ReverseIterator::rend(*this);
+        }
+
+        /**
+         * @return ReverseConstIterator 
+         */
+        ReverseConstIterator rend() const
+        {
+            return ReverseConstIterator::rend(*this);
+        }
+
+        /**
+         * @return ALWAYS_INLINE constexpr 
+         */
+        ALWAYS_INLINE constexpr auto in_reverse()
+        {
+            return ReverseWrapper::in_reverse(*this);
+        }
+        
+        /**
+         * @return ALWAYS_INLINE constexpr 
+         */
+        ALWAYS_INLINE constexpr auto in_reverse() const
+        {
+            return ReverseWrapper::in_reverse(*this);
         }
 
         /**
@@ -1013,7 +1187,7 @@ namespace Mods
          * @param finder 
          * @return ConstIterator 
          */
-        template<typename TUnaryPredicate>
+        template <typename TUnaryPredicate>
         ConstIterator find_if(TUnaryPredicate&& finder) const
         {
             return Mods::find_if(begin(), end(), forward<TUnaryPredicate>(finder));
@@ -1024,7 +1198,7 @@ namespace Mods
          * @param finder 
          * @return Iterator 
          */
-        template<typename TUnaryPredicate>
+        template <typename TUnaryPredicate>
         Iterator find_if(TUnaryPredicate&& finder)
         {
             return Mods::find_if(begin(), end(), forward<TUnaryPredicate>(finder));
@@ -1054,16 +1228,17 @@ namespace Mods
          */
         Optional<size_t> find_first_index(VisibleType const& value) const
         {
-            if (auto const index = Mods::find_index(begin(), end(), value);
-                index < size()) {
+            if(auto const index = Mods::find_index(begin(), end(), value);
+            index < size())
+            {
                 return index;
             }
             return {};
         }
-
+        
         void reverse()
         {
-            for (size_t i = 0; i < size() / 2; ++i)
+            for(size_t i = 0; i < size() / 2; ++i)
                 Mods::swap(at(i), at(size() - i - 1));
         }
 
@@ -1086,60 +1261,92 @@ namespace Mods
          * @param i 
          * @return StorageType* 
          */
-        StorageType* slot(size_t i) 
-        { 
-            return &data()[i]; 
+        StorageType* slot(size_t i)
+        {
+            return &data()[i];
         }
 
         /**
          * @param i 
          * @return StorageType const* 
          */
-        StorageType const* slot(size_t i) const 
-        { 
-            return &data()[i]; 
+        StorageType const* slot(size_t i) const
+        {
+            return &data()[i];
         }
 
+        /**
+         * @return StorageType* 
+         */
         StorageType* inline_buffer()
         {
             static_assert(inline_capacity > 0);
             return reinterpret_cast<StorageType*>(m_inline_buffer_storage);
         }
 
+        /**
+         * @return StorageType const* 
+         */
         StorageType const* inline_buffer() const
         {
             static_assert(inline_capacity > 0);
             return reinterpret_cast<StorageType const*>(m_inline_buffer_storage);
         }
 
-        StorageType& raw_last() 
-        { 
-            return raw_at(size() - 1); 
+        /**
+         * @return StorageType& 
+         */
+        StorageType& raw_last()
+        {
+            return raw_at(size() - 1);
         }
-
-        StorageType& raw_first() 
-        { 
-            return raw_at(0); 
+        StorageType& raw_first()
+        {
+            return raw_at(0);
         }
 
         /**
          * @param index 
          * @return StorageType& 
          */
-        StorageType& raw_at(size_t index) 
-        { 
-            return *slot(index); 
+        StorageType& raw_at(size_t index)
+        {
+            return *slot(index);
         }
 
-        size_t m_size { 0 };
-        size_t m_capacity { 0 };
+        size_t m_size{0};
+        size_t m_capacity{0};
 
-        alignas(StorageType) unsigned char m_inline_buffer_storage[sizeof(StorageType) * inline_capacity];
+        /**
+         * @return constexpr size_t 
+         */
+        static constexpr size_t storage_size()
+        {
+            if constexpr(inline_capacity == 0)
+                return 0;
+            else
+                return sizeof(StorageType) * inline_capacity;
+        }
 
-        StorageType* m_outline_buffer { nullptr };
+        /**
+         * @return constexpr size_t 
+         */
+        static constexpr size_t storage_alignment()
+        {
+            if constexpr(inline_capacity == 0)
+                return 1;
+            else
+                return alignof(StorageType);
+        }
+
+        alignas(storage_alignment()) unsigned char m_inline_buffer_storage[storage_size()];
+        StorageType* m_outline_buffer{nullptr};
     }; // class Vector
-
-    template<class... Args>
+    
+    /**
+     * @tparam Args 
+     */
+    template <class... Args>
     Vector(Args... args) -> Vector<CommonType<Args...>>;
 
 } // namespace Mods
