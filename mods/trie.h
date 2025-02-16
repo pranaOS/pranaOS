@@ -21,6 +21,34 @@ namespace Mods
 {
     namespace Detail
     {
+        /**
+         * @tparam TypeA 
+         * @tparam Default 
+         */
+        template<typename TypeA, typename Default>
+        struct SubstituteIfVoid
+        {
+            using Type = TypeA;
+        }; // struct SubstituteIfVoid
 
+        /**
+         * @tparam Default 
+         */
+        template<typename Default>
+        struct SubstituteIfVoid<void, Default> 
+        {
+            using Type = Default;
+        }; // struct SubstituteIfVoid<void, Default> 
+
+        /**
+         * @tparam DeclaredBaseType 
+         * @tparam DefaultBaseType 
+         */
+        template<typename DeclaredBaseType, typename DefaultBaseType>
+        class Trie
+        {
+            using BaseType = typenme SubstituteIfVoid<DeclaredBaseType>;
+
+        }
     } // namespace Detail
 } // namespace Mods
