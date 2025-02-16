@@ -4,94 +4,102 @@
  * @brief TypedTransfer
  * @version 6.0
  * @date 2023-06-28
- * 
- * @copyright Copyright (c) 2021-2024 pranaOS Developers, Krisna Pranav
- * 
+ *
+ * @copyright Copyright (c) 2021-2025 pranaOS Developers, Krisna Pranav
+ *
  */
 
 #pragma once
 
-#include "traits.h"
+#include <mods/traits.h>
 
-namespace Mods 
+namespace Mods
 {
-    template<typename T>
-    class TypedTransfer 
+/**
+ * @tparam T
+ */
+template <typename T>
+class TypedTransfer
+{
+  public:
+    /**
+     * @param destination
+     * @param source
+     * @param count
+     */
+    static void move(T* destination, T* source, size_t count)
     {
-    public:
-        /**
-         * @param destination 
-         * @param source 
-         * @param count 
-         */
-        static void move(T* destination, T* source, size_t count)
+        if(count == 0)
+            return;
+
+        if constexpr(Traits<T>::is_trivial())
         {
-            if (count == 0)
-                return;
-
-            if constexpr (Traits<T>::is_trivial()) {
-                __builtin_memmove(destination, source, count * sizeof(T));
-                return;
-            }
-
-            for (size_t i = 0; i < count; ++i) {
-                if (destination <= source)
-                    new (&destination[i]) T(std::move(source[i]));
-                else
-                    new (&destination[count - i - 1]) T(std::move(source[count - i - 1]));
-            }
+            __builtin_memmove(destination, source, count * sizeof(T));
+            return;
         }
 
-        /**
-         * @param destination 
-         * @param source 
-         * @param count 
-         * @return size_t 
-         */
-        static size_t copy(T* destination, const T* source, size_t count)
+        for(size_t i = 0; i < count; ++i)
         {
-            if (count == 0)
-                return 0;
+            if(destination <= source)
+                new(&destination[i]) T(std::move(source[i]));
+            else
+                new(&destination[count - i - 1]) T(std::move(source[count - i - 1]));
+        }
+    }
 
-            if constexpr (Traits<T>::is_trivial()) {
-                if (count == 1)
-                    *destination = *source;
-                else
-                    __builtin_memmove(destination, source, count * sizeof(T));
-                return count;
-            }
+    /**
+     * @param destination
+     * @param source
+     * @param count
+     * @return size_t
+     */
+    static size_t copy(T* destination, const T* source, size_t count)
+    {
+        if(count == 0)
+            return 0;
 
-            for (size_t i = 0; i < count; ++i) {
-                if (destination <= source)
-                    new (&destination[i]) T(source[i]);
-                else
-                    new (&destination[count - i - 1]) T(source[count - i - 1]);
-            }
-
+        if constexpr(Traits<T>::is_trivial())
+        {
+            if(count == 1)
+                *destination = *source;
+            else
+                __builtin_memmove(destination, source, count * sizeof(T));
             return count;
         }
 
-        /**
-         * @param a 
-         * @param b 
-         * @param count 
-         * @return true 
-         * @return false 
-         */
-        static bool compare(const T* a, const T* b, size_t count)
+        for(size_t i = 0; i < count; ++i)
         {
-            if (count == 0)
-                return true;
-
-            if constexpr (Traits<T>::is_trivial())
-                return !__builtin_memcmp(a, b, count * sizeof(T));
-
-            for (size_t i = 0; i < count; ++i) {
-                if (a[i] != b[i])
-                    return false;
-            }
-
-            return true;
+            if(destination <= source)
+                new(&destination[i]) T(source[i]);
+            else
+                new(&destination[count - i - 1]) T(source[count - i - 1]);
         }
-    }; // class TypedTransfer
+
+        return count;
+    }
+
+    /**
+     * @param a
+     * @param b
+     * @param count
+     * @return true
+     * @return false
+     */
+    static bool compare(const T* a, const T* b, size_t count)
+    {
+        if(count == 0)
+            return true;
+
+        if constexpr(Traits<T>::is_trivial())
+            return !__builtin_memcmp(a, b, count * sizeof(T));
+
+        for(size_t i = 0; i < count; ++i)
+        {
+            if(a[i] != b[i])
+                return false;
+        }
+
+        return true;
+    }
+};
 } // namespace Mods
