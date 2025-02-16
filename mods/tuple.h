@@ -46,11 +46,38 @@ namespace Mods::Detail
             static_assert(IsSame<T, U>, "Invalid tuple access");
             return value;
         }
-        
+
+        /**
+         * @tparam U 
+         * @return const U& 
+         */
         template<typename U>
         const U& get() const
         {
             return const_cast<Tuple<T>&>(*this).get<U>();
+        }
+
+        /**
+         * @tparam U 
+         * @return const U& 
+         */
+        template<typename U>
+        const U& get() const
+        {
+            return const_cast<Tuple<T>&>(*this).get<U>();
+        }
+
+        /**
+         * @brief Get the with index object
+         * 
+         * @tparam U 
+         * @tparam index 
+         * @return const U& 
+         */
+        template<typename U, unsigned index>
+        const U& get_with_index() const
+        {
+            return const_cast<Tuple<T>&>(*this).get_with_index<U, index>();
         }
     private:
         T value;
