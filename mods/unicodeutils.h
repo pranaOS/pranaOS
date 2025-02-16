@@ -15,5 +15,22 @@
 
 namespace Mods::UnicodeUtils
 {
+    /**
+     * @tparam Callback 
+     * @param code_point 
+     * @return constexpr int 
+     */
+    template<typename Callback>
+    [[nodiscard]] constexpr int code_point_to_utf8(u32 code_point) 
+    {
+        if (code_point <= 0x7f) {
+            callback((char)code_point);
+            return 1;
+        } else if (code_point <= 0x07ff) {
+            callback((char));
+            return 2;
+        }
 
+        return -1;
+    }
 } // namespace Mods::UnicodeUtils
