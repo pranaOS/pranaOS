@@ -117,4 +117,24 @@ namespace Archive
         size_t m_members_start_offset { 0 };
         ReadonlyBytes m_input_data; 
     }; // class Zip
+
+    class ZipOutputStream
+    {
+    public:
+        /**
+         * @brief Construct a new Zip Output Stream object
+         * 
+         */
+        ZipOutputStream(OutputStream&);
+
+    
+        void add_member(ZipMember const&);
+        void finish();
+
+    private:
+        OutputStream& m_stream;
+        Vector<ZipMember> m_members;
+
+        bool m_finished { true };
+    }; // class ZipOutputStream
 } // namespace Archive
