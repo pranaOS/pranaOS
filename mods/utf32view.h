@@ -4,36 +4,44 @@
  * @brief Utf32View
  * @version 6.0
  * @date 2023-07-27
- * 
+ *
  * @copyright Copyright (c) 2021-2024 pranaOS Developers, Krisna Pranav
- * 
+ *
  */
 
 #pragma once
 
-#include "types.h"
-#include "assertions.h"
-#include "check.h"
+#include <mods/assertions.h>
+#include <mods/checked.h>
+#include <mods/types.h>
 
-namespace Mods 
+namespace Mods
 {
-
     class Utf32View;
 
-    class Utf32CodepointIterator 
+    class Utf32CodePointIterator
     {
         friend class Utf32View;
 
     public:
-        Utf32CodepointIterator() { }
-        ~Utf32CodepointIterator() { }
+        /**
+         * @brief Construct a new Utf32CodePointIterator object
+         * 
+         */
+        Utf32CodePointIterator() = default;
+            
+        /**
+         * @brief Destroy the Utf32CodePointIterator object
+         * 
+         */
+        ~Utf32CodePointIterator() = default;
 
         /**
          * @param other 
          * @return true 
          * @return false 
          */
-        bool operator==(const Utf32CodepointIterator& other) const
+        bool operator==(Utf32CodePointIterator const& other) const
         {
             return m_ptr == other.m_ptr && m_length == other.m_length;
         }
@@ -43,17 +51,17 @@ namespace Mods
          * @return true 
          * @return false 
          */
-        bool operator!=(const Utf32CodepointIterator& other) const
+        bool operator!=(Utf32CodePointIterator const& other) const
         {
             return !(*this == other);
         }
 
         /**
-         * @return Utf32CodepointIterator& 
+         * @return Utf32CodePointIterator& 
          */
-        Utf32CodepointIterator& operator++()
+        Utf32CodePointIterator& operator++()
         {
-            ASSERT(m_length > 0);
+            VERIFY(m_length > 0);
             m_ptr++;
             m_length--;
             return *this;
@@ -63,7 +71,7 @@ namespace Mods
          * @param other 
          * @return ssize_t 
          */
-        ssize_t operator-(const Utf32CodepointIterator& other) const
+        ssize_t operator-(Utf32CodePointIterator const& other) const
         {
             return m_ptr - other.m_ptr;
         }
@@ -73,98 +81,139 @@ namespace Mods
          */
         u32 operator*() const
         {
-            ASSERT(m_length > 0);
+            VERIFY(m_length > 0);
             return *m_ptr;
         }
 
         /**
          * @return constexpr int 
          */
-        constexpr int code_point_length_in_bytes() const 
-        { 
-            return sizeof(u32); 
+        constexpr int code_point_length_in_bytes() const
+        {
+            return sizeof(u32);
         }
 
         /**
          * @return true 
          * @return false 
          */
-        bool done() const 
-        { 
-            return !m_length; 
+        bool done() const
+        {
+            return !m_length;
         }
 
     private:
         /**
+         * @brief Construct a new Utf32CodePointIterator object
+         * 
          * @param ptr 
          * @param length 
          */
-        Utf32CodepointIterator(const u32* ptr, size_t length)
-            : m_ptr(ptr)
-            , m_length((ssize_t)length)
-        {}
+        Utf32CodePointIterator(u32 const* ptr, size_t length)
+            : m_ptr(ptr), m_length((ssize_t)length)
+        {
+        }
 
-        const u32* m_ptr { nullptr };
-        ssize_t m_length { -1 };
-    }; // Utf32CodepointIterator
+        u32 const* m_ptr{nullptr};
+        ssize_t m_length{-1};
+    }; // class Utf32CodePointIterator
 
-    class Utf32View 
+    class Utf32View
     {
     public:
-        using Iterator = Utf32CodepointIterator;
-
-        Utf32View() { }
+        using Iterator = Utf32CodePointIterator;
 
         /**
+         * @brief Construct a new Utf32View object
+         * 
+         */
+        Utf32View() = default;
+
+        /**
+         * @brief Construct a new Utf32View object
+         * 
          * @param code_points 
          * @param length 
          */
-        Utf32View(const u32* code_points, size_t length)
-            : m_code_points(code_points)
-            , m_length(length)
+        Utf32View(u32 const* code_points, size_t length)
+            : m_code_points(code_points), m_length(length)
         {
-            ASSERT(code_points || length == 0);
+            VERIFY(code_points || length == 0);
+        }   
+
+        /**
+         * @return Utf32CodePointIterator 
+         */
+        Utf32CodePointIterator begin() const
+        {
+            return {begin_ptr(), m_length};
         }
 
         /**
-         * @return Utf32CodepointIterator 
+         * @return Utf32CodePointIterator 
          */
-        Utf32CodepointIterator begin() const
+        Utf32CodePointIterator end() const
         {
-            return { begin_ptr(), m_length };
+            return {end_ptr(), 0};
         }
 
         /**
-         * @return Utf32CodepointIterator 
+         * @param index 
+         * @return u32 
          */
-        Utf32CodepointIterator end() const
+        u32 at(size_t index) const
         {
-            return { end_ptr(), 0 };
+            VERIFY(index < m_length);
+            return m_code_points[index];
         }
 
         /**
-         * @return const u32* 
+         * @param index 
+         * @return u32 
          */
-        const u32* code_points() const 
-        { 
-            return m_code_points; 
+        u32 operator[](size_t index) const
+        {
+            return at(index);
+        }
+
+        /**
+         * @return u32 const* 
+         */
+        u32 const* code_points() const
+        {
+            return m_code_points;
         }
 
         /**
          * @return true 
          * @return false 
          */
-        bool is_empty() const 
-        { 
-            return m_length == 0; 
+        bool is_empty() const
+        {
+            return m_length == 0;
+        }
+        bool is_null() const
+        {
+            return !m_code_points;
         }
 
         /**
          * @return size_t 
          */
-        size_t length() const 
-        { 
-            return m_length; 
+        size_t length() const
+        {
+            return m_length;
+        }
+
+        /**
+         * @param it 
+         * @return size_t 
+         */
+        size_t iterator_offset(Utf32CodePointIterator const& it) const
+        {
+            VERIFY(it.m_ptr >= m_code_points);
+            VERIFY(it.m_ptr < m_code_points + m_length);
+            return ((ptrdiff_t)it.m_ptr - (ptrdiff_t)m_code_points) / sizeof(u32);
         }
 
         /**
@@ -174,36 +223,28 @@ namespace Mods
          */
         Utf32View substring_view(size_t offset, size_t length) const
         {
-            if (length == 0)
-                return {};
-            ASSERT(offset < m_length);
-            ASSERT(!Checked<size_t>::addition_would_overflow(offset, length));
-            ASSERT((offset + length) <= m_length);
+            VERIFY(offset <= m_length);
+            VERIFY(!Checked<size_t>::addition_would_overflow(offset, length));
+            VERIFY((offset + length) <= m_length);
             return Utf32View(m_code_points + offset, length);
         }
 
     private:
-
         /**
-         * @return const u32* 
+         * @return u32 const* 
          */
-        const u32* begin_ptr() const
+        u32 const* begin_ptr() const
         {
             return m_code_points;
         }
-
-        /**
-         * @return const u32* 
-         */
-        const u32* end_ptr() const
+        u32 const* end_ptr() const
         {
             return m_code_points + m_length;
         }
 
-        const u32* m_code_points { nullptr };
-        size_t m_length { 0 };
-    }; // Utf32View
-
-}
+        u32 const* m_code_points{nullptr};
+        size_t m_length{0};
+    }; // class Utf32View
+} // namespace Mods
 
 using Mods::Utf32View;
