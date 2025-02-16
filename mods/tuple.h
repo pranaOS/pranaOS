@@ -36,8 +36,22 @@ namespace Mods::Detail
         Tuple(const T& value)
             : value(value)
         {}  
+
+        /**
+         * @tparam U 
+         */
+        template<typename U>
+        U& get
+        {
+            static_assert(IsSame<T, U>, "Invalid tuple access");
+            return value;
+        }
         
-    
+        template<typename U>
+        const U& get() const
+        {
+            return const_cast<Tuple<T>&>(*this).get<U>();
+        }
     private:
         T value;
     }
