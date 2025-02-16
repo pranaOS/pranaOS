@@ -4,16 +4,16 @@
  * @brief Types
  * @version 6.0
  * @date 2023-06-28
- * 
+ *
  * @copyright Copyright (c) 2021-2024 pranaOS Developers, Krisna Pranav
- * 
+ *
  */
 
 #pragma once
 
-#include "iterdecision.h"
-#include "platform.h"
-#include "stdlibextra.h"
+#include <mods/iterationdecision.h>
+#include <mods/platform.h>
+#include <mods/stdlibextra.h>
 
 using u64 = __UINT64_TYPE__;
 using u32 = __UINT32_TYPE__;
@@ -47,13 +47,13 @@ using int64_t = i64;
 using pid_t = int;
 
 #else
-#    include <stddef.h>
-#    include <stdint.h>
-#    include <sys/types.h>
+#include <stddef.h>
+#include <stdint.h>
+#include <sys/types.h>
 
-#    ifdef __ptrdiff_t
+#ifdef __ptrdiff_t
 using __ptrdiff_t = __PTRDIFF_TYPE__;
-#    endif
+#endif
 
 #endif
 
@@ -66,9 +66,9 @@ constexpr u64 TiB = KiB * KiB * KiB * KiB;
 constexpr u64 PiB = KiB * KiB * KiB * KiB * KiB;
 constexpr u64 EiB = KiB * KiB * KiB * KiB * KiB * KiB;
 
-namespace std 
+namespace std
 { 
-    using nullptr_t = decltype(nullptr);
+using nullptr_t = decltype(nullptr);
 } // namespace std
 
 /**
@@ -78,11 +78,11 @@ namespace std
 static constexpr FlatPtr explode_byte(u8 b)
 {
     FlatPtr value = b;
-    if constexpr (sizeof(FlatPtr) == 4)
+    if constexpr(sizeof(FlatPtr) == 4)
         return value << 24 | value << 16 | value << 8 | value;
-    else if (sizeof(FlatPtr) == 8)
+    else if(sizeof(FlatPtr) == 8)
         return value << 56 | value << 48 | value << 40 | value << 32 | value << 24 | value << 16 | value << 8 | value;
-} // static constexpr FlatPtr 
+}
 
 static_assert(explode_byte(0xff) == (FlatPtr)0xffffffffffffffffull);
 static_assert(explode_byte(0x80) == (FlatPtr)0x8080808080808080ull);
@@ -99,16 +99,17 @@ constexpr size_t align_up_to(const size_t value, const size_t alignment)
     return (value + (alignment - 1)) & ~(alignment - 1);
 }
 
-enum class [[nodiscard]] TriState : u8 
+enum class [[nodiscard]] TriState : u8
 {
     False,
     True,
     Unknown
-}; // enum class TriState
+}; // enum class [[nodiscard]] TriState : u8
 
-namespace Mods 
+namespace Mods
 {
-    enum MemoryOrder 
+
+    enum MemoryOrder
     {
         memory_order_relaxed = __ATOMIC_RELAXED,
         memory_order_consume = __ATOMIC_CONSUME,
@@ -117,4 +118,5 @@ namespace Mods
         memory_order_acq_rel = __ATOMIC_ACQ_REL,
         memory_order_seq_cst = __ATOMIC_SEQ_CST
     }; // enum MemoryOrder
+
 } // namespace Mods
