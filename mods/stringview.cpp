@@ -45,4 +45,41 @@ namespace Mods
         , m_length(string.length())
     {}
     #endif
+
+    /**
+     * @brief Construct a new StringView::StringView object
+     * 
+     * @param buffer 
+     */
+    StringView::StringView(ByteBuffer const& buffer)
+        : m_characters((char const*)buffer.data())
+        , m_length(buffer.size())
+    {}
+
+    /**
+     * @param separator 
+     * @param keep_empty 
+     * @return Vector<StringView> 
+     */
+    Vector<StringView> StringView::split_view(char const separator, bool keep_empty) const
+    {
+        StringView seperator_view { &seperator, 1 };
+        return split_view(seperator_view, keep_empty);
+    }
+
+    /**
+     * @param separator 
+     * @param keep_empty 
+     * @return Vector<StringView> 
+     */
+    Vector<StringView> StringView::split_view(StringView separator, bool keep_empty) const
+    {
+        Vector<StringView> parts;
+
+        for_each_split_view(separator, keep_empty, [&](StringView view) {
+            parts.append(view);
+        });
+
+        return parts;
+    }
 }
