@@ -4,9 +4,9 @@
  * @brief UTF16 View
  * @version 6.0
  * @date 2024-11-02
- * 
+ *
  * @copyright Copyright (c) 2021-2024 pranaOS Developers, Krisna Pranav
- * 
+ *
  */
 
 #pragma once
@@ -28,19 +28,19 @@ namespace Mods
 
     class Utf16View;
 
-    class Utf16CodePointIterator 
+    class Utf16CodePointIterator
     {
         friend class Utf16View;
 
     public:
         /**
-         * @brief Construct a new Utf 1 6 Code Point Iterator object
+         * @brief Construct a new Utf16CodePointIterator object
          * 
          */
         Utf16CodePointIterator() = default;
 
         /**
-         * @brief Destroy the Utf 1 6 Code Point Iterator object
+         * @brief Destroy the Utf16CodePointIterator object
          * 
          */
         ~Utf16CodePointIterator() = default;
@@ -70,30 +70,39 @@ namespace Mods
          */
         Utf16CodePointIterator& operator++();
 
+        /**
+         * @return u32 
+         */
         u32 operator*() const;
 
+        /**
+         * @return size_t 
+         */
         size_t length_in_code_units() const;
 
     private:
         /**
-         * @brief Construct a new Utf 1 6 Code Point Iterator object
+         * @brief Construct a new Utf16CodePointIterator object
          * 
          * @param ptr 
          * @param length 
          */
         Utf16CodePointIterator(u16 const* ptr, size_t length)
-            : m_ptr(ptr)
-            , m_remaining_code_units(length)
+            : m_ptr(ptr), m_remaining_code_units(length)
         {
         }
 
-        u16 const* m_ptr { nullptr };
-        size_t m_remaining_code_units { 0 };
+        u16 const* m_ptr{nullptr};
+        size_t m_remaining_code_units{0};
     }; // class Utf16CodePointIterator
 
-    class Utf16View 
+    class Utf16View
     {
     public:
+        /**
+         * @return true 
+         * @return false 
+         */
         static bool is_high_surrogate(u16);
         static bool is_low_surrogate(u16);
 
@@ -105,19 +114,19 @@ namespace Mods
         static u32 decode_surrogate_pair(u16 high_surrogate, u16 low_surrogate);
 
         /**
-         * @brief Construct a new Utf 1 6 View object
+         * @brief Construct a new Utf16View object
          * 
          */
         Utf16View() = default;
 
         /**
-         * @brief Destroy the Utf 1 6 View object
+         * @brief Destroy the Utf16View object
          * 
          */
         ~Utf16View() = default;
 
         /**
-         * @brief Construct a new Utf 1 6 View object
+         * @brief Construct a new Utf16View object
          * 
          * @param code_units 
          */
@@ -131,49 +140,75 @@ namespace Mods
          * @return true 
          * @return false 
          */
-        bool operator==(Utf16View const& other) const 
-        { 
-            return m_code_units == other.m_code_units; 
+        bool operator==(Utf16View const& other) const
+        {
+            return m_code_units == other.m_code_units;
         }
 
-        enum class AllowInvalidCodeUnits 
+        enum class AllowInvalidCodeUnits
         {
             Yes,
             No,
-        }; // enum class AllowInvalidCodeUnits 
+        }; // enum class AllowInvalidCodeUnits
 
+        /**
+         * @return String 
+         */
         String to_utf8(AllowInvalidCodeUnits = AllowInvalidCodeUnits::No) const;
 
-        bool is_null() const 
-        { 
-            return m_code_units.is_null(); 
+        /**
+         * @return true 
+         * @return false 
+         */
+        bool is_null() const
+        {
+            return m_code_units.is_null();
         }
 
-        bool is_empty() const 
-        { 
-            return m_code_units.is_empty(); 
+        /**
+         * @return true 
+         * @return false 
+         */
+        bool is_empty() const
+        {
+            return m_code_units.is_empty();
         }
 
-        size_t length_in_code_units() const 
-        { 
-            return m_code_units.size(); 
+        /**
+         * @return size_t 
+         */
+        size_t length_in_code_units() const
+        {
+            return m_code_units.size();
         }
 
+        /**
+         * @return size_t 
+         */
         size_t length_in_code_points() const;
 
-        Utf16CodePointIterator begin() const 
-        { 
-            return { begin_ptr(), m_code_units.size() }; 
-        }
-        
-        Utf16CodePointIterator end() const 
-        { 
-            return { end_ptr(), 0 }; 
+        /**
+         * @return Utf16CodePointIterator 
+         */
+        Utf16CodePointIterator begin() const
+        {
+            return {begin_ptr(), m_code_units.size()};
         }
 
-        u16 const* data() const 
-        { 
-            return m_code_units.data(); 
+        /**
+         * @return Utf16CodePointIterator 
+         */
+        Utf16CodePointIterator end() const
+        {
+            return {end_ptr(), 0};
+        }
+
+        /**
+         * @return u16 const* 
+         */
+        u16 const* data() const
+        {
+            return m_code_units.data();
         }
 
         /**
@@ -216,9 +251,9 @@ namespace Mods
          * @param code_unit_offset 
          * @return Utf16View 
          */
-        Utf16View substring_view(size_t code_unit_offset) const 
-        { 
-            return substring_view(code_unit_offset, length_in_code_units() - code_unit_offset); 
+        Utf16View substring_view(size_t code_unit_offset) const
+        {
+            return substring_view(code_unit_offset, length_in_code_units() - code_unit_offset);
         }
 
         /**
@@ -232,9 +267,9 @@ namespace Mods
          * @param code_point_offset 
          * @return Utf16View 
          */
-        Utf16View unicode_substring_view(size_t code_point_offset) const 
-        { 
-            return unicode_substring_view(code_point_offset, length_in_code_points() - code_point_offset); 
+        Utf16View unicode_substring_view(size_t code_point_offset) const
+        {
+            return unicode_substring_view(code_point_offset, length_in_code_points() - code_point_offset);
         }
 
         /**
@@ -244,34 +279,54 @@ namespace Mods
          */
         bool validate(size_t& valid_code_units) const;
 
+        /**
+         * @return true 
+         * @return false 
+         */
         bool validate() const
         {
             size_t valid_code_units;
             return validate(valid_code_units);
         }
 
+        /**
+         * @return true 
+         * @return false 
+         */
         bool equals_ignoring_case(Utf16View const&) const;
 
     private:
-        u16 const* begin_ptr() const 
-        { 
-            return m_code_units.data(); 
+        /**
+         * @return u16 const* 
+         */
+        u16 const* begin_ptr() const
+        {
+            return m_code_units.data();
         }
 
-        u16 const* end_ptr() const 
-        { 
-            return begin_ptr() + m_code_units.size(); 
+        /**
+         * @return u16 const* 
+         */
+        u16 const* end_ptr() const
+        {
+            return begin_ptr() + m_code_units.size();
         }
 
+        /**
+         * @return size_t 
+         */
         size_t calculate_length_in_code_points() const;
 
         Span<u16 const> m_code_units;
         mutable Optional<size_t> m_length_in_code_points;
-    }; // class Utf16View 
+    }; // class Utf16View
 } // namespace Mods
 
-template<>
-struct Mods::Formatter<Mods::Utf16View> : Formatter<FormatString> 
+/**
+ * @tparam  
+ */
+template <>
+struct Mods::Formatter<Mods::Utf16View> : Formatter<FormatString>
 {
     /**
      * @param builder 
@@ -282,6 +337,6 @@ struct Mods::Formatter<Mods::Utf16View> : Formatter<FormatString>
     {
         return builder.builder().try_append(value);
     }
-};
+}; // struct Mods::Formatter<Mods::Utf16View> : Formatter<FormatString>
 
 using Mods::Utf16View;
