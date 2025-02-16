@@ -25,5 +25,24 @@
 namespace Mods
 {
     #ifndef KERNEL
+    /**
+     * @brief Construct a new StringView::StringView object
+     * 
+     * @param string 
+     */
+    StringView::StringView(String const& string)
+        : m_characters(string.characters())
+        , m_length(string.length())
+    {}
+
+    /**
+     * @brief Construct a new StringView::StringView object
+     * 
+     * @param string 
+     */
+    StringView::StringView(FlyString const& string)
+        : m_characters(string.characters())
+        , m_length(string.length())
+    {}
     #endif
 }
