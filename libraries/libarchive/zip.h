@@ -77,4 +77,44 @@ namespace Archive
             return true;
         }
     }; // struct [[gnu::packed]] EndOfCentralDirectory
+
+    enum class ZipCompressionMethod : u16
+    {
+        Store = 0,
+        Shrink = 1,
+        Reduce1 = 2,
+        Reduce2 = 3,
+        Reduce3 = 4,
+        Reduce4 = 5,
+        Implode = 6,
+        Reserved = 7,
+        Deflate = 8
+    }; // enum class ZipCompressionMethod : u16
+
+    /**
+     * @param stream 
+     * @param method 
+     * @return OutputStream& 
+     */
+    OutputStream& operator<<(OutputStream& stream, ZipCompressionMethod method);
+
+    struct ZipMember
+    {
+        String name;
+        ReadonlyBytes compressed_data;
+        ZipCompressionMethod compression_method;
+        u32 uncompressed_size;
+        u32 crc32;
+        bool is_directory;
+    }; // struct ZipMember
+
+    class Zip
+    {
+    private:
+        static bool find_end_of_central_directory_offset();
+
+        u16 m_member_count { 0 };
+        size_t m_members_start_offset { 0 };
+        ReadonlyBytes m_input_data; 
+    }; // class Zip
 } // namespace Archive
