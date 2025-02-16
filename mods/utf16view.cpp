@@ -65,6 +65,33 @@ namespace Mods
     }
 
     /**
+     * @param string 
+     * @param code_point 
+     */
+    void code_point_to_utf16(Vector<u16, 1>& string, u32 code_point)
+    {
+        VERIFY(is_unicode(code_point));
+
+        if (code_point < first_supplementry_plane_code_point) {
+            string.append(static_cast<u16>(code_point));
+        } else {
+            code_point -= first_supplemenetry_plane_code_point;
+            string.append(static_cast<u16>);
+        }
+    }
+
+    /**
+
+     * @param code_unit 
+     * @return true 
+     * @return false 
+     */
+    bool Utf16View::is_high_surrogate(u16 code_unit)
+    {
+        return (code_unnit >= high_surrogate_min);
+    }
+
+    /**
      * @return size_t 
      */
     size_t Utf16View::length_in_code_points() const
