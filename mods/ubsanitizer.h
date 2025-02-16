@@ -11,13 +11,14 @@
 
 #pragma once
 
+#include "mods/noncopyable.h"
+#include "mods/stdlibextra.h"
 #include <mods/atomic.h>
-#include <mods/noncopyable.h>
-#include <mods/stdlibextra.h>
 #include <mods/types.h>
 
 namespace Mods::UBSanitizer
 {
+
     extern Atomic<bool> g_ubsan_is_deadly;
 
     typedef void* ValueHandle;
@@ -28,9 +29,9 @@ namespace Mods::UBSanitizer
 
     public:
         /**
-         * @return const char* 
+         * @return char const* 
          */
-        const char* filename() const
+        char const* filename() const
         {
             return m_filename;
         }
@@ -59,6 +60,10 @@ namespace Mods::UBSanitizer
             return move(*this);
         }
 
+        /**
+         * @return true 
+         * @return false 
+         */
         bool needs_logging() const
         {
             return !(m_filename == nullptr);
@@ -93,12 +98,11 @@ namespace Mods::UBSanitizer
                 m_line = exchange(other.m_line, 0);
                 m_column = exchange(other.m_column, 0);
             }
-
             return *this;
         }
 
     private:
-        const char* m_filename{nullptr};
+        char const* m_filename{nullptr};
         u32 m_line{0};
         u32 m_column{0};
     }; // class SourceLocation
@@ -114,9 +118,9 @@ namespace Mods::UBSanitizer
     {
     public:
         /**
-         * @return const char* 
+         * @return char const* 
          */
-        const char* name() const
+        char const* name() const
         {
             return m_name;
         }
@@ -173,7 +177,7 @@ namespace Mods::UBSanitizer
     struct InvalidValueData
     {
         SourceLocation location;
-        const TypeDescriptor& type;
+        TypeDescriptor const& type;
     }; // struct InvalidValueData
 
     struct NonnullArgData
@@ -191,33 +195,33 @@ namespace Mods::UBSanitizer
     struct OverflowData
     {
         SourceLocation location;
-        const TypeDescriptor& type;
+        TypeDescriptor const& type;
     }; // struct OverflowData
 
     struct VLABoundData
     {
         SourceLocation location;
-        const TypeDescriptor& type;
+        TypeDescriptor const& type;
     }; // struct VLABoundData
 
     struct ShiftOutOfBoundsData
     {
         SourceLocation location;
-        const TypeDescriptor& lhs_type;
-        const TypeDescriptor& rhs_type;
+        TypeDescriptor const& lhs_type;
+        TypeDescriptor const& rhs_type;
     }; // struct ShiftOutOfBoundsData
 
     struct OutOfBoundsData
     {
         SourceLocation location;
-        const TypeDescriptor& array_type;
-        const TypeDescriptor& index_type;
-    }; // struct OutofBoundsData
+        TypeDescriptor const& array_type;
+        TypeDescriptor const& index_type;
+    }; // struct OutOfBoundsData
 
     struct TypeMismatchData
     {
         SourceLocation location;
-        const TypeDescriptor& type;
+        TypeDescriptor const& type;
         u8 log_alignment;
         u8 type_check_kind;
     }; // struct TypeMismatchData
@@ -226,7 +230,7 @@ namespace Mods::UBSanitizer
     {
         SourceLocation location;
         SourceLocation assumption_location;
-        const TypeDescriptor& type;
+        TypeDescriptor const& type;
     }; // struct AlignmentAssumptionData
 
     struct UnreachableData
@@ -237,8 +241,8 @@ namespace Mods::UBSanitizer
     struct ImplicitConversionData
     {
         SourceLocation location;
-        const TypeDescriptor& from_type;
-        const TypeDescriptor& to_type;
+        TypeDescriptor const& from_type;
+        TypeDescriptor const& to_type;
         unsigned char kind;
     }; // struct ImplicitConversionData
 
