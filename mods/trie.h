@@ -9,3 +9,18 @@
  * 
  */
 
+#pragma once
+
+#include <mods/concept.h>
+#include <mods/forward.h>
+#include <mods/hashmap.h>
+#include <mods/ownptr.h>
+#include <mods/types.h>
+
+namespace Mods
+{
+    namespace Detail
+    {
+
+    } // namespace Detail
+} // namespace Mods
