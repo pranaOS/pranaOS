@@ -4,241 +4,511 @@
  * @brief url
  * @version 6.0
  * @date 2023-07-15
- * 
- * @copyright Copyright (c) 2021-2024 pranaOS Developers, Krisna Pranav
- * 
+ *
+ * @copyright Copyright (c) 2021-2025 pranaOS Developers, Krisna Pranav
+ *
  */
 
 #pragma once
 
-#include "string.h"
-#include "string_view.h"
+#include <mods/string.h>
+#include <mods/stringview.h>
+#include <mods/vector.h>
 
-namespace Mods 
+namespace Mods
 {
-
-    class URL 
+    class URL
     {
+        friend class URLParser;
+
     public:
-        URL() { }
+        enum class PercentEncodeSet
+        {
+            C0Control,
+            Fragment,
+            Query,
+            SpecialQuery,
+            Path,
+            Userinfo,
+            Component,
+            ApplicationXWWWFormUrlencoded,
+            EncodeURI
+        }; // enum class PercentEncodeSet
 
-        URL(const StringView&);
+        enum class ExcludeFragment
+        {
+            No,
+            Yes
+        }; // enum class ExcludeFragment
 
-        URL(const char* string)
+        /**
+         * @brief Construct a new URL object
+         * 
+         */
+        URL() = default;
+
+        /**
+         * @brief Construct a new URL object
+         * 
+         */
+        URL(StringView);
+
+        /**
+         * @brief Construct a new URL object
+         * 
+         * @param string 
+         */
+        URL(char const* string)
             : URL(StringView(string))
         {
         }
 
-        URL(const String& string)
+        /**
+         * @brief Construct a new URL object
+         * 
+         * @param string 
+         */
+        URL(String const& string)
             : URL(string.view())
         {
         }
-
+        
         /**
          * @return true 
          * @return false 
          */
-        bool is_valid() const 
-        { 
-            return m_valid; 
+        bool is_valid() const
+        {
+            return m_valid;
+        }   
+
+        /**
+         * @return String const& 
+         */
+        String const& scheme() const
+        {
+            return m_scheme;
         }
 
         /**
-         * @return String 
+         * @return String const& 
          */
-        String protocol() const 
-        { 
-            return m_protocol; 
+        String const& protocol() const
+        {
+            return m_scheme;
         }
 
         /**
-         * @return String 
+         * @return String const& 
          */
-        String host() const 
-        { 
-            return m_host; 
+        String const& username() const
+        {
+            return m_username;
         }
 
         /**
-         * @return String 
+         * @return String const& 
          */
-        String path() const 
-        { 
-            return m_path; 
+        String const& password() const
+        {
+            return m_password;
         }
 
         /**
-         * @return String 
+         * @return String const& 
          */
-        String query() const 
-        { 
-            return m_query; 
+        String const& host() const
+        {
+            return m_host;
         }
 
         /**
-         * @return String 
+         * @return Vector<String> const& 
          */
-        String fragment() const 
-        { 
-            return m_fragment; 
+        Vector<String> const& paths() const
+        {
+            return m_paths;
+        }
+
+        /**
+         * @return String const& 
+         */
+        String const& query() const
+        {
+            return m_query;
+        }
+
+        /**
+         * @return String const& 
+         */
+        String const& fragment() const
+        {
+            return m_fragment;
+        }
+
+        /**
+         * @return Optional<u16> 
+         */
+        Optional<u16> port() const
+        {
+            return m_port;
         }
 
         /**
          * @return u16 
          */
-        u16 port() const 
-        { 
-            return m_port; 
+        u16 port_or_default() const
+        {
+            return m_port.value_or(default_port_for_scheme(m_scheme));
         }
 
         /**
+         * @return true 
+         * @return false 
+         */
+        bool cannot_be_a_base_url() const
+        {
+            return m_cannot_be_a_base_url;
+        }
+
+        /**
+         * @return true 
+         * @return false 
+         */
+        bool cannot_have_a_username_or_password_or_port() const
+        {
+            return m_host.is_null() || m_host.is_empty() || m_cannot_be_a_base_url || m_scheme == "file"sv;
+        }
+
+        /**
+         * @return true 
+         * @return false 
+         */
+        bool includes_credentials() const
+        {
+            return !m_username.is_empty() || !m_password.is_empty();
+        }
+
+        /**
+         * @return true 
+         * @return false 
+         */
+        bool is_special() const
+        {
+            return is_special_scheme(m_scheme);
+        }
+
+        /**
+         * @brief Set the scheme object
+         * 
+         */
+        void set_scheme(String);
+
+        /**
+         * @brief Set the protocol object
+         * 
          * @param protocol 
          */
-        void set_protocol(const String& protocol);
+        void set_protocol(String protocol)
+        {
+            set_scheme(move(protocol));
+        }
 
         /**
-         * @param host 
+         * @brief Set the username object
+         * 
          */
-        void set_host(const String& host);
+        void set_username(String);
 
         /**
-         * @param port 
+         * @brief Set the password object
+         * 
          */
-        void set_port(const u16 port);
+        void set_password(String);
+
+        /**
+         * @brief Set the host object
+         * 
+         */
+        void set_host(String);
+
+        /**
+         * @brief Set the port object
+         * 
+         */
+        void set_port(Optional<u16>);
+
+        /**
+         * @brief Set the paths object
+         * 
+         */
+        void set_paths(Vector<String>);
+
+        /**
+         * @brief Set the query object
+         * 
+         */
+        void set_query(String);
+
+        /**
+         * @brief Set the fragment object
+         * 
+         */
+        void set_fragment(String);
+
+        /**
+         * @brief Set the cannot be a base url object
+         * 
+         * @param value 
+         */
+        void set_cannot_be_a_base_url(bool value)
+        {
+            m_cannot_be_a_base_url = value;
+        }
 
         /**
          * @param path 
          */
-        void set_path(const String& path);
+        void append_path(String path)
+        {
+            m_paths.append(move(path));
+        }
 
         /**
-         * @param query 
+         * @return String 
          */
-        void set_query(const String& query);
-
-        /**
-         * @param fragment 
-         */
-        void set_fragment(const String& fragment);
-
+        String path() const;
         String basename() const;
-        String to_string() const;
 
-        /**
-         * @return URL 
-         */
-        URL complete_url(const String&) const;
-
-        /**
-         * @return true 
-         * @return false 
-         */
-        bool data_payload_is_base64() const 
-        { 
-            return m_data_payload_is_base64; 
+        String serialize(ExcludeFragment = ExcludeFragment::No) const;
+        String serialize_for_display() const;
+        String to_string() const
+        {
+            return serialize();
         }
 
-        /**
-         * @return const String& 
-         */
-        const String& data_mime_type() const 
-        { 
-            return m_data_mime_type; 
-        }
-
-        /**
-         * @return const String& 
-         */
-        const String& data_payload() const 
-        { 
-            return m_data_payload; 
-        }
-
-        /**
-         * @param url_or_path 
-         * @return URL 
-         */
-        static URL create_with_url_or_path(const String& url_or_path);
-
-        /**
-         * @param path 
-         * @return URL 
-         */
-        static URL create_with_file_protocol(const String& path);
-
-        /**
-         * @param mime_type 
-         * @param payload 
-         * @param is_base64 
-         * @return URL 
-         */
-        static URL create_with_data(const StringView& mime_type, const StringView& payload, bool is_base64 = false);
-
-        /**
-         * @param protocol 
-         * @return true 
-         * @return false 
-         */
-        static bool protocol_requires_port(const String& protocol);
-
-        /**
-         * @param protocol 
-         * @return u16 
-         */
-        static u16 default_port_for_protocol(const String& protocol);
+        String serialize_origin() const;
 
         /**
          * @param other 
          * @return true 
          * @return false 
          */
-        bool operator==(const URL& other) const
+        bool equals(URL const& other, ExcludeFragment = ExcludeFragment::No) const;
+
+        /**
+         * @return URL 
+         */
+        URL complete_url(String const&) const;
+
+        /**
+         * @return true 
+         * @return false 
+         */
+        bool data_payload_is_base64() const
         {
-            if (this == &other)
-                return true;
-            return to_string() == other.to_string();
+            return m_data_payload_is_base64;
         }
+
+        /**
+         * @return String const& 
+         */
+        String const& data_mime_type() const
+        {
+            return m_data_mime_type;
+        }
+
+        /**
+         * @return String const& 
+         */
+        String const& data_payload() const
+        {
+            return m_data_payload;
+        }
+
+        /**
+         * @brief Create a with url or path object
+         * 
+         * @return URL 
+         */
+        static URL create_with_url_or_path(String const&);
+
+        /**
+         * @brief Create a with file scheme object
+         * 
+         * @param path 
+         * @param fragment 
+         * @param hostname 
+         * @return URL 
+         */
+        static URL create_with_file_scheme(String const& path, String const& fragment = {}, String const& hostname = {});
+
+        /**
+         * @brief Create a with file protocol object
+         * 
+         * @param path 
+         * @param fragment 
+         * @return URL 
+         */
+        static URL create_with_file_protocol(String const& path, String const& fragment = {})
+        {
+            return create_with_file_scheme(path, fragment);
+        }
+
+        /**
+         * @brief Create a with help scheme object
+         * 
+         * @param path 
+         * @param fragment 
+         * @param hostname 
+         * @return URL 
+         */
+        static URL create_with_help_scheme(String const& path, String const& fragment = {}, String const& hostname = {});
+
+        /**
+         * @brief Create a with data object
+         * 
+         * @param mime_type 
+         * @param payload 
+         * @param is_base64 
+         * @return URL 
+         */
+        static URL create_with_data(String mime_type, String payload, bool is_base64 = false)
+        {
+            return URL(move(mime_type), move(payload), is_base64);
+        };
+
+        /**
+         * @return true 
+         * @return false 
+         */
+        static bool scheme_requires_port(StringView);
+
+        /**
+         * @return u16 
+         */
+        static u16 default_port_for_scheme(StringView);
+
+        /**
+         * @brief 
+         * 
+         * @return true 
+         * @return false 
+         */
+        static bool is_special_scheme(StringView);
+
+        enum class SpaceAsPlus
+        {
+            No,
+            Yes,
+        }; // enum class SpaceAsPlus
+
+        /**
+         * @param input 
+         * @param set 
+         * @return String 
+         */
+        static String percent_encode(StringView input, PercentEncodeSet set = PercentEncodeSet::Userinfo, SpaceAsPlus = SpaceAsPlus::No);
+
+        /**
+         * @param input 
+         * @return String 
+         */
+        static String percent_decode(StringView input);
+
+        /**
+         * @param other 
+         * @return true 
+         * @return false 
+         */
+        bool operator==(URL const& other) const
+        {
+            return equals(other, ExcludeFragment::No);
+        }
+
+        /**
+         * @param code_point 
+         * @return true 
+         * @return false 
+         */
+        static bool code_point_is_in_percent_encode_set(u32 code_point, URL::PercentEncodeSet);
 
     private:
-        bool parse(const StringView&);
+        /**
+         * @brief Construct a new URL object
+         * 
+         * @param data_mime_type 
+         * @param data_payload 
+         * @param payload_is_base64 
+         */
+        URL(String&& data_mime_type, String&& data_payload, bool payload_is_base64)
+            : m_valid(true), m_scheme("data"), m_data_payload_is_base64(payload_is_base64), m_data_mime_type(move(data_mime_type)), m_data_payload(move(data_payload))
+        {
+        }
+
         bool compute_validity() const;
 
-        bool m_valid { false };
-        u16 m_port { 0 };
-        bool m_data_payload_is_base64 { false };
-        String m_protocol;
+        /**
+         * @return String 
+         */
+        String serialize_data_url() const;
+
+        /**
+         * @param code_point 
+         * @param set 
+         */
+        static void append_percent_encoded_if_necessary(StringBuilder&, u32 code_point, PercentEncodeSet set = PercentEncodeSet::Userinfo);
+
+        /**
+         * @param code_point 
+         */
+        static void append_percent_encoded(StringBuilder&, u32 code_point);
+
+        bool m_valid{false};
+
+        String m_scheme;
+        String m_username;
+        String m_password;
         String m_host;
+        
+        Optional<u16> m_port;
         String m_path;
+        Vector<String> m_paths;
         String m_query;
         String m_fragment;
+
+        bool m_cannot_be_a_base_url{false};
+
+        bool m_data_payload_is_base64{false};
         String m_data_mime_type;
         String m_data_payload;
-    };
-    
-    /**
-     * @param stream 
-     * @param value 
-     * @return const LogStream& 
-     */
-    inline const LogStream& operator<<(const LogStream& stream, const URL& value)
+    }; // class URL
+
+    template <>
+    struct Formatter<URL> : Formatter<StringView>
     {
-        return stream << value.to_string();
-    }
-
-    /**
-     * @tparam t
-     */
-    template<>
-    struct Formatter<URL> : Formatter<StringView> {
-        void format(TypeErasedFormatParams& params, FormatBuilder& builder, const URL& value)
+        /**
+         * @param builder 
+         * @param value 
+         * @return ErrorOr<void> 
+         */
+        ErrorOr<void> format(FormatBuilder& builder, URL const& value)
         {
-            Formatter<StringView>::format(params, builder, value.to_string());
+            return Formatter<StringView>::format(builder, value.serialize());
         }
-    };
+    }; // struct Formatter<URL> : Formatter<StringView>
 
-    template<>
-    struct Traits<URL> : public GenericTraits<URL> {
-        static unsigned hash(const URL& url) { return url.to_string().hash(); }
-    };
+    template <>
+    struct Traits<URL> : public GenericTraits<URL>
+    {
+        /**
+         * @param url 
+         * @return unsigned 
+         */
+        static unsigned hash(URL const& url)
+        {
+            return url.to_string().hash();
+        }
+    }; // struct Traits<URL> : public GenericTraits<URL>
 
-}
+} // namespace Mods
