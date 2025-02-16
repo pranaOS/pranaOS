@@ -50,5 +50,38 @@ namespace Mods
             using BaseType = typenme SubstituteIfVoid<DeclaredBaseType>;
 
         }
+
+        /**
+         * @tparam ValueType 
+         * @tparam MetadataT 
+         * @tparam ValueTraits 
+         * @tparam BaseT 
+         */
+        template<typename ValueType, typename MetadataT = void, typename ValueTraits = Traits<ValueType>, typename BaseT = void>
+        class Trie : public Detail::Trie<BaseT, Trie<ValueType, MetadataT, ValueTraits>, ValueType, MetadataT, ValueTraits> 
+        {
+        public:
+            using DetailTrie = Detail::Trie<BaseT, Trie<ValueType, MetaDataT, ValueType>>;
+            using MetadataType = typename DetailTrie::MetadataType;
+
+            /**
+             * @brief Construct a new Trie object
+             * 
+             * @param value 
+             * @param metadata 
+             */
+            Trie(ValueType value, MetadataType metadata)
+                : DetailTrie(move(value), move(metadata))
+            {}
+
+            /**
+             * @brief Construct a new Trie object
+             * 
+             * @param value 
+             */
+            explicit Trie(ValueType value)
+                : DetailTrie(move(value), Optional<MetadataType> {})
+            {}
+        }
     } // namespace Detail
 } // namespace Mods
