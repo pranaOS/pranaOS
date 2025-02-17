@@ -21,7 +21,35 @@ namespace Archive
 
     class TarFileStream : public InputStream
     {
-        
+    public:
+        /**
+         * @return size_t 
+         */
+        size_t read(Bytes) override;
+
+        /**
+         * @return true 
+         * @return false 
+         */
+        bool unreliable_eof() const override;
+
+        /**
+         * @return true 
+         * @return false 
+         */
+        bool read_or_error(Bytes) override;
+
+        /**
+         * @param count 
+         * @return true 
+         * @return false 
+         */
+        bool discard_or_error(size_t count) override;
+    private:
+        TarFileStream(TarInputStream& stream);
+        TarInputStream& m_tar_stream;
+        int m_generator;
+        friend class TarInputStream;
     }; // class TarFileStream : public InputStream
 
     class TarInputStream
