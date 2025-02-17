@@ -54,7 +54,58 @@ namespace Archive
 
     class TarInputStream
     {
+    public:
+        /**
+         * @brief Construct a new Tar Input Stream object
+         * 
+         */
+        TarInputStream(InputStream&);
 
+        void advance();
+
+        /**
+         * @return true 
+         * @return false 
+         */
+        bool finished() const
+        {
+            return m_finished;
+        }
+
+        /**
+         * @return true 
+         * @return false 
+         */
+        bool valid() const;
+
+        /**
+         * @return TarFileHeader const& 
+         */
+        TarFileHeader const& header() const
+        {
+            return m_header;
+        }
+
+        /**
+         * @return TarFileStream 
+         */
+        TarFileStream file_contents();
+
+        /**
+         * @tparam F 
+         * @param func 
+         * @return ErrorOr<void> 
+         */
+        template<VoidFunction<StringView, StringView> F>
+        ErrorOr<void> for_each_extended_header(F func);
+
+    private:
+        TarFileHeader m_header;
+        InputStream& m_stream;
+        unsigned long m_file_offset { 0 };
+        int m_generator { 0 };
+        bool m_finished { false };
+        friend class TarFileStream;
     }; // class TarInputStream
 
     class TarOutputStream 
