@@ -99,4 +99,24 @@ static void set_octal_field(char (&field)[N], TSource&& source)
 {
     set_field(field, String::formatted("{:o}", forward<TSource>(source)));
 }
+
+class [[gnu::packed]] TarFileHeader
+{
+  public:
+    /**
+     * @return StringView
+     */
+    StringView filename() const
+    {
+        return get_field_as_string_view(m_filename);
+    }
+
+    /**
+     * @return mode_t
+     */
+    mode_t mode() const
+    {
+        return get_field_as_integral(m_mode);
+    }
+}; // class [[gnu::packed]] TarFileHeader
 } // namespace Archive
