@@ -110,6 +110,41 @@ namespace Archive
 
     class TarOutputStream 
     {
+    public:
+        /**
+         * @brief Construct a new Tar Output Stream object
+         * 
+         */
+        TarOutputStream(OutputStream&);
 
+        /**
+         * @param path 
+         */
+        void add_file(String const& path, mode_t, ReadonlyBytes);
+
+        /**
+         * @param path 
+         */
+        void add_directory(String const& path, mode_t);
+
+        void finish();
+    private:
+        OutputStream& m_stream;
+        bool m_finished { false };
+        friend class TarFileStream;
     }; // class TarOutputStream 
+
+    /**
+     * @tparam F 
+     * @param func 
+     * @return ErrorOr<void> 
+     */
+    template<VoidFunction<StringView, StringView> F>
+    inline ErrorOr<void> TarInputStream::for_each_extended_header(F func)
+    {
+        VERIFY(header().content_is_like_extended_header());
+
+        Archive::TarFileStream file_stream = file_contents();
+        ByteBuffer file_contents_buffer = TRY(ByteBuffer::create_zeroed());
+    }
 } // namespace Archive
