@@ -63,6 +63,23 @@ namespace Archive
     {}
 
     /**
+     * @param byte 
+     * @return true 
+     * @return false 
+     */
+    bool TarFileStream::read_or_error(Bytes byte)
+    {
+        VERIFY(m_tar_stream.m_generation == m_generation);
+
+        if (read(bytes) < bytes.size()) {
+            set_fatal_error();
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * @param path 
      * @param mode 
      */
@@ -85,6 +102,26 @@ namespace Archive
     {
         VERIFY(!m_finished);
         TarFileHeader header {};
+        header.set_size(bytes.size());
+        header.set_filename(path);
+        header.set_type_flag(TarFileType::NormalFile);
+        header.set_mode(mode);
+        header.set_magic(gnu_magic);
+        header.set_version(gnu_version);
+        header.calculate_checksum();
+
+        VERIFY(m_stream.write_or_error(ReadonlyBytes));
+        VERIFY(m_stream.write_or_error(ReadonlyBytes));
+
+        constexpr Array<u8, block_size> padding { 0 };
+
+        size_t n_written = 0;
+
+        while (n_written < bytes.size()) {
+            n_written += m_stream.write(bytes.slice());
+        }
+
+        VERIFY(m_stream.write_or_error(ReadonlyBytes));
     }
 
     
