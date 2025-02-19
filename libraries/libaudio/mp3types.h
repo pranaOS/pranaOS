@@ -37,7 +37,27 @@ namespace Audio::MP3
     enum class Emphasis
     {
         None = 0,
+        Microseconds_50_15 = 1,
+        Reserved = 2,
+        CCITT_J17 = 3,
     }; // enum class Emphasis
+
+    enum class BlockType 
+    {
+        Normal = 0,
+        Start = 1,
+        Short = 2,
+        End = 3,
+    }; // enum class BlockType 
+
+    struct Header
+    {
+        i32 id;
+        i32 layer;
+        bool protection_bit;
+        i32 bitrate;
+        i32 samplerate;
+    }; // struct Header
  
     struct Granule
     {
