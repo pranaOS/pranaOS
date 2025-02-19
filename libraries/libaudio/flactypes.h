@@ -38,4 +38,34 @@ namespace Audio
     {
         
     }; // enum class FlacFrameChannelType : u8
+
+    enum class FlacSubframeType : u8
+    {
+
+    }; // enum class FlacSubframeType : u8
+
+    enum class FlacResidualMode : u8
+    {
+
+    }; // enum class FlacResidualMode : u8
+
+    struct FlacRawMetadataBlock
+    {
+
+    }; // struct FlacRawMetadataBlock
+
+    struct FlacFrameHeader
+    {
+
+    }; // struct FlacFrameHeader
+
+    struct FlacSubframeHeader
+    {
+
+    }; // struct FlacSubframeHeader
+
+    struct FlacSeekPoint
+    {
+
+    }; // struct FlacSeekPoint
 } // namespace Audio
