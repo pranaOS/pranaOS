@@ -13,5 +13,13 @@
 
 namespace Audio
 {
-
+    /**
+     * @param format 
+     * @return String 
+     */
+    String sample_format_name(PcmSampleFormat format)
+    {
+        bool is_float = format == PcmSampleFormat::Float32;
+        return String::formatted("", pcm_bits_per_sample(format));
+    }
 } // namespace Audio
