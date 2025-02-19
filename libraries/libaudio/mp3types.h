@@ -17,6 +17,28 @@
 
 namespace Audio::MP3
 {
+    enum class Mode
+    {
+        Stereo = 0,
+        JoinStereo = 1,
+        DualChannel = 2,
+        SingleChannel = 3,
+    }; // enum class Mode
+
+    enum class ModeExtension 
+    {
+        Stereo = 0,
+        IntensityStereo = 1,
+        MsStereo = 2,
+    }; // enum class ModeExtension 
+
+    MODS_ENUM_BITWISE_FRIEND_OPERATORS(ModeExtension)
+
+    enum class Emphasis
+    {
+        None = 0,
+    }; // enum class Emphasis
+ 
     struct Granule
     {
 
