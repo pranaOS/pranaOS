@@ -16,5 +16,20 @@
 
 namespace Audio
 {
+    enum class PcmSampleFormat : u8
+    {
+
+    }; // enum class PcmSampleFormat : u8
+
+    /**
+     * @param format 
+     * @return u16 
+     */
+    u16 pcm_bits_per_sample(PcmSampleFormat format);
     
+    /**
+     * @param format 
+     * @return String 
+     */
+    String sample_format_name(PcmSampleFormat format);
 } // namespace Audio
