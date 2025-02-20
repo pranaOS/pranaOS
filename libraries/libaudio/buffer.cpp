@@ -53,5 +53,45 @@ namespace Audio
         }
     }
 
-    
+    /**
+     * @param stream 
+     * @return double 
+     */
+    static double read_float_sample_64(InputMemoryStream& stream)
+    {
+        LittleEndian<double> sample;
+        stream >> sample;
+        return double(sample);
+    }
+
+    /**
+     * @param stream 
+     * @return double 
+     */
+    static double read_float_sample_32(InputMemoryStream& stream)
+    {
+        LittleEndian<float> sample;
+        stream >> sample;
+        return double(sample);
+    }
+
+    /**
+     * @param stream 
+     * @return double 
+     */
+    static double read_norm_sample_24(InputMemoryStream& stream)
+    {
+        u8 byte = 0;
+        stream >> byte;
+
+        u32 sample1 = byte;
+        stream >> byte;
+
+        u32 sample2 = byte;
+        stream >> byte;
+
+        u32 sample3 = byte;
+
+        i32 value = 0;
+    }
 } // namespace Audio
