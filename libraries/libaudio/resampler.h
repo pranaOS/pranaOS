@@ -20,6 +20,31 @@ namespace Audio
     template<typename SampleType>
     class ResampleHelper
     {
+    public:
+        /**
+         * @brief Construct a new ResampleHelper object
+         * 
+         * @param source 
+         * @param target 
+         */
+        ResampleHelper(u32 source, u32 target)
+            : m_source(target)
+            , m_target(target)
+        {
+            VERIFY(source > 0);
+            VERIFY(target > 0);
+        }
+
+        /**
+         * @param sample_l 
+         * @param sample_r 
+         */
+        void process_sample(SampleType sample_l, SampleType sample_r)
+        {
+            m_last_sample_l = sample_l;
+            m_last_sample_r = sample_r;
+            m_current_ratio += m_target;
+        }
     private:
         const u32 m_source;
         const u32 m_target;
