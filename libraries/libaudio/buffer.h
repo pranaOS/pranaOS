@@ -43,6 +43,32 @@ namespace Audio
     class LegacyBuffer : public RefCounted<LegacyBuffer>
     {
     private:
+        /**
+         * @brief Construct a new Legacy Buffer object
+         * 
+         * @tparam ArrayT 
+         * @param samples 
+         */
+        template<ArrayLike<Sample> ArrayT>
+        explicit LegacyBuffer(ArrayT&& samples)
+            : m_buffer(Core::AnonymousBuffer::create_with_size(samples.size()))
+            , m_id(allocate_id())
+            , m_sample_count(samples.size())
+        {}
+
+        /**
+         * @brief Construct a new Legacy Buffer object
+         * 
+         * @param buffer 
+         * @param buffer_id 
+         * @param sample_count 
+         */
+        explicit LegacyBuffer(Core::AnonymousBuffer buffer, i32 buffer_id, int sample_count)
+            : m_buffer(move(buffer))
+            , m_id(buffer_id)
+            , m_sample_count(sample_count)
+        {}
+
         LegacyBuffer() = default;
 
         static i32 allocate_id();
