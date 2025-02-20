@@ -55,5 +55,37 @@ namespace Audio
         LoaderError(FlyString description)
             : description(move(description))
         {}
+
+        /**
+         * @brief Construct a new LoaderError object
+         * 
+         * @param category 
+         * @param description 
+         */
+        LoaderError(Category category, FlyString description)
+            : category(category)
+            , description(move(description))
+        {}
+
+        LoaderError(LoaderError&) = default;
+        LoaderError(LoaderError&&) = default;
+
+        /**
+         * @brief Construct a new LoaderError object
+         * 
+         * @param error 
+         */
+        LoaderError(Error&& error)  
+        {
+            if (error.is_errno()) {
+                auto code = error.code();
+                description = String::formatted("");
+                if (code == EBADF || code == EBUSY) {
+                    category = Category::IO;
+                }
+            } else {
+                description = error.string_literal();
+            }
+        }
     }; // struct LoaderError
 } // namespace Audio
