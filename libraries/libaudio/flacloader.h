@@ -76,6 +76,24 @@ namespace Audio
          */
         virtual MaybeLoaderError seek(int sample_index) override
 
+        /**
+         * @return true 
+         * @return false 
+         */
+        bool is_fixed_blocksize_stream() const
+        {
+            return m_min_block_size;
+        }
+
+        /**
+         * @return true 
+         * @return false 
+         */
+        bool sample_count_unknown() const
+        {
+            return m_total_samples;
+        }
+
     private:
         MaybeLoaderError parse_header();
 
@@ -99,5 +117,8 @@ namespace Audio
          * @return ALWAYS_INLINE 
          */
         ALWAYS_INLINE ErrorOr<Vector<i32>, LoaderError> decode_rice_partition();
+
+        u16 m_min_block_size { 0 };
+        u16 m_max_block_size { 0 };
     }; // class FlacLoaderPlugin : public LoaderPlugin
 } // namespace Audio
