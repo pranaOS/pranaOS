@@ -17,4 +17,41 @@
 
 namespace Audio
 {
+    /**
+     * @return i32 
+     */
+    i32 LegacyBuffer::allocate_id()
+    {
+        static Atomic<i32> next_id;
+        return next_id++;
+    }
+
+    template<typename SampleReader>
+    static void read_samples_from_stream(InputMemoryStream& stream, SampleReader read_sample, Vector<Sample>& samples, int num_channels)
+    {
+        double left_channel_sample = 0;
+        double right_channel_sample = 0;
+
+        switch (num_channels) {
+        case 1:
+            for (;;) {
+                left_channel_sample = read_sample(stream);
+                samples.append(Sample(left_channel_sample));
+            }
+
+        case 2:
+            for (;;) {
+                left_channel_sample = read_sample(stream);
+                right_channel_sample = read_sample(stream);
+                samples.append(Sample(left_channel_sample, right_channel_sample));
+            }
+
+            break;
+
+        default:
+            VERIFY_NOT_REACHED();
+        }
+    }
+
+    
 } // namespace Audio
