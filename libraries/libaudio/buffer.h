@@ -30,66 +30,148 @@
 #include <libcore/sharedcircularqueue.h>
 #include <string.h>
 
-namespace Audio
+namespace Audio 
 {
     static constexpr size_t AUDIO_BUFFERS_COUNT = 128;
-
+    
     static constexpr size_t AUDIO_BUFFER_SIZE = 50;
 
     using AudioQueue = Core::SharedSingleProducerCircularQueue<Array<Sample, AUDIO_BUFFER_SIZE>, AUDIO_BUFFERS_COUNT>;
 
     using namespace Mods::Exponentials;
 
-    class LegacyBuffer : public RefCounted<LegacyBuffer>
+    class LegacyBuffer : public RefCounted<LegacyBuffer> 
     {
     public:
-        int sample_count() const
+        /**
+         * @param data 
+         * @param num_channels 
+         * @param sample_format 
+         * @return ErrorOr<NonnullRefPtr<LegacyBuffer>> 
+         */
+        static ErrorOr<NonnullRefPtr<LegacyBuffer>> from_pcm_data(ReadonlyBytes data, int num_channels, PcmSampleFormat sample_format);
+
+        /**
+         * @param stream 
+         * @param num_channels 
+         * @param sample_format 
+         * @param num_samples 
+         * @return ErrorOr<NonnullRefPtr<LegacyBuffer>> 
+         */
+        static ErrorOr<NonnullRefPtr<LegacyBuffer>> from_pcm_stream(InputMemoryStream& stream, int num_channels, PcmSampleFormat sample_format, int num_samples);
+
+        /**
+         * @brief Create a with samples object
+         * 
+         * @tparam ArrayT 
+         * @param samples 
+         * @return ErrorOr<NonnullRefPtr<LegacyBuffer>> 
+         */
+        template<ArrayLike<Sample> ArrayT>
+        static ErrorOr<NonnullRefPtr<LegacyBuffer>> create_with_samples(ArrayT&& samples)
         {
-            return m_sample_count;
+            return adopt_nonnull_ref_or_enomem(new (nothrow) LegacyBuffer(move(samples)));
+        }
+
+        /**
+         * @brief Create a with anonymous buffer object
+         * 
+         * @param buffer 
+         * @param buffer_id 
+         * @param sample_count 
+         * @return ErrorOr<NonnullRefPtr<LegacyBuffer>> 
+         */
+        static ErrorOr<NonnullRefPtr<LegacyBuffer>> create_with_anonymous_buffer(Core::AnonymousBuffer buffer, i32 buffer_id, int sample_count)
+        {
+            return adopt_nonnull_ref_or_enomem(new (nothrow) LegacyBuffer(move(buffer), buffer_id, sample_count));
+        }
+
+        /**
+         * @brief Create a empty object
+         * 
+         * @return NonnullRefPtr<LegacyBuffer> 
+         */
+        static NonnullRefPtr<LegacyBuffer> create_empty()
+        {
+            return MUST(adopt_nonnull_ref_or_enomem(new (nothrow) LegacyBuffer));
+        }
+
+        /**
+         * @return Sample const* 
+         */
+        Sample const* samples() const 
+        { 
+            return (Sample const*)data(); 
+        }
+
+        /**
+         * @return ErrorOr<FixedArray<Sample>> 
+         */
+        ErrorOr<FixedArray<Sample>> to_sample_array() const
+        {
+            FixedArray<Sample> samples = TRY(FixedArray<Sample>::try_create(m_sample_count));
+            Mods::TypedTransfer<Sample>::copy(samples.data(), this->samples(), m_sample_count);
+            return samples;
+        }
+
+        /**
+         * @return int 
+         */
+        int sample_count() const 
+        { 
+            return m_sample_count; 
         }
 
         /**
          * @return void const* 
          */
-        void const* data() const
-        {
-            return m_buffer.data<void>();
+        void const* data() const 
+        { 
+            return m_buffer.data<void>(); 
         }
 
-        int size_in_bytes() const
-        {
-            return m_sample_count * (int)sizeof(Sample);
+        /**
+         * @return int 
+         */
+        int size_in_bytes() const 
+        { 
+            return m_sample_count * (int)sizeof(Sample); 
         }
 
-        int id() const
-        {
-            return m_id;
+        /**
+         * @return int 
+         */
+        int id() const 
+        { 
+            return m_id; 
         }
 
         /**
          * @return Core::AnonymousBuffer const& 
          */
-        Core::AnonymousBuffer const& anonymous_buffer() const
-        {
-            return m_buffer;
+        Core::AnonymousBuffer const& anonymous_buffer() const 
+        { 
+            return m_buffer; 
         }
 
     private:
         /**
-         * @brief Construct a new Legacy Buffer object
+         * @brief Construct a new LegacyBuffer object
          * 
          * @tparam ArrayT 
          * @param samples 
          */
         template<ArrayLike<Sample> ArrayT>
         explicit LegacyBuffer(ArrayT&& samples)
-            : m_buffer(Core::AnonymousBuffer::create_with_size(samples.size()))
+            : m_buffer(Core::AnonymousBuffer::create_with_size(samples.size() * sizeof(Sample)).release_value())
             , m_id(allocate_id())
             , m_sample_count(samples.size())
-        {}
+        {
+            memcpy(m_buffer.data<void>(), samples.data(), samples.size() * sizeof(Sample));
+        }
 
         /**
-         * @brief Construct a new Legacy Buffer object
+         * @brief Construct a new LegacyBuffer object
          * 
          * @param buffer 
          * @param buffer_id 
@@ -99,8 +181,13 @@ namespace Audio
             : m_buffer(move(buffer))
             , m_id(buffer_id)
             , m_sample_count(sample_count)
-        {}
+        {
+        }
 
+        /**
+         * @brief Construct a new LegacyBuffer object
+         * 
+         */
         LegacyBuffer() = default;
 
         static i32 allocate_id();
@@ -109,4 +196,12 @@ namespace Audio
         const i32 m_id { -1 };
         int const m_sample_count { 0 };
     }; // class LegacyBuffer : public RefCounted<LegacyBuffer>
+
+    /**
+     * @param resampler 
+     * @param to_resample 
+     * @return ErrorOr<NonnullRefPtr<LegacyBuffer>> 
+     */
+    ErrorOr<NonnullRefPtr<LegacyBuffer>> resample_buffer(ResampleHelper<double>& resampler, LegacyBuffer const& to_resample);
+
 } // namespace Audio
