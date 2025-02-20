@@ -40,5 +40,15 @@ namespace Audio
 
     using namespace Mods::Exponentials;
 
+    class LegacyBuffer : public RefCounted<LegacyBuffer>
+    {
+    private:
+        LegacyBuffer() = default;
 
+        static i32 allocate_id();
+
+        Core::AnonymousBuffer m_buffer;
+        const i32 m_id { -1 };
+        int const m_sample_count { 0 };
+    }; // class LegacyBuffer : public RefCounted<LegacyBuffer>
 } // namespace Audio
