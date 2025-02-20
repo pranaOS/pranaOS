@@ -27,5 +27,33 @@ namespace Audio
             Internal,
             Unimplemented
         }; // enum class Category : u32
+
+        Category category { Category::Unknown };
+        size_t index { 0 };
+        FlyString description { String::empty() };
+
+        constexpr LoaderError() = default;
+
+        /**
+         * @brief Construct a new LoaderError object
+         * 
+         * @param category 
+         * @param index 
+         * @param description 
+         */
+        LoaderError(Category category, size_t index, FlyString description)
+            : category(category)
+            , index(index)
+            , description(move(description))
+        {}
+
+        /**
+         * @brief Construct a new LoaderError object
+         * 
+         * @param description 
+         */
+        LoaderError(FlyString description)
+            : description(move(description))
+        {}
     }; // struct LoaderError
 } // namespace Audio
