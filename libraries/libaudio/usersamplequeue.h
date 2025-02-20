@@ -23,8 +23,17 @@ namespace Audio
         MOD_MAKE_NONCOPYABLE(UserSampleQueue)
         MOD_MAKE_NONMOVABLE(UserSampleQueue);
     public:
-
+        UserSampleQueue() = default;
     private:
+        void fix_spans();
+
+        Threading::Mutex m_sample_mutex;
+
+        DisjoinSpans<Sample> m_enqueued_samples;
+
+        size_t m_samples_to_discard { 0 };
+
+        DisjoinChunks<Sample, FixedArray<Sample>> m_backing_samples {};
     }; // class UserSampleQueue
 
 } // namespace Audio
