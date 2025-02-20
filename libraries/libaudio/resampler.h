@@ -15,10 +15,13 @@
 #include <mods/types.h>
 #include <mods/vector.h>
 
-namespace Audio
+namespace Audio 
 {
+    /**
+     * @tparam SampleType 
+     */
     template<typename SampleType>
-    class ResampleHelper
+    class ResampleHelper 
     {
     public:
         /**
@@ -28,7 +31,7 @@ namespace Audio
          * @param target 
          */
         ResampleHelper(u32 source, u32 target)
-            : m_source(target)
+            : m_source(source)
             , m_target(target)
         {
             VERIFY(source > 0);
@@ -46,6 +49,45 @@ namespace Audio
             m_current_ratio += m_target;
         }
 
+        /**
+         * @param next_l 
+         * @param next_r 
+         * @return true 
+         * @return false 
+         */
+        bool read_sample(SampleType& next_l, SampleType& next_r)
+        {
+            if (m_current_ratio >= m_source) {
+                m_current_ratio -= m_source;
+                next_l = m_last_sample_l;
+                next_r = m_last_sample_r;
+                return true;
+            }
+
+            return false;
+        }
+
+        /**
+         * @tparam Samples 
+         * @param to_resample 
+         * @return Vector<SampleType> 
+         */
+        template<ArrayLike<SampleType> Samples>
+        Vector<SampleType> resample(Samples&& to_resample)
+        {
+            Vector<SampleType> resampled;
+            resampled.ensure_capacity(to_resample.size() * ceil_div(m_source, m_target));
+
+            for (auto sample : to_resample) {
+                process_sample(sample, sample);
+
+                while (read_sample(sample, sample))
+                    resampled.unchecked_append(sample);
+            }
+
+            return resampled;
+        }
+
         void reset()
         {
             m_current_ratio = 0;
@@ -56,18 +98,19 @@ namespace Audio
         /**
          * @return u32 
          */
-        u32 source() const
-        {
-            return m_source;
+        u32 source() const 
+        { 
+            return m_source; 
         }
 
         /**
          * @return u32 
          */
-        u32 target() const
-        {
-            return m_target;
+        u32 target() const 
+        { 
+            return m_target; 
         }
+
     private:
         const u32 m_source;
         const u32 m_target;
@@ -84,4 +127,5 @@ namespace Audio
      * @return ErrorOr<NonnullRefPtr<LegacyBuffer>> 
      */
     ErrorOr<NonnullRefPtr<LegacyBuffer>> resample_buffer(ResampleHelper<double>& resampler, LegacyBuffer const& to_resample);
+
 } // namespace Audio
