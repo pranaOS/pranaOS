@@ -9,3 +9,24 @@
  * 
  */
 
+#pragma once
+
+#include "buffer.h"
+#include "loader.h"
+#include "mp3types.h"
+#include <mods/tuple.h>
+#include <libcore/filestream.h>
+#include <libdsp/mdct.h>
+
+namespace Audio
+{
+    namespace MP3::Tables
+    {
+        struct ScaleFactorBand;
+    } // namespace MP3::Tables
+
+    class MP3LoaderPlugin : public LoaderPlugin
+    {
+    
+    } // class MP3LoaderPlugin : public LoaderPlugin
+} // namespace Audio
