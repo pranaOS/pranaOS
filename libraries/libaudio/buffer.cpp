@@ -94,4 +94,29 @@ namespace Audio
 
         i32 value = 0;
     }
+
+    /**
+     * @param stream 
+     * @return double 
+     */
+    static double read_norm_sample_16(InputMemoryStream& stream)
+    {
+        LittleEndian<i16> sample;
+        stream >> sample;
+        return double(sample);
+    }
+
+    static double read_norm_sample(InputMemoryStream& stream)
+    {
+        u8 sample = 0;
+        stream >> sample;
+        return double(sample);
+    }
+
+
+    ErrorOr<NonnullRefPtr<LegacyBuffer> LegacyBuffer::from_pcm_data(ReadonlyBytes bytes)
+    {
+        InputMemoryStream stream { bytes };
+        return from_pcm_stream(stream, num_channels);
+    }
 } // namespace Audio
