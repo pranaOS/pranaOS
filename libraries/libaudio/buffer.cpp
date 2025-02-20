@@ -12,7 +12,7 @@
 #include "buffer.h"
 #include <mods/atomic.h>
 #include <mods/debug.h>
-#include <mods/stdlibextras.h>
+#include <mods/stdlibextra.h>
 #include <mods/string.h>
 
 namespace Audio 
