@@ -13,15 +13,19 @@
 
 #include <mods/disjointchunks.h>
 #include <mods/fixedarray.h>
+#include <mods/format.h>
 #include <mods/noncopyable.h>
+#include <mods/vector.h>
+#include <libaudio/sample.h>
+#include <libthreading/mutex.h>
 
-namespace Audio
+namespace Audio 
 {
-
-    class UserSampleQueue
+    class UserSampleQueue 
     {
-        MOD_MAKE_NONCOPYABLE(UserSampleQueue)
+        MOD_MAKE_NONCOPYABLE(UserSampleQueue);
         MOD_MAKE_NONMOVABLE(UserSampleQueue);
+
     public:
         /**
          * @brief Construct a new UserSampleQueue object
@@ -34,6 +38,8 @@ namespace Audio
          */
         void append(FixedArray<Sample>&& samples);
 
+        void clear();
+        
         /**
          * @param count 
          */
@@ -44,16 +50,29 @@ namespace Audio
          * @return Sample 
          */
         Sample operator[](size_t index);
+
+        /**
+         * @return size_t 
+         */
+        size_t size();
+
+        bool is_empty();
+
+        /**
+         * @return size_t 
+         */
+        size_t remaining_samples();
+
     private:
         void fix_spans();
 
         Threading::Mutex m_sample_mutex;
-
-        DisjoinSpans<Sample> m_enqueued_samples;
-
+        
+        DisjointSpans<Sample> m_enqueued_samples;
+        
         size_t m_samples_to_discard { 0 };
 
-        DisjoinChunks<Sample, FixedArray<Sample>> m_backing_samples {};
+        DisjointChunks<Sample, FixedArray<Sample>> m_backing_samples {};
     }; // class UserSampleQueue
 
 } // namespace Audio
