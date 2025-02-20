@@ -45,6 +45,29 @@ namespace Audio
             m_last_sample_r = sample_r;
             m_current_ratio += m_target;
         }
+
+        void reset()
+        {
+            m_current_ratio = 0;
+            m_last_sample_l = {};
+            m_last_sample_r = {};
+        }
+
+        /**
+         * @return u32 
+         */
+        u32 source() const
+        {
+            return m_source;
+        }
+
+        /**
+         * @return u32 
+         */
+        u32 target() const
+        {
+            return m_target;
+        }
     private:
         const u32 m_source;
         const u32 m_target;
