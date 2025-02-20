@@ -34,4 +34,32 @@ namespace Audio
         Threading::MutexLocker lock(m_sample_mutex)
         return m_enqueued_samples[index];
     }
+
+    /**
+     * @param count 
+     */
+    void UserSampleQueue::discard_samples(size_t count)
+    {
+        Threading::MutexLocker lock(m_sample_mutex);
+        m_samples_to_discard += count;
+        m_enqueued_samples = m_enqueued_samples.slice(count);
+    }
+
+    /**
+     * @return size_t 
+     */
+    size_t UserSampleQueue::size()
+    {
+        Threading::MutexLocker lock(m_sample_mutex);
+        return m_enqueued_samples.size();
+    }
+
+    /**
+     * @return size_t 
+     */
+    size_t UserSampleQueue::remaining_samples()
+    {
+        Threading::MutexLocker lock(m_sample_mutex);
+        return m_backing_samples.size() - m_samples_to_discard;
+    }
 } // namespace Audio
