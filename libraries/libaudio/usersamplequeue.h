@@ -23,7 +23,27 @@ namespace Audio
         MOD_MAKE_NONCOPYABLE(UserSampleQueue)
         MOD_MAKE_NONMOVABLE(UserSampleQueue);
     public:
+        /**
+         * @brief Construct a new UserSampleQueue object
+         * 
+         */
         UserSampleQueue() = default;
+
+        /**
+         * @param samples 
+         */
+        void append(FixedArray<Sample>&& samples);
+
+        /**
+         * @param count 
+         */
+        void discard_samples(size_t count);
+
+        /**
+         * @param index 
+         * @return Sample 
+         */
+        Sample operator[](size_t index);
     private:
         void fix_spans();
 
