@@ -42,6 +42,38 @@ namespace Audio
 
     class LegacyBuffer : public RefCounted<LegacyBuffer>
     {
+    public:
+        int sample_count() const
+        {
+            return m_sample_count;
+        }
+
+        /**
+         * @return void const* 
+         */
+        void const* data() const
+        {
+            return m_buffer.data<void>();
+        }
+
+        int size_in_bytes() const
+        {
+            return m_sample_count * (int)sizeof(Sample);
+        }
+
+        int id() const
+        {
+            return m_id;
+        }
+
+        /**
+         * @return Core::AnonymousBuffer const& 
+         */
+        Core::AnonymousBuffer const& anonymous_buffer() const
+        {
+            return m_buffer;
+        }
+
     private:
         /**
          * @brief Construct a new Legacy Buffer object
