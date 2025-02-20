@@ -29,6 +29,53 @@ namespace Audio
 
     class FlacLoaderPlugin : public LoaderPlugin
     {
+    public:
+
+        /**
+         * @brief Construct a new FlacLoaderPlugin object
+         * 
+         * @param path 
+         */
+        explicit FlacLoaderPlugin(StringView path);
+
+        /**
+         * @brief Construct a new FlacLoaderPlugin object
+         * 
+         * @param buffer 
+         */
+        explicit FlacLoaderPlugin(Bytes& buffer);
+
+        /**
+         * @brief Destroy the FlacLoaderPlugin object
+         * 
+         */
+        ~FlacLoaderPlugin()
+        {}
+
+        /**
+         * @return MaybeLoaderError 
+         */
+        virtual MaybeLoaderError initialize() override;
+
+        /**
+         * @brief Get the more samples object
+         * 
+         * @param max_bytes_to_read_from_input 
+         * @return LoaderSamples 
+         */
+        virtual LoaderSamples get_more_samples(size_t max_bytes_to_read_from_input = 128 * KiB) override;
+
+        /**
+         * @return MaybeLoaderError 
+         */
+        virtual MaybeLoaderError reset() override;
+
+        /**
+         * @param sample_index 
+         * @return MaybeLoaderError 
+         */
+        virtual MaybeLoaderError seek(int sample_index) override
+
     private:
         MaybeLoaderError parse_header();
 
