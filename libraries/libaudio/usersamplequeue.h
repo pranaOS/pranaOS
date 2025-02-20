@@ -13,12 +13,15 @@
 
 #include <mods/disjointchunks.h>
 #include <mods/fixedarray.h>
+#include <mods/noncopyable.h>
 
 namespace Audio
 {
 
     class UserSampleQueue
     {
+        MOD_MAKE_NONCOPYABLE(UserSampleQueue)
+        MOD_MAKE_NONMOVABLE(UserSampleQueue);
     public:
 
     private:
