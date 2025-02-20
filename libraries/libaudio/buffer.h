@@ -32,5 +32,13 @@
 
 namespace Audio
 {
+    static constexpr size_t AUDIO_BUFFERS_COUNT = 128;
+
+    static constexpr size_t AUDIO_BUFFER_SIZE = 50;
+
+    using AudioQueue = Core::SharedSingleProducerCircularQueue<Array<Sample, AUDIO_BUFFER_SIZE>, AUDIO_BUFFERS_COUNT>;
+
+    using namespace Mods::Exponentials;
+
 
 } // namespace Audio
