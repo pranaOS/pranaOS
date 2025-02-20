@@ -11,8 +11,22 @@
 
 #include "usersamplequeue.h"
 
-namespace Audio
+namespace Audio 
 {
+    /**
+     * @param samples 
+     */
+    void UserSampleQueue::append(FixedArray<Sample>&& samples)
+    {
+        Threading::MutexLocker lock(m_sample_mutex);
+
+        if (m_samples_to_discard != 0)
+            m_backing_samples = m_backing_samples.release_slice(m_samples_to_discard);
+
+        m_backing_samples.append(move(samples));
+        fix_spans();
+    }
+
     void UserSampleQueue::clear()
     {
         discard_samples(size());
@@ -31,7 +45,7 @@ namespace Audio
      */
     Sample UserSampleQueue::operator[](size_t index)
     {
-        Threading::MutexLocker lock(m_sample_mutex)
+        Threading::MutexLocker lock(m_sample_mutex);
         return m_enqueued_samples[index];
     }
 
@@ -62,4 +76,15 @@ namespace Audio
         Threading::MutexLocker lock(m_sample_mutex);
         return m_backing_samples.size() - m_samples_to_discard;
     }
+
+    /**
+     * @return true 
+     * @return false 
+     */
+    bool UserSampleQueue::is_empty()
+    {
+        Threading::MutexLocker lock(m_sample_mutex);
+        return m_enqueued_samples.is_empty();
+    }
+
 } // namespace Audio
