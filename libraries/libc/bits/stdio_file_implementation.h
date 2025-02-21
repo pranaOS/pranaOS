@@ -15,7 +15,13 @@
 
 struct File
 {
-
+private:
+    struct Buffer
+    {
+    private:
+        constexpr static auto ungent_buffer_size = MB_CUR_MAX;
+        constexpr static u32 ungotten_mask = ((832));
+    }; // struct Buffer
 }; // struct File
 
 class ScopedFileLock 
