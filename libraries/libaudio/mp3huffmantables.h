@@ -73,4 +73,46 @@ namespace Audio::MP3::Tables::Huffman
 
         return max;
     }
+
+    struct HuffmanTreeXY
+    {
+        Span<HuffmanNode<HuffmanXY> const> nodes;
+        int linbits;
+    }; // struct HuffmanTreeXY
+
+    Array<HuffmanTreeXY const, 32> HuffmanTreesXY { {
+        { Tree0, 0 },
+        { Tree1, 0 },
+        { Tree2, 0 },
+        { Tree3, 0 },
+        { {}, 0 },
+        { Tree5, 0 },
+        { Tree6, 0 },
+        { Tree7, 0 },
+        { Tree8, 0 },
+        { Tree9, 0 },
+        { Tree10, 0 },
+        { Tree11, 0 },
+        { Tree12, 0 },
+        { Tree13, 0 },
+        { {}, 0 },
+        { Tree15, 0 },
+        { Tree16, 1 },
+        { Tree17, 2 },
+        { Tree18, 3 },
+        { Tree19, 4 },
+        { Tree20, 6 },
+        { Tree21, 8 },
+        { Tree22, 10 },
+        { Tree23, 13 },
+        { Tree24, 4 },
+        { Tree25, 5 },
+        { Tree26, 6 },
+        { Tree27, 7 },
+        { Tree28, 8 },
+        { Tree29, 9 },
+        { Tree30, 11 },
+        { Tree31, 13 },
+    } };
+
 } // namespace Audio::MP3::Tables::Huffman
