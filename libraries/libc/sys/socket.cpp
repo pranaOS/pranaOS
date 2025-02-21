@@ -9,16 +9,15 @@
  * 
  */
 
+#include <mods/assertions.h>
 #include <errno.h>
 #include <stdio.h>
 #include <string.h>
 #include <sys/socket.h>
 #include <sys/uio.h>
-#include <mods/assertions.h>
-#include <kernel/api/syscall.h>
+#include <syscall.h>
 
-extern "C" 
-{
+extern "C" {
 
     /**
      * @param domain 
@@ -38,7 +37,7 @@ extern "C"
      * @param addrlen 
      * @return int 
      */
-    int bind(int sockfd, const sockaddr* addr, socklen_t addrlen)
+    int bind(int sockfd, sockaddr const* addr, socklen_t addrlen)
     {
         int rc = syscall(SC_bind, sockfd, addr, addrlen);
         __RETURN_WITH_ERRNO(rc, rc, -1);
@@ -63,7 +62,20 @@ extern "C"
      */
     int accept(int sockfd, sockaddr* addr, socklen_t* addrlen)
     {
-        int rc = syscall(SC_accept, sockfd, addr, addrlen);
+        return accept4(sockfd, addr, addrlen, 0);
+    }
+
+    /**
+     * @param sockfd 
+     * @param addr 
+     * @param addrlen 
+     * @param flags 
+     * @return int 
+     */
+    int accept4(int sockfd, sockaddr* addr, socklen_t* addrlen, int flags)
+    {
+        Syscall::SC_accept4_params params { addr, addrlen, sockfd, flags };
+        int rc = syscall(SC_accept4, &params);
         __RETURN_WITH_ERRNO(rc, rc, -1);
     }
 
@@ -73,7 +85,7 @@ extern "C"
      * @param addrlen 
      * @return int 
      */
-    int connect(int sockfd, const sockaddr* addr, socklen_t addrlen)
+    int connect(int sockfd, sockaddr const* addr, socklen_t addrlen)
     {
         int rc = syscall(SC_connect, sockfd, addr, addrlen);
         __RETURN_WITH_ERRNO(rc, rc, -1);
@@ -111,7 +123,7 @@ extern "C"
      * @param addr_length 
      * @return ssize_t 
      */
-    ssize_t sendto(int sockfd, const void* data, size_t data_length, int flags, const struct sockaddr* addr, socklen_t addr_length)
+    ssize_t sendto(int sockfd, void const* data, size_t data_length, int flags, const struct sockaddr* addr, socklen_t addr_length)
     {
         iovec iov = { const_cast<void*>(data), data_length };
         msghdr msg = { const_cast<struct sockaddr*>(addr), addr_length, &iov, 1, nullptr, 0, 0 };
@@ -125,7 +137,7 @@ extern "C"
      * @param flags 
      * @return ssize_t 
      */
-    ssize_t send(int sockfd, const void* data, size_t data_length, int flags)
+    ssize_t send(int sockfd, void const* data, size_t data_length, int flags)
     {
         return sendto(sockfd, data, data_length, flags, nullptr, 0);
     }
@@ -204,9 +216,9 @@ extern "C"
      * @param value_size 
      * @return int 
      */
-    int setsockopt(int sockfd, int level, int option, const void* value, socklen_t value_size)
+    int setsockopt(int sockfd, int level, int option, void const* value, socklen_t value_size)
     {
-        Syscall::SC_setsockopt_params params { sockfd, level, option, value, value_size };
+        Syscall::SC_setsockopt_params params { value, sockfd, level, option, value_size };
         int rc = syscall(SC_setsockopt, &params);
         __RETURN_WITH_ERRNO(rc, rc, -1);
     }
@@ -238,6 +250,20 @@ extern "C"
     }
 
     /**
+     * @param domain 
+     * @param type 
+     * @param protocol 
+     * @param sv 
+     * @return int 
+     */
+    int socketpair(int domain, int type, int protocol, int sv[2])
+    {
+        Syscall::SC_socketpair_params params { domain, type, protocol, sv };
+        int rc = syscall(SC_socketpair, &params);
+        __RETURN_WITH_ERRNO(rc, rc, -1);
+    }
+
+    /**
      * @param sockfd 
      * @param fd 
      * @return int 
@@ -250,11 +276,13 @@ extern "C"
 
     /**
      * @param sockfd 
+     * @param options 
      * @return int 
      */
-    int recvfd(int sockfd)
+    int recvfd(int sockfd, int options)
     {
-        int rc = syscall(SC_recvfd, sockfd);
+        int rc = syscall(SC_recvfd, sockfd, options);
         __RETURN_WITH_ERRNO(rc, rc, -1);
     }
+
 }
