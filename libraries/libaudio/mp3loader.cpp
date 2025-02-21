@@ -50,4 +50,29 @@ namespace Audio
             return;
         }
     }
+
+    /**
+     * @brief Destroy the MP3LoaderPlugin::MP3LoaderPlugin object
+     * 
+     */
+    MP3LoaderPlugin::~MP3LoaderPlugin()
+    {
+        if (m_bitstream) {
+            m_bitstream->handle_any_error();
+        }
+
+        if (m_input_stream) {
+            m_input_stream->handle_any_error();
+        }
+    }
+
+    MaybeLoaderError MP3LoaderPlugin::initialize()
+    {
+        if (m_error.has_value())
+            return m_error.release_value();
+        
+        TRY(synchronize());
+
+        auto header = TRY(read_header());
+    }
 }
