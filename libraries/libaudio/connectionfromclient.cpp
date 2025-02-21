@@ -1,7 +1,7 @@
 /**
  * @file connectionfromclient.cpp
  * @author Krisna Pranav
- * @brief Connection From Client
+ * @brief ConnectionFromClient
  * @version 6.0
  * @date 2025-02-21
  * 
