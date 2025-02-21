@@ -30,4 +30,33 @@ namespace Audio
 
         m_stream = make<Core::InputFileStream>(*m_file);
     }
+
+    /**
+     * @return MaybeLoaderError 
+     */
+    MaybeLoaderError WavLoaderPlugin::initialize()
+    {
+        if (m_error.has_value())
+            return m_error.release_value();
+    
+        TRY(parse_header());
+        return {};
+    }
+
+    /**
+     * @brief Construct a new WavLoaderPlugin::WavLoaderPlugin object
+     * 
+     * @param buffer 
+     */
+    WavLoaderPlugin::WavLoaderPlugin(Bytes const& buffer)
+    {
+        m_stream = make<InputMemoryStream>(buffer);
+
+        if (!m_stream) {
+            m_error = LoaderError { String::formatted("Can't open: {}") };
+            return;
+        }
+
+        m_memory_stream = static_cast<InputMemoryStream*>(m_stream.ptr());
+    }
 } // namespace Audio
