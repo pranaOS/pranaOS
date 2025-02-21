@@ -13,11 +13,44 @@
 
 #include <pthread.h>
 
-namespace LibC
+namespace LibC 
 {
-    class MutexLocker
+
+    class [[nodiscard]] MutexLocker 
     {
+    public:
+        /**
+         * @brief Construct a new MutexLocker object
+         * 
+         * @param mutex 
+         */
+        explicit MutexLocker(pthread_mutex_t& mutex)
+            : m_mutex(mutex)
+        {
+            lock();
+        }
+
+        /**
+         * @brief Destroy the MutexLocker object
+         * 
+         */
+        ~MutexLocker()
+        {
+            unlock();
+        }
+
+        void lock() 
+        { 
+            pthread_mutex_lock(&m_mutex); 
+        }
+
+        void unlock() 
+        { 
+            pthread_mutex_unlock(&m_mutex); 
+        }
+
     private:
         pthread_mutex_t& m_mutex;
-    }; // class MutexLocker
+    }; // class [[nodiscard]] MutexLocker
+
 } // namespace LibC
