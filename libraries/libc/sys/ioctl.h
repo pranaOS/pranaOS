@@ -9,7 +9,7 @@
  * 
  */
 
-#pragma once 
+#pragma once
 
 #include <sys/cdefs.h>
 #include <sys/ioctl_numbers.h>
