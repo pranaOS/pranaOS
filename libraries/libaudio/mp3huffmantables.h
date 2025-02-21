@@ -21,8 +21,7 @@ namespace Audio::MP3::Tables::Huffman
      * @tparam Symbol 
      */
     template<typename Symbol>
-    struct HuffmanEntry 
-    {
+    struct HuffmanEntry {
         using SymbolType = Symbol;
         unsigned code;
         size_t code_length;
@@ -33,13 +32,17 @@ namespace Audio::MP3::Tables::Huffman
      * @tparam Symbol 
      */
     template<typename Symbol>
-    struct HuffmanNode 
-    {
+    struct HuffmanNode {
         int left;
         int right;
         unsigned code;
         size_t code_length;
         Symbol symbol;
+
+        /**
+         * @return true 
+         * @return false 
+         */
         bool is_leaf() const 
         { 
             return left == -1 && right == -1; 
