@@ -8,3 +8,19 @@
  * @copyright Copyright (c) 2021-2025 pranaOS Developers, Krisna Pranav
  * 
  */
+
+extern "C"
+{
+    int flock(int fd, int operation)
+    {
+        struct flock lock
+        {
+
+        };
+
+        if (operation) {
+            VERIFY_NOT_REACHED();
+        }
+        
+    }
+}
