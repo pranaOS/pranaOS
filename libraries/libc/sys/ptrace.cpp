@@ -9,53 +9,52 @@
  * 
  */
 
-#pragma once 
-
-#include <mods/logstream.h>
 #include <errno.h>
 #include <sys/ptrace.h>
-#include <kernel/api/syscall.h>
+#include <syscall.h>
 
-extern "C" 
+extern "C" {
+
+/**
+ * @param request 
+ * @param tid 
+ * @param addr 
+ * @param data 
+ * @return long 
+ */
+long ptrace(int request, pid_t tid, void* addr, void* data)
 {
-    
-    /**
-     * @param request 
-     * @param tid 
-     * @param addr 
-     * @param data 
-     * @return int 
-     */
-    int ptrace(int request, pid_t tid, void* addr, int data)
-    {
-
-        u32 out_data;
-        Syscall::SC_ptrace_peek_params peek_params;
-
-        if (request == PT_PEEK) {
-            peek_params.address = reinterpret_cast<u32*>(addr);
-            peek_params.out_data = &out_data;
-            addr = &peek_params;
-        }
-
-        Syscall::SC_ptrace_params params {
-            request,
-            tid,
-            reinterpret_cast<u8*>(addr),
-            data
-        };
-        
-        int rc = syscall(SC_ptrace, &params);
-
-        if (request == PT_PEEK) {
-            if (rc < 0) {
-                errno = -rc;
-                return -1;
-            }
-            errno = 0;
-            return static_cast<int>(out_data);
-        }
-
-        __RETURN_WITH_ERRNO(rc, rc, -1);
+    if (request == PT_PEEKBUF) {
+        return EINVAL;
     }
+
+    FlatPtr out_data;
+
+    auto is_peek_type = request == PT_PEEK || request == PT_PEEKDEBUG;
+
+    if (is_peek_type) {
+        data = &out_data;
+    }
+
+    Syscall::SC_ptrace_params params {
+        request,
+        tid,
+        addr,
+        (FlatPtr)data
+    };
+
+    long rc = syscall(SC_ptrace, &params);
+
+    if (is_peek_type) {
+        if (rc < 0) {
+            errno = -rc;
+            return -1;
+        }
+        errno = 0;
+        return static_cast<long>(out_data);
+    }
+
+    __RETURN_WITH_ERRNO(rc, rc, -1);
 }
+
+} // extern "C"
