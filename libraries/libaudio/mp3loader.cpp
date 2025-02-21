@@ -20,4 +20,34 @@ namespace Audio
 {
     LibDSP::MDCT<12> MP3LoaderPlugin::s_mdct_12;
     LibDSP::MDCT<36> MP3LoaderPlugin::s_mdct_36;
+
+    MP3LoaderPlugin::MP3LoaderPlugin(StringView path)
+        : m_file(Core::File::construct(path))
+    {
+        if (!m_file->open(Core::OpenMode::ReadOnly)) {
+            m_error = LoaderError { LoaderError::Category::IO };
+            return;
+        }
+
+        off_t file_size = 0;
+
+        if (!m_file->seek(0, Core::SeekMode::FromEndPosition, &file_size)) {
+            m_error = LoaderError { LoaderError::Category::IO };
+            return;
+        }
+
+        m_file_size = file_size;
+
+        if (!m_file->seek(0, Core::SeekMode::SetPosition)) {
+            m_error = LoaderError { LoaderError::Category::IO };
+            return;
+        }
+
+        m_input_stream = make<Core::InputFileStream>(*m_file);
+
+        if (!m_input_stream || m_input_stream->has_any_error()) {
+            m_error = LoaderError { LoaderError::Category::Internal };
+            return;
+        }
+    }
 }
