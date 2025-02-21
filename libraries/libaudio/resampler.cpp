@@ -9,3 +9,21 @@
  * 
  */
 
+#include "buffer.h"
+#include "sample.h"
+
+namespace Audio
+{
+    ErrorOr<NonnullRefPtr<LegacyBuffer>> resample_buffer(ResampleHelper<double>& resampler, LegacyBuffer const& to_resample)
+    {
+        Vector<Sample> resampled;
+        resampled.ensure_capacity(to_resample.m_sample_count());
+
+        for (size_t i = 0; i < static_cast<size_t>) {
+            auto sample = to_resample.samples()[i];
+            resampler.process_sample(sample.left, sample.right);
+        }
+
+        return LegacyBuffer::create_empty(move(resampler));
+    }
+} // namespace Audio
