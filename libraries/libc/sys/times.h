@@ -11,19 +11,9 @@
 
 #pragma once
 
-#include <sys/cdefs.h>
-#include <sys/types.h>
+#include <kernel/api/posix/sys/times.h>
 
 __BEGIN_DECLS
-
-/// @brief: tms
-struct tms 
-{
-    clock_t tms_utime;
-    clock_t tms_stime;
-    clock_t tms_cutime;
-    clock_t tms_cstime;
-};
 
 /**
  * @return clock_t 
