@@ -9,4 +9,6 @@
  * 
  */
 
- 
+#pragma once
+
+#include <kernel/api/posix/net/if_arp.h>
