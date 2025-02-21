@@ -26,4 +26,14 @@
 
 namespace Audio
 {
+    #define WAVE_FORMAT_PCM
+    #define WAVE_FORMAT_IEEE_FLOAT
+    #define WAVE_FORMAT_ALAW
+    #define WAVE_FORMAT_MULAW
+    #define WAVE_FORMAT_EXTENSIBLE
+
+    class WavLoaderPlugin : public LoaderPlugin
+    {
+
+    }; // class WavLoaderPlugin : public LoaderPlugin
 } // namespace Audio
