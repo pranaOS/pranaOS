@@ -5,7 +5,7 @@
  * @version 6.0
  * @date 2025-02-21
  * 
- * @copyright Copyright (c) 2025
+ * @copyright Copyright (c) 2025 Krisna Pranav, pranaOS Developers
  * 
  */
 
