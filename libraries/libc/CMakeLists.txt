@@ -128,31 +128,33 @@ set(SOURCES ${LIBC_SOURCES} ${AK_SOURCES} ${ELF_SOURCES} ${ASM_SOURCES})
 
 set_source_files_properties(stdio.cpp PROPERTIES COMPILE_FLAGS "-fno-builtin-fputc -fno-builtin-fputs -fno-builtin-fwrite")
 
-add_library(LibCStaticWithoutDeps STATIC ${SOURCES})
-target_link_libraries(LibCStaticWithoutDeps ssp LibTimeZone)
-add_dependencies(LibCStaticWithoutDeps LibM LibSystem LibUBSanitizer)
+add_library(libcstaticwithoutdeps STATIC ${SOURCES})
+target_link_libraries(libcstaticwithoutdeps ssp libtimezone)
+add_dependencies(libcstaticwithoutdeps libm libsystem libubsanitizer)
 
 add_custom_target(LibCStatic
-        COMMAND ${CMAKE_AR} -x $<TARGET_FILE:LibCStaticWithoutDeps>
+        COMMAND ${CMAKE_AR} -x $<TARGET_FILE:libcstaticwithoutdeps>
         COMMAND ${CMAKE_AR} -x $<TARGET_FILE:ssp>
-        COMMAND ${CMAKE_AR} -x $<TARGET_FILE:LibSystemStatic>
-        COMMAND ${CMAKE_AR} -x $<TARGET_FILE:LibUBSanitizerStatic>
+        COMMAND ${CMAKE_AR} -x $<TARGET_FILE:libsystemstatic>
+        COMMAND ${CMAKE_AR} -x $<TARGET_FILE:libubsanitizerstatic>
         COMMAND ${CMAKE_AR} -rcs ${CMAKE_CURRENT_BINARY_DIR}/libc.a *.o
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-        DEPENDS LibCStaticWithoutDeps ssp LibSystemStatic LibUBSanitizerStatic
+        DEPENDS libcstaticwithoutdeps ssp libsystemstatic libubsanitizerstatic
         )
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libc.a DESTINATION ${CMAKE_INSTALL_PREFIX}/usr/lib/)
+
 file(GLOB TEMP_OBJ_FILES ${CMAKE_CURRENT_BINARY_DIR}/*.o)
+
 set_property(
-        TARGET LibCStatic
+        TARGET libcstatic
         APPEND
         PROPERTY ADDITIONAL_CLEAN_FILES ${TEMP_OBJ_FILES}
 )
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -nolibc")
-pranaos_libc(LibC c)
-add_dependencies(LibC crti crt0 crt0_shared crtn)
-target_link_libraries(LibC ssp system LibTimeZone)
+pranaos_libc(libc c)
+add_dependencies(libc crti crt0 crt0_shared crtn)
+target_link_libraries(libc ssp system libtimezone)
 
-add_dependencies(LibC LibM LibSystem LibCStatic)
+add_dependencies(libc libm libsystem Libcstatic)
