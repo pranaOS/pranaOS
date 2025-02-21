@@ -5,22 +5,15 @@
  * @version 6.0
  * @date 2023-07-10
  * 
- * @copyright Copyright (c) 2021-2024 pranaOS Developers, Krisna Pranav
+ * @copyright Copyright (c) 2021-2025 pranaOS Developers, Krisna Pranav
  * 
  */
 
 #pragma once
 
-#include <sys/cdefs.h>
-#include <sys/types.h>
+#include <kernel/api/posix/sys/uio.h>
 
 __BEGIN_DECLS
-
-/// @brief iovec
-struct iovec {
-    void* iov_base;
-    size_t iov_len;
-};
 
 /**
  * @param fd 
@@ -28,5 +21,12 @@ struct iovec {
  * @return ssize_t 
  */
 ssize_t writev(int fd, const struct iovec*, int iov_count);
+
+/**
+ * @param fd 
+ * @param iov_count 
+ * @return ssize_t 
+ */
+ssize_t readv(int fd, const struct iovec*, int iov_count);
 
 __END_DECLS
