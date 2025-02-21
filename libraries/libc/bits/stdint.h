@@ -11,6 +11,7 @@
 
 #pragma once
 
+#include <bits/wchar_size.h>
 #include <sys/cdefs.h>
 
 __BEGIN_DECLS
