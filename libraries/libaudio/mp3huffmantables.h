@@ -11,9 +11,9 @@
 
 #pragma once
 
-#include <AK/Array.h>
-#include <AK/BitStream.h>
-#include <AK/Span.h>
+#include <mods/array.h>
+#include <mods/bitstream.h>
+#include <mods/span.h>
 
 namespace Audio::MP3::Tables::Huffman 
 {
