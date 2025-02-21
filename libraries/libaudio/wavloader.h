@@ -34,6 +34,34 @@ namespace Audio
 
     class WavLoaderPlugin : public LoaderPlugin
     {
+    public:
+        /**
+         * @brief Construct a new WavLoaderPlugin object
+         * 
+         * @param path 
+         */
+        explicit WavLoaderPlugin(StringView path);
+
+        /**
+         * @brief Construct a new WavLoaderPlugin object
+         * 
+         * @param buffer 
+         */
+        explicit WavLoaderPlugin(Bytes const& buffer);
+
+        /**
+         * @return MaybeLoaderError 
+         */
+        virtual MaybeLoaderError initialize() override;
+
+        /**
+         * @brief Get the more samples object
+         * 
+         * @param max_bytes_to_read_from_input 
+         * @return LoaderSamples 
+         */
+        virtual LoaderSamples get_more_samples(size_t max_bytes_to_read_from_input = 128 * KiB) override;
+
     private:
         MaybeLoaderError parse_header();
 
