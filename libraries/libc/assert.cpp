@@ -9,26 +9,35 @@
  * 
  */
 
+#include <mods/format.h>
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
+#include <string.h>
 #include <sys/internals.h>
+#include <syscall.h>
+#include <unistd.h>
 
 extern "C" {
 
     extern bool __stdio_is_initialized;
 
-    #ifdef DEBUG
-        /**
-         * @param msg 
-         */
-        void __assertion_failed(const char* msg)
-        {
-            dbgprintf("USERSPACE(%d) ASSERTION FAILED: %s\n", getpid(), msg);
+    /**
+     * @param msg 
+     */
+    void __assertion_failed(char const* msg)
+    {
+        if (__heap_is_stable) {
+            dbgln("ASSERTION FAILED: {}", msg);
             if (__stdio_is_initialized)
-                fprintf(stderr, "ASSERTION FAILED: %s\n", msg);
-            abort();
+                warnln("ASSERTION FAILED: {}", msg);
         }
-    #endif
+
+        Syscall::SC_set_coredump_metadata_params params {
+            { "assertion", strlen("assertion") },
+            { msg, strlen(msg) },
+        };
+        syscall(SC_set_coredump_metadata, &params);
+        abort();
+    }
 }
