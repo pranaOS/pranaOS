@@ -8,3 +8,8 @@
  * @copyright Copyright (c) 2021-2025 pranaOS Developers, Krisna Pranav
  * 
  */
+
+
+#pragma once
+
+#define ETH_ALEN 6 
