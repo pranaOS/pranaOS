@@ -9,51 +9,13 @@
  * 
  */
 
+#include <mods/types.h>
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/internals.h>
 #include <unistd.h>
-#include <mods/types.h>
 
-extern "C" 
-{
-
-    /**
-     * @return int 
-     */
-    int main(int, char**, char**);
-
-    /// @brief: void* __libc + __init
-    extern void __libc_init();
-    extern void _init();
-    extern char** environ;
-    extern bool __environ_is_malloced;
-
-    /**
-     * @param argc 
-     * @param argv 
-     * @param env 
-     * @return int 
-     */
-    int _start(int argc, char** argv, char** env);
-
-    /**
-     * @param argc 
-     * @param argv 
-     * @param env 
-     * @return int 
-     */
-    int _start(int argc, char** argv, char** env)
-    {
-        _init();
-
-        int status = main(argc, argv, env);
-        return status;
-    }
-}
-
-/**
- * @return void* 
- */
+#ifndef _DYNAMIC_LOADER
 void* __dso_handle __attribute__((__weak__));
+#endif
