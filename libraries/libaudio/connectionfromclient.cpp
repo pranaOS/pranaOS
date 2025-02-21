@@ -9,15 +9,15 @@
  * 
  */
 
- #include <AK/Atomic.h>
-#include <AK/Format.h>
-#include <AK/OwnPtr.h>
-#include <AK/Time.h>
-#include <AK/Types.h>
-#include <LibAudio/ConnectionFromClient.h>
-#include <LibAudio/UserSampleQueue.h>
-#include <LibCore/Event.h>
-#include <LibThreading/Mutex.h>
+#include <mods/atomic.h>
+#include <mods/format.h>
+#include <mods/ownptr.h>
+#include <mods/time.h>
+#include <mods/types.h>
+#include <libaudio/connectionfromclient.h>
+#include <libaudio/usersamplequeue.h>
+#include <libcore/event.h>
+#include <libthreading/mutex.h>
 #include <time.h>
 
 namespace Audio 
