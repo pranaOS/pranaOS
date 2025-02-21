@@ -15,3 +15,14 @@ struct search_tree_node
 {
 
 }; // struct search_tree_node
+
+/**
+ * @param key 
+ * @return struct search_tree_node* 
+ */
+struct search_tree_node* new_tree_node(void const* key);
+
+/**
+ * @param node 
+ */
+void delete_node_recursive(struct search_tree_node* node);
