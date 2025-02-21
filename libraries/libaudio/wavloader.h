@@ -34,6 +34,21 @@ namespace Audio
 
     class WavLoaderPlugin : public LoaderPlugin
     {
+    private:
+        MaybeLoaderError parse_header();
 
+        RefPtr<Core::File> m_file;
+        OwnPtr<Mods::InputStream> m_stream;
+        Mods::InputMemoryStream* m_memory_stream;
+        Optional<LoaderError> m_error {};
+
+        u32 m_sample_rate { 0 };
+        u16 m_num_channels { 0 };
+        PcmSampleFormat m_sample_format;
+
+        size_t m_byte_offset_of_data_samples { 0 };
+
+        int m_loaded_samples { 0 };
+        int m_total_samples { 0 };
     }; // class WavLoaderPlugin : public LoaderPlugin
 } // namespace Audio
