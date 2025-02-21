@@ -9,22 +9,14 @@
  * 
  */
 
-#pragma once 
+#pragma once
 
+#include <kernel/api/posix/sys/time.h>
 #include <time.h>
-#include <sys/cdefs.h>
-#include <sys/types.h>
 
 __BEGIN_DECLS
 
-struct timeval 
-{
-    time_t tv_sec;
-    suseconds_t tv_usec;
-}; // struct timeval
-
-struct timezone 
-{
+struct timezone {
     int tz_minuteswest;
     int tz_dsttime;
 }; // struct timezone
@@ -36,11 +28,25 @@ struct timezone
  */
 int adjtime(const struct timeval* delta, struct timeval* old_delta);
 
-/// @breif: get time of day
-int gettimeofday(struct timeval* __restrict__, void* __restrict__) __attribute__((nonnull(1)));
+/**
+ * @param __restrict__ 
+ * @param __restrict__ 
+ * @return int 
+ */
+int gettimeofday(struct timeval* __restrict__, void* __restrict__);
 
-/// @brief: set time of day
-int settimeofday(struct timeval* __restrict__, void* __restrict__) __attribute__((nonnull(1)));
+/**
+ * @param __restrict__ 
+ * @param __restrict__ 
+ * @return int 
+ */
+int settimeofday(struct timeval* __restrict__, void* __restrict__);
+
+/**
+ * @param pathname 
+ * @return int 
+ */
+int utimes(char const* pathname, const struct timeval[2]);
 
 /**
  * @param a 
@@ -91,7 +97,6 @@ static inline int timerisset(const struct timeval* tv)
     return tv->tv_sec || tv->tv_usec;
 }
 
-/// @brief: timer[add, sub, clear, set]
 #define timeradd timeradd
 #define timersub timersub
 #define timerclear timerclear
@@ -124,7 +129,7 @@ static inline void timespecsub(const struct timespec* a, const struct timespec* 
 {
     out->tv_sec = a->tv_sec - b->tv_sec;
     out->tv_nsec = a->tv_nsec - b->tv_nsec;
-    
+
     if (out->tv_nsec < 0) {
         out->tv_sec--;
         out->tv_nsec += 1000 * 1000 * 1000;
@@ -168,12 +173,11 @@ static inline void TIMESPEC_TO_TIMEVAL(struct timeval* tv, const struct timespec
     tv->tv_usec = ts->tv_nsec / 1000;
 }
 
-/// @brief: timsepc[add, sub, clear, set, cmp]
 #define timespecadd timespecadd
 #define timespecsub timespecsub
 #define timespecclear timespecclear
 #define timespecisset timespecisset
 #define timespeccmp(ts, us, cmp) \
-    (((ts)->tv_sec == (us)->tv_sec) ? ((ts)->vf_nsec cmp(us)->tv_nsec) : ((ts)->tv_sec cmp(us)->tv_sec))
+    (((ts)->tv_sec == (us)->tv_sec) ? ((ts)->tv_nsec cmp(us)->tv_nsec) : ((ts)->tv_sec cmp(us)->tv_sec))
 
 __END_DECLS
