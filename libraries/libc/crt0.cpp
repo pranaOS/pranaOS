@@ -9,30 +9,30 @@
  * 
  */
 
-#pragma once
-
+#include <mods/types.h>
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
-#include <mods/types.h>
 #include <sys/internals.h>
+#include <unistd.h>
 
-extern "C" 
-{
+#ifndef _DYNAMIC_LOADER
+extern "C" {
 
-    /**
-     * @return int 
-     */
+    extern size_t __stack_chk_guard;
+    extern bool s_global_initializers_ran;
+
     int main(int, char**, char**);
 
-    /**
-     * @param argc 
-     * @param argv 
-     * @param env 
-     * @return int 
-     */
-    int _start(int argc, char** argv, char** env);
+    int _entry(int argc, char** argv, char** env) __attribute__((used));
+    void _start(int, char**, char**) __attribute__((used));
+
+    NAKED void _start(int, char**, char**)
+    {
+        asm(
+            "push $0\n"
+            "jmp _entry@plt\n");
+    }
 
     /**
      * @param argc 
@@ -40,27 +40,29 @@ extern "C"
      * @param env 
      * @return int 
      */
-    int _start(int argc, char** argv, char** env)
+    int _entry(int argc, char** argv, char** env)
     {
+        size_t original_stack_chk = __stack_chk_guard;
+        arc4random_buf(&__stack_chk_guard, sizeof(__stack_chk_guard));
+
+        if (__stack_chk_guard == 0)
+            __stack_chk_guard = original_stack_chk;
+
         environ = env;
         __environ_is_malloced = false;
+        __begin_atexit_locking();
 
-        __libc_init();
+        s_global_initializers_ran = true;
 
         _init();
-
-        extern void (*__init_array_start[])(int, char**, char**) __attribute__((visibility("hidden")));
-        extern void (*__init_array_end[])(int, char**, char**) __attribute__((visibility("hidden")));
-
-        const size_t size = __init_array_end - __init_array_start;
-        for (size_t i = 0; i < size; i++)
-            (*__init_array_start[i])(argc, argv, env);
 
         int status = main(argc, argv, environ);
 
         exit(status);
 
+        __stack_chk_guard = original_stack_chk;
+
         return 20150614;
     }
-    
 }
+#endif
