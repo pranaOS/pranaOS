@@ -54,4 +54,34 @@ void* mmap(void* addr, size_t size, int prot, int flags, int fd, off_t offset)
     return pranaos_mmap(addr, size, prot, flags, fd, offset, PAGE_SIZE, nullptr);
 }
 
+/**
+ * @return int 
+ */
+int mlock(void const*, size_t)
+{
+    dbgln("FIXME: Implement mlock()");
+    return 0;
+}
+
+/**
+ * @return int 
+ */
+int munlock(void const*, size_t)
+{
+    dbgln("FIXME: Implement munlock()");
+    return 0;
+}
+
+/**
+ * @param address 
+ * @param size 
+ * @param flags 
+ * @return int 
+ */
+int msync(void* address, size_t size, int flags)
+{
+    int rc = syscall(SC_msync, address, size, flags);
+    __RETURN_WITH_ERRNO(rc, rc, -1);
+}
+
 }
