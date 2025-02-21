@@ -74,6 +74,49 @@ namespace Audio::MP3::Tables::Huffman
         return max;
     }
 
+    constexpr HuffmanEntries<HuffmanEntryXY, 256> Table25 { Table24 };
+    constexpr HuffmanEntries<HuffmanEntryXY, 256> Table26 { Table24 };
+    constexpr HuffmanEntries<HuffmanEntryXY, 256> Table27 { Table24 };
+    constexpr HuffmanEntries<HuffmanEntryXY, 256> Table28 { Table24 };
+    constexpr HuffmanEntries<HuffmanEntryXY, 256> Table29 { Table24 };
+    constexpr HuffmanEntries<HuffmanEntryXY, 256> Table30 { Table24 };
+    constexpr HuffmanEntries<HuffmanEntryXY, 256> Table31 { Table24 };
+
+    constexpr auto TreeA = make_huffman_tree<TableA>();
+    constexpr auto TreeB = make_huffman_tree<TableB>();
+
+    constexpr auto Tree0 = make_huffman_tree<Table0>();
+    constexpr auto Tree1 = make_huffman_tree<Table1>();
+    constexpr auto Tree2 = make_huffman_tree<Table2>();
+    constexpr auto Tree3 = make_huffman_tree<Table3>();
+    constexpr auto Tree5 = make_huffman_tree<Table5>();
+    constexpr auto Tree6 = make_huffman_tree<Table6>();
+    constexpr auto Tree7 = make_huffman_tree<Table7>();
+    constexpr auto Tree8 = make_huffman_tree<Table8>();
+    constexpr auto Tree9 = make_huffman_tree<Table9>();
+    constexpr auto Tree10 = make_huffman_tree<Table10>();
+    constexpr auto Tree11 = make_huffman_tree<Table11>();
+    constexpr auto Tree12 = make_huffman_tree<Table12>();
+    constexpr auto Tree13 = make_huffman_tree<Table13>();
+    constexpr auto Tree15 = make_huffman_tree<Table15>();
+    constexpr auto Tree16 = make_huffman_tree<Table16>();
+    constexpr auto Tree17 = make_huffman_tree<Table17>();
+    constexpr auto Tree18 = make_huffman_tree<Table18>();
+    constexpr auto Tree19 = make_huffman_tree<Table19>();
+    constexpr auto Tree20 = make_huffman_tree<Table20>();
+    constexpr auto Tree21 = make_huffman_tree<Table21>();
+    constexpr auto Tree22 = make_huffman_tree<Table22>();
+    constexpr auto Tree23 = make_huffman_tree<Table23>();
+    constexpr auto Tree24 = make_huffman_tree<Table24>();
+    constexpr auto Tree25 = make_huffman_tree<Table25>();
+    constexpr auto Tree26 = make_huffman_tree<Table26>();
+    constexpr auto Tree27 = make_huffman_tree<Table27>();
+    constexpr auto Tree28 = make_huffman_tree<Table28>();
+    constexpr auto Tree29 = make_huffman_tree<Table29>();
+    constexpr auto Tree30 = make_huffman_tree<Table30>();
+    constexpr auto Tree31 = make_huffman_tree<Table31>();
+
+
     struct HuffmanTreeXY
     {
         Span<HuffmanNode<HuffmanXY> const> nodes;
