@@ -5,39 +5,36 @@
  * @version 6.0
  * @date 2023-08-01
  * 
- * @copyright Copyright (c) 2021-2024 pranaOS Developers, Krisna Pranav
+ * @copyright Copyright (c) 2021-2025 pranaOS Developers, Krisna Pranav
  * 
  */
 
-#pragma once 
+#ifndef _ASSERT_H
+#    define _ASSERT_H
+
+#    define __stringify_helper(x) #    x
+#    define __stringify(x) __stringify_helper(x)
+
+#    ifndef __cplusplus
+#        define static_assert _Static_assert
+#    endif
+#endif
 
 #include <sys/cdefs.h>
 
+#undef assert
+
 __BEGIN_DECLS
 
-#ifdef DEBUG
-__attribute__((noreturn)) void __assertion_failed(const char* msg);
-#    define __stringify_helper(x) #    x
-#    define __stringify(x) __stringify_helper(x)
-#    define assert(expr)                                                           \
-        do {                                                                       \
-            if (__builtin_expect(!(expr), 0))                                      \
-                __assertion_failed(#expr "\n" __FILE__ ":" __stringify(__LINE__)); \
-        } while (0)
-#    define ASSERT_NOT_REACHED() assert(false)
+#ifndef NDEBUG
+__attribute__((noreturn)) void __assertion_failed(char const* msg);
+#    define assert(expr)                                                            \
+        (__builtin_expect(!(expr), 0)                                               \
+                ? __assertion_failed(#expr "\n" __FILE__ ":" __stringify(__LINE__)) \
+                : (void)0)
+
 #else
-#    define assert(expr) ((void)0)
-#    define ASSERT_NOT_REACHED() CRASH()
+#    define assert(expr) ((void)(0))
 #endif
-
-#define CRASH()              \
-    do {                     \
-        asm volatile("ud2"); \
-    } while (0)
-
-/// @brief: ASSERT functionalities.
-#define ASSERT assert
-#define RELEASE_ASSERT assert
-#define TODO ASSERT_NOT_REACHED
 
 __END_DECLS
