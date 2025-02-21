@@ -11,10 +11,12 @@
 
 #pragma once
 
-struct search_tree_node
+struct search_tree_node 
 {
-
-}; // struct search_tree_node
+    void const* key;
+    struct search_tree_node* left;
+    struct search_tree_node* right;
+}; // struct search_tree_node 
 
 /**
  * @param key 
