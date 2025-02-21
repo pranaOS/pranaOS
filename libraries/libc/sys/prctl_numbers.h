@@ -9,4 +9,7 @@
  * 
  */
 
- 
+#pragma once
+
+#define PR_SET_DUMPABLE 1
+#define PR_GET_DUMPABLE 2
