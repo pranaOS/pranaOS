@@ -74,5 +74,21 @@ namespace Audio
         TRY(synchronize());
 
         auto header = TRY(read_header());
+
+        if (header.id != 1 || header.layer != 3)
+            return LoaderError { LoaderError::Category::Format };
+
+        m_sample_rate = header.samplerate;
+        m_num_channels = header.channel_count();
+        m_loaded_samples = 0;
+
+        TRY(build_seek_table());
+
+        if (!m_file->seek(0, Core::SeekMode::SetPosition))
+            return;
+        
+        m_bitstream->handle_any_error();
+
+        return {};
     }
 }
