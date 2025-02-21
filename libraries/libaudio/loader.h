@@ -8,3 +8,19 @@
  * @copyright Copyright (c) 2025
  * 
  */
+
+
+#pragma once
+
+namespace Audio
+{
+    class LoaderPlugin
+    {
+
+    }; // class LoaderPlugin
+
+    class Loader : public RefCounted<Loader>
+    {
+
+    }; // class Loader : public RefCounted<Loader>
+} // namespace Audio
