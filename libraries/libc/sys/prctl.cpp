@@ -10,5 +10,9 @@
  */
 
 extern "C" {
-    
+    int prctl(int option, ...)
+    {
+        va_list args;
+        va_end(args);
+    }
 }
