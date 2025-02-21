@@ -9,3 +9,24 @@
  * 
  */
 
+#pragma once
+
+#include <kernel/api/posix/sys/statvfs.h>
+
+__BEGIN_DECLS
+
+/**
+ * @param path 
+ * @param buf 
+ * @return int 
+ */
+int statvfs(char const* path, struct statvfs* buf);
+
+/**
+ * @param fd 
+ * @param buf 
+ * @return int 
+ */
+int fstatvfs(int fd, struct statvfs* buf);
+
+__END_DECLS
