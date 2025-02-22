@@ -2,7 +2,7 @@
 pranaOS is a modern and flexible operating system designed for x86, ARM, mobile, and watch platforms. It provides a robust kernel, a graphical user interface, and a comprehensive set of libraries for application development. With a focus on performance, security, and modularity, pranaOS aims to be a versatile OS for various computing environments.
 
 <p align="center">
-<img src="https://raw.githubusercontent.com/pranaOS/pranaOS/master/docs/eagle.jpeg" width="200" height="200">
+<img src="https://raw.githubusercontent.com/pranaOS/pranaOS/master/imgs/pranaOS.png" width="200" height="200">
 </p>
 
 [![macCI](https://github.com/pranaOS/pranaOS/actions/workflows/macos.yml/badge.svg?branch=master)](https://github.com/pranaOS/pranaOS/actions/workflows/macos.yml)
