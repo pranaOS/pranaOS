@@ -68,5 +68,64 @@ int fegetenv(fenv_t* env)
     return 0;
 }
 
+/**
+ * @param env 
+ * @return int 
+ */
+int fesetenv(fenv_t const* env)
+{
+    if (!env)
+        return 1;
+    
+
+    if (env == FE_DFL_ENV) {
+        asm volatile("finit");
+        return 0;
+    }
+
+    set_mxcsr(env->__mxcsr);
+
+    return 0;
+}
+
+/**
+ * @return int 
+ */
+int fegetround()
+{
+    return (read_status_register() >> 10) & 3;
+}
+
+/**
+ * @param exceptions 
+ * @return int 
+ */
+int feraiseexcept(int exceptions)
+{
+    fenv_t env;
+    fegetenv(&env);
+
+    exceptions &= FE_ALL_EXCEPT;
+
+    if (exceptions & FE_INEXACT) {
+        env.__x87_fpu_env.__status_word &= ((u16)exceptions & ~FE_INEXACT);
+        fesetenv(&env);
+        asm volatile("fwait"); 
+
+        fegetenv(&env);
+        env.__x87_fpu_env.__status_word &= FE_INEXACT;
+        fesetenv(&env);
+
+        asm volatile("fwait");
+
+        return 0;
+    }
+
+    env.__x87_fpu_env.__status_word &= exceptions;
+    fesetenv(&env);
+    asm volatile("fwait");
+
+    return 0;
+}
 
 }
