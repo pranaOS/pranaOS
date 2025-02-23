@@ -13,6 +13,6 @@
 
 #include <kernel/api/device.h>
 
-#define makedev(major, minor) serenity_dev_makedev((major), (minor))
-#define major(dev) serenity_dev_major(dev)
-#define minor(dev) serenity_dev_minor(dev)
+#define makedev(major, minor) pranaos_dev_makedev((major), (minor))
+#define major(dev) pranaos_dev_major(dev)
+#define minor(dev) pranaos_dev_minor(dev)
