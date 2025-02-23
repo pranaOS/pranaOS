@@ -9,38 +9,37 @@
  * 
  */
 
-#pragma once 
+#pragma once
 
 #define _STDIO_H 
 
+#include <kernel/api/posix/stdio.h>
+#include <bits/FILE.h>
 #include <limits.h>
 #include <stdarg.h>
 #include <sys/cdefs.h>
 #include <sys/types.h>
-#include <bits/file.h>
 
 #define FILENAME_MAX 1024
+#define FOPEN_MAX 1024
 
 __BEGIN_DECLS
 #ifndef EOF
 #    define EOF (-1)
 #endif
 
-#define SEEK_SET 0
-#define SEEK_CUR 1
-#define SEEK_END 2
-
 #define _IOFBF 0
 #define _IOLBF 1
 #define _IONBF 2
 
 #define L_tmpnam 256
+#define P_tmpdir "/tmp"
 
 extern FILE* stdin;
 extern FILE* stdout;
 extern FILE* stderr;
 
-typedef long fpos_t;
+typedef off_t fpos_t;
 
 /**
  * @param offset 
@@ -50,19 +49,22 @@ typedef long fpos_t;
 int fseek(FILE*, long offset, int whence);
 
 /**
+ * @param offset 
+ * @param whence 
+ * @return int 
+ */
+int fseeko(FILE*, off_t offset, int whence);
+
+/**
  * @return int 
  */
 int fgetpos(FILE*, fpos_t*);
 
-/**
- * @return int 
- */
-int fsetpos(FILE*, const fpos_t*);
+int fsetpos(FILE*, fpos_t const*);
 
-/**
- * @return long 
- */
 long ftell(FILE*);
+
+off_t ftello(FILE*);
 
 /**
  * @param buffer 
@@ -77,19 +79,12 @@ char* fgets(char* buffer, int size, FILE*);
  */
 int fputc(int ch, FILE*);
 
-/**
- * @return int 
- */
 int fileno(FILE*);
 
-/**
- * @return int 
- */
 int fgetc(FILE*);
 
-/**
- * @return int 
- */
+int fgetc_unlocked(FILE*);
+
 int getc(FILE*);
 
 /**
@@ -98,10 +93,7 @@ int getc(FILE*);
  */
 int getc_unlocked(FILE* stream);
 
-/**
- * @return int 
- */
-int getchar();
+int getchar(void);
 
 /**
  * @return ssize_t 
@@ -123,29 +115,36 @@ int ungetc(int c, FILE*);
  * @param pathname 
  * @return int 
  */
-int remove(const char* pathname);
+int remove(char const* pathname);
 
 /**
  * @param fd 
  * @param mode 
  * @return FILE* 
  */
-FILE* fdopen(int fd, const char* mode);
+FILE* fdopen(int fd, char const* mode);
 
 /**
  * @param pathname 
  * @param mode 
  * @return FILE* 
  */
-FILE* fopen(const char* pathname, const char* mode);
+FILE* fopen(char const* pathname, char const* mode);
 
 /**
-
  * @param pathname 
  * @param mode 
  * @return FILE* 
  */
-FILE* freopen(const char* pathname, const char* mode, FILE*);
+FILE* freopen(char const* pathname, char const* mode, FILE*);
+
+/**
+ * @param buf 
+ * @param size 
+ * @param mode 
+ * @return FILE* 
+ */
+FILE* fmemopen(void* buf, size_t size, char const* mode);
 
 /**
  * @param filehandle 
@@ -162,25 +161,14 @@ void funlockfile(FILE* filehandle);
  */
 int fclose(FILE*);
 
-/// @brief: rewind(FILE)
 void rewind(FILE*);
 
-/// @brief: clearerr
 void clearerr(FILE*);
 
-/**
- * @return int 
- */
 int ferror(FILE*);
 
-/**
- * @return int 
- */
 int feof(FILE*);
 
-/**
- * @return int 
- */
 int fflush(FILE*);
 
 /**
@@ -197,178 +185,45 @@ size_t fread(void* ptr, size_t size, size_t nmemb, FILE*);
  * @param nmemb 
  * @return size_t 
  */
-size_t fwrite(const void* ptr, size_t size, size_t nmemb, FILE*);
+size_t fread_unlocked(void* ptr, size_t size, size_t nmemb, FILE*);
 
 /**
- * @param fmt 
- * @return int 
+ * @param ptr 
+ * @param size 
+ * @param nmemb 
+ * @return size_t 
  */
-int vprintf(const char* fmt, va_list);
+size_t fwrite(void const* ptr, size_t size, size_t nmemb, FILE*);
 
-/**
- * @param fmt 
- * @return int 
- */
-int vfprintf(FILE*, const char* fmt, va_list);
-
-/**
- * @param buffer 
- * @param fmt 
- * @return int 
- */
-int vsprintf(char* buffer, const char* fmt, va_list);
-
-/**
- * @param buffer 
- * @param fmt 
- * @return int 
- */
-int vsnprintf(char* buffer, size_t, const char* fmt, va_list);
-
-/**
- * @param fmt 
- * @param ... 
- * @return int 
- */
-int fprintf(FILE*, const char* fmt, ...);
-
-/**
- * @param fmt 
- * @param ... 
- * @return int 
- */
-int printf(const char* fmt, ...);
-
-/**
- * @param fmt 
- * @param ... 
- * @return int 
- */
-int dbgprintf(const char* fmt, ...);
-
-/// @brief: dbgputch
-void dbgputch(char);
-
-/**
- * @return int 
- */
-int dbgputstr(const char*, ssize_t);
-
-/**
- * @param buffer 
- * @param fmt 
- * @param ... 
- * @return int 
- */
-int sprintf(char* buffer, const char* fmt, ...);
-
-/**
- * @param buffer 
- * @param fmt 
- * @param ... 
- * @return int 
- */
-int snprintf(char* buffer, size_t, const char* fmt, ...);
-
-/**
- * @param ch 
- * @return int 
- */
+int vprintf(char const* fmt, va_list) __attribute__((format(printf, 1, 0)));
+int vfprintf(FILE*, char const* fmt, va_list) __attribute__((format(printf, 2, 0)));
+int vasprintf(char** strp, char const* fmt, va_list) __attribute__((format(printf, 2, 0)));
+int vsprintf(char* buffer, char const* fmt, va_list) __attribute__((format(printf, 2, 0)));
+int vsnprintf(char* buffer, size_t, char const* fmt, va_list) __attribute__((format(printf, 3, 0)));
+int fprintf(FILE*, char const* fmt, ...) __attribute__((format(printf, 2, 3)));
+int printf(char const* fmt, ...) __attribute__((format(printf, 1, 2)));
+void dbgputstr(char const*, size_t);
+int sprintf(char* buffer, char const* fmt, ...) __attribute__((format(printf, 2, 3)));
+int asprintf(char** strp, char const* fmt, ...) __attribute__((format(printf, 2, 3)));
+int snprintf(char* buffer, size_t, char const* fmt, ...) __attribute__((format(printf, 3, 4)));
 int putchar(int ch);
-
-/**
- * @param ch 
- * @return int 
- */
 int putc(int ch, FILE*);
-
-/**
- * @return int 
- */
-int puts(const char*);
-
-/**
- * @return int 
- */
-int fputs(const char*, FILE*);
-
-/// @brief: perror
-void perror(const char*);
-
-/**
- * @param fmt 
- * @param ... 
- * @return int 
- */
-int scanf(const char* fmt, ...);
-
-/**
- * @param str 
- * @param fmt 
- * @param ... 
- * @return int 
- */
-int sscanf(const char* str, const char* fmt, ...);
-
-/**
- * @param fmt 
- * @param ... 
- * @return int 
- */
-int fscanf(FILE*, const char* fmt, ...);
-
-/**
- * @return int 
- */
-int vfscanf(FILE*, const char*, va_list);
-
-/**
- * @return int 
- */
-int vsscanf(const char*, const char*, va_list);
-
-/**
- * @param buf 
- * @param mode 
- * @return int 
- */
+int puts(char const*);
+int fputs(char const*, FILE*);
+void perror(char const*);
+int scanf(char const* fmt, ...) __attribute__((format(scanf, 1, 2)));
+int sscanf(char const* str, char const* fmt, ...) __attribute__((format(scanf, 2, 3)));
+int fscanf(FILE*, char const* fmt, ...) __attribute__((format(scanf, 2, 3)));
+int vscanf(char const*, va_list) __attribute__((format(scanf, 1, 0)));
+int vfscanf(FILE*, char const*, va_list) __attribute__((format(scanf, 2, 0)));
+int vsscanf(char const*, char const*, va_list) __attribute__((format(scanf, 2, 0)));
 int setvbuf(FILE*, char* buf, int mode, size_t);
-
-/**
- * @param buf 
- */
 void setbuf(FILE*, char* buf);
-
-/// @brief: setlinebuf
 void setlinebuf(FILE*);
-
-/**
- * @param oldpath 
- * @param newpath 
- * @return int 
- */
-int rename(const char* oldpath, const char* newpath);
-
-/**
- * @return FILE* 
- */
-FILE* tmpfile();
-
-/**
- * @return char* 
- */
+int rename(char const* oldpath, char const* newpath);
+FILE* tmpfile(void);
 char* tmpnam(char*);
-
-/**
- * @param command 
- * @param type 
- * @return FILE* 
- */
-FILE* popen(const char* command, const char* type);
-
-/**
- * @return int 
- */
+FILE* popen(char const* command, char const* type);
 int pclose(FILE*);
 
 __END_DECLS
