@@ -459,7 +459,7 @@ void tzset()
         tzname[1] = const_cast<char*>(__utc);
     };
 
-    if (auto offsets = TimeZone::get_named_time_zone_offsets(time_zone, AK::Time::now_realtime()); offsets.has_value()) {
+    if (auto offsets = TimeZone::get_named_time_zone_offsets(time_zone, Mods::Time::now_realtime()); offsets.has_value()) {
         if (!offsets->at(0).name.copy_characters_to_buffer(__tzname_standard, TZNAME_MAX))
             return set_default_values();
         if (!offsets->at(1).name.copy_characters_to_buffer(__tzname_daylight, TZNAME_MAX))
@@ -516,9 +516,9 @@ int clock_gettime(clockid_t clock_id, struct timespec* ts)
         if (auto* kernel_time_page = get_kernel_time_page()) {
             u32 update_iteration;
             do {
-                update_iteration = AK::atomic_load(&kernel_time_page->update1, AK::memory_order_acquire);
+                update_iteration = Mods::atomic_load(&kernel_time_page->update1, Mods::memory_order_acquire);
                 *ts = kernel_time_page->clocks[clock_id];
-            } while (update_iteration != AK::atomic_load(&kernel_time_page->update2, AK::memory_order_acquire));
+            } while (update_iteration != Mods::atomic_load(&kernel_time_page->update2, Mods::memory_order_acquire));
             return 0;
         }
     }
