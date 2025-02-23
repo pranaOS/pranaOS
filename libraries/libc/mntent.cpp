@@ -9,18 +9,47 @@
  * 
  */
 
-#include <mntent.h>
+#include <mods/format.h>
 #include <assert.h>
+#include <mntent.h>
 
-extern "C" 
+extern "C" {
+
+/**
+ * @return struct mntent* 
+ */
+struct mntent* getmntent(FILE*)
 {
-    /**
-     * @return struct mntent* 
-     */
-    struct mntent* getmntent(FILE*)
-    {
-        ASSERT_NOT_REACHED();
-        return nullptr;
-    } // struct getmntent
+    dbgln("FIXME: Implement getmntent()");
+    return nullptr;
+}
 
-} // extern
+/**
+ * @return FILE* 
+ */
+FILE* setmntent(char const*, char const*)
+{
+    dbgln("FIXME: Implement setmntent()");
+    return nullptr;
+}
+
+/**
+ * @return int 
+ */
+int endmntent(FILE*)
+{
+    dbgln("FIXME: Implement endmntent()");
+    return 0;
+}
+
+/**
+ * @brief Get the mntent r object
+ * 
+ * @return struct mntent* 
+ */
+struct mntent* getmntent_r(FILE*, struct mntent*, char*, int)
+{
+    dbgln("FIXME: Implement getmntent_r()");
+    return 0;
+}
+}
