@@ -31,7 +31,7 @@
 #    include <stdint.h>
 #    include <sys/types.h>
 #else
-#    include <mods/types.h>
+#    include <AK/Types.h>
 #endif
 
 #ifdef __x86_64__
@@ -140,7 +140,7 @@ typedef struct elfhdr {
     Elf32_Half e_shentsize;           /* section header entry size */
     Elf32_Half e_shnum;               /* number of section header entries */
     Elf32_Half e_shstrndx;            /* section header table's "section
-					   header string table" entry offset */
+                                           header string table" entry offset */
 } Elf32_Ehdr;
 
 typedef struct {
@@ -218,7 +218,7 @@ typedef struct {
 /* Section Header */
 typedef struct {
     Elf32_Word sh_name;      /* name - index into section header
-					   string table section */
+                                           string table section */
     Elf32_Word sh_type;      /* type */
     Elf32_Word sh_flags;     /* flags */
     Elf32_Addr sh_addr;      /* address */
