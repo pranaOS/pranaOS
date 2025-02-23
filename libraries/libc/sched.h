@@ -9,24 +9,19 @@
  * 
  */
 
-#pragma once 
+#pragma once
 
-#include <sched.h>
 #include <sys/cdefs.h>
 #include <sys/types.h>
 
 __BEGIN_DECLS
 
-/**
- * @return int 
- */
-int sched_yield();
-struct sched_param 
-{
+int sched_yield(void);
+
+struct sched_param {
     int sched_priority;
 }; // struct sched_param
 
-/// @brief: SCHED[FIFO, RR, OTHER, BATCH]
 #define SCHED_FIFO 0
 #define SCHED_RR 1
 #define SCHED_OTHER 2
