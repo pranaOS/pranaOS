@@ -12,7 +12,7 @@
 #pragma once
 
 #ifndef __pranaos__
-#    include <libc/elf.h>
+#    include <LibC/elf.h>
 #else
 #    include <elf.h>
 #endif
@@ -21,13 +21,12 @@
 
 __BEGIN_DECLS
 
-struct dl_phdr_info 
-{
+struct dl_phdr_info {
     ElfW(Addr) dlpi_addr;
-    const char* dlpi_name;
+    char const* dlpi_name;
     const ElfW(Phdr) * dlpi_phdr;
     ElfW(Half) dlpi_phnum;
-}; // struct dl_phdr_info 
+}; // struct dl_phdr_info
 
 /**
  * @param callback 
