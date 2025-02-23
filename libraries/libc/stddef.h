@@ -11,8 +11,12 @@
 
 #pragma once
 
+#define offsetof(type, member) __builtin_offsetof(type, member)
+
 #ifndef KERNEL
+
 #    include <sys/cdefs.h>
+
 #    ifdef __cplusplus
 #        define NULL nullptr
 #    else
