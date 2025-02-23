@@ -9,43 +9,15 @@
  * 
  */
 
-#pragma once 
+#pragma once
 
-#include "signal_codes.h"
+#include <kernel/api/posix/signal.h>
+#include <kernel/api/posix/ucontext.h>
+#include <bits/sighow.h>
+#include <signal_numbers.h>
 #include <sys/types.h>
-#include <stdint.h>
 
 __BEGIN_DECLS
-
-typedef void (*__sighandler_t)(int);
-typedef __sighandler_t sighandler_t;
-
-typedef uint32_t sigset_t;
-typedef uint32_t sig_atomic_t;
-
-union sigval {
-    int sival_int;
-    void* sival_ptr;
-};
-
-typedef struct siginfo {
-    int si_signo;
-    int si_code;
-    pid_t si_pid;
-    uid_t si_uid;
-    void* si_addr;
-    int si_status;
-    union sigval si_value;
-} siginfo_t;
-
-struct sigaction {
-    union {
-        void (*sa_handler)(int);
-        void (*sa_sigaction)(int, siginfo_t*, void*);
-    };
-    sigset_t sa_mask;
-    int sa_flags;
-};
 
 /**
  * @param sig 
@@ -69,10 +41,10 @@ sighandler_t signal(int sig, sighandler_t);
 /**
  * @param how 
  * @param set 
- * @param ol_dset 
+ * @param old_set 
  * @return int 
  */
-int pthread_sigmask(int how, const sigset_t* set, sigset_t* ol_dset);
+int pthread_sigmask(int how, sigset_t const* set, sigset_t* old_set);
 
 /**
  * @param sig 
@@ -99,6 +71,13 @@ int sigfillset(sigset_t*);
 int sigaddset(sigset_t*, int sig);
 
 /**
+ * @param ss 
+ * @param old_ss 
+ * @return int 
+ */
+int sigaltstack(stack_t const* ss, stack_t* old_ss);
+
+/**
  * @param sig 
  * @return int 
  */
@@ -108,7 +87,7 @@ int sigdelset(sigset_t*, int sig);
  * @param sig 
  * @return int 
  */
-int sigismember(const sigset_t*, int sig);
+int sigismember(sigset_t const*, int sig);
 
 /**
  * @param how 
@@ -116,7 +95,7 @@ int sigismember(const sigset_t*, int sig);
  * @param old_set 
  * @return int 
  */
-int sigprocmask(int how, const sigset_t* set, sigset_t* old_set);
+int sigprocmask(int how, sigset_t const* set, sigset_t* old_set);
 
 /**
  * @return int 
@@ -126,7 +105,22 @@ int sigpending(sigset_t*);
 /**
  * @return int 
  */
-int sigsuspend(const sigset_t*);
+int sigsuspend(sigset_t const*);
+
+/**
+ * @return int 
+ */
+int sigtimedwait(sigset_t const*, siginfo_t*, struct timespec const*);
+
+/**
+ * @return int 
+ */
+int sigwait(sigset_t const*, int*);
+
+/**
+ * @return int 
+ */
+int sigwaitinfo(sigset_t const*, siginfo_t*);
 
 /**
  * @param sig 
@@ -137,40 +131,14 @@ int raise(int sig);
 /**
  * @return int 
  */
-int getsignalbyname(const char*);
+int getsignalbyname(char const*);
 
 /**
- * @return const char* 
+ * @return char const* 
  */
-const char* getsignalname(int);
+char const* getsignalname(int);
 
-/// @brief sys_siglist
-extern const char* sys_siglist[NSIG];
-
-#define SIG_DFL ((__sighandler_t)0)
-#define SIG_ERR ((__sighandler_t)-1)
-#define SIG_IGN ((__sighandler_t)1)
-
-#define SA_NOCLDSTOP 1
-#define SA_NOCLDWAIT 2
-#define SA_SIGINFO 4
-#define SA_ONSTACK 0x08000000
-#define SA_RESTART 0x10000000
-#define SA_NODEFER 0x40000000
-#define SA_RESETHAND 0x80000000
-
-#define SA_NOMASK SA_NODEFER
-#define SA_ONESHOT SA_RESETHAND
-
-#define SIG_BLOCK 0
-#define SIG_UNBLOCK 1
-#define SIG_SETMASK 2
-
-#define CLD_EXITED 0
-#define CLD_KILLED 1
-#define CLD_DUMPED 2
-#define CLD_TRAPPED 3
-#define CLD_STOPPED 4
-#define CLD_CONTINUED 5
+extern char const* sys_siglist[NSIG];
+extern char const* sys_signame[NSIG];
 
 __END_DECLS
