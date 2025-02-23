@@ -12,7 +12,7 @@
 
 #include <errno.h>
 #include <sys/times.h>
-#include <kernel/api/syscall.h>
+#include <syscall.h>
 
 /**
  * @param buf 
