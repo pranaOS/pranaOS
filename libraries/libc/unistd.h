@@ -11,27 +11,25 @@
 
 #pragma once
 
-#include <errno.h>
+#include <Kernel/API/POSIX/unistd.h>
+#include <fd_set.h>
 #include <limits.h>
-#include <sys/cdefs.h>
-#include <sys/types.h>
 
 __BEGIN_DECLS
 
 #define HZ 1000
-#define STDIN_FILENO 0
-#define STDOUT_FILENO 1
-#define STDERR_FILENO 2
 
-#ifndef _STDIO_H      
-#    define SEEK_SET 0
-#    define SEEK_CUR 1
-#    define SEEK_END 2
+#ifndef _STDIO_H       
+#    define SEEK_SET 0 
+#    define SEEK_CUR 1 
+#    define SEEK_END 2 
 #endif
 
 extern char** environ;
 
 /**
+ * @brief Get the process name object
+ * 
  * @param buffer 
  * @param buffer_size 
  * @return int 
@@ -39,57 +37,48 @@ extern char** environ;
 int get_process_name(char* buffer, int buffer_size);
 
 /**
+ * @brief Set the process name object
+ * 
  * @param name 
  * @param name_length 
  * @return int 
  */
-int set_process_name(const char* name, size_t name_length);
+int set_process_name(char const* name, size_t name_length);
 
-/// @brief: dump_backtrace
-void dump_backtrace();
+void dump_backtrace(void);
 
 /**
  * @param fd 
  * @return int 
  */
 int fsync(int fd);
-
-/// @brief: sysbeep
-void sysbeep();
-
-/**
- * @return int 
- */
-int gettid();
-
-/**
- * @param tid 
- * @return int 
- */
-int donate(int tid);
-
-/**
- * @param icon_id 
- * @return int 
- */
-int set_process_icon(int icon_id);
-
-/**
- * @return int 
- */
-int getpagesize();
+int sysbeep(void);
+int gettid(void);
+int getpagesize(void);
 
 /**
  * @return pid_t 
  */
-pid_t fork();
+pid_t fork(void);
+
+/**
+ * @return pid_t 
+ */
+pid_t vfork(void);
+
+/**
+ * @param nochdir 
+ * @param noclose 
+ * @return int 
+ */
+int daemon(int nochdir, int noclose);
 
 /**
  * @param path 
  * @param argv 
  * @return int 
  */
-int execv(const char* path, char* const argv[]);
+int execv(char const* path, char* const argv[]);
 
 /**
  * @param filename 
@@ -97,7 +86,7 @@ int execv(const char* path, char* const argv[]);
  * @param envp 
  * @return int 
  */
-int execve(const char* filename, char* const argv[], char* const envp[]);
+int execve(char const* filename, char* const argv[], char* const envp[]);
 
 /**
  * @param filename 
@@ -105,14 +94,14 @@ int execve(const char* filename, char* const argv[], char* const envp[]);
  * @param envp 
  * @return int 
  */
-int execvpe(const char* filename, char* const argv[], char* const envp[]);
+int execvpe(char const* filename, char* const argv[], char* const envp[]);
 
 /**
  * @param filename 
  * @param argv 
  * @return int 
  */
-int execvp(const char* filename, char* const argv[]);
+int execvp(char const* filename, char* const argv[]);
 
 /**
  * @param filename 
@@ -120,7 +109,7 @@ int execvp(const char* filename, char* const argv[]);
  * @param ... 
  * @return int 
  */
-int execl(const char* filename, const char* arg, ...);
+int execl(char const* filename, char const* arg, ...);
 
 /**
  * @param filename 
@@ -128,34 +117,28 @@ int execl(const char* filename, const char* arg, ...);
  * @param ... 
  * @return int 
  */
-int execlp(const char* filename, const char* arg, ...);
+int execle(char const* filename, char const* arg, ...);
 
 /**
- * @param path 
+ * @param filename 
+ * @param arg 
+ * @param ... 
  * @return int 
  */
-int chroot(const char* path);
+int execlp(char const* filename, char const* arg, ...);
+
+void sync(void);
 
 /**
- * @param path 
- * @param mount_flags 
- * @return int 
+ * @param status
  */
-int chroot_with_mount_flags(const char* path, int mount_flags);
-
-/// @brief: sync
-void sync();
-
-/// @brief: exit
 __attribute__((noreturn)) void _exit(int status);
 
 /**
  * @return pid_t 
  */
 pid_t getsid(pid_t);
-
-/// @return pid_t 
-pid_t setsid();
+pid_t setsid(void);
 
 /**
  * @param pid 
@@ -164,38 +147,30 @@ pid_t setsid();
  */
 int setpgid(pid_t pid, pid_t pgid);
 
-/// @return pid_t
+/**
+ * @return pid_t 
+ */
 pid_t getpgid(pid_t);
+pid_t getpgrp(void);
 
-/// @return pid_t 
-pid_t getpgrp();
+/**
+ * @return uid_t 
+ */
+uid_t geteuid(void);
+gid_t getegid(void);
+uid_t getuid(void);
+gid_t getgid(void);
 
-/// @return uid_t 
-uid_t geteuid();
-
-/// @return gid_t 
-gid_t getegid();
-
-/// @return uid_t 
-uid_t getuid();
-
-/// @return gid_t 
-gid_t getgid();
-
-/// @return pid_t 
-pid_t getpid();
-
-/// @return pid_t 
-pid_t getppid();
+/**
+ * @return pid_t 
+ */
+pid_t getpid(void);
+pid_t getppid(void);
 
 /**
  * @return int 
  */
 int getresuid(uid_t*, uid_t*, uid_t*);
-
-/**
- * @return int 
- */
 int getresgid(gid_t*, gid_t*, gid_t*);
 
 /**
@@ -208,28 +183,13 @@ int getgroups(int size, gid_t list[]);
 /**
  * @return int 
  */
-int setgroups(size_t, const gid_t*);
-
-/**
- * @return int 
- */
+int setgroups(size_t, gid_t const*);
 int seteuid(uid_t);
-
-/// @return int
 int setegid(gid_t);
-
-/// @return int
 int setuid(uid_t);
-
-/// @return int
 int setgid(gid_t);
-
-/// @return int
+int setreuid(uid_t, uid_t);
 int setresuid(uid_t, uid_t, uid_t);
-
-/**
- * @return int 
- */
 int setresgid(gid_t, gid_t, gid_t);
 
 /**
@@ -267,7 +227,15 @@ ssize_t pread(int fd, void* buf, size_t count, off_t);
  * @param count 
  * @return ssize_t 
  */
-ssize_t write(int fd, const void* buf, size_t count);
+ssize_t write(int fd, void const* buf, size_t count);
+
+/**
+ * @param fd 
+ * @param buf 
+ * @param count 
+ * @return ssize_t 
+ */
+ssize_t pwrite(int fd, void const* buf, size_t count, off_t);
 
 /**
  * @param fd 
@@ -279,7 +247,7 @@ int close(int fd);
  * @param path 
  * @return int 
  */
-int chdir(const char* path);
+int chdir(char const* path);
 
 /**
  * @param fd 
@@ -302,31 +270,20 @@ char* getwd(char* buffer);
 
 /**
  * @param seconds 
- * @return int 
+ * @return unsigned int 
  */
-int sleep(unsigned seconds);
+unsigned int sleep(unsigned int seconds);
 
-/**
- * @return int 
- */
 int usleep(useconds_t);
-
-/**
- * @return int 
- */
 int gethostname(char*, size_t);
-
-/**
- * @return int 
- */
-int sethostname(const char*, ssize_t);
+int sethostname(char const*, ssize_t);
 
 /**
  * @param path 
  * @param buffer 
  * @return ssize_t 
  */
-ssize_t readlink(const char* path, char* buffer, size_t);
+ssize_t readlink(char const* path, char* buffer, size_t);
 
 /**
  * @param fd 
@@ -353,26 +310,34 @@ off_t lseek(int fd, off_t, int whence);
  * @param newpath 
  * @return int 
  */
-int link(const char* oldpath, const char* newpath);
+int link(char const* oldpath, char const* newpath);
 
 /**
  * @param pathname 
  * @return int 
  */
-int unlink(const char* pathname);
+int unlink(char const* pathname);
+
+/**
+ * @param dirfd 
+ * @param pathname 
+ * @param flags 
+ * @return int 
+ */
+int unlinkat(int dirfd, char const* pathname, int flags);
 
 /**
  * @param target 
  * @param linkpath 
  * @return int 
  */
-int symlink(const char* target, const char* linkpath);
+int symlink(char const* target, char const* linkpath);
 
 /**
  * @param pathname 
  * @return int 
  */
-int rmdir(const char* pathname);
+int rmdir(char const* pathname);
 
 /**
  * @param old_fd 
@@ -411,7 +376,7 @@ unsigned int alarm(unsigned int seconds);
  * @param mode 
  * @return int 
  */
-int access(const char* pathname, int mode);
+int access(char const* pathname, int mode);
 
 /**
  * @param fd 
@@ -423,7 +388,7 @@ int isatty(int fd);
  * @param pathname 
  * @return int 
  */
-int mknod(const char* pathname, mode_t, dev_t);
+int mknod(char const* pathname, mode_t, dev_t);
 
 /**
  * @param fd 
@@ -437,24 +402,42 @@ long fpathconf(int fd, int name);
  * @param name 
  * @return long 
  */
-long pathconf(const char* path, int name);
+long pathconf(char const* path, int name);
 
 /**
  * @return char* 
  */
-char* getlogin();
+char* getlogin(void);
+
+/**
+ * @param pathname 
+ * @param uid 
+ * @param gid 
+ * @return int 
+ */
+int lchown(char const* pathname, uid_t uid, gid_t gid);
 
 /**
  * @param pathname 
  * @return int 
  */
-int chown(const char* pathname, uid_t, gid_t);
+int chown(char const* pathname, uid_t, gid_t);
 
 /**
  * @param fd 
  * @return int 
  */
 int fchown(int fd, uid_t, gid_t);
+
+/**
+ * @param fd 
+ * @param pathname 
+ * @param uid 
+ * @param gid 
+ * @param flags 
+ * @return int 
+ */
+int fchownat(int fd, char const* pathname, uid_t uid, gid_t gid, int flags);
 
 /**
  * @param fd 
@@ -468,17 +451,7 @@ int ftruncate(int fd, off_t length);
  * @param length 
  * @return int 
  */
-int truncate(const char* path, off_t length);
-
-/**
- * @return int 
- */
-int halt();
-
-/**
- * @return int 
- */
-int reboot();
+int truncate(char const* path, off_t length);
 
 /**
  * @param source_fd 
@@ -487,102 +460,67 @@ int reboot();
  * @param flags 
  * @return int 
  */
-int mount(int source_fd, const char* target, const char* fs_type, int flags);
+int mount(int source_fd, char const* target, char const* fs_type, int flags);
 
 /**
  * @param mountpoint 
  * @return int 
  */
-int umount(const char* mountpoint);
+int umount(char const* mountpoint);
 
 /**
  * @param promises 
  * @param execpromises 
  * @return int 
  */
-int pledge(const char* promises, const char* execpromises);
+int pledge(char const* promises, char const* execpromises);
 
 /**
  * @param path 
  * @param permissions 
  * @return int 
  */
-int unveil(const char* path, const char* permissions);
+int unveil(char const* path, char const* permissions);
 
 /**
  * @param prompt 
  * @return char* 
  */
-char* getpass(const char* prompt);
+char* getpass(char const* prompt);
 
-enum 
-{
+int pause(void);
+int chroot(char const*);
+int getdtablesize(void);
+
+enum {
     _PC_NAME_MAX,
     _PC_PATH_MAX,
     _PC_PIPE_BUF,
-    _PC_VDISABLE
-}; // enum 
-
-#define HOST_NAME_MAX 64
-
-#define R_OK 4
-#define W_OK 2
-#define X_OK 1
-#define F_OK 0
-
-#define MS_NODEV (1 << 0)
-#define MS_NOEXEC (1 << 1)
-#define MS_NOSUID (1 << 2)
-#define MS_BIND (1 << 3)
-#define MS_RDONLY (1 << 4)
-#define MS_REMOUNT (1 << 5)
-
-#define _POSIX_SAVED_IDS
-#define _POSIX_PRIORITY_SCHEDULING
-#define _POSIX_VDISABLE '\0'
-
-enum 
-{
-    _SC_NPROCESSORS_CONF,
-    _SC_NPROCESSORS_ONLN,
-    _SC_PAGESIZE,
-    _SC_OPEN_MAX,
+    _PC_VDISABLE,
+    _PC_LINK_MAX
 }; // enum
 
-/// @breif: _SC
-#define _SC_NPROCESSORS_CONF _SC_NPROCESSORS_CONF
-#define _SC_NPROCESSORS_ONLN _SC_NPROCESSORS_ONLN
-#define _SC_PAGESIZE _SC_PAGESIZE
-#define _SC_OPEN_MAX _SC_OPEN_MAX
+#define _POSIX_FSYNC 200112L
+#define _POSIX_MAPPED_FILES 200112L
+#define _POSIX_MEMORY_PROTECTION 200112L
+#define _POSIX_MONOTONIC_CLOCK 200112L
+#define _POSIX_RAW_SOCKETS 200112L
+#define _POSIX_REGEXP 1
+#define _POSIX_SAVED_IDS 1
+#define _POSIX_SPAWN 200112L
+#define _POSIX_THREADS 200112L
+#define _POSIX_THREAD_ATTR_STACKADDR 200112L
+#define _POSIX_THREAD_ATTR_STACKSIZE 200112L
+#define _POSIX_TIMERS 200809L
+
+#define _POSIX_PRIORITY_SCHEDULING
+#define _POSIX_VDISABLE '\0'
 
 /**
  * @param name 
  * @return long 
  */
 long sysconf(int name);
-
-/// @brief: crypto_data
-struct crypt_data 
-{
-    int initialized;
-    char result[65];
-};
-
-/**
- * @param key 
- * @param salt 
- * @return char* 
- */
-char* crypt(const char* key, const char* salt);
-
-/**
- * @param key 
- * @param salt 
- * @param data 
- * @return char* 
- */
-char* crypt_r(const char* key, const char* salt, struct crypt_data* data);
-
 
 extern int opterr;
 extern int optopt;
@@ -596,6 +534,6 @@ extern char* optarg;
  * @param short_options 
  * @return int 
  */
-int getopt(int argc, char** argv, const char* short_options);
+int getopt(int argc, char* const* argv, char const* short_options);
 
 __END_DECLS
