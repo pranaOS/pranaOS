@@ -9,3 +9,21 @@
  * 
  */
 
+#pragma once
+
+namespace Cards 
+{
+    class Card final : public Core::Object 
+    {
+        C_OBJECT(Card)
+    private:
+        Card(Suit suit, uint8_t value);
+
+        Suit m_suit;
+        uint8_t m_value;
+        bool m_old_position_valid { false };
+        bool m_moving { false };
+        bool m_upside_down { false };
+        bool m_inverted { false };
+    }
+} // namespace Cards
