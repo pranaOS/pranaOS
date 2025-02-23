@@ -11,19 +11,17 @@
 
 #include <errno.h>
 #include <sys/utsname.h>
-#include <kernel/api/syscall.h>
+#include <syscall.h>
 
-extern "C"
+extern "C" {
+
+/**
+ * @param buf 
+ * @return int 
+ */
+int uname(struct utsname* buf)
 {
-
-    /**
-     * @param buf 
-     * @return int 
-     */
-    int uname(struct utsname* buf)
-    {
-        int rc = syscall(SC_uname, buf);
-        __RETURN_WITH_ERRNO(rc, rc, -1);
-    }
-
-} // extern
+    int rc = syscall(SC_uname, buf);
+    __RETURN_WITH_ERRNO(rc, rc, -1);
+}
+}
