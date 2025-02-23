@@ -5,7 +5,7 @@
  * @version 6.0
  * @date 2023-08-05
  * 
- * @copyright Copyright (c) 2021-2024 pranaOS Developers, Krisna Pranav
+ * @copyright Copyright (c) 2021-2025 pranaOS Developers, Krisna Pranav
  * 
  */
 
@@ -15,7 +15,6 @@
 
 __BEGIN_DECLS
 
-/// @brief: PC, UP, BC
 extern char PC;
 extern char* UP;
 extern char* BC;
@@ -25,26 +24,26 @@ extern char* BC;
  * @param name 
  * @return int 
  */
-int tgetent(char* bp, const char* name);
+int tgetent(char* bp, char const* name);
 
 /**
  * @param id 
  * @return int 
  */
-int tgetflag(const char* id);
+int tgetflag(char const* id);
 
 /**
  * @param id 
  * @return int 
  */
-int tgetnum(const char* id);
+int tgetnum(char const* id);
 
 /**
  * @param id 
  * @param area 
  * @return char* 
  */
-char* tgetstr(const char* id, char** area);
+char* tgetstr(char const* id, char** area);
 
 /**
  * @param cap 
@@ -52,7 +51,7 @@ char* tgetstr(const char* id, char** area);
  * @param row 
  * @return char* 
  */
-char* tgoto(const char* cap, int col, int row);
+char* tgoto(char const* cap, int col, int row);
 
 /**
  * @param str 
@@ -60,6 +59,6 @@ char* tgoto(const char* cap, int col, int row);
  * @param putc 
  * @return int 
  */
-int tputs(const char* str, int affcnt, int (*putc)(int));
+int tputs(char const* str, int affcnt, int (*putc)(int));
 
 __END_DECLS
