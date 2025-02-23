@@ -29,28 +29,16 @@ __BEGIN_DECLS
 
 #    include <stdint.h>
 
-/**
- * @param x 
- * @return __inline 
- */
 static __inline uint16_t __bswap16(uint16_t x)
 {
     return __builtin_bswap16(x);
 }
 
-/**
- * @param x 
- * @return __inline 
- */
 static __inline uint32_t __bswap32(uint32_t x)
 {
     return __builtin_bswap32(x);
 }
 
-/**
- * @param x 
- * @return __inline 
- */
 static __inline uint64_t __bswap64(uint64_t x)
 {
     return __builtin_bswap64(x);
