@@ -13,24 +13,23 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <sys/ioctl.h>
-#include <kernel/api/syscall.h>
+#include <syscall.h>
 
-extern "C" 
+extern "C" {
+
+/**
+ * @param fd 
+ * @param request 
+ * @param ... 
+ * @return int 
+ */
+int ioctl(int fd, unsigned request, ...)
 {
-    /**
-     * @param fd 
-     * @param request 
-     * @param ... 
-     * @return int 
-     */
-    int ioctl(int fd, unsigned request, ...)
-    {
-        va_list ap;
-        va_start(ap, request);
-        unsigned arg = va_arg(ap, unsigned);
-        int rc = syscall(SC_ioctl, fd, request, arg);
-        va_end(ap);
-        __RETURN_WITH_ERRNO(rc, rc, -1);
-    } // int ioctl
-
-} // extern
+    va_list ap;
+    va_start(ap, request);
+    FlatPtr arg = va_arg(ap, FlatPtr);
+    int rc = syscall(SC_ioctl, fd, request, arg);
+    va_end(ap);
+    __RETURN_WITH_ERRNO(rc, rc, -1);
+}
+}
