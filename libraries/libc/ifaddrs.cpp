@@ -9,4 +9,18 @@
  * 
  */
 
- 
+#include <libc/errno.h>
+#include <libc/ifaddrs.h>
+
+/**
+ * @return int 
+ */
+int getifaddrs(struct ifaddrs**)
+{
+    errno = ENOSYS;
+    return -1;
+}
+
+void freeifaddrs(struct ifaddrs*)
+{
+}
