@@ -9,7 +9,7 @@
  * 
  */
 
-#pragma once 
+#pragma once
 
 #include <sys/cdefs.h>
 
@@ -19,6 +19,6 @@ __BEGIN_DECLS
  * @param pathname 
  * @return int 
  */
-int utime(const char* pathname, const struct utimbuf*);
+int utime(char const* pathname, const struct utimbuf*);
 
 __END_DECLS
