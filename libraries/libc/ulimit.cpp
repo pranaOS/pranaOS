@@ -9,42 +9,56 @@
  * 
  */
 
+#include <mods/format.h>
 #include <assert.h>
-#include <ulimit.h>
 #include <sys/resource.h>
-#include <mods/logstream.h>
+#include <syscall.h>
+#include <ulimit.h>
 
-extern "C" 
+extern "C" {
+
+/**
+ * @param cmd 
+ * @param newlimit 
+ * @return long 
+ */
+long ulimit([[maybe_unused]] int cmd, [[maybe_unused]] long newlimit)
 {
+    dbgln("FIXME: Implement ulimit()");
+    TODO();
+    return -1;
+}
 
-    /**
-     * @param cmd 
-     * @param newlimit 
-     * @return long 
-     */
-    long ulimit(int cmd, long newlimit)
-    {
-        (void)cmd;
-        (void)newlimit;
+/**
+ * @param who 
+ * @param usage 
+ * @return int 
+ */
+int getrusage(int who, struct rusage* usage)
+{
+    int rc = syscall(SC_getrusage, who, usage);
+    __RETURN_WITH_ERRNO(rc, rc, -1);
+}
 
-        ASSERT_NOT_REACHED();
+/**
+ * @param resource 
+ * @param rl 
+ * @return int 
+ */
+int getrlimit([[maybe_unused]] int resource, rlimit* rl)
+{
+    rl->rlim_cur = RLIM_INFINITY;
+    rl->rlim_max = RLIM_INFINITY;
+    return 0;
+}
 
-        return -1;
-    }
-
-    /**
-     * @param who 
-     * @param usage 
-     * @return int 
-     */
-    int getrusage(int who, struct rusage* usage)
-    {
-        (void)who;
-        (void)usage;
-
-        dbg() << "[libc]: getrusage is not implemented yet.. ;(";
-
-        return -1;
-    }
-
-} // extern
+/**
+ * @param resource 
+ * @param rl 
+ * @return int 
+ */
+int setrlimit([[maybe_unused]] int resource, [[maybe_unused]] rlimit const* rl)
+{
+    return 0;
+}
+}
