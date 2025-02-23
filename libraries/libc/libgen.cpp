@@ -9,9 +9,9 @@
  * 
  */
 
+#include <mods/assertions.h>
 #include <libgen.h>
 #include <string.h>
-#include <mods/assertions.h>
 
 static char dot[] = ".";
 static char slash[] = "/";
@@ -26,7 +26,6 @@ char* dirname(char* path)
         return dot;
 
     int len = strlen(path);
-
     if (len == 0)
         return dot;
 
@@ -36,7 +35,6 @@ char* dirname(char* path)
     }
 
     char* last_slash = strrchr(path, '/');
-
     if (last_slash == nullptr)
         return dot;
 
@@ -44,21 +42,15 @@ char* dirname(char* path)
         return slash;
 
     *last_slash = 0;
-
     return path;
 }
 
-/**
- * @param path 
- * @return char* 
- */
 char* basename(char* path)
 {
     if (path == nullptr)
         return dot;
 
     int len = strlen(path);
-
     if (len == 0)
         return dot;
 
@@ -68,13 +60,12 @@ char* basename(char* path)
     }
 
     char* last_slash = strrchr(path, '/');
-    
     if (last_slash == nullptr)
         return path;
 
     if (len == 1) {
-        ASSERT(last_slash == path);
-        ASSERT(path[0] == '/');
+        VERIFY(last_slash == path);
+        VERIFY(path[0] == '/');
         return slash;
     }
 
