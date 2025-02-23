@@ -16,7 +16,6 @@
 
 __BEGIN_DECLS
 
-/// @brief: iconv_t
 typedef void* iconv_t;
 
 /**
@@ -24,9 +23,9 @@ typedef void* iconv_t;
  * @param fromcode 
  * @return iconv_t 
  */
-extern iconv_t iconv_open(const char* tocode, const char* fromcode);
+extern iconv_t iconv_open(char const* tocode, char const* fromcode);
 
-/** 
+/**
  * @param inbuf 
  * @param inbytesleft 
  * @param outbuf 
@@ -41,3 +40,4 @@ extern size_t iconv(iconv_t, char** inbuf, size_t* inbytesleft, char** outbuf, s
 extern int iconv_close(iconv_t);
 
 __END_DECLS
+
