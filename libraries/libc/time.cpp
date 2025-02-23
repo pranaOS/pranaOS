@@ -1,7 +1,7 @@
 /**
  * @file time.cpp
  * @author Krisna Pranav
- * @brief time
+ * @brief time lib
  * @version 6.0
  * @date 2023-08-06
  * 
