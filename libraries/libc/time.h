@@ -9,15 +9,13 @@
  * 
  */
 
-#pragma once 
+#pragma once
 
-#include <sys/cdefs.h>
-#include <sys/types.h>
+#include <kernel/api/posix/time.h>
 
 __BEGIN_DECLS
 
-struct tm 
-{
+struct tm {
     int tm_sec;   
     int tm_min;   
     int tm_hour;  
@@ -37,70 +35,36 @@ extern int daylight;
 typedef uint32_t clock_t;
 typedef int64_t time_t;
 
-/**
- * @return struct tm* 
- */
-struct tm* localtime(const time_t*);
-
-/**
- * @return struct tm* 
- */
-struct tm* gmtime(const time_t*);
-
-/**
- * @return time_t 
- */
+struct tm* localtime(time_t const*);
+struct tm* gmtime(time_t const*);
 time_t mktime(struct tm*);
-
-/**
- * @return time_t 
- */
 time_t timegm(struct tm*);
-
-/**
- * @return time_t 
- */
 time_t time(time_t*);
+char* ctime(time_t const*);
 
 /**
+ * @param tm 
+ * @param buf 
  * @return char* 
  */
-char* ctime(const time_t*);
+char* ctime_r(time_t const* tm, char* buf);
 
-void tzset();
+void tzset(void);
 
 /**
  * @return char* 
  */
 char* asctime(const struct tm*);
 
-#define CLOCKS_PER_SEC 1000
-
 /**
- * @return clock_t 
+ * @param buf 
+ * @return char* 
  */
-clock_t clock();
+char* asctime_r(const struct tm*, char* buf);
 
-struct timespec 
-{
-    time_t tv_sec;
-    long tv_nsec;
-}; // struct timespec
+clock_t clock(void);
 
-typedef int clockid_t;
-
-#define CLOCK_REALTIME 0
-#define CLOCK_MONOTONIC 1
-#define TIMER_ABSTIME 99
-
-/**
- * @return int 
- */
 int clock_gettime(clockid_t, struct timespec*);
-
-/**
- * @return int 
- */
 int clock_settime(clockid_t, struct timespec*);
 
 /**
@@ -129,26 +93,17 @@ int nanosleep(const struct timespec* requested_sleep, struct timespec* remaining
  * @param result 
  * @return struct tm* 
  */
-struct tm* gmtime_r(const time_t* timep, struct tm* result);
+struct tm* gmtime_r(time_t const* timep, struct tm* result);
 
 /**
  * @param timep 
  * @param result 
  * @return struct tm* 
  */
-struct tm* localtime_r(const time_t* timep, struct tm* result);
+struct tm* localtime_r(time_t const* timep, struct tm* result);
 
-/**
- * @return double 
- */
 double difftime(time_t, time_t);
 
-/**
- * @param s 
- * @param max 
- * @param format 
- * @return size_t 
- */
-size_t strftime(char* s, size_t max, const char* format, const struct tm*);
+size_t strftime(char* s, size_t max, char const* format, const struct tm*) __attribute__((format(strftime, 3, 0)));
 
 __END_DECLS
