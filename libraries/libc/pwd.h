@@ -9,16 +9,15 @@
  * 
  */
 
-#pragma once 
+#pragma once
 
+#include <bits/FILE.h>
 #include <sys/cdefs.h>
 #include <sys/types.h>
-#include <bits/file.h>
 
 __BEGIN_DECLS
 
-struct passwd 
-{
+struct passwd {
     char* pw_name;
     char* pw_passwd;
     uid_t pw_uid;
@@ -31,17 +30,16 @@ struct passwd
 /**
  * @return struct passwd* 
  */
-struct passwd* getpwent();
+struct passwd* getpwent(void);
 
-/// @brief: pwent(set, end)
-void setpwent();
-void endpwent();
+void setpwent(void);
+void endpwent(void);
 
 /**
  * @param name 
  * @return struct passwd* 
  */
-struct passwd* getpwnam(const char* name);
+struct passwd* getpwnam(char const* name);
 
 /**
  * @return struct passwd* 
@@ -54,5 +52,28 @@ struct passwd* getpwuid(uid_t);
  * @return int 
  */
 int putpwent(const struct passwd* p, FILE* stream);
+
+/**
+ * @brief Get the pwnam r object
+ * 
+ * @param name 
+ * @param pwd 
+ * @param buf 
+ * @param buflen 
+ * @param result 
+ * @return int 
+ */
+int getpwnam_r(char const* name, struct passwd* pwd, char* buf, size_t buflen, struct passwd** result);
+
+/**
+ * @brief Get the pwuid r object
+ * 
+ * @param pwd 
+ * @param buf 
+ * @param buflen 
+ * @param result 
+ * @return int 
+ */
+int getpwuid_r(uid_t, struct passwd* pwd, char* buf, size_t buflen, struct passwd** result);
 
 __END_DECLS
