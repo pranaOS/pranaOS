@@ -42,11 +42,11 @@
 
 typedef uint8_t Elf_Byte;
 
-typedef uint32_t Elf32_Addr; /* Unsigned program address */
-typedef uint32_t Elf32_Off;  /* Unsigned file offset */
-typedef int32_t Elf32_Sword; /* Signed large integer */
-typedef uint32_t Elf32_Word; /* Unsigned large integer */
-typedef uint16_t Elf32_Half; /* Unsigned medium integer */
+typedef uint32_t Elf32_Addr; 
+typedef uint32_t Elf32_Off;  
+typedef int32_t Elf32_Sword; 
+typedef uint32_t Elf32_Word; 
+typedef uint16_t Elf32_Half; 
 typedef uint64_t Elf32_Lword;
 
 typedef uint64_t Elf64_Addr;
