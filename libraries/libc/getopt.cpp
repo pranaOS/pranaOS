@@ -9,13 +9,12 @@
  * 
  */
 
+#include <mods/stringview.h>
+#include <mods/vector.h>
 #include <getopt.h>
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
-#include <mods/string_view.h>
-#include <mods/vector.h>
-
 
 int opterr = 1;
 int optopt = 0;
@@ -23,12 +22,13 @@ int optind = 1;
 int optreset = 0;
 char* optarg = nullptr;
 
-// POSIX says, "When an element of argv[] contains multiple option characters,
-// it is unspecified how getopt() determines which options have already been
-// processed". Well, this is how we do it.
 static size_t s_index_into_multioption_argument = 0;
 
-static inline void report_error(const char* format, ...)
+/**
+ * @param format 
+ * @param ... 
+ */
+[[gnu::format(printf, 1, 2)]] static inline void report_error(char const* format, ...)
 {
     if (!opterr)
         return;
@@ -49,19 +49,23 @@ namespace
     class OptionParser 
     {
     public:
-
         /**
+         * @brief Construct a new Option Parser object
+         * 
          * @param argc 
          * @param argv 
          * @param short_options 
          * @param long_options 
          * @param out_long_option_index 
          */
-        OptionParser(int argc, char** argv, const StringView& short_options, const option* long_options, int* out_long_option_index = nullptr);
+        OptionParser(int argc, char* const* argv, StringView short_options, option const* long_options, int* out_long_option_index = nullptr);
+
+        /**
+         * @return int 
+         */
         int getopt();
 
     private:
-
         /**
          * @param option 
          * @param needs_value 
@@ -77,9 +81,9 @@ namespace
 
         /**
          * @param raw 
-         * @return const option* 
+         * @return option const* 
          */
-        const option* lookup_long_option(char* raw) const;
+        option const* lookup_long_option(char* raw) const;
 
         /**
          * @return int 
@@ -90,11 +94,9 @@ namespace
         bool find_next_option();
 
         size_t m_argc { 0 };
-        char** m_argv { nullptr };
-
+        char* const* m_argv { nullptr };
         StringView m_short_options;
-
-        const option* m_long_options { nullptr };
+        option const* m_long_options { nullptr };
         int* m_out_long_option_index { nullptr };
         bool m_stop_on_first_non_option { false };
 
@@ -103,13 +105,15 @@ namespace
     }; // class OptionParser
 
     /**
+     * @brief Construct a new Option Parser:: Option Parser object
+     * 
      * @param argc 
      * @param argv 
      * @param short_options 
      * @param long_options 
      * @param out_long_option_index 
      */
-    OptionParser::OptionParser(int argc, char** argv, const StringView& short_options, const option* long_options, int* out_long_option_index)
+    OptionParser::OptionParser(int argc, char* const* argv, StringView short_options, option const* long_options, int* out_long_option_index)
         : m_argc(argc)
         , m_argv(argv)
         , m_short_options(short_options)
@@ -159,7 +163,7 @@ namespace
         if (should_reorder_argv)
             shift_argv();
         else
-            ASSERT(optind == static_cast<int>(m_arg_index));
+            VERIFY(optind == static_cast<int>(m_arg_index));
         optind += m_consumed_args;
 
         return res;
@@ -175,7 +179,7 @@ namespace
     {
         Vector<StringView> parts = m_short_options.split_view(option, true);
 
-        ASSERT(parts.size() <= 2);
+        VERIFY(parts.size() <= 2);
         if (parts.size() < 2) {
             return false;
         }
@@ -196,12 +200,11 @@ namespace
     int OptionParser::handle_short_option()
     {
         StringView arg = m_argv[m_arg_index];
-        ASSERT(arg.starts_with('-'));
+        VERIFY(arg.starts_with('-'));
 
         if (s_index_into_multioption_argument == 0) {
             s_index_into_multioption_argument = 1;
         }
-
         char option = arg[s_index_into_multioption_argument];
         s_index_into_multioption_argument++;
 
@@ -219,6 +222,7 @@ namespace
                 m_consumed_args = 0;
             } else {
                 optarg = m_argv[m_arg_index] + s_index_into_multioption_argument;
+
                 s_index_into_multioption_argument = 0;
                 m_consumed_args = 1;
             }
@@ -241,9 +245,9 @@ namespace
 
     /**
      * @param raw 
-     * @return const option* 
+     * @return option const* 
      */
-    const option* OptionParser::lookup_long_option(char* raw) const
+    option const* OptionParser::lookup_long_option(char* raw) const
     {
         StringView arg = raw;
 
@@ -261,7 +265,9 @@ namespace
                 optarg = nullptr;
                 return &option;
             }
-            ASSERT(arg.length() > name.length());
+
+            VERIFY(arg.length() > name.length());
+
             if (arg[name.length()] == '=') {
                 optarg = raw + name.length() + 1;
                 return &option;
@@ -276,7 +282,7 @@ namespace
      */
     int OptionParser::handle_long_option()
     {
-        ASSERT(StringView(m_argv[m_arg_index]).starts_with("--"));
+        VERIFY(StringView(m_argv[m_arg_index]).starts_with("--"));
 
         optopt = 0;
 
@@ -301,7 +307,6 @@ namespace
             if (optarg) {
                 m_consumed_args = 1;
             } else if (m_arg_index + 1 < m_argc) {
-
                 optarg = m_argv[m_arg_index + 1];
                 m_consumed_args = 2;
             } else {
@@ -310,7 +315,7 @@ namespace
             }
             break;
         default:
-            ASSERT_NOT_REACHED();
+            VERIFY_NOT_REACHED();
         }
 
         if (option->flag) {
@@ -322,16 +327,17 @@ namespace
 
     void OptionParser::shift_argv()
     {
-        ASSERT(optind <= static_cast<int>(m_arg_index));
+        VERIFY(optind <= static_cast<int>(m_arg_index));
 
         if (optind == static_cast<int>(m_arg_index) || m_consumed_args == 0) {
             return;
         }
 
+        auto new_argv = const_cast<char**>(m_argv);
         char* buffer[m_consumed_args];
-        memcpy(buffer, &m_argv[m_arg_index], sizeof(char*) * m_consumed_args);
-        memmove(&m_argv[optind + m_consumed_args], &m_argv[optind], sizeof(char*) * (m_arg_index - optind));
-        memcpy(&m_argv[optind], buffer, sizeof(char*) * m_consumed_args);
+        memcpy(buffer, &new_argv[m_arg_index], sizeof(char*) * m_consumed_args);
+        memmove(&new_argv[optind + m_consumed_args], &new_argv[optind], sizeof(char*) * (m_arg_index - optind));
+        memcpy(&new_argv[optind], buffer, sizeof(char*) * m_consumed_args);
     }
 
     /**
@@ -342,6 +348,7 @@ namespace
     {
         for (m_arg_index = optind; m_arg_index < m_argc && m_argv[m_arg_index]; m_arg_index++) {
             StringView arg = m_argv[m_arg_index];
+
             if (!arg.starts_with('-')) {
                 if (m_stop_on_first_non_option)
                     return false;
@@ -350,7 +357,7 @@ namespace
 
             if (arg == "-")
                 continue;
-
+            
             if (arg == "--")
                 return false;
 
@@ -360,7 +367,7 @@ namespace
         return false;
     }
 
-} // namespace
+}
 
 /**
  * @param argc 
@@ -368,7 +375,7 @@ namespace
  * @param short_options 
  * @return int 
  */
-int getopt(int argc, char** argv, const char* short_options)
+int getopt(int argc, char* const* argv, char const* short_options)
 {
     option dummy { nullptr, 0, nullptr, 0 };
     OptionParser parser { argc, argv, short_options, &dummy };
@@ -376,6 +383,8 @@ int getopt(int argc, char** argv, const char* short_options)
 }
 
 /**
+ * @brief Get the opt long object
+ * 
  * @param argc 
  * @param argv 
  * @param short_options 
@@ -383,7 +392,7 @@ int getopt(int argc, char** argv, const char* short_options)
  * @param out_long_option_index 
  * @return int 
  */
-int getopt_long(int argc, char** argv, const char* short_options, const struct option* long_options, int* out_long_option_index)
+int getopt_long(int argc, char* const* argv, char const* short_options, const struct option* long_options, int* out_long_option_index)
 {
     OptionParser parser { argc, argv, short_options, long_options, out_long_option_index };
     return parser.getopt();
