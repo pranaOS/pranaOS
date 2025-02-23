@@ -9,3 +9,19 @@
  * 
  */
 
+#pragma once
+
+namespace Cards 
+{
+    class CardStack final : public RefCounted<CardStack>
+    {
+    public:
+        enum class Type
+        {
+        }; // enum class Type
+
+        enum class MovementRule
+        {
+        }; // enum class MovementRule
+    }; // class CardStack final : public RefCounted<CardStack>
+} // namespace Cards 
