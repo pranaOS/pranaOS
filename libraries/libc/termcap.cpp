@@ -9,180 +9,135 @@
  * 
  */
 
-#include <assert.h>
-#include <stdio.h>
-#include <string.h>
-#include <termcap.h>
+#include <mods/debug.h>
 #include <mods/hashmap.h>
 #include <mods/string.h>
+#include <mods/vector.h>
+#include <assert.h>
+#include <string.h>
+#include <termcap.h>
 
-extern "C" 
+extern "C" {
+
+char PC;
+char* UP;
+char* BC;
+
+int __attribute__((weak)) tgetent([[maybe_unused]] char* bp, [[maybe_unused]] char const* name)
 {
+    warnln_if(TERMCAP_DEBUG, "tgetent: bp={:p}, name='{}'", bp, name);
+    PC = '\0';
+    BC = const_cast<char*>("\033[D");
+    UP = const_cast<char*>("\033[A");
+    return 1;
+}
 
-    char PC;
-    char* UP;
-    char* BC;
+static HashMap<String, char const*>* caps = nullptr;
 
-    /**
-     * @param bp 
-     * @param name 
-     * @return int 
-     */
-    int tgetent(char* bp, const char* name)
-    {
-        (void)bp;
-        (void)name;
-    #ifdef TERMCAP_DEBUG
-        fprintf(stderr, "tgetent: bp=%p, name='%s'\n", bp, name);
-    #endif
-        PC = '\0';
-        BC = const_cast<char*>("\033[D");
-        UP = const_cast<char*>("\033[A");
+static void ensure_caps()
+{
+    if (caps)
+        return;
+    caps = new HashMap<String, char const*>;
+    caps->set("DC", "\033[%p1%dP");
+    caps->set("IC", "\033[%p1%d@");
+    caps->set("ce", "\033[K");
+    caps->set("cl", "\033[H\033[J");
+    caps->set("cr", "\015");
+    caps->set("dc", "\033[P");
+    caps->set("ei", "");
+    caps->set("ic", "");
+    caps->set("im", "");
+    caps->set("kd", "\033[B");
+    caps->set("kl", "\033[D");
+    caps->set("kr", "\033[C");
+    caps->set("ku", "\033[A");
+    caps->set("ks", "");
+    caps->set("ke", "");
+    caps->set("le", "\033[D");
+    caps->set("mm", "");
+    caps->set("mo", "");
+    caps->set("pc", "");
+    caps->set("up", "\033[A");
+    caps->set("vb", "");
+    caps->set("am", "");
+    caps->set("@7", "");
+    caps->set("kH", "");
+    caps->set("kI", "\033[L");
+    caps->set("kh", "\033[H");
+    caps->set("vs", "");
+    caps->set("ve", "");
+    caps->set("E3", "");
+    caps->set("kD", "");
+    caps->set("nd", "\033[C");
+
+    caps->set("co", "80");
+    caps->set("li", "25");
+}
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+
+char* __attribute__((weak)) tgetstr(char const* id, char** area)
+{
+    ensure_caps();
+    warnln_if(TERMCAP_DEBUG, "tgetstr: id='{}'", id);
+    auto it = caps->find(id);
+    if (it != caps->end()) {
+        char* ret = *area;
+        char const* val = (*it).value;
+        strcpy(*area, val);
+        *area += strlen(val) + 1;
+        return ret;
+    }
+    warnln_if(TERMCAP_DEBUG, "tgetstr: missing cap id='{}'", id);
+    return nullptr;
+}
+
+#pragma GCC diagnostic pop
+
+/**
+ * @param id
+ * 
+ */
+int __attribute__((weak)) tgetflag([[maybe_unused]] char const* id)
+{
+    warnln_if(TERMCAP_DEBUG, "tgetflag: '{}'", id);
+    auto it = caps->find(id);
+    if (it != caps->end())
         return 1;
-    }
+    return 0;
+}
 
-    static HashMap<String, const char*>* caps = nullptr;
+/**
+ * @param id
+ * 
+ */
+int __attribute__((weak)) tgetnum(char const* id)
+{
+    warnln_if(TERMCAP_DEBUG, "tgetnum: '{}'", id);
+    auto it = caps->find(id);
+    if (it != caps->end())
+        return atoi((*it).value);
+    return -1;
+}
 
-    /// @brief: ensure_caps
-    static void ensure_caps()
-    {
-        if (caps)
-            return;
+static Vector<char> s_tgoto_buffer;
+char* __attribute__((weak)) tgoto([[maybe_unused]] char const* cap, [[maybe_unused]] int col, [[maybe_unused]] int row)
+{
+    auto cap_str = StringView(cap).replace("%p1%d", String::number(col)).replace("%p2%d", String::number(row));
 
-        caps = new HashMap<String, const char*>;
-        
-        caps->set("DC", "\033[%p1%dP");
-        caps->set("IC", "\033[%p1%d@");
-        caps->set("ce", "\033[K");
-        caps->set("cl", "\033[H\033[J");
-        caps->set("cr", "\015");
-        caps->set("dc", "\033[P");
-        caps->set("ei", "");
-        caps->set("ic", "");
-        caps->set("im", "");
-        caps->set("kd", "\033[B");
-        caps->set("kl", "\033[D");
-        caps->set("kr", "\033[C");
-        caps->set("ku", "\033[A");
-        caps->set("ks", "");
-        caps->set("ke", "");
-        caps->set("le", "\033[D");
-        caps->set("mm", "");
-        caps->set("mo", "");
-        caps->set("pc", "");
-        caps->set("up", "\033[A");
-        caps->set("vb", "");
-        caps->set("am", "");
-        caps->set("@7", "");
-        caps->set("kH", "");
-        caps->set("kI", "\033[L");
-        caps->set("kh", "\033[H");
-        caps->set("vs", "");
-        caps->set("ve", "");
-        caps->set("E3", "");
-        caps->set("kD", "");
-        caps->set("nd", "\033[C");
+    s_tgoto_buffer.clear_with_capacity();
+    s_tgoto_buffer.ensure_capacity(cap_str.length());
+    (void)cap_str.copy_characters_to_buffer(s_tgoto_buffer.data(), cap_str.length());
+    return s_tgoto_buffer.data();
+}
 
-        caps->set("co", "80");
-        caps->set("li", "25");
-    }
-
-    #pragma GCC diagnostic push
-    #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-
-    /**
-     * @param id 
-     * @param area 
-     * @return char* 
-     */
-    char* tgetstr(const char* id, char** area)
-    {
-        ensure_caps();
-    #ifdef TERMCAP_DEBUG
-        fprintf(stderr, "tgetstr: id='%s'\n", id);
-    #endif
-        auto it = caps->find(id);
-
-        if (it != caps->end()) {
-            char* ret = *area;
-            const char* val = (*it).value;
-            strcpy(*area, val);
-            *area += strlen(val) + 1;
-            return ret;
-        }
-
-        fprintf(stderr, "tgetstr: missing cap id='%s'\n", id);
-
-        return nullptr;
-    }
-
-    #pragma GCC diagnostic pop
-
-    /**
-     * @param id 
-     * @return int 
-     */
-    int tgetflag(const char* id)
-    {
-        (void)id;
-    #ifdef TERMCAP_DEBUG
-        fprintf(stderr, "tgetflag: '%s'\n", id);
-    #endif
-        auto it = caps->find(id);
-
-        if (it != caps->end())
-            return 1;
-
-        return 0;
-    }
-
-    /**
-     * @param id 
-     * @return int 
-     */
-    int tgetnum(const char* id)
-    {
-    #ifdef TERMCAP_DEBUG
-        fprintf(stderr, "tgetnum: '%s'\n", id);
-    #endif
-        auto it = caps->find(id);
-
-        if (it != caps->end())
-            return atoi((*it).value);
-
-        ASSERT_NOT_REACHED();
-    }
-
-    /**
-     * @param cap 
-     * @param col 
-     * @param row 
-     * @return char* 
-     */
-    char* tgoto(const char* cap, int col, int row)
-    {
-        (void)cap;
-        (void)col;
-        (void)row;
-
-        ASSERT_NOT_REACHED();
-    }
-
-    /**
-     * @param str 
-     * @param affcnt 
-     * @param putc 
-     * @return int 
-     */
-    int tputs(const char* str, int affcnt, int (*putc)(int))
-    {
-        (void)affcnt;
-        size_t len = strlen(str);
-
-        for (size_t i = 0; i < len; ++i)
-            putc(str[i]);
-
-        return 0;
-    }
-
-} // extern
+int __attribute__((weak)) tputs(char const* str, [[maybe_unused]] int affcnt, int (*putc)(int))
+{
+    size_t len = strlen(str);
+    for (size_t i = 0; i < len; ++i)
+        putc(str[i]);
+    return 0;
+}
+}
