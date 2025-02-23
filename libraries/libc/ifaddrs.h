@@ -9,4 +9,22 @@
  * 
  */
 
- 
+#pragma once
+
+#include <kernel/api/posix/ifaddrs.h>
+#include <sys/cdefs.h>
+
+__BEGIN_DECLS
+
+/**
+ * @param ifap 
+ * @return int 
+ */
+int getifaddrs(struct ifaddrs** ifap);
+
+/**
+ * @param ifa 
+ */
+void freeifaddrs(struct ifaddrs* ifa);
+
+__END_DECLS
