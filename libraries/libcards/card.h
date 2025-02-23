@@ -27,3 +27,30 @@ namespace Cards
         bool m_inverted { false };
     }
 } // namespace Cards
+
+template<>
+struct Mods::Formatter<Cards::Card> : Formatter<FormatString> {
+    ErrorOr<void> format(FormatBuilder& builder, Cards::Card const& card)
+    {
+        StringView suit;
+
+        switch (card.suit()) {
+        case Cards::Card::Suit::Clubs:
+            suit = "C"sv;
+            break;
+        case Cards::Card::Suit::Diamonds:
+            suit = "D"sv;
+            break;
+        case Cards::Card::Suit::Hearts:
+            suit = "H"sv;
+            break;
+        case Cards::Card::Suit::Spades:
+            suit = "S"sv;
+            break;
+        default:
+            VERIFY_NOT_REACHED();
+        }
+
+        return Formatter<FormatString>::format(builder, "{:>2}{}", Cards::Card::labels[card.value()], suit);
+    }
+};
