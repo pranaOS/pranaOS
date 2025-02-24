@@ -132,3 +132,38 @@ namespace Chess
     }
 
 } // namespace Chess
+
+template<>
+struct Mods::Traits<Chess::Piece> : public GenericTraits<Chess::Piece> {
+    /**
+     * @param piece 
+     * @return unsigned 
+     */
+    static unsigned hash(Chess::Piece const& piece)
+    {
+        return pair_int_hash(static_cast<u32>(piece.color), static_cast<u32>(piece.type));
+    }
+};
+
+template<>
+struct Mods::Traits<Chess::Board> : public GenericTraits<Chess::Board> {
+    /**
+     * @param chess 
+     * @return unsigned 
+     */
+    static unsigned hash(Chess::Board const& chess)
+    {
+        unsigned hash = 0;
+        hash = pair_int_hash(hash, static_cast<u32>(chess.m_white_can_castle_queenside));
+        hash = pair_int_hash(hash, static_cast<u32>(chess.m_white_can_castle_kingside));
+        hash = pair_int_hash(hash, static_cast<u32>(chess.m_black_can_castle_queenside));
+        hash = pair_int_hash(hash, static_cast<u32>(chess.m_black_can_castle_kingside));
+
+        Chess::Square::for_each([&](Chess::Square sq) {
+            hash = pair_int_hash(hash, Traits<Chess::Piece>::hash(chess.get_piece(sq)));
+            return IterationDecision::Continue;
+        });
+
+        return hash;
+    }
+};
