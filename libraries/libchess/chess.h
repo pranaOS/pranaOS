@@ -110,6 +110,25 @@ namespace Chess
         {}
     }; // struct Square 
 
-    class Board {}
+    class Board 
+    {
+    private:
+        bool is_legal_no_check(Move const&, Color color) const;
+        bool is_legal_promotion(Move const&, Color color) const;
+        bool apply_illegal_move(Move const&, Color color);
+
+        Piece m_board[8][8];
+        Optional<Move> m_last_move;
+        
+        short m_moves_since_capture { 0 };
+        short m_moves_since_pawn_advance { 0 };
+
+        Color m_turn : 2 { Color::White };
+        Color m_resigned : 2 { Color::None };
+
+        Vector<Move> m_moves;
+        HashMap<unsigned, int> m_previos_states;
+        friend struct Traits<Board>;
+    }
 
 } // namespace Chess
