@@ -94,4 +94,25 @@ namespace Chess::UCI
         Flag m_flag;
     }; // class DebugCommand : public Command 
 
+    class IseadyCommand : public Command
+    {
+    public:
+        explicit IsReadyCommand()
+            : Command(Command::Type::IsReady)
+        {}
+
+        /**
+         * @param command 
+         * @return IsReadyCommand 
+         */
+        static IsReadyCommand from_string(StringView command);
+
+        virtual String to_string() const override;
+    }; // class IseadyCommand : public Command
+
+    class SetOptionCommand : public Command
+    {
+        
+    }; // class SetOptionCommand : public Command
+
 } // namespace Chess::UCI    
