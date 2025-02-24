@@ -55,4 +55,43 @@ namespace Chess::UCI
         virtual String to_string() const override;
     } // class UCICommand : public Command
 
+    class DebugCommand : public Command 
+    {
+    public:
+        enum class Flag
+        {
+            On,
+            Off
+        }; // enum class Flag
+
+        /**
+         * @brief Construct a new Debug Command object
+         * 
+         * @param flag 
+         */
+        explicit DebugCommand(Flag flag)    
+            : Command(Command::Type::Debug)
+            , m_flag(flag)
+        {}
+
+        /**
+         * @param command 
+         * @return DebugCommand 
+         */
+        static DebugCommand from_string(StringView command);
+
+        virtual String to_string() const override;
+
+        /**
+         * @return Flag 
+         */
+        Flag flag() const
+        {
+            return m_flag;
+        }
+    
+    private:
+        Flag m_flag;
+    }; // class DebugCommand : public Command 
+
 } // namespace Chess::UCI    
