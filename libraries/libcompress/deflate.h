@@ -9,4 +9,16 @@
  * 
  */
 
- 
+#pragma once
+
+#include <mods/bitstream.h>
+#include <mods/bytebuffer.h>
+#include <mods/circularduplexstream.h>
+#include <mods/endian.h>
+#include <mods/vector.h>
+#include <libcompress/deflatetables.h>
+
+namespace Compress
+{
+
+} // namespace Compress
