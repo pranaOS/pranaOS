@@ -13,12 +13,53 @@
 
 #include <mods/bytebuffer.h>
 #include <mods/optional.h>
+#include <mods/span.h>
+#include <mods/types.h>
 
-namespace Compress
+namespace Compress 
 {
-    class Zlib
+
+    class Zlib 
     {
+    public:
+        /**
+         * @return Optional<ByteBuffer> 
+         */
+        Optional<ByteBuffer> decompress();
+
+        /**
+         * @return u32 
+         */
+        u32 checksum();
+
+        /**
+         * @param data 
+         * @return Optional<Zlib> 
+         */
+        static Optional<Zlib> try_create(ReadonlyBytes data);
+
+        /**
+         * @return Optional<ByteBuffer> 
+         */
+        static Optional<ByteBuffer> decompress_all(ReadonlyBytes);
+
     private:
+        /**
+         * @brief Construct a new Zlib object
+         * 
+         * @param data 
+         */
         Zlib(ReadonlyBytes data);
+
+        u8 m_compression_method;
+        u8 m_compression_info;
+        u8 m_check_bits;
+        u8 m_has_dictionary;
+        u8 m_compression_level;
+
+        u32 m_checksum { 0 };
+        ReadonlyBytes m_input_data;
+        ReadonlyBytes m_data_bytes;
     }; // class Zlib
-} // namespace Compress
+
+} // namespace Compress 
