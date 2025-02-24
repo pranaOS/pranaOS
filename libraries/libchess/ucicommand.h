@@ -37,6 +37,22 @@ namespace Chess::UCI
 
     class UCICommand : public Command
     {
+    public:
+        /**
+         * @brief Construct a new UCICommand object
+         * 
+         */
+        explicit UCICommand()
+            : Command(Command::Type::UCI)
+        {}
 
+        /**
+         * @param command 
+         * @return UCICommand 
+         */
+        static UCICommand from_string(StringView command);
+
+        virtual String to_string() const override;
     } // class UCICommand : public Command
+
 } // namespace Chess::UCI    
