@@ -38,4 +38,20 @@ namespace Cards
         VERIFY(type != Type::Invalid);
         calculate_bounding_box();
     }
+
+    void CardStack::clear()
+    {
+        m_stack.clear();
+        m_stack_positions.clear();
+    }
+
+    void CardStack::rebound_cards()
+    {
+        VERIFY(m_stack_positions.size() == m_stack.size());
+
+        size_t card_index = 0;
+        for (auto& card : m_stack)
+            card.set_position(m_stack_positions.at(card_index++));
+    }
+
 } // namespace Cards
