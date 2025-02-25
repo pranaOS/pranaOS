@@ -16,5 +16,9 @@
 
 namespace Compress 
 {
-
+    Optional<Zlib> Zlib::try_create(ReadonlyBytes data)
+    {
+        if (data.size() < 6)
+            return {};
+    }
 } // namespace Compress 
