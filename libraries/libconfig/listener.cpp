@@ -16,6 +16,7 @@
 
 namespace Config 
 {
+
     static HashTable<Listener*> s_listeners;
 
     /**
@@ -25,7 +26,7 @@ namespace Config
     Listener::Listener()
     {
         s_listeners.set(this);
-    }
+    }   
 
     /**
      * @brief Destroy the Listener::Listener object
@@ -34,7 +35,7 @@ namespace Config
     Listener::~Listener()
     {
         s_listeners.remove(this);
-    }   
+    }
 
     /**
      * @param callback 
@@ -43,5 +44,22 @@ namespace Config
     {
         for (auto* listener : s_listeners)
             callback(*listener);
+    }   
+
+    void Listener::config_string_did_change(String const&, String const&, String const&, String const&)
+    {
     }
+
+    void Listener::config_i32_did_change(String const&, String const&, String const&, i32)
+    {
+    }
+
+    void Listener::config_bool_did_change(String const&, String const&, String const&, bool)
+    {
+    }
+
+    void Listener::config_key_was_removed(String const&, String const&, String const&)
+    {
+    }
+
 } // namespace Config 
