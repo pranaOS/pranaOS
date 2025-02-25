@@ -23,7 +23,31 @@ namespace Compress
     Optional<Zlib> Zlib::try_create(ReadonlyBytes data)
     {
         if (data.size() < 6)
-            return {};
+            return {}; 
+
+        Zlib zlib { data };
+
+        u8 compression_info = data.at(0);
+        u8 flags = data.at(1);
+
+        zlib.m_compression_method = compression_info & 0xF;
+        zlib.m_compression_info = (compression_info >> 4) & 0xF;
+        zlib.m_check_bits = flags & 0xF;
+        zlib.m_has_dictionary = (flags >> 5) & 0x1;
+        zlib.m_compression_level = (flags >> 6) & 0x3;
+
+        if (zlib.m_compression_method != 8 || zlib.m_compression_info > 7)
+            return {}; 
+
+        if (zlib.m_has_dictionary)
+            return {}; 
+
+        if ((compression_info * 256 + flags) % 31 != 0)
+            return {}; 
+
+        zlib.m_data_bytes = data.slice(2, data.size() - 2 - 4);
+
+        return zlib;
     }
 
     /**
@@ -33,14 +57,15 @@ namespace Compress
      */
     Zlib::Zlib(ReadonlyBytes data)
         : m_input_data(data)
-    {}
+    {
+    }
 
     /**
      * @return Optional<ByteBuffer> 
      */
     Optional<ByteBuffer> Zlib::decompress()
     {
-        return DeflateCompressor::decompress_all(m_data_bytes);
+        return DeflateDecompressor::decompress_all(m_data_bytes);
     }
 
     /**
@@ -70,4 +95,4 @@ namespace Compress
         return m_checksum;
     }
 
-} // namespace Compress 
+} // namespace Compress
