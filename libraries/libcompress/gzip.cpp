@@ -9,3 +9,21 @@
  * 
  */
 
+
+#include <libcompress/gzip.h>
+#include <mods/memorystream.h>
+#include <mods/string.h>
+#include <libcore/datetime.h>
+
+namespace Compress 
+{
+    /**
+     * @param bytes 
+     * @return true 
+     * @return false 
+     */
+    bool GzipDecompressor::is_likely_compressed(ReadonlyBytes bytes)
+    {
+        return bytes.size() >= 2 && bytes[0] == gzip_magic_1;
+    }
+} // namespace Compress 
