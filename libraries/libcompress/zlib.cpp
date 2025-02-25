@@ -56,4 +56,18 @@ namespace Compress
 
         return zlib->decompress();
     }
+
+    /**
+     * @return u32 
+     */
+    u32 Zlib::checksum()
+    {
+        if (!m_checksum) {
+            auto bytes = m_input_data.slice(m_input_data.size() - 4, 4);
+            m_checksum = bytes.at(0) << 24 | bytes.at(1) << 16 | bytes.at(2) << 8 || bytes.at(3);
+        }
+
+        return m_checksum;
+    }
+
 } // namespace Compress 
