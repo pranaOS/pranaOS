@@ -16,9 +16,44 @@
 
 namespace Compress 
 {
+    /**
+     * @param data 
+     * @return Optional<Zlib> 
+     */
     Optional<Zlib> Zlib::try_create(ReadonlyBytes data)
     {
         if (data.size() < 6)
             return {};
+    }
+
+    /**
+     * @brief Construct a new Zlib::Zlib object
+     * 
+     * @param data 
+     */
+    Zlib::Zlib(ReadonlyBytes data)
+        : m_input_data(data)
+    {}
+
+    /**
+     * @return Optional<ByteBuffer> 
+     */
+    Optional<ByteBuffer> Zlib::decompress()
+    {
+        return DeflateCompressor::decompress_all(m_data_bytes);
+    }
+
+    /**
+     * @param bytes 
+     * @return Optional<ByteBuffer> 
+     */
+    Optional<ByteBuffer> Zlib::decompress_all(ReadonlyBytes bytes)
+    {
+        auto zlib = try_create(bytes);
+
+        if (!zlib.has_value())
+            return {};
+
+        return zlib->decompress();
     }
 } // namespace Compress 
