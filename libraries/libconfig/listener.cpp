@@ -9,3 +9,39 @@
  * 
  */
 
+#include <mods/function.h>
+#include <mods/hashtable.h>
+#include <mods/string.h>
+#include <libconfig/listener.h>
+
+namespace Config 
+{
+    static HashTable<Listener*> s_listeners;
+
+    /**
+     * @brief Construct a new Listener::Listener object
+     * 
+     */
+    Listener::Listener()
+    {
+        s_listeners.set(this);
+    }
+
+    /**
+     * @brief Destroy the Listener::Listener object
+     * 
+     */
+    Listener::~Listener()
+    {
+        s_listeners.remove(this);
+    }   
+
+    /**
+     * @param callback 
+     */
+    void Listener::for_each(Function<void(Listener&)> callback)
+    {
+        for (auto* listener : s_listeners)
+            callback(*listener);
+    }
+} // namespace Config 
