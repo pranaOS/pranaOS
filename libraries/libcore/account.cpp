@@ -30,5 +30,47 @@
 
 namespace Core 
 {
-    
+    /**
+     * @brief Get the salt object
+     * 
+     * @return String 
+     */
+    static String get_salt()
+    {
+        char random_data[12];
+        fill_with_random(random_data, sizeof(random_data));
+
+        StringBuilder builder;
+        builder.append("$5$");
+        builder.append(encode_base64(ReadonlyBytes(random_data, sizeof(random_data))));
+
+        return builder.build();
+    }
+
+    /**
+     * @brief Get the extra gids object
+     * 
+     * @param pwd 
+     * @return Vector<gid_t> 
+     */
+    static Vector<gid_t> get_extra_gids(passwd const& pwd)
+    {
+        StringView username { pwd.pwd_name };
+        Vector<gid_t> extra_gids;
+        setgrent();
+        for (auto* group = getgrent(); group; group = getgrent()) {
+            if (group->gr_gid == pwd.pw_gid)
+                continue;
+            
+            for (size_t i = 0; group->gr_mem[i]; ++i) {
+                if (username == group->gr_mem[i]) {
+                    extra_gids.append(group->gr_gid);
+                    break;
+                }
+            }
+        }
+
+        endgrent();
+        return extra_gids;
+    }
 } // namespace Core 
