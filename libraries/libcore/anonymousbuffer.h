@@ -11,15 +11,16 @@
 
 #pragma once
 
-#include <libipc/forward.h>
 #include <mods/error.h>
 #include <mods/noncopyable.h>
 #include <mods/refcounted.h>
 #include <mods/refptr.h>
 #include <mods/types.h>
+#include <libipc/forward.h>
 
 namespace Core 
 {
+
     class AnonymousBufferImpl final : public RefCounted<AnonymousBufferImpl> 
     {
     public:
@@ -30,16 +31,22 @@ namespace Core
         static ErrorOr<NonnullRefPtr<AnonymousBufferImpl>> create(int fd, size_t);
 
         /**
-         * @brief Destroy the Anonymous Buffer Impl object
+         * @brief Destroy the AnonymousBufferImpl object
          * 
          */
         ~AnonymousBufferImpl();
 
+        /**
+         * @return int 
+         */
         int fd() const 
         { 
-            return m_fd;
+            return m_fd; 
         }
 
+        /**
+         * @return size_t 
+         */
         size_t size() const 
         { 
             return m_size; 
@@ -50,14 +57,14 @@ namespace Core
             return m_data; 
         }
 
-        const void* data() const 
+        void const* data() const 
         { 
             return m_data; 
         }
 
     private:
         /**
-         * @brief Construct a new Anonymous Buffer Impl object
+         * @brief Construct a new AnonymousBufferImpl object
          * 
          * @param fd 
          */
@@ -79,7 +86,7 @@ namespace Core
         static ErrorOr<AnonymousBuffer> create_with_size(size_t);
 
         /**
-         * @brief Create a from anon fd object
+         * @brief Create a fromanonfd object
          * 
          * @param fd 
          * @return ErrorOr<AnonymousBuffer> 
@@ -87,21 +94,27 @@ namespace Core
         static ErrorOr<AnonymousBuffer> create_from_anon_fd(int fd, size_t);
 
         /**
-         * @brief Construct a new Anonymous Buffer object
+         * @brief Construct a new AnonymousBuffer object
          * 
          */
-        AnonymousBuffer() { }
+        AnonymousBuffer() = default;
 
         bool is_valid() const 
         { 
             return m_impl; 
         }
 
+        /**
+         * @return int 
+         */
         int fd() const 
         { 
             return m_impl ? m_impl->fd() : -1; 
         }
 
+        /**
+         * @return size_t 
+         */
         size_t size() const 
         { 
             return m_impl ? m_impl->size() : 0; 
@@ -141,7 +154,8 @@ namespace Core
         explicit AnonymousBuffer(NonnullRefPtr<AnonymousBufferImpl>);
 
         RefPtr<AnonymousBufferImpl> m_impl;
-    }; // class AnonymousBuffer 
+    }; // class AnonymousBuffer
+
 } // namespace Core
 
 namespace IPC 
@@ -150,10 +164,11 @@ namespace IPC
      * @return true 
      * @return false 
      */
-    bool encode(Encoder&, const Core::AnonymousBuffer&);
+    bool encode(Encoder&, Core::AnonymousBuffer const&);
 
     /**
      * @return ErrorOr<void> 
      */
     ErrorOr<void> decode(Decoder&, Core::AnonymousBuffer&);
+
 } // namespace IPC
