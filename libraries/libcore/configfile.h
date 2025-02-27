@@ -9,3 +9,13 @@
  * 
  */
 
+#pragma once
+
+#include <mods/forward.h>
+#include <mods/hashmap.h>
+#include <mods/refcounted.h>
+#include <mods/refptr.h>
+#include <mods/string.h>
+#include <mods/vector.h>
+#include <libcore/stream.h>
+#include <libgfx/color.h>
