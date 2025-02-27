@@ -25,6 +25,94 @@ namespace Core
 
     class ConfigFile : public RefCounted<ConfigFile>
     {
+    public:
+        enum class AllowWriting
+        {
+            YES,
+            NO
+        }; // enum class AllowWriting
+
+        /**
+         * @brief Destroy the ConfigFile object
+         * 
+         */
+        ~ConfigFile();
+
+        /**
+         * @return true 
+         * @return false 
+         */
+        bool has_group(String const&) const;
+
+        /**
+         * @param group 
+         * @param key 
+         * @return true 
+         * @return false 
+         */
+        bool has_key(String const& group, String const& key) const;
+
+        /**
+         * @return Vector<String> 
+         */
+        Vector<String> groups() const;
+
+        /**
+         * @param group 
+         * @return Vector<String> 
+         */
+        Vector<String> keys(String const& group) const;
+
+        /**
+         * @return size_t 
+         */
+        size_t num_groups() const
+        {
+            return m_groups.size();
+        }
+
+        /**
+         * @param group 
+         * @param key 
+         * @param default_value 
+         * @return String 
+         */
+        String read_entry(String const& group, String const& key, String const& default_value = String()) const;
+
+        void dump() const;
+
+        /**
+         * @return true 
+         * @return false 
+         */
+        bool is_dirty() const 
+        {
+            return m_dirty;
+        }
+
+        /**
+         * @return ErrorOr<void> 
+         */
+        ErrorOr<void> sync();
+
+        /**
+         * @param group 
+         */
+        void remove_group(String const& group);
+
+        /**
+         * @param group 
+         * @param key 
+         */
+        void remove_entry(String const& group, String const& key);
+
+        /**
+         * @return String const& 
+         */
+        String const& filename() const
+        {
+            return m_filename;
+        }
     private:
         /**
          * @brief Construct a new Config File object
