@@ -1,0 +1,43 @@
+set(SOURCES
+    account.cpp
+    anonymousbuffer.cpp
+    argsparser.cpp
+    configfile.cpp
+    command.cpp
+    datetime.cpp
+    directory.cpp
+    diriterator.cpp
+    elapsedtimer.cpp
+    event.cpp
+    eventloop.cpp
+    filewatcher.cpp
+    file.cpp
+    filepermissionsmask.cpp
+    getpassword.cpp
+    group.cpp
+    iodevice.cpp
+    localserver.cpp
+    lockfile.cpp
+    mappedfile.cpp
+    mimedata.cpp
+    networkjob.cpp
+    notifier.cpp
+    object.cpp
+    process.cpp
+    processstatisticsreader.cpp
+    property.cpp
+    secretstring.cpp
+    socksproxyclient.cpp
+    stream.cpp
+    standardpaths.cpp
+    system.cpp
+    systemservertakeover.cpp
+    tcpserver.cpp
+    tempfile.cpp
+    timer.cpp
+    udpserver.cpp
+    version.cpp
+)
+
+pranaos_lib(libcore core)
+target_link_libraries(libcore libc libcrypt)
