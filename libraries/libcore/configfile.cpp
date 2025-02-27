@@ -9,3 +9,16 @@
  * 
  */
 
+#include <mods/lexicalpath.h>
+#include <mods/stringbuilder.h>
+#include <libcore/configfile.h>
+#include <libcore/directory.h>
+#include <libcore/standardpaths.h>
+#include <libcore/system.h>
+#include <pwd.h>
+#include <sys/types.h>
+
+namespace Core
+{
+
+} // namespace Core
