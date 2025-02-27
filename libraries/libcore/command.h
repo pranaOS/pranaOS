@@ -9,27 +9,35 @@
  * 
  */
 
-#pragma once 
+#pragma once
 
-#include <mods/lexical_path.h>
+#include <mods/lexicalpath.h>
 #include <mods/optional.h>
 #include <mods/string.h>
 #include <spawn.h>
 
-namespace Core
+namespace Core 
 {
+
+    struct CommandResult {
+        int exit_code { 0 };
+        String output;
+        String error;
+    }; // struct CommandResult
+
     /**
      * @param program 
      * @param arguments 
      * @param chdir 
-     * @return String 
+     * @return ErrorOr<CommandResult> 
      */
-    String command(const String& program, const Vector<String>& arguments, Optional<LexicalPath> chdir);
-
+    ErrorOr<CommandResult> command(String const& program, Vector<String> const& arguments, Optional<LexicalPath> chdir);
+    
     /**
      * @param command_string 
      * @param chdir 
-     * @return String 
+     * @return ErrorOr<CommandResult> 
      */
-    String command(const String& command_string, Optional<LexicalPath> chdir);
+    ErrorOr<CommandResult> command(String const& command_string, Optional<LexicalPath> chdir);
+
 } // namespace Core
