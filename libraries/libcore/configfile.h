@@ -19,3 +19,27 @@
 #include <mods/vector.h>
 #include <libcore/stream.h>
 #include <libgfx/color.h>
+
+namespace Core
+{
+
+    class ConfigFile : public RefCounted<ConfigFile>
+    {
+    private:
+        /**
+         * @brief Construct a new Config File object
+         * 
+         * @param filename 
+         * @param open_file 
+         */
+        ConfigFile(String const& filename, OwnPtr<Stream::BufferedFile> open_file);
+
+        ErrorOr<void> reparse();
+
+        String m_file;
+        OwnPtr<Stream::BufferedFile> m_file;
+        HashMap<String, HashMap<String, String>> m_groups;
+        bool m_dirty { false };
+    }; // class ConfigFile : public RefCounted<ConfigFile>
+
+} // namespace Core
