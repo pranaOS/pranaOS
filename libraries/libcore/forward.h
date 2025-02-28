@@ -5,41 +5,49 @@
  * @version 6.0
  * @date 2023-09-25
  * 
- * @copyright Copyright (c) 2021-2024 pranaOS Developers, Krisna Pranav
+ * @copyright Copyright (c) 2021-2025 pranaOS Developers, Krisna Pranav
  * 
  */
 
-#pragma once 
+#pragma once
 
 namespace Core 
 {
+
+    class AnonymousBuffer;
     class ArgsParser;
     class ChildEvent;
     class ConfigFile;
     class CustomEvent;
     class DateTime;
     class DirIterator;
+    class DeferredInvocationContext;
     class ElapsedTimer;
     class Event;
     class EventLoop;
     class File;
     class IODevice;
     class LocalServer;
-    class LocalSocket;
     class MimeData;
     class NetworkJob;
     class NetworkResponse;
     class Notifier;
     class Object;
+    class ObjectClassRegistration;
     class ProcessStatisticsReader;
-    class Socket;
     class SocketAddress;
     class TCPServer;
-    class TCPSocket;
     class Timer;
     class TimerEvent;
     class UDPServer;
-    class UDPSocket;
 
     enum class TimerShouldFireWhenNotVisible;
+
+    namespace Stream 
+    {
+        class Socket;
+        class Stream;
+        class BufferedSocketBase;
+    } // namespace Stream
+
 } // namespace Core
