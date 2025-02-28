@@ -9,17 +9,19 @@
  * 
  */
 
-#pragma once 
+#pragma once
 
 #include <mods/string.h>
+#include <mods/stringview.h>
+#include <libipc/forward.h>
 #include <time.h>
 
 namespace Core 
 {
+
     class DateTime 
     {
     public:
-
         /**
          * @return time_t 
          */
@@ -35,12 +37,12 @@ namespace Core
         { 
             return m_year; 
         }
-        
+
         unsigned month() const 
         { 
             return m_month; 
         }
-
+        
         unsigned day() const 
         { 
             return m_day; 
@@ -64,10 +66,11 @@ namespace Core
         unsigned weekday() const;
         unsigned days_in_month() const;
         unsigned day_of_year() const;
-
         bool is_leap_year() const;
 
         /**
+         * @brief Set the time object
+         * 
          * @param year 
          * @param month 
          * @param day 
@@ -75,13 +78,13 @@ namespace Core
          * @param minute 
          * @param second 
          */
-        void set_time(unsigned year, unsigned month = 1, unsigned day = 0, unsigned hour = 0, unsigned minute = 0, unsigned second = 0);
+        void set_time(int year, int month = 1, int day = 1, int hour = 0, int minute = 0, int second = 0);
 
         /**
          * @param format 
          * @return String 
          */
-        String to_string(const String& format = "%Y-%m-%d %H:%M:%S") const;
+        String to_string(StringView format = "%Y-%m-%d %H:%M:%S"sv) const;
 
         /**
          * @param year 
@@ -92,7 +95,7 @@ namespace Core
          * @param second 
          * @return DateTime 
          */
-        static DateTime create(unsigned year, unsigned month = 1, unsigned day = 0, unsigned hour = 0, unsigned minute = 0, unsigned second = 0);
+        static DateTime create(int year, int month = 1, int day = 1, int hour = 0, int minute = 0, int second = 0);
 
         /**
          * @return DateTime 
@@ -103,27 +106,48 @@ namespace Core
          * @return DateTime 
          */
         static DateTime from_timestamp(time_t);
-        
+
         /**
+         * @param format 
+         * @param string 
+         * @return Optional<DateTime> 
+         */
+        static Optional<DateTime> parse(StringView format, String const& string);
+
+        /**
+         * @param other 
          * @return true 
          * @return false 
          */
-        bool is_before(const String&) const;
+        bool operator<(DateTime const& other) const 
+        { 
+            return m_timestamp < other.m_timestamp; 
+        }
 
     private:
         time_t m_timestamp { 0 };
-        
-        unsigned m_year { 0 };
-        unsigned m_month { 0 };
-        unsigned m_day { 0 };
-        unsigned m_hour { 0 };
-        unsigned m_minute { 0 };
-        unsigned m_second { 0 };
-    };
+        int m_year { 0 };
+        int m_month { 0 };
+        int m_day { 0 };
+        int m_hour { 0 };
+        int m_minute { 0 };
+        int m_second { 0 };
+    }; // class DateTime
+
+} // namespace Core
+
+namespace IPC 
+{
 
     /**
-     * @return const LogStream& 
+     * @return true 
+     * @return false 
      */
-    const LogStream& operator<<(const LogStream&, const DateTime&);
+    bool encode(Encoder&, Core::DateTime const&);
 
-}
+    /**
+     * @return ErrorOr<void> 
+     */
+    ErrorOr<void> decode(Decoder&, Core::DateTime&);
+
+} // namespace IPC
