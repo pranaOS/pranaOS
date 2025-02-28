@@ -39,8 +39,24 @@ namespace Core
     class FileWatcherBase 
     {
     public:
+        /**
+         * @brief Destroy the FileWatcherBase object
+         * 
+         */
         virtual ~FileWatcherBase() = default;
 
+        /**
+         * @param path 
+         * @param event_mask 
+         * @return ErrorOr<bool> 
+         */
+        ErrorOr<bool> add_watch(String path, FileWatcherEvent::Type event_mask);
+
+        /**
+         * @param path 
+         * @return ErrorOr<bool> 
+         */
+        ErrorOr<bool> remove_watch(String path);
         /**
          * @param path 
          * @return true 
@@ -50,7 +66,7 @@ namespace Core
         { 
             return m_path_to_wd.find(path) != m_path_to_wd.end(); 
         }
-        
+
     protected:  
         /**
          * @brief Construct a new File Watcher Base object
@@ -65,4 +81,25 @@ namespace Core
         HashMap<String, unsigned> m_path_to_wd;
         HashMap<unsigned, String> m_wd_to_path;
     }; // class FileWatcherBase 
+
+    class BlockingFileWatcher final : public FileWatcherBase 
+    {
+        MOD_MAKE_NONCOPYABLE(BlockingFileWatcher);
+
+    public:
+        /**
+         * @brief Construct a new Blocking File Watcher object
+         * 
+         */
+        explicit BlockingFileWatcher(InodeWatcherFlags = InodeWatcherFlags::None);
+
+        /**
+         * @brief Destroy the Blocking File Watcher object
+         * 
+         */
+        ~BlockingFileWatcher();
+
+        Optional<FileWatcherEvent> wait_for_event();
+    }; // class BlockingFileWatcher final : public FileWatcherBase 
+
 } // namespace Core
