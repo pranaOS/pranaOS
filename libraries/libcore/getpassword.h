@@ -9,16 +9,19 @@
  * 
  */
 
-#pragma once 
+#pragma once
 
-#include <mods/result.h>
-#include <mods/string.h>
+#include <mods/error.h>
+#include <libcore/secretstring.h>
 
-namespace Core
+namespace Core 
 {
     /**
+     * @brief Get the password object
+     * 
      * @param prompt 
-     * @return Result<String, int> 
+     * @return ErrorOr<SecretString> 
      */
-    Result<String, int> get_password(const StringView& prompt = "Password: ");
+    ErrorOr<SecretString> get_password(StringView prompt = "Password: "sv);
+
 } // namespace Core
