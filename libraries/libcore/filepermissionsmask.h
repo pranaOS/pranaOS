@@ -20,7 +20,37 @@ namespace Core
 
     class FilePermissionMask
     {
+    public:
+        /**
+         * @brief Construct a new FilePermissionMask object
+         * 
+         */
+        FilePermissionMask()
+            : m_clear_mask(0)
+            , m_write_mask(0)
+        {}
 
+        /**
+         * @param mode 
+         * @return FilePermissionMask& 
+         */
+        FilePermissionMask& assign_permissions(mode_t mode);
+
+        /**
+         * @param mode 
+         * @return FilePermissionMask& 
+         */
+        FilePermissionMask& add_permissions(mode_t mode);   
+
+        /**
+         * @param mode 
+         * @return FilePermissionMask& 
+         */
+        FilePermissionMask& remove_permissions(mode_t mode);
+        
+    private:
+        mode_t m_clear_mask;
+        mode_t m_write_mask;
     }; // class FilePermissionMask
-    
+
 } // namespace Core
