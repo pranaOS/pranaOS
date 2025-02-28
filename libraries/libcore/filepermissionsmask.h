@@ -15,42 +15,86 @@
 #include <mods/string.h>
 #include <sys/stat.h>
 
-namespace Core
+namespace Core 
 {
 
-    class FilePermissionMask
+    class FilePermissionsMask 
     {
     public:
         /**
-         * @brief Construct a new FilePermissionMask object
+         * @param string 
+         * @return ErrorOr<FilePermissionsMask> 
+         */
+        static ErrorOr<FilePermissionsMask> parse(StringView string);
+
+        /**
+         * @param string 
+         * @return ErrorOr<FilePermissionsMask> 
+         */
+        static ErrorOr<FilePermissionsMask> from_numeric_notation(StringView string);
+
+        /**
+         * @param string 
+         * @return ErrorOr<FilePermissionsMask> 
+         */
+        static ErrorOr<FilePermissionsMask> from_symbolic_notation(StringView string);
+
+        /**
+         * @brief Construct a new FilePermissionsMask object
          * 
          */
-        FilePermissionMask()
+        FilePermissionsMask()
             : m_clear_mask(0)
             , m_write_mask(0)
-        {}
+        {
+        }
 
         /**
          * @param mode 
-         * @return FilePermissionMask& 
+         * @return FilePermissionsMask& 
          */
-        FilePermissionMask& assign_permissions(mode_t mode);
+        FilePermissionsMask& assign_permissions(mode_t mode);
 
         /**
          * @param mode 
-         * @return FilePermissionMask& 
+         * @return FilePermissionsMask& 
          */
-        FilePermissionMask& add_permissions(mode_t mode);   
+        FilePermissionsMask& add_permissions(mode_t mode);
 
         /**
          * @param mode 
-         * @return FilePermissionMask& 
+         * @return FilePermissionsMask& 
          */
-        FilePermissionMask& remove_permissions(mode_t mode);
+        FilePermissionsMask& remove_permissions(mode_t mode);
+
+        /**
+         * @param mode 
+         * @return mode_t 
+         */
+        mode_t apply(mode_t mode) const 
+        { 
+            return m_write_mask | (mode & ~m_clear_mask); 
+        }
+
+        /**
+         * @return mode_t 
+         */
+        mode_t clear_mask() const 
+        { 
+            return m_clear_mask; 
+        }
         
+        /**
+         * @return mode_t 
+         */
+        mode_t write_mask() const 
+        { 
+            return m_write_mask; 
+        }
+
     private:
-        mode_t m_clear_mask;
-        mode_t m_write_mask;
-    }; // class FilePermissionMask
+        mode_t m_clear_mask; 
+        mode_t m_write_mask; 
+    }; // class FilePermissionsMask 
 
 } // namespace Core
