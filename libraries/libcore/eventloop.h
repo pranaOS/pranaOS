@@ -27,8 +27,8 @@
 #include <sys/time.h>
 #include <sys/types.h>
 
-namespace Core {
-    extern Threading::MutexProtected<EventLoop*> s_main_event_loop;
+namespace Core 
+{
 
     class EventLoop 
     {
@@ -46,13 +46,13 @@ namespace Core {
         }; // enum class ShouldWake 
 
         /**
-         * @brief Construct a new Event Loop object
+         * @brief Construct a new EventLoop object
          * 
          */
         explicit EventLoop(MakeInspectable = MakeInspectable::No);
 
         /**
-         * @brief Destroy the Event Loop object
+         * @brief Destroy the EventLoop object
          * 
          */
         ~EventLoop();
@@ -80,21 +80,14 @@ namespace Core {
         void post_event(Object& receiver, NonnullOwnPtr<Event>&&, ShouldWake = ShouldWake::No);
 
         /**
-         * @tparam Callback 
-         * @param callback 
-         * @return decltype(auto) 
+         * @return EventLoop& 
          */
-        template<typename Callback>
-        static decltype(auto) with_main_locked(Callback callback)
-        {
-            return s_main_event_loop.with_locked([&callback](auto*& event_loop) {
-                VERIFY(event_loop != nullptr);
-                return callback(event_loop);
-            });
-        }
-
         static EventLoop& current();
 
+        /**
+         * @return true 
+         * @return false 
+         */
         bool was_exit_requested() const 
         { 
             return m_exit_requested; 
@@ -148,7 +141,7 @@ namespace Core {
         {
             Child,
         }; // enum class ForkEvent 
-
+        
         static void notify_forked(ForkEvent);
 
         static bool has_been_instantiated();
@@ -174,27 +167,27 @@ namespace Core {
 
         public:
             /**
-             * @brief Construct a new Queued Event object
+             * @brief Construct a new QueuedEvent object
              * 
              * @param receiver 
              */
             QueuedEvent(Object& receiver, NonnullOwnPtr<Event>);
-            
+
             /**
-             * @brief Construct a new Queued Event object
+             * @brief Construct a new QueuedEvent object
              * 
              */
             QueuedEvent(QueuedEvent&&);
 
             /**
-             * @brief Destroy the Queued Event object
+             * @brief Destroy the QueuedEvent object
              * 
              */
-            ~QueuedEvent();
+            ~QueuedEvent() = default;
 
             WeakPtr<Object> receiver;
             NonnullOwnPtr<Event> event;
-        }; // struct QueuedEvent 
+        }; // struct QueuedEvent
 
         Vector<QueuedEvent, 64> m_queued_events;
         static pid_t s_pid;
@@ -218,4 +211,5 @@ namespace Core {
     {
         EventLoop::current().deferred_invoke(move(invokee));
     }
+
 } // namespace Core
