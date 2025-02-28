@@ -23,4 +23,63 @@
 namespace Core
 {
     class DirIterator;
+
+    class Directory
+    {
+        MOD_MAKE_NONCOPYABLE(Directory);
+
+    public:
+        Directory();
+
+        ~Directory();
+
+        enum class CreateDirectories : bool 
+        {
+            NO,
+            YES
+        }; // enum class CreateDirectories : bool 
+
+    private:
+        /**
+         * @brief Construct a new Directory object
+         * 
+         * @param directory_fd 
+         * @param path 
+         */
+        Directory(int directory_fd, Optional<LexicalPath> path);
+
+        /**
+         * @param path 
+         * @return ErrorOr<void> 
+         */
+        static ErrorOr<void> ensure_directory(LexicalPath const& path);
+
+        Optional<LexicalPath> m_path;
+
+        int m_directory_fd;
+
+    }; // class Directory
+
 } // namespace Core
+
+
+namespace Mods
+{
+    /**
+     * @tparam  
+     */
+    template<>
+    struct Formatter<Core::Directory> : Formatter<StringView>
+    {
+        ErrorOr<void> format()
+        {
+            auto path = directory.path();
+
+            if (path.is_error()) {
+                return Formatter<StringView>::format(builder);
+            }
+
+            return Formatter<StringView>::format(builder);
+        }
+    }; // struct Formatter<Core::Directory> : Formatter<StringView>
+} // namespace Mods
