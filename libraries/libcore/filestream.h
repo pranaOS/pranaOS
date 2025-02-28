@@ -88,6 +88,41 @@ namespace Core
             return true;
         }
 
+        /**
+         * @param offset 
+         * @param whence 
+         * @return true 
+         * @return false 
+         */
+        bool seek(size_t offset, SeekMode whence = SeekMode::SetPosition)
+        {
+            return m_file->seek(offset, whenece)
+        }
+
+        /**
+         * @param count 
+         * @return true 
+         * @return false 
+         */
+        bool discard_or_error(size_t count) override 
+        { 
+            return m_file->seek(count, SeekMode::FromCurrentPosition); 
+        }
+
+        /**
+         * @return true 
+         * @return false 
+         */
+        bool unreliable_eof() const override 
+        { 
+            return m_file->eof(); 
+        }
+
+        void close()
+        {
+            if (!m_file->close())
+                set_fatal_error();
+        }
     private:
         NonnullRefPtr<File> m_file;
     }; // class InputFileStream final : public InputStream
