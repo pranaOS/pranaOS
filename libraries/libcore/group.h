@@ -21,7 +21,29 @@ namespace Core
     
     class Group
     {
+    private:
+        /**
+         * @param name 
+         * @return ErrorOr<bool> 
+         */
+        static ErrorOr<bool> name_exists(StringView name);
 
+        /**
+         * @param id 
+         * @return ErrorOr<bool> 
+         */
+        static ErrorOr<bool> id_exists(gid_t id);
+
+        /**
+         * @return ErrorOr<struct group> 
+         */
+        ErrorOr<struct group> to_libc_group();
+
+        String m_name;
+        
+        gid_t m_id { 0 };
+
+        Vector<String> m_members;
     }; // class Group
-    
+
 } // namespace Core
