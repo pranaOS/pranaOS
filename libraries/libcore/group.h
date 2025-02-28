@@ -9,3 +9,19 @@
  * 
  */
 
+#pragma once
+
+#include <mods/error.h>
+#include <mods/string.h>
+#include <mods/vector.h>
+#include <grp.h>
+
+namespace Core
+{
+    
+    class Group
+    {
+
+    }; // class Group
+    
+} // namespace Core
