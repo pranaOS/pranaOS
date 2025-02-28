@@ -16,5 +16,33 @@
 
 namespace Core
 {
+    /**
+     * @brief Construct a new DirIterator::DirIterator object
+     * 
+     * @param path 
+     * @param flags 
+     */
+    DirIterator::DirIterator(String path, Flags flags)
+        : m_path(move(path))
+        , m_flags(flags)
+    {
+        m_dir = opendir(m_path.characters());
+
+        if (!m_dir) {
+            m_error = errno;
+        }
+    }
+
+    /**
+     * @brief Destroy the DirIterator::DirIterator object
+     * 
+     */
+    DirIterator::~DirIterator()
+    {
+        if (m_dir) {
+            closedir(m_dir);
+            m_dir = nullptr;
+        }
+    }
     
 } // namespace Core
