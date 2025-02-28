@@ -9,7 +9,7 @@
  * 
  */
 
-#pragma once 
+#pragma once
 
 #include <mods/string.h>
 #include <dirent.h>
@@ -17,30 +17,51 @@
 
 namespace Core 
 {
+
     class DirIterator 
     {
     public:
-        
+
         enum Flags 
         {
             NoFlags = 0x0,
             SkipDots = 0x1,
             SkipParentAndBaseDir = 0x2,
-        }; // enum Flags
+        }; // enum Flags    
 
         /**
+         * @brief Construct a new DirIterator object
+         * 
          * @param path 
          */
-        DirIterator(const StringView& path, Flags = Flags::NoFlags);
+        explicit DirIterator(String path, Flags = Flags::NoFlags);
 
-        /// @brief Destroy the Dir Iterator object
+        /**
+         * @brief Destroy the DirIterator object
+         * 
+         */
         ~DirIterator();
+
+        /**
+         * @brief Construct a new DirIterator object
+         * 
+         */
+        DirIterator(DirIterator&&);
+
+        /**
+         * @brief Construct a new DirIterator object
+         * 
+         */
+        DirIterator(DirIterator const&) = delete;
 
         /**
          * @return true 
          * @return false 
          */
-        bool has_error() const { return m_error != 0; }
+        bool has_error() const 
+        { 
+            return m_error != 0; 
+        }
 
         /**
          * @return int 
@@ -51,17 +72,29 @@ namespace Core
         }
 
         /**
-         * @return const char* 
+         * @return char const* 
          */
-        const char* error_string() const 
+        char const* error_string() const 
         { 
             return strerror(m_error); 
         }
 
+        /**
+         * @return true 
+         * @return false 
+         */
         bool has_next();
-        
+
+        /**
+         * @return String 
+         */
         String next_path();
         String next_full_path();
+
+        /**
+         * @return int 
+         */
+        int fd() const;
 
     private:
         DIR* m_dir = nullptr;
