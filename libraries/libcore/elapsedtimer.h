@@ -9,18 +9,32 @@
  * 
  */
 
-#pragma once 
+#pragma once
 
+#include <mods/time.h>
 #include <sys/time.h>
 
 namespace Core 
 {
+
     class ElapsedTimer 
     {
     public:
-        ///  @brief Construct a new Elapsed Timer object
-        ElapsedTimer() { }
-        
+        /**
+         * @return ElapsedTimer 
+         */
+        static ElapsedTimer start_new();
+
+        /**
+         * @brief Construct a new ElapsedTimer object
+         * 
+         * @param precise 
+         */
+        ElapsedTimer(bool precise = false)
+            : m_precise(precise)
+        {
+        }
+
         /**
          * @return true 
          * @return false 
@@ -31,11 +45,17 @@ namespace Core
         }
 
         void start();
+        void reset();
 
         /**
          * @return int 
          */
         int elapsed() const;
+
+        /**
+         * @return Time 
+         */
+        Time elapsed_time() const;
 
         /**
          * @return const struct timeval& 
@@ -46,8 +66,11 @@ namespace Core
         }
 
     private:
+        bool m_precise { false };
         bool m_valid { false };
-        struct timeval m_origin_time { 0, 0 };
+        struct timeval m_origin_time {
+            0, 0
+        };
     }; // class ElapsedTimer
 
 } // namespace Core
