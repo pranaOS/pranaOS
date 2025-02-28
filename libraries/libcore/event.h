@@ -41,7 +41,7 @@ namespace Core
          * @brief Construct a new Event object
          * 
          */
-        Event() { }
+        Event() = default;
 
         /**
          * @brief Construct a new Event object
@@ -57,36 +57,39 @@ namespace Core
          * @brief Destroy the Event object
          * 
          */
-        virtual ~Event() { }
+        virtual ~Event() = default;
 
+        /**
+         * @return unsigned 
+         */
         unsigned type() const 
         { 
             return m_type; 
         }
 
+        /**
+         * @return true 
+         * @return false 
+         */
         bool is_accepted() const 
         { 
             return m_accepted; 
         }
-
+        
         void accept() 
         { 
             m_accepted = true; 
         }
-
+        
         void ignore() 
         { 
             m_accepted = false; 
         }
 
     private:
-        unsigned m_type 
-        { 
-            Type::Invalid 
-        };
-
+        unsigned m_type { Type::Invalid };
         bool m_accepted { true };
-    }; // class Event 
+    }; // class Event
 
     class DeferredInvocationEvent : public Event 
     {
@@ -126,11 +129,14 @@ namespace Core
         }
 
         /**
-         * @brief Destroy the Timer Event object
+         * @brief Destroy the TimerEvent object
          * 
          */
-        ~TimerEvent() { }
+        ~TimerEvent() = default;
 
+        /**
+         * @return int 
+         */
         int timer_id() const 
         { 
             return m_timer_id; 
@@ -142,9 +148,9 @@ namespace Core
 
     class NotifierReadEvent final : public Event 
     {
-    public:
+    public: 
         /**
-         * @brief Construct a new Notifier Read Event object
+         * @brief Construct a new NotifierReadEvent object
          * 
          * @param fd 
          */
@@ -155,11 +161,14 @@ namespace Core
         }
 
         /**
-         * @brief Destroy the Notifier Read Event object
+         * @brief Destroy the NotifierReadEvent object
          * 
          */
-        ~NotifierReadEvent() { }
+        ~NotifierReadEvent() = default;
 
+        /**
+         * @return int 
+         */
         int fd() const 
         { 
             return m_fd; 
@@ -173,7 +182,7 @@ namespace Core
     {
     public:
         /**
-         * @brief Construct a new Notifier Write Event object
+         * @brief Construct a new NotifierWriteEvent object
          * 
          * @param fd 
          */
@@ -184,11 +193,14 @@ namespace Core
         }
 
         /**
-         * @brief Destroy the Notifier Write Event object
+         * @brief Destroy the NotifierWriteEvent object
          * 
          */
-        ~NotifierWriteEvent() { }
+        ~NotifierWriteEvent() = default;
 
+        /**
+         * @return int 
+         */
         int fd() const 
         { 
             return m_fd; 
@@ -202,7 +214,7 @@ namespace Core
     {
     public:
         /**
-         * @brief Construct a new Child Event object
+         * @brief Construct a new ChildEvent object
          * 
          * @param child 
          * @param insertion_before_child 
@@ -210,24 +222,19 @@ namespace Core
         ChildEvent(Type, Object& child, Object* insertion_before_child = nullptr);
 
         /**
-         * @brief Destroy the Child Event object
+         * @brief Destroy the ChildEvent object
          * 
          */
-        ~ChildEvent();
+        ~ChildEvent() = default;
 
         /**
          * @return Object* 
          */
         Object* child();
-
-        /**
-         * @return const Object* 
-         */
-        const Object* child() const;
+        Object const* child() const;
 
         Object* insertion_before_child();
-
-        const Object* insertion_before_child() const;
+        Object const* insertion_before_child() const;
 
     private:
         WeakPtr<Object> m_child;
@@ -238,7 +245,7 @@ namespace Core
     {
     public:
         /**
-         * @brief Construct a new Custom Event object
+         * @brief Construct a new CustomEvent object
          * 
          * @param custom_type 
          */
@@ -249,10 +256,10 @@ namespace Core
         }
 
         /**
-         * @brief Destroy the Custom Event object
+         * @brief Destroy the CustomEvent object
          * 
          */
-        ~CustomEvent() { }
+        ~CustomEvent() = default;
 
         /**
          * @return int 
