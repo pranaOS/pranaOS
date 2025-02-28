@@ -9,50 +9,48 @@
  * 
  */
 
+#include <libcore/getpassword.h>
+#include <libcore/system.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <termios.h>
-#include <libcore/getpassword.h>
+#include <unistd.h>
 
 namespace Core 
 {
     /**
+     * @brief Get the password object
+     * 
      * @param prompt 
-     * @return Result<String, int> 
+     * @return ErrorOr<SecretString> 
      */
-    Result<String, int> get_password(const StringView& prompt)
+    ErrorOr<SecretString> get_password(StringView prompt)
     {
-        fwrite(prompt.characters_without_null_termination(), sizeof(char), prompt.length(), stdout);
-        fflush(stdout);
+        TRY(Core::System::write(STDOUT_FILENO, prompt.bytes()));
 
-        struct termios original;
-        tcgetattr(STDIN_FILENO, &original);
+        auto original = TRY(Core::System::tcgetattr(STDIN_FILENO));
 
-        struct termios no_echo = original;
+        termios no_echo = original;
         no_echo.c_lflag &= ~ECHO;
 
-        if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &no_echo) < 0) {
-            return errno;
-        }
+        TRY(Core::System::tcsetattr(STDIN_FILENO, TCSAFLUSH, no_echo));
 
         char* password = nullptr;
-
         size_t n = 0;
 
-        int ret = getline(&password, &n, stdin);
+        auto line_length = getline(&password, &n, stdin);
+        auto saved_errno = errno;
 
         tcsetattr(STDIN_FILENO, TCSAFLUSH, &original);
-
         putchar('\n');
 
-        if (ret < 0) {
-            return errno;
-        }
+        if (line_length < 0)
+            return Error::from_errno(saved_errno);
 
-        String s(password);
+        VERIFY(line_length != 0);
 
-        free(password);
+        password[line_length - 1] = '\0';
 
-        return s;
-    } // Result<String, int> get_password
+        return SecretString::take_ownership(password, line_length);
+    }
 } // namespace Core
