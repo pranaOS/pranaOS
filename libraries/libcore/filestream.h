@@ -17,20 +17,21 @@
 #include <mods/try.h>
 #include <libcore/file.h>
 
-namespace Core
+namespace Core 
 {
 
-    class InputFileStream final : public InputStream
+    class InputFileStream final : public InputStream 
     {
     public:
         /**
-         * @brief Construct a new Input File Stream object
+         * @brief Construct a new InputFileStream object
          * 
          * @param file 
          */
         explicit InputFileStream(NonnullRefPtr<File> file)
             : m_file(file)
-        {}
+        {
+        }
 
         /**
          * @param filename 
@@ -70,6 +71,7 @@ namespace Core
                 return 0;
 
             auto const buffer = m_file->read(bytes.size());
+
             return buffer.bytes().copy_to(bytes);
         }
 
@@ -96,7 +98,7 @@ namespace Core
          */
         bool seek(size_t offset, SeekMode whence = SeekMode::SetPosition)
         {
-            return m_file->seek(offset, whenece)
+            return m_file->seek(offset, whence);
         }
 
         /**
@@ -123,7 +125,113 @@ namespace Core
             if (!m_file->close())
                 set_fatal_error();
         }
+
     private:
         NonnullRefPtr<File> m_file;
     }; // class InputFileStream final : public InputStream
+
+    class OutputFileStream : public OutputStream 
+    {
+    public:
+        /**
+         * @brief Construct a new OutputFileStream object
+         * 
+         * @param file 
+         */
+        explicit OutputFileStream(NonnullRefPtr<File> file)
+            : m_file(file)
+        {
+        }
+
+        /**
+         * @param filename 
+         * @param mode 
+         * @param permissions 
+         * @return ErrorOr<OutputFileStream> 
+         */
+        static ErrorOr<OutputFileStream> open(StringView filename, OpenMode mode = OpenMode::WriteOnly, mode_t permissions = 0644)
+        {
+            VERIFY(has_flag(mode, OpenMode::WriteOnly));
+            auto file = TRY(File::open(filename, mode, permissions));
+
+            return OutputFileStream { move(file) };
+        }
+
+        /**
+         * @param filename 
+         * @param mode 
+         * @param permissions 
+         * @return ErrorOr<Buffered<OutputFileStream>> 
+         */
+        static ErrorOr<Buffered<OutputFileStream>> open_buffered(StringView filename, OpenMode mode = OpenMode::WriteOnly, mode_t permissions = 0644)
+        {
+            VERIFY(has_flag(mode, OpenMode::WriteOnly));
+            auto file = TRY(File::open(filename, mode, permissions));
+
+            return Buffered<OutputFileStream> { move(file) };
+        }
+
+        /**
+         * @return OutputFileStream 
+         */
+        static OutputFileStream standard_output()
+        {
+            return OutputFileStream { Core::File::standard_output() };
+        }   
+
+        /**
+         * @return OutputFileStream 
+         */
+        static OutputFileStream standard_error()
+        {
+            return OutputFileStream { Core::File::standard_error() };
+        }
+
+        /**
+         * @return Buffered<OutputFileStream> 
+         */
+        static Buffered<OutputFileStream> stdout_buffered()
+        {
+            return Buffered<OutputFileStream> { Core::File::standard_output() };
+        }
+
+        /**
+         * @param bytes 
+         * @return size_t 
+         */
+        size_t write(ReadonlyBytes bytes) override
+        {
+            if (!m_file->write(bytes.data(), bytes.size())) {
+                set_fatal_error();
+                return 0;
+            }
+
+            return bytes.size();
+        }
+
+        /**
+         * @param bytes 
+         * @return true 
+         * @return false 
+         */
+        bool write_or_error(ReadonlyBytes bytes) override
+        {
+            if (write(bytes) < bytes.size()) {
+                set_fatal_error();
+                return false;
+            }
+
+            return true;
+        }
+
+        void close()
+        {
+            if (!m_file->close())
+                set_fatal_error();
+        }
+
+    private:
+        NonnullRefPtr<File> m_file;
+    }; // class OutputFileStream : public OutputStream
+
 } // namespace Core
