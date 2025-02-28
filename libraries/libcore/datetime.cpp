@@ -13,11 +13,13 @@
 #include <mods/dateconstants.h>
 #include <mods/stringbuilder.h>
 #include <mods/time.h>
+#include <libcore/datetime.h>
 #include <errno.h>
 #include <time.h>
 
-namespace Core
+namespace Core 
 {
+
     /**
      * @return DateTime 
      */
@@ -31,10 +33,11 @@ namespace Core
      * @param month 
      * @param day 
      * @param hour 
+     * @param minute 
      * @param second 
      * @return DateTime 
      */
-    DateTime DateTime::create(int year, int month, int day, int hour, int second)
+    DateTime DateTime::create(int year, int month, int day, int hour, int minute, int second)
     {
         DateTime dt;
         dt.set_time(year, month, day, hour, minute, second);
@@ -49,14 +52,15 @@ namespace Core
     {
         struct tm tm;
         localtime_r(&timestamp, &tm);
-        DateTime tm;
+        DateTime dt;
 
         dt.m_year = tm.tm_year + 1900;
         dt.m_month = tm.tm_mon + 1;
         dt.m_day = tm.tm_mday;
         dt.m_hour = tm.tm_hour;
         dt.m_minute = tm.tm_min;
-        dt.m_second = tm.tm_second;
+        dt.m_second = tm.tm_sec;
+        dt.m_timestamp = timestamp;
 
         return dt;
     }
@@ -78,9 +82,14 @@ namespace Core
     }
 
     /**
-     * @return true 
-     * @return false 
+     * @brief 
+     * @return unsigned 
      */
+    unsigned DateTime::day_of_year() const
+    {
+        return ::day_of_year(m_year, m_month, m_day);
+    }
+
     bool DateTime::is_leap_year() const
     {
         return ::is_leap_year(m_year);
@@ -114,4 +123,459 @@ namespace Core
         m_minute = tm.tm_min;
         m_second = tm.tm_sec;
     }
+
+    /**
+     * @param format 
+     * @return String 
+     */
+    String DateTime::to_string(StringView format) const
+    {
+        struct tm tm;
+        localtime_r(&m_timestamp, &tm);
+        StringBuilder builder;
+        int const format_len = format.length();
+
+        auto format_time_zone_offset = [&](bool with_separator) {
+    #if defined(__pranaos__)
+            auto offset_seconds = daylight ? -altzone : -timezone;
+    #elif !defined(__FreeBSD__)
+            auto offset_seconds = -timezone;
+    #else
+            auto offset_seconds = 0;
+    #endif
+            StringView offset_sign;
+
+            if (offset_seconds >= 0) {
+                offset_sign = "+"sv;
+            } else {
+                offset_sign = "-"sv;
+                offset_seconds *= -1;
+            }
+
+            auto offset_hours = offset_seconds / 3600;
+            auto offset_minutes = (offset_seconds % 3600) / 60;
+            auto separator = with_separator ? ":"sv : ""sv;
+
+            builder.appendff("{}{:02}{}{:02}", offset_sign, offset_hours, separator, offset_minutes);
+        };
+
+        for (int i = 0; i < format_len; ++i) {
+            if (format[i] != '%') {
+                builder.append(format[i]);
+            } else {
+                if (++i == format_len)
+                    return String();
+
+                switch (format[i]) {
+                case 'a':
+                    builder.append(short_day_names[tm.tm_wday]);
+                    break;
+                case 'A':
+                    builder.append(long_day_names[tm.tm_wday]);
+                    break;
+                case 'b':
+                    builder.append(short_month_names[tm.tm_mon]);
+                    break;
+                case 'B':
+                    builder.append(long_month_names[tm.tm_mon]);
+                    break;
+                case 'C':
+                    builder.appendff("{:02}", (tm.tm_year + 1900) / 100);
+                    break;
+                case 'd':
+                    builder.appendff("{:02}", tm.tm_mday);
+                    break;
+                case 'D':
+                    builder.appendff("{:02}/{:02}/{:02}", tm.tm_mon + 1, tm.tm_mday, (tm.tm_year + 1900) % 100);
+                    break;
+                case 'e':
+                    builder.appendff("{:2}", tm.tm_mday);
+                    break;
+                case 'h':
+                    builder.append(short_month_names[tm.tm_mon]);
+                    break;
+                case 'H':
+                    builder.appendff("{:02}", tm.tm_hour);
+                    break;
+                case 'I': {
+                    int display_hour = tm.tm_hour % 12;
+                    if (display_hour == 0)
+                        display_hour = 12;
+                    builder.appendff("{:02}", display_hour);
+                    break;
+                }
+                case 'j':
+                    builder.appendff("{:03}", tm.tm_yday + 1);
+                    break;
+                case 'm':
+                    builder.appendff("{:02}", tm.tm_mon + 1);
+                    break;
+                case 'M':
+                    builder.appendff("{:02}", tm.tm_min);
+                    break;
+                case 'n':
+                    builder.append('\n');
+                    break;
+                case 'p':
+                    builder.append(tm.tm_hour < 12 ? "AM" : "PM");
+                    break;
+                case 'r': {
+                    int display_hour = tm.tm_hour % 12;
+                    if (display_hour == 0)
+                        display_hour = 12;
+                    builder.appendff("{:02}:{:02}:{:02} {}", display_hour, tm.tm_min, tm.tm_sec, tm.tm_hour < 12 ? "AM" : "PM");
+                    break;
+                }
+                case 'R':
+                    builder.appendff("{:02}:{:02}", tm.tm_hour, tm.tm_min);
+                    break;
+                case 'S':
+                    builder.appendff("{:02}", tm.tm_sec);
+                    break;
+                case 't':
+                    builder.append('\t');
+                    break;
+                case 'T':
+                    builder.appendff("{:02}:{:02}:{:02}", tm.tm_hour, tm.tm_min, tm.tm_sec);
+                    break;
+                case 'u':
+                    builder.appendff("{}", tm.tm_wday ? tm.tm_wday : 7);
+                    break;
+                case 'U': {
+                    int const wday_of_year_beginning = (tm.tm_wday + 6 * tm.tm_yday) % 7;
+                    int const week_number = (tm.tm_yday + wday_of_year_beginning) / 7;
+                    builder.appendff("{:02}", week_number);
+                    break;
+                }
+                case 'V': {
+                    int const wday_of_year_beginning = (tm.tm_wday + 6 + 6 * tm.tm_yday) % 7;
+                    int week_number = (tm.tm_yday + wday_of_year_beginning) / 7 + 1;
+                    if (wday_of_year_beginning > 3) {
+                        if (tm.tm_yday >= 7 - wday_of_year_beginning)
+                            --week_number;
+                        else {
+                            int const days_of_last_year = days_in_year(tm.tm_year + 1900 - 1);
+                            int const wday_of_last_year_beginning = (wday_of_year_beginning + 6 * days_of_last_year) % 7;
+                            week_number = (days_of_last_year + wday_of_last_year_beginning) / 7 + 1;
+                            if (wday_of_last_year_beginning > 3)
+                                --week_number;
+                        }
+                    }
+                    builder.appendff("{:02}", week_number);
+                    break;
+                }
+                case 'w':
+                    builder.appendff("{}", tm.tm_wday);
+                    break;
+                case 'W': {
+                    int const wday_of_year_beginning = (tm.tm_wday + 6 + 6 * tm.tm_yday) % 7;
+                    int const week_number = (tm.tm_yday + wday_of_year_beginning) / 7;
+                    builder.appendff("{:02}", week_number);
+                    break;
+                }
+                case 'y':
+                    builder.appendff("{:02}", (tm.tm_year + 1900) % 100);
+                    break;
+                case 'Y':
+                    builder.appendff("{}", tm.tm_year + 1900);
+                    break;
+                case 'z':
+                    format_time_zone_offset(false);
+                    break;
+                case ':':
+                    if (++i == format_len) {
+                        builder.append("%:");
+                        break;
+                    }
+                    if (format[i] != 'z') {
+                        builder.append("%:");
+                        builder.append(format[i]);
+                        break;
+                    }
+                    format_time_zone_offset(true);
+                    break;
+                case 'Z':
+                    builder.append(tzname[daylight]);
+                    break;
+                case '%':
+                    builder.append('%');
+                    break;
+                default:
+                    builder.append('%');
+                    builder.append(format[i]);
+                    break;
+                }
+            }
+        }
+
+        return builder.build();
+    }
+
+    /**
+     * @param format 
+     * @param string 
+     * @return Optional<DateTime> 
+     */
+    Optional<DateTime> DateTime::parse(StringView format, String const& string)
+    {
+        unsigned format_pos = 0;
+        unsigned string_pos = 0;
+        struct tm tm = {};
+
+        auto parsing_failed = false;
+
+        auto parse_number = [&] {
+            if (string_pos >= string.length()) {
+                parsing_failed = true;
+                return 0;
+            }
+
+            char* end_ptr = nullptr;
+            errno = 0;
+            int number = strtol(string.characters() + string_pos, &end_ptr, 10);
+
+            auto chars_parsed = end_ptr - (string.characters() + string_pos);
+            if (chars_parsed == 0 || errno != 0)
+                parsing_failed = true;
+            else
+                string_pos += chars_parsed;
+            return number;
+        };
+
+        auto consume = [&](char x) {
+            if (string_pos >= string.length()) {
+                parsing_failed = true;
+                return;
+            }
+            if (string[string_pos] != x)
+                parsing_failed = true;
+            else
+                string_pos++;
+        };
+
+        while (format_pos < format.length() && string_pos < string.length()) {
+            if (format[format_pos] != '%') {
+                if (format[format_pos] != string[string_pos]) {
+                    return {};
+                }
+                format_pos++;
+                string_pos++;
+                continue;
+            }
+
+            format_pos++;
+            if (format_pos == format.length()) {
+                return {};
+            }
+            switch (format[format_pos]) {
+            case 'a': {
+                auto wday = 0;
+                for (auto name : short_day_names) {
+                    if (string.substring_view(string_pos).starts_with(name, Mods::CaseSensitivity::CaseInsensitive)) {
+                        string_pos += name.length();
+                        tm.tm_wday = wday;
+                        break;
+                    }
+                    ++wday;
+                }
+                if (wday == 7)
+                    return {};
+                break;
+            }
+            case 'A': {
+                auto wday = 0;
+                for (auto name : long_day_names) {
+                    if (string.substring_view(string_pos).starts_with(name, Mods::CaseSensitivity::CaseInsensitive)) {
+                        string_pos += name.length();
+                        tm.tm_wday = wday;
+                        break;
+                    }
+                    ++wday;
+                }
+                if (wday == 7)
+                    return {};
+                break;
+            }
+            case 'h':
+            case 'b': {
+                auto mon = 0;
+                for (auto name : short_month_names) {
+                    if (string.substring_view(string_pos).starts_with(name, Mods::CaseSensitivity::CaseInsensitive)) {
+                        string_pos += name.length();
+                        tm.tm_mon = mon;
+                        break;
+                    }
+                    ++mon;
+                }
+                if (mon == 12)
+                    return {};
+                break;
+            }
+            case 'B': {
+                auto mon = 0;
+                for (auto name : long_month_names) {
+                    if (string.substring_view(string_pos).starts_with(name, Mods::CaseSensitivity::CaseInsensitive)) {
+                        string_pos += name.length();
+                        tm.tm_mon = mon;
+                        break;
+                    }
+                    ++mon;
+                }
+                if (mon == 12)
+                    return {};
+                break;
+            }
+            case 'C': {
+                int num = parse_number();
+                tm.tm_year = (num - 19) * 100;
+                break;
+            }
+            case 'd': {
+                tm.tm_mday = parse_number();
+                break;
+            }
+            case 'D': {
+                int mon = parse_number();
+                consume('/');
+                int day = parse_number();
+                consume('/');
+                int year = parse_number();
+                tm.tm_mon = mon + 1;
+                tm.tm_mday = day;
+                tm.tm_year = (year + 1900) % 100;
+                break;
+            }
+            case 'e': {
+                tm.tm_mday = parse_number();
+                break;
+            }
+            case 'H': {
+                tm.tm_hour = parse_number();
+                break;
+            }
+            case 'I': {
+                int num = parse_number();
+                tm.tm_hour = num % 12;
+                break;
+            }
+            case 'j': {
+                tm.tm_mday = parse_number();
+                tm.tm_mon = 0;
+                mktime(&tm);
+                break;
+            }
+            case 'm': {
+                int num = parse_number();
+                tm.tm_mon = num - 1;
+                break;
+            }
+            case 'M': {
+                tm.tm_min = parse_number();
+                break;
+            }
+            case 'n':
+            case 't':
+                while (is_ascii_blank(string[string_pos])) {
+                    string_pos++;
+                }
+                break;
+            case 'p': {
+                auto ampm = string.substring_view(string_pos, 2);
+                if (ampm == "PM" && tm.tm_hour < 12) {
+                    tm.tm_hour += 12;
+                }
+                string_pos += 2;
+                break;
+            }
+            case 'r': {
+                auto ampm = string.substring_view(string_pos, 2);
+                if (ampm == "PM" && tm.tm_hour < 12) {
+                    tm.tm_hour += 12;
+                }
+                string_pos += 2;
+                break;
+            }
+            case 'R': {
+                tm.tm_hour = parse_number();
+                consume(':');
+                tm.tm_min = parse_number();
+                break;
+            }
+            case 'S':
+                tm.tm_sec = parse_number();
+                break;
+            case 'T':
+                tm.tm_hour = parse_number();
+                consume(':');
+                tm.tm_min = parse_number();
+                consume(':');
+                tm.tm_sec = parse_number();
+                break;
+            case 'w':
+                tm.tm_wday = parse_number();
+                break;
+            case 'y': {
+                int year = parse_number();
+                tm.tm_year = year <= 99 && year > 69 ? 1900 + year : 2000 + year;
+                break;
+            }
+            case 'Y': {
+                int year = parse_number();
+                tm.tm_year = year - 1900;
+                break;
+            }
+            case 'z': {
+                if (string[string_pos] == 'Z') {
+                    string_pos++;
+                    break;
+                }
+                int sign;
+
+                if (string[string_pos] == '+')
+                    sign = -1;
+                else if (string[string_pos] == '-')
+                    sign = +1;
+                else
+                    return {};
+
+                string_pos++;
+
+                auto hours = parse_number();
+                int minutes;
+                if (string_pos < string.length() && string[string_pos] == ':') {
+                    string_pos++;
+                    minutes = parse_number();
+                } else {
+                    minutes = hours % 100;
+                    hours = hours / 100;
+                }
+
+                tm.tm_hour += sign * hours;
+                tm.tm_min += sign * minutes;
+                break;
+            }
+            case '%':
+                if (string[string_pos] != '%') {
+                    return {};
+                }
+                string_pos += 1;
+                break;
+            default:
+                parsing_failed = true;
+                break;
+            }
+
+            if (parsing_failed) {
+                return {};
+            }
+
+            format_pos++;
+        }
+        if (string_pos != string.length() || format_pos != format.length()) {
+            return {};
+        }
+
+        return DateTime::from_timestamp(mktime(&tm));
+    }
+
 } // namespace Core
