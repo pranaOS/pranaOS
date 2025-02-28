@@ -33,4 +33,36 @@ namespace Core
         Type type;
         String event_path;
     }; // struct FileWatcherEvent 
+
+    MOD_ENUM_BITWISE_OPERATORS(FileWatcherEvent::Type);
+
+    class FileWatcherBase 
+    {
+    public:
+        virtual ~FileWatcherBase() = default;
+
+        /**
+         * @param path 
+         * @return true 
+         * @return false 
+         */
+        bool is_watching(String const& path) const 
+        { 
+            return m_path_to_wd.find(path) != m_path_to_wd.end(); 
+        }
+        
+    protected:  
+        /**
+         * @brief Construct a new File Watcher Base object
+         * 
+         * @param watcher_fd 
+         */
+        FileWatcherBase(int watcher_fd)
+            : m_watcher_fd(watcher_fd)
+        {}
+        
+        int m_watcher_fd { -1 };
+        HashMap<String, unsigned> m_path_to_wd;
+        HashMap<unsigned, String> m_wd_to_path;
+    }; // class FileWatcherBase 
 } // namespace Core
