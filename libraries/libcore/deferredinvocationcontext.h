@@ -5,7 +5,7 @@
  * @version 6.0
  * @date 2024-10-25
  * 
- * @copyright Copyright (c) 2021-2024 pranaOS Developers, Krisna Pranav
+ * @copyright Copyright (c) 2021-2025 pranaOS Developers, Krisna Pranav
  * 
  */
 
@@ -13,20 +13,18 @@
 
 #include <libcore/object.h>
 
-namespace Core
+namespace Core 
 {
+
     class DeferredInvocationContext final : public Core::Object 
     {
-        /**
-         * @brief Construct a new c object object
-         * 
-         */
         C_OBJECT(DeferredInvocationContext)
     private:
         /**
-         * @brief Construct a new Deferred Invocation Context object
+         * @brief Construct a new DeferredInvocationContext object
          * 
          */
-        DeferredInvocationContext() { }
+        DeferredInvocationContext() = default;
     }; // class DeferredInvocationContext final : public Core::Object 
-} // namespace Core 
+
+} // namespace Core
