@@ -53,4 +53,104 @@ namespace Core
 
         return read_buffer.size();
     }
+
+    /**
+     * @param offset 
+     * @param mode 
+     * @param pos 
+     * @return true 
+     * @return false 
+     */
+    bool IODevice::seek(i64 offset, SeekMode mode, off_t* pos)
+    {
+        int m = SEEK_SET;
+
+        switch (mode) {
+        case SeekMode::SetPosition:
+            m = SEEK_SET;
+            break;
+        case SeekMode::FromCurrentPosition:
+            m = SEEK_CUR;
+            offset -= m_buffered_data.size();
+            break;
+        case SeekMode::FromEndPosition:
+            m = SEEK_END;
+            break;
+        }
+
+        off_t rc = lseek(m_fd, offset, m);
+        
+        if (rc < 0) {
+            set_error(errno);
+            if (pos)
+                *pos = -1;
+            return false;
+        }
+        
+        m_buffered_data.clear();
+        m_eof = false;
+
+        if (pos)
+            *pos = rc;
+
+        return true;
+    }
+
+    /**
+     * @param size 
+     * @return true 
+     * @return false 
+     */
+    bool IODevice::truncate(off_t size)
+    {
+        int rc = ftruncate(m_fd, size);
+
+        if (rc < 0) {
+            set_error(errno);
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * @param data 
+     * @param size 
+     * @return true 
+     * @return false 
+     */
+    bool IODevice::write(u8 const* data, int size)
+    {
+        int rc = ::write(m_fd, data, size);
+
+        if (rc < 0) {
+            set_error(errno);
+            perror("IODevice::write: write");
+            return false;
+        }
+
+        return rc == size;
+    }
+
+    /**
+     * @param fd 
+     */
+    void IODevice::set_fd(int fd)
+    {
+        if (m_fd == fd)
+            return;
+
+        m_fd = fd;
+        did_update_fd(fd);
+    }
+
+    /**
+     * @param v 
+     * @return true 
+     * @return false 
+     */
+    bool IODevice::write(StringView v)
+    {
+        return write((u8 const*)v.characters_without_null_termination(), v.length());
+    }
 } // namespace Core
