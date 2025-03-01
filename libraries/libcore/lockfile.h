@@ -11,10 +11,10 @@
 
 #pragma once
 
-namespace Core
+namespace Core 
 {
-    
-    class LockFile
+
+    class LockFile 
     {
     public:
         enum class Type 
@@ -23,15 +23,47 @@ namespace Core
             Shared
         }; // enum class Type 
 
-        int error_code() const
-        {
-            return m_errno;
+        /**
+         * @brief Construct a new LockFile object
+         * 
+         * @param other 
+         */
+        LockFile(LockFile const& other) = delete;
+
+        /**
+         * @brief Construct a new LockFile object
+         * 
+         * @param filename 
+         * @param type 
+         */
+        LockFile(char const* filename, Type type = Type::Exclusive);
+
+        /**
+         * @brief Destroy the LockFile object
+         * 
+         */
+        ~LockFile();
+
+        /**
+         * @return true 
+         * @return false 
+         */
+        bool is_held() const;
+
+        /**
+         * @return int 
+         */
+        int error_code() const 
+        { 
+            return m_errno; 
         }
-        
+
+        void release();
+
     private:
         int m_fd { -1 };
         int m_errno { 0 };
         char const* m_filename { nullptr };
-    }; // class LockFile
+    }; // class LockFile 
 
 } // namespace Core
