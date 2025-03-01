@@ -11,12 +11,34 @@
 
 #pragma once
 
-namespace Core
+#include <mods/bytebuffer.h>
+#include <mods/refcounted.h>
+
+namespace Core 
 {
 
-    class NetworkResponse : public RefCounted<NetworkResponse>
+    class NetworkResponse : public RefCounted<NetworkResponse> 
     {
+    public:
+        /**
+         * @brief Destroy the NetworkResponse object
+         * 
+         */
+        virtual ~NetworkResponse() = default;
 
+        /**
+         * @return true 
+         * @return false 
+         */
+        bool is_error() const 
+        { 
+            return m_error; 
+        }
+
+    protected:
+        explicit NetworkResponse() = default;
+
+        bool m_error { false };
     }; // class NetworkResponse : public RefCounted<NetworkResponse>
-
+ 
 } // namespace Core
