@@ -9,7 +9,7 @@
  * 
  */
 
-#pragma once 
+#pragma once
 
 #include <mods/function.h>
 #include <libcore/object.h>
@@ -21,23 +21,24 @@ namespace Core
     {
         C_OBJECT(Notifier)
     public:
-
         enum Event 
         {
             None = 0,
             Read = 1,
             Write = 2,
             Exceptional = 4,
-        }; // enum Event
+        }; // enum Event 
 
-        /// @brief Destroy the Notifier object
+        /**
+         * @brief Destroy the Notifier object
+         * 
+         */
         virtual ~Notifier() override;
+
+        void set_enabled(bool);
 
         Function<void()> on_ready_to_read;
         Function<void()> on_ready_to_write;
-
-        /// @brief Set the enabled object
-        void set_enabled(bool);
 
         void close();
 
@@ -58,6 +59,8 @@ namespace Core
         }
 
         /**
+         * @brief Set the event mask object
+         * 
          * @param event_mask 
          */
         void set_event_mask(unsigned event_mask) 
@@ -65,12 +68,12 @@ namespace Core
             m_event_mask = event_mask; 
         }
 
-        /// @breif: core event
         void event(Core::Event&) override;
 
     private:
-
         /**
+         * @brief Construct a new Notifier object
+         * 
          * @param fd 
          * @param event_mask 
          * @param parent 
@@ -79,6 +82,6 @@ namespace Core
 
         int m_fd { -1 };
         unsigned m_event_mask { 0 };
+    }; // class Notifier : public Object
 
-    }; // class Notifier
 } // namespace Core
