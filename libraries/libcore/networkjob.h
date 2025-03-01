@@ -9,18 +9,21 @@
  * 
  */
 
-#pragma once 
+#pragma once
 
 #include <mods/function.h>
+#include <mods/stream.h>
+#include <libcore/forward.h>
 #include <libcore/object.h>
+#include <libcore/stream.h>
 
 namespace Core 
 {
+
     class NetworkJob : public Object 
     {
         C_OBJECT_ABSTRACT(NetworkJob)
     public:
-
         enum class Error 
         {
             None,
@@ -30,9 +33,13 @@ namespace Core
             Cancelled,
         }; // enum class Error
 
-        /// @brief Destroy the Network Job object
-        virtual ~NetworkJob() override;
+        /**
+         * @brief Destroy the NetworkJob object
+         * 
+         */
+        virtual ~NetworkJob() override = default;
 
+        Function<void(HashMap<String, String, CaseInsensitiveStringTraits> const& response_headers, Optional<u32> response_code)> on_headers_received;
         Function<void(bool success)> on_finish;
         Function<void(Optional<u32>, u32)> on_progress;
 
@@ -70,29 +77,37 @@ namespace Core
             return m_response.ptr(); 
         }
 
-        /**
-         * @return const NetworkResponse* 
-         */
-        const NetworkResponse* response() const 
+        NetworkResponse const* response() const 
         { 
             return m_response.ptr(); 
         }
-        
-        virtual void start() = 0;
-        virtual void shutdown() = 0;
+
+        enum class ShutdownMode 
+        {
+            DetachFromSocket,
+            CloseSocket,
+        }; // enum class ShutdownMode 
+
+        virtual void start(Core::Stream::Socket&) = 0;
+        virtual void shutdown(ShutdownMode) = 0;
+
+        /**
+         * @param error 
+         */
+        virtual void fail(Error error) 
+        { 
+            did_fail(error); 
+        }
 
         void cancel()
         {
-            shutdown();
+            shutdown(ShutdownMode::DetachFromSocket);
             m_error = Error::Cancelled;
         }
 
     protected:
-        /// @brief Construct a new Network Job object
-        NetworkJob();
-
+        NetworkJob(Core::Stream::Stream&);
         void did_finish(NonnullRefPtr<NetworkResponse>&&);
-
         void did_fail(Error);
 
         /**
@@ -101,15 +116,25 @@ namespace Core
          */
         void did_progress(Optional<u32> total_size, u32 downloaded);
 
+        /**
+         * @param bytes 
+         * @return ErrorOr<size_t> 
+         */
+        ErrorOr<size_t> do_write(ReadonlyBytes bytes) 
+        { 
+            return m_output_stream.write(bytes); 
+        }
+
     private:
         RefPtr<NetworkResponse> m_response;
+        Core::Stream::Stream& m_output_stream;
         Error m_error { Error::None };
+    }; // class NetworkJob : public Object
 
-    }; // class NetworkJob
-
-    /**
-     * @return const char* 
-     */
-    const char* to_string(NetworkJob::Error);
+    char const* to_string(NetworkJob::Error);
 
 } // namespace Core
+
+template<>
+struct Mods::Formatter<Core::NetworkJob> : Formatter<Core::Object> {
+};
