@@ -9,3 +9,7 @@
  * 
  */
 
+namespace Core
+{
+    
+} // namespace Core
