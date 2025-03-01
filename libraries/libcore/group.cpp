@@ -14,8 +14,9 @@
 #include <libcore/group.h>
 #include <libcore/system.h>
 
-namespace Core
+namespace Core 
 {
+
     #ifndef MOD_OS_BSD_GENERIC
     /**
      * @param group 
@@ -64,4 +65,63 @@ namespace Core
         return {};
     }
     #endif
-} // namespace Core
+
+    /**
+     * @brief Construct a new Group::Group object
+     * 
+     * @param name 
+     * @param id 
+     * @param members 
+     */
+    Group::Group(String name, gid_t id, Vector<String> members)
+        : m_name(move(name))
+        , m_id(id)
+        , m_members(move(members))
+    {
+    }
+
+    /**
+     * @param name 
+     * @return ErrorOr<bool> 
+     */
+    ErrorOr<bool> Group::name_exists(StringView name)
+    {
+        return TRY(Core::System::getgrnam(name)).has_value();
+    }   
+
+    /**
+     * @param id 
+     * @return ErrorOr<bool> 
+     */
+    ErrorOr<bool> Group::id_exists(gid_t id)
+    {
+        return TRY(Core::System::getgrgid(id)).has_value();
+    }
+
+    /**
+     * @return ErrorOr<struct group> 
+     */
+    ErrorOr<struct group> Group::to_libc_group()
+    {
+        struct group gr;
+        gr.gr_name = const_cast<char*>(m_name.characters());
+        gr.gr_passwd = const_cast<char*>("x");
+        gr.gr_gid = m_id;
+        gr.gr_mem = nullptr;
+
+        static Vector<char*> members;
+        members.clear_with_capacity();
+
+        if (m_members.size() > 0) {
+            TRY(members.try_ensure_capacity(m_members.size() + 1));
+            for (auto member : m_members)
+                members.unchecked_append(const_cast<char*>(member.characters()));
+            members.unchecked_append(nullptr);
+
+            gr.gr_mem = const_cast<char**>(members.data());
+        }
+
+        return gr;
+    }
+
+}
