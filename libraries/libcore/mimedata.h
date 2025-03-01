@@ -9,48 +9,50 @@
  * 
  */
 
-#pragma once 
+#pragma once
 
-#include <libcore/object.h>
-#include <mods/byte_buffer.h>
+#include <mods/bytebuffer.h>
 #include <mods/hashmap.h>
 #include <mods/url.h>
+#include <libcore/object.h>
 
 namespace Core 
 {
+
     class MimeData : public Object 
     {
         C_OBJECT(MimeData);
 
     public:
-
-        /// @brief Destroy the Mime Data object
-        virtual ~MimeData() { }
+        /**
+         * @brief Destroy the MimeData object
+         * 
+         */
+        virtual ~MimeData() = default;
 
         /**
          * @param mime_type 
          * @return ByteBuffer 
          */
-        ByteBuffer data(const String& mime_type) const 
+        ByteBuffer data(String const& mime_type) const 
         { 
             return m_data.get(mime_type).value_or({}); 
         }
 
         /**
+         * @brief Set the data object
+         * 
          * @param mime_type 
          * @param data 
          */
-        void set_data(const String& mime_type, const ByteBuffer& data) 
-        { 
-            m_data.set(mime_type, data); 
-        }
+        void set_data(String const& mime_type, ByteBuffer&& data) { m_data.set(mime_type, move(data)); }
 
         /**
          * @param mime_type 
          * @return true 
          * @return false 
          */
-        bool has_format(const String& mime_type) const 
+        bool has_format(String const& mime_type) const 
         { 
             return m_data.contains(mime_type); 
         }
@@ -59,6 +61,7 @@ namespace Core
          * @return Vector<String> 
          */
         Vector<String> formats() const;
+
 
         /**
          * @return true 
@@ -74,8 +77,7 @@ namespace Core
          */
         String text() const;
 
-        /// @brief Set the text object
-        void set_text(const String&);
+        void set_text(String const&);
 
         /**
          * @return true 
@@ -91,31 +93,44 @@ namespace Core
          */
         Vector<URL> urls() const;
 
-        /// @brief Set the urls object
-        void set_urls(const Vector<URL>&);
+        void set_urls(Vector<URL> const&);
 
         /**
-         * @return const HashMap<String, ByteBuffer>& 
+         * @return HashMap<String, ByteBuffer> const& 
          */
-        const HashMap<String, ByteBuffer>& all_data() const 
+        HashMap<String, ByteBuffer> const& all_data() const 
         { 
             return m_data; 
         }
 
     private:
-        /// @brief Construct a new Mime Data object
-        MimeData() { }
+        /**
+         * @brief Construct a new MimeData object
+         * 
+         */
+        MimeData() = default;
 
         /**
+         * @brief Construct a new MimeData object
+         * 
          * @param data 
          */
-        explicit MimeData(const HashMap<String, ByteBuffer>& data)
+        explicit MimeData(HashMap<String, ByteBuffer> const& data)
             : m_data(data)
         {
         }
 
         HashMap<String, ByteBuffer> m_data;
-    }; // class MimeData
+    }; // class MimeData : public Object
 
-    String guess_mime_type_based_on_filename(const StringView&);
+    /**
+     * @return String 
+     */
+    String guess_mime_type_based_on_filename(StringView);
+
+    /**
+     * @return Optional<String> 
+     */
+    Optional<String> guess_mime_type_based_on_sniffed_bytes(ReadonlyBytes);
+
 } // namespace Core
