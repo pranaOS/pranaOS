@@ -9,3 +9,14 @@
  * 
  */
 
+#pragma once
+
+namespace Core
+{
+
+    class NetworkResponse : public RefCounted<NetworkResponse>
+    {
+
+    }; // class NetworkResponse : public RefCounted<NetworkResponse>
+
+} // namespace Core
