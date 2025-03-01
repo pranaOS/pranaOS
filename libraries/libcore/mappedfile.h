@@ -17,7 +17,8 @@
 #include <mods/refcounted.h>
 #include <mods/result.h>
 
-namespace Core {
+namespace Core 
+{
 
     class MappedFile : public RefCounted<MappedFile> 
     {
@@ -39,35 +40,52 @@ namespace Core {
         static ErrorOr<NonnullRefPtr<MappedFile>> map_from_fd_and_close(int fd, String const& path);
 
         /**
-         * @brief Destroy the Mapped File object
+         * @brief Destroy the MappedFile object
          * 
          */
         ~MappedFile();
 
+        /**
+         * @return void* 
+         */
         void* data() 
         { 
             return m_data; 
         }
 
-        const void* data() const 
+        /**
+         * @return void const* 
+         */
+        void const* data() const 
         { 
             return m_data; 
         }
 
+        /**
+         * @return size_t 
+         */
         size_t size() const 
         { 
             return m_size; 
         }
 
+        /**
+         * @return ReadonlyBytes 
+         */
         ReadonlyBytes bytes() const 
         { 
             return { m_data, m_size }; 
         }
 
     private:
+        /**
+         * @brief Construct a new MappedFile object
+         * 
+         */
         explicit MappedFile(void*, size_t);
 
         void* m_data { nullptr };
         size_t m_size { 0 };
-    }; // class MappedFile : public RefCounted<MappedFile>
-} // namespace Core
+    }; // class MappedFile : public RefCounted<MappedFile> 
+
+} // namespace Core 
