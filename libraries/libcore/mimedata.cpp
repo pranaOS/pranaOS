@@ -48,4 +48,33 @@ namespace Core
 
         return urls;
     }
+
+    /**
+     * @param urls 
+     */
+    void MimeData::set_urls(Vector<URL> const& urls)
+    {
+        StringBuilder builder;
+        for (auto& url : urls) {
+            builder.append(url.to_string());
+            builder.append('\n');
+        }
+        set_data("text/uri-list", builder.to_byte_buffer());
+    }
+
+    /**
+     * @return String 
+     */
+    String MimeData::text() const
+    {
+        return String::copy(m_data.get("text/plain").value_or({}));
+    }
+
+    /**
+     * @param text 
+     */
+    void MimeData::set_text(String const& text)
+    {
+        set_data("text/plain", text.to_byte_buffer());
+    }
 } // namespace Core
