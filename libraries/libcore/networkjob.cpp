@@ -13,7 +13,7 @@
 #include <libcore/networkjob.h>
 #include <libcore/networkresponse.h>
 
-namespace Core
+namespace Core 
 {
 
     /**
@@ -50,5 +50,57 @@ namespace Core
         on_finish(true);
         shutdown(ShutdownMode::DetachFromSocket);
     }
-    
+
+    /**
+     * @param error 
+     */
+    void NetworkJob::did_fail(Error error)
+    {
+        if (is_cancelled())
+            return;
+
+        NonnullRefPtr<NetworkJob> protector(*this);
+
+        m_error = error;
+        dbgln_if(NETWORKJOB_DEBUG, "{}{{{:p}}} job did_fail! error: {} ({})", class_name(), this, (unsigned)error, to_string(error));
+        VERIFY(on_finish);
+        on_finish(false);
+        shutdown(ShutdownMode::DetachFromSocket);
+    }
+
+    /**
+     * @param total_size 
+     * @param downloaded 
+     */
+    void NetworkJob::did_progress(Optional<u32> total_size, u32 downloaded)
+    {
+        if (is_cancelled())
+            return;
+
+        NonnullRefPtr<NetworkJob> protector(*this);
+
+        if (on_progress)
+            on_progress(total_size, downloaded);
+    }
+
+    /**
+     * @param error 
+     * @return char const* 
+     */
+    char const* to_string(NetworkJob::Error error)
+    {
+        switch (error) {
+        case NetworkJob::Error::ProtocolFailed:
+            return "ProtocolFailed";
+        case NetworkJob::Error::ConnectionFailed:
+            return "ConnectionFailed";
+        case NetworkJob::Error::TransmissionFailed:
+            return "TransmissionFailed";
+        case NetworkJob::Error::Cancelled:
+            return "Cancelled";
+        default:
+            return "(Unknown error)";
+        }
+    }
+
 } // namespace Core
