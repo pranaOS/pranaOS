@@ -16,7 +16,26 @@ namespace Core
     
     class LocalServer : public Object
     {
+    public:
+        /**
+         * @brief Destroy the LocalServer object
+         * 
+         */
+        virtual ~LocalServer() override;
 
+    private:
+        /**
+         * @brief Construct a new LocalServer object
+         * 
+         * @param parent 
+         */
+        explicit LocalServer(Object* parent = nullptr);
+
+        void setup_notifier();
+
+        int m_fd { -1 };
+        bool m_listening { false };
+        RefPtr<Notifier> m_notifier;
     }; // class LocalServer : public Object
-    
+
 } // namespace Core
