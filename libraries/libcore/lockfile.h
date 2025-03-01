@@ -13,5 +13,25 @@
 
 namespace Core
 {
+    
+    class LockFile
+    {
+    public:
+        enum class Type 
+        {
+            Exclusive,
+            Shared
+        }; // enum class Type 
+
+        int error_code() const
+        {
+            return m_errno;
+        }
+        
+    private:
+        int m_fd { -1 };
+        int m_errno { 0 };
+        char const* m_filename { nullptr };
+    }; // class LockFile
 
 } // namespace Core
