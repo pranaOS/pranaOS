@@ -9,31 +9,121 @@
  * 
  */
 
-#pragma once 
+#pragma once
 
+#include <mods/enumbits.h>
 #include <mods/forward.h>
 #include <libcore/object.h>
 
 namespace Core 
 {
+
+    class IODevice;
+
+    class LineIterator 
+    {
+        MOD_MAKE_NONCOPYABLE(LineIterator);
+
+    public:
+        /**
+         * @brief Construct a new Line Iterator object
+         * 
+         * @param is_end 
+         */
+        explicit LineIterator(IODevice&, bool is_end = false);
+
+        /**
+         * @param other 
+         * @return true 
+         * @return false 
+         */
+        bool operator==(LineIterator const& other) const 
+        { 
+            return &other == this || (at_end() && other.is_end()) || (other.at_end() && is_end()); 
+        }
+
+        /**
+         * @return true 
+         * @return false 
+         */
+        bool is_end() const { return m_is_end; }
+        bool at_end() const;
+
+        /**
+         * @return LineIterator& 
+         */
+        LineIterator& operator++();
+
+        /**
+         * @return StringView 
+         */
+        StringView operator*() const { return m_buffer; }
+
+    private:
+        NonnullRefPtr<IODevice> m_device;
+        bool m_is_end { false };
+        String m_buffer;
+    }; // class LineIterator
+
+    class LineRange 
+    {
+    public:
+        /**
+         * @brief Construct a new LineRange object
+         * 
+         */
+        LineRange() = delete;
+
+        /**
+         * @brief Construct a new LineRange object
+         * 
+         * @param device 
+         */
+        explicit LineRange(IODevice& device)
+            : m_device(device)
+        {
+        }
+
+        /**
+         * @return LineIterator 
+         */
+        LineIterator begin();
+        LineIterator end();
+
+    private:
+        IODevice& m_device;
+    }; // class LineRange
+
+    enum class OpenMode : unsigned 
+    {
+        NotOpen = 0,
+        ReadOnly = 1,
+        WriteOnly = 2,
+        ReadWrite = 3,
+        Append = 4,
+        Truncate = 8,
+        MustBeNew = 16,
+        KeepOnExec = 32,
+    }; // enum class OpenMode : unsigned 
+
+    enum class SeekMode 
+    {
+        SetPosition,
+        FromCurrentPosition,
+        FromEndPosition,
+    }; // enum class SeekMode 
+
+    MOD_ENUM_BITWISE_OPERATORS(OpenMode)
+
     class IODevice : public Object 
     {
         C_OBJECT_ABSTRACT(IODevice)
     public:
-
-        enum OpenMode 
-        {
-            NotOpen = 0,
-            ReadOnly = 1,
-            WriteOnly = 2,
-            ReadWrite = 3,
-            Append = 4,
-            Truncate = 8,
-            MustBeNew = 16,
-        }; // enum OpenMode
-
-        /// @brief Destroy the IODevice object
-        virtual ~IODevice() override;
+        /**
+         * @brief Destroy the IODevice object
+         * 
+         */
+        virtual ~IODevice() override = default;
 
         /**
          * @return int 
@@ -44,9 +134,9 @@ namespace Core
         }
 
         /**
-         * @return unsigned 
+         * @return OpenMode 
          */
-        unsigned mode() const 
+        OpenMode mode() const 
         { 
             return m_mode; 
         }
@@ -57,7 +147,7 @@ namespace Core
          */
         bool is_open() const 
         { 
-            return m_mode != NotOpen; 
+            return m_mode != OpenMode::NotOpen; 
         }
 
         /**
@@ -78,9 +168,9 @@ namespace Core
         }
 
         /**
-         * @return const char* 
+         * @return char const* 
          */
-        const char* error_string() const;
+        char const* error_string() const;
 
         /**
          * @return true 
@@ -105,7 +195,7 @@ namespace Core
         ByteBuffer read(size_t max_size);
 
         ByteBuffer read_all();
-        
+
         /**
          * @param max_size 
          * @return String 
@@ -117,26 +207,23 @@ namespace Core
          * @return true 
          * @return false 
          */
-        bool write(const u8*, int size);
-
-        bool write(const StringView&);
+        bool write(u8 const*, int size);
 
         /**
          * @return true 
          * @return false 
          */
+        bool write(StringView);
+
         bool truncate(off_t);
 
         bool can_read_line() const;
 
         bool can_read() const;
-
-        enum class SeekMode 
-        {
-            SetPosition,
-            FromCurrentPosition,
-            FromEndPosition,
-        }; // enum class SeekMode
+        bool can_read_only_from_buffer() const 
+        { 
+            return !m_buffered_data.is_empty() && !can_read_from_fd(); 
+        }
 
         /**
          * @return true 
@@ -144,30 +231,36 @@ namespace Core
          */
         bool seek(i64, SeekMode = SeekMode::SetPosition, off_t* = nullptr);
 
-        /**
-         * @return true 
-         * @return false 
-         */
-        virtual bool open(IODevice::OpenMode) = 0;
-
+        virtual bool open(OpenMode) = 0;
         virtual bool close();
 
         /**
-         * @param ... 
-         * @return int 
+         * @return LineIterator 
          */
-        int printf(const char*, ...);
+        LineIterator line_begin() & { return LineIterator(*this); }
+        LineIterator line_end() { return LineIterator(*this, true); }
 
-    protected:  
         /**
+         * @return LineRange 
+         */
+        LineRange lines()
+        {
+            return LineRange(*this);
+        }
+
+    protected:
+        /**
+         * @brief Construct a new IODevice object
+         * 
          * @param parent 
          */
         explicit IODevice(Object* parent = nullptr);
 
-        /// @brief Set the fd object
         void set_fd(int);
 
         /**
+         * @brief Set the mode object
+         * 
          * @param mode 
          */
         void set_mode(OpenMode mode) 
@@ -176,6 +269,8 @@ namespace Core
         }
 
         /**
+         * @brief Set the error object
+         * 
          * @param error 
          */
         void set_error(int error) const 
@@ -184,6 +279,8 @@ namespace Core
         }
 
         /**
+         * @brief Set the eof object
+         * 
          * @param eof 
          */
         void set_eof(bool eof) const 
@@ -194,16 +291,19 @@ namespace Core
         virtual void did_update_fd(int) { }
 
     private:
-        bool populate_read_buffer() const;
+        /**
+         * @param size 
+         * @return true 
+         * @return false 
+         */
+        bool populate_read_buffer(size_t size = 1024) const;
         bool can_read_from_fd() const;
 
         int m_fd { -1 };
-
-        OpenMode m_mode { NotOpen };
-
+        OpenMode m_mode { OpenMode::NotOpen };
         mutable int m_error { 0 };
         mutable bool m_eof { false };
         mutable Vector<u8> m_buffered_data;
-
-    }; // class IODevice
+    }; // class IODevice : public Object
+ 
 } // namespace Core
