@@ -9,3 +9,23 @@
  * 
  */
 
+#include <libcore/property.h>
+
+namespace Core 
+{
+
+    /**
+     * @brief Construct a new Property::Property object
+     * 
+     * @param name 
+     * @param getter 
+     * @param setter 
+     */
+    Property::Property(String name, Function<JsonValue()> getter, Function<bool(JsonValue const&)> setter)
+        : m_name(move(name))
+        , m_getter(move(getter))
+        , m_setter(move(setter))
+    {
+    }
+
+} // namespace Core
