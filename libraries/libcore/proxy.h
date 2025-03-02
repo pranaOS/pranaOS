@@ -12,3 +12,13 @@
 #pragma once
 
 #include <mods/error.h>
+
+
+
+
+namespace IPC
+{
+    bool encode(Encoder&, Core::ProxyData const);
+
+    ErrorOr<void> decode(Decoder&, Core::ProxyData&);
+} // namespace IPC
