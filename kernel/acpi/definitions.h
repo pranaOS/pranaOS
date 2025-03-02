@@ -4,27 +4,27 @@
  * @brief definitions
  * @version 6.0
  * @date 2023-08-14
- * 
- * @copyright Copyright (c) 2021-2024 pranaOS Developers, Krisna Pranav
- * 
+ *
+ * @copyright Copyright (c) 2021-2025 pranaOS Developers, Krisna Pranav
+ *
  */
 
-#pragma once 
+#pragma once
 
 #include <kernel/physical_address.h>
 #include <mods/refcounted.h>
 #include <mods/types.h>
 #include <mods/vector.h>
 
-namespace Kernel 
+namespace Kernel
 {
 
-    namespace ACPI 
+    namespace ACPI
     {
 
         namespace FADTFlags {
 
-            enum class FeatureFlags : u32 
+            enum class FeatureFlags : u32
             {
                 WBINVD = 1 << 0,
                 WBINVD_FLUSH = 1 << 1,
@@ -50,7 +50,7 @@ namespace Kernel
                 LOW_POWER_S0_IDLE_CAPABLE = 1 << 21
             };
 
-            enum class IA_PC_Flags : u8 
+            enum class IA_PC_Flags : u8
             {
                 Legacy_Devices = 1 << 0,
                 PS2_8042 = 1 << 1,
@@ -96,9 +96,9 @@ namespace Kernel
             };
         };
 
-        namespace GenericAddressStructure 
+        namespace GenericAddressStructure
         {
-        enum class AddressSpace 
+        enum class AddressSpace
         {
             SystemMemory = 0,
             SystemIO = 1,
@@ -109,7 +109,7 @@ namespace Kernel
             FunctionalFixedHardware = 0x7F
         };
 
-        enum class AccessSize 
+        enum class AccessSize
         {
             Undefined = 0,
             Byte = 1,
@@ -118,7 +118,7 @@ namespace Kernel
             QWord = 4
         };
 
-        enum class BitWidth 
+        enum class BitWidth
         {
             Undefined = 0,
             Byte = 8,
@@ -128,7 +128,7 @@ namespace Kernel
         };
         }
 
-        namespace Structures 
+        namespace Structures
         {
         struct [[gnu::packed]] RSDPDescriptor
         {
@@ -254,7 +254,7 @@ namespace Kernel
             u64 hypervisor_vendor_identity;
         };
 
-        enum class MADTEntryType 
+        enum class MADTEntryType
         {
             LocalAPIC = 0x0,
             IOAPIC = 0x1,
@@ -280,7 +280,7 @@ namespace Kernel
             u8 length;
         };
 
-        namespace MADTEntries 
+        namespace MADTEntries
         {
             struct [[gnu::packed]] IOAPIC
             {
@@ -345,17 +345,17 @@ namespace Kernel
         class DynamicParser;
         class Parser;
 
-        namespace StaticParsing 
+        namespace StaticParsing
         {
             /**
-             * @return Optional<PhysicalAddress> 
+             * @return Optional<PhysicalAddress>
              */
             Optional<PhysicalAddress> find_rsdp();
 
             /**
-             * @param rsdp 
-             * @param signature 
-             * @return PhysicalAddress 
+             * @param rsdp
+             * @param signature
+             * @return PhysicalAddress
              */
             PhysicalAddress find_table(PhysicalAddress rsdp, const StringView& signature);
         } // namespace StaticParsing
