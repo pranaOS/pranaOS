@@ -13,8 +13,24 @@
 
 #include <mods/error.h>
 
+namespace Core
+{
+    struct ProxyData
+    {
+        enum Type 
+        {
+            Direct,
+            SOCKS5
+        };
 
-
+        /**
+         * @param other 
+         * @return true 
+         * @return false 
+         */
+        bool operator==(ProxyData const& other) const = default;
+    }; // struct ProxyData
+} // namespace Core
 
 namespace IPC
 {
