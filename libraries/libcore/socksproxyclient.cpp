@@ -14,41 +14,71 @@
 
 enum class Method : u8 
 {
-
+    NoAuth = 0x00,
+    GSSAPI = 0x01,
+    UsernamePassword = 0x02,
+    NoAcceptableMethods = 0xFF,
 }; // enum class Method : u8 
 
 enum class AddressType : u8 
 {
-
+    IPV4 = 0x01,
+    DomainName = 0x03,
+    IPV6 = 0x04,
 }; // enum class AddressType : u8 
 
 enum class Reply 
 {
+    Succeeded = 0x00,
+    GeneralSocksServerFailure = 0x01,
+    ConnectionNotAllowedByRuleset = 0x02,
+    NetworkUnreachable = 0x03,
+    HostUnreachable = 0x04,
+    ConnectionRefused = 0x05,
+    TTLExpired = 0x06,
+    CommandNotSupported = 0x07,
+    AddressTypeNotSupported = 0x08,
+}; // enum class Reply
 
-}; // enum class Reply 
-
-struct [[gnu::packed]] Socks5VersionIdentifierAndMethodSelectionMessage
-{
-
+struct [[gnu::packed]] Socks5VersionIdentifierAndMethodSelectionMessage {
+    u8 version_identifier;
+    u8 method_count;
+    u8 methods[1];
 }; // struct [[gnu::packed]] Socks5VersionIdentifierAndMethodSelectionMessage
 
-struct [[gnu::packed]] Socks5InitialResponse 
-{
+struct [[gnu::packed]] Socks5InitialResponse {
+    u8 version_identifier;
+    u8 method;
+}; // struct [[gnu::packed]] Socks5InitialResponse
 
-}; // struct [[gnu::packed]] Socks5InitialResponse 
+struct [[gnu::packed]] Socks5ConnectRequestHeader {
+    u8 version_identifier;
+    u8 command;
+    u8 reserved;
+}; // struct [[gnu::packed]] Socks5ConnectRequestHeader
 
-struct [[gnu::packed]] Socks5ConnectRequestHeader 
-{
-
-}; // struct [[gnu::packed]] Socks5ConnectRequestHeader 
-
-struct [[gnu::packed]] Socks5ConnectRequestTrailer
-{
-    
+struct [[gnu::packed]] Socks5ConnectRequestTrailer {
+    u16 port;
 }; // struct [[gnu::packed]] Socks5ConnectRequestTrailer
 
-namespace
+struct [[gnu::packed]] Socks5ConnectResponseHeader {
+    u8 version_identifier;
+    u8 status;
+    u8 reserved;
+}; // struct [[gnu::packed]] Socks5ConnectResponseHeader
+
+struct [[gnu::packed]] Socks5ConnectResponseTrailer {
+    u8 bind_port;
+}; // struct [[gnu::packed]] Socks5ConnectResponseTrailer
+
+struct [[gnu::packed]] Socks5UsernamePasswordResponse {
+    u8 version_identifier;
+    u8 status;
+}; // struct [[gnu::packed]] Socks5UsernamePasswordResponse
+ 
+namespace 
 {
+
     /**
      * @param reply 
      * @return StringView 
@@ -58,9 +88,23 @@ namespace
         switch (reply) {
         case Reply::Succeeded:
             return "Succeeded";
-        
+        case Reply::GeneralSocksServerFailure:
+            return "GeneralSocksServerFailure";
+        case Reply::ConnectionNotAllowedByRuleset:
+            return "ConnectionNotAllowedByRuleset";
+        case Reply::NetworkUnreachable:
+            return "NetworkUnreachable";
+        case Reply::HostUnreachable:
+            return "HostUnreachable";
+        case Reply::ConnectionRefused:
+            return "ConnectionRefused";
+        case Reply::TTLExpired:
+            return "TTLExpired";
+        case Reply::CommandNotSupported:
+            return "CommandNotSupported";
+        case Reply::AddressTypeNotSupported:
+            return "AddressTypeNotSupported";
         }
-
         VERIFY_NOT_REACHED();
     }
 
@@ -76,20 +120,183 @@ namespace
             .version_identifier = to_underlying(version),
             .method_count = 1,
             .methods = { to_underlying(method) },
-        }
+        };
 
         auto size = TRY(socket.write({ &message, sizeof(message) }));
 
         if (size != sizeof(message))
-            return Error::from_string_literal("SOCKS5 negotiation failed");
+            return Error::from_string_literal("SOCKS negotiation failed: Failed to send version identifier and method selection message");
 
         Socks5InitialResponse response;
-        
         size = TRY(socket.read({ &response, sizeof(response) })).size();
 
         if (size != sizeof(response))
-            return Error::from_string_literal("SOCKS5 negotiation failed");
+            return Error::from_string_literal("SOCKS negotiation failed: Failed to receive initial response");
+
+        if (response.version_identifier != to_underlying(version))
+            return Error::from_string_literal("SOCKS negotiation failed: Invalid version identifier");
+
+        if (response.method != to_underlying(method))
+            return Error::from_string_literal("SOCKS negotiation failed: Failed to negotiate a method");
+
+        return {};
+    }
+
+    /**
+     * @param socket 
+     * @param version 
+     * @param target 
+     * @param port 
+     * @param command 
+     * @return ErrorOr<Reply> 
+     */
+    ErrorOr<Reply> send_connect_request_message(Core::Stream::Socket& socket, Core::SOCKSProxyClient::Version version, Core::SOCKSProxyClient::HostOrIPV4 target, int port, Core::SOCKSProxyClient::Command command)
+    {
+        DuplexMemoryStream stream;
+
+        Socks5ConnectRequestHeader header {
+            .version_identifier = to_underlying(version),
+            .command = to_underlying(command),
+            .reserved = 0,
+        };
+
+        Socks5ConnectRequestTrailer trailer {
+            .port = htons(port),
+        };
+
+        auto size = stream.write({ &header, sizeof(header) });
         
+        if (size != sizeof(header))
+            return Error::from_string_literal("SOCKS negotiation failed: Failed to send connect request header");
+
+        TRY(target.visit(
+            [&](String const& hostname) -> ErrorOr<void> {
+                u8 address_data[2];
+                address_data[0] = to_underlying(AddressType::DomainName);
+                address_data[1] = hostname.length();
+                auto size = stream.write({ address_data, sizeof(address_data) });
+                if (size != array_size(address_data))
+                    return Error::from_string_literal("SOCKS negotiation failed: Failed to send connect request address data");
+                stream.write({ hostname.characters(), hostname.length() });
+                return {};
+            },
+            [&](u32 ipv4) -> ErrorOr<void> {
+                u8 address_data[5];
+                address_data[0] = to_underlying(AddressType::IPV4);
+                u32 network_ordered_ipv4 = NetworkOrdered<u32>(ipv4);
+                memcpy(address_data + 1, &network_ordered_ipv4, sizeof(network_ordered_ipv4));
+                auto size = stream.write({ address_data, sizeof(address_data) });
+                if (size != array_size(address_data))
+                    return Error::from_string_literal("SOCKS negotiation failed: Failed to send connect request address data");
+                return {};
+            }));
+
+        size = stream.write({ &trailer, sizeof(trailer) });
+
+        if (size != sizeof(trailer))
+            return Error::from_string_literal("SOCKS negotiation failed: Failed to send connect request trailer");
+
+        auto buffer = stream.copy_into_contiguous_buffer();
+        size = TRY(socket.write({ buffer.data(), buffer.size() }));
+
+        if (size != buffer.size())
+            return Error::from_string_literal("SOCKS negotiation failed: Failed to send connect request");
+
+        Socks5ConnectResponseHeader response_header;
+        size = TRY(socket.read({ &response_header, sizeof(response_header) })).size();
+
+        if (size != sizeof(response_header))
+            return Error::from_string_literal("SOCKS negotiation failed: Failed to receive connect response header");
+
+        if (response_header.version_identifier != to_underlying(version))
+            return Error::from_string_literal("SOCKS negotiation failed: Invalid version identifier");
+
+        u8 response_address_type;
+        size = TRY(socket.read({ &response_address_type, sizeof(response_address_type) })).size();
+
+        if (size != sizeof(response_address_type))
+            return Error::from_string_literal("SOCKS negotiation failed: Failed to receive connect response address type");
+
+        switch (AddressType(response_address_type)) {
+        case AddressType::IPV4: {
+            u8 response_address_data[4];
+            size = TRY(socket.read({ response_address_data, sizeof(response_address_data) })).size();
+            if (size != sizeof(response_address_data))
+                return Error::from_string_literal("SOCKS negotiation failed: Failed to receive connect response address data");
+            break;
+        }
+        case AddressType::DomainName: {
+            u8 response_address_length;
+            size = TRY(socket.read({ &response_address_length, sizeof(response_address_length) })).size();
+            if (size != sizeof(response_address_length))
+                return Error::from_string_literal("SOCKS negotiation failed: Failed to receive connect response address length");
+            ByteBuffer buffer;
+            buffer.resize(response_address_length);
+            size = TRY(socket.read(buffer)).size();
+            if (size != response_address_length)
+                return Error::from_string_literal("SOCKS negotiation failed: Failed to receive connect response address data");
+            break;
+        }
+        case AddressType::IPV6:
+        default:
+            return Error::from_string_literal("SOCKS negotiation failed: Invalid connect response address type");
+        }
+
+        u16 bound_port;
+        size = TRY(socket.read({ &bound_port, sizeof(bound_port) })).size();
+
+        if (size != sizeof(bound_port))
+            return Error::from_string_literal("SOCKS negotiation failed: Failed to receive connect response bound port");
+
+        return Reply(response_header.status);
+    }
+
+    /**
+     * @param socket 
+     * @param auth_data 
+     * @return ErrorOr<u8> 
+     */
+    ErrorOr<u8> send_username_password_authentication_message(Core::Stream::Socket& socket, Core::SOCKSProxyClient::UsernamePasswordAuthenticationData const& auth_data)
+    {
+        DuplexMemoryStream stream;
+
+        u8 version = 0x01;
+        auto size = stream.write({ &version, sizeof(version) });
+        if (size != sizeof(version))
+            return Error::from_string_literal("SOCKS negotiation failed: Failed to send username/password authentication message");
+
+        u8 username_length = auth_data.username.length();
+        size = stream.write({ &username_length, sizeof(username_length) });
+        if (size != sizeof(username_length))
+            return Error::from_string_literal("SOCKS negotiation failed: Failed to send username/password authentication message");
+
+        size = stream.write({ auth_data.username.characters(), auth_data.username.length() });
+        if (size != auth_data.username.length())
+            return Error::from_string_literal("SOCKS negotiation failed: Failed to send username/password authentication message");
+
+        u8 password_length = auth_data.password.length();
+        size = stream.write({ &password_length, sizeof(password_length) });
+        if (size != sizeof(password_length))
+            return Error::from_string_literal("SOCKS negotiation failed: Failed to send username/password authentication message");
+
+        size = stream.write({ auth_data.password.characters(), auth_data.password.length() });
+        if (size != auth_data.password.length())
+            return Error::from_string_literal("SOCKS negotiation failed: Failed to send username/password authentication message");
+
+        auto buffer = stream.copy_into_contiguous_buffer();
+        size = TRY(socket.write(buffer));
+        if (size != buffer.size())
+            return Error::from_string_literal("SOCKS negotiation failed: Failed to send username/password authentication message");
+
+        Socks5UsernamePasswordResponse response;
+        size = TRY(socket.read({ &response, sizeof(response) })).size();
+        if (size != sizeof(response))
+            return Error::from_string_literal("SOCKS negotiation failed: Failed to receive username/password authentication response");
+
+        if (response.version_identifier != version)
+            return Error::from_string_literal("SOCKS negotiation failed: Invalid version identifier");
+
+        return response.status;
     }
 } // namespace
 
