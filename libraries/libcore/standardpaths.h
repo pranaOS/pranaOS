@@ -9,3 +9,15 @@
  * 
  */
 
+#pragma once
+
+namespace Core
+{
+
+    class StandardPaths
+    {
+    public:
+    
+    }; // class StandardPaths
+
+} // namespace Core
