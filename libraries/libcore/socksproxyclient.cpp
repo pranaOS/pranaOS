@@ -46,3 +46,63 @@ struct [[gnu::packed]] Socks5ConnectRequestTrailer
 {
     
 }; // struct [[gnu::packed]] Socks5ConnectRequestTrailer
+
+namespace
+{
+    /**
+     * @param reply 
+     * @return StringView 
+     */
+    StringView reply_response_name(Reply reply)
+    {
+        switch (reply) {
+        case Reply::Succeeded:
+            return "Succeeded";
+        
+        }
+
+        VERIFY_NOT_REACHED();
+    }
+
+    /**
+     * @param socket 
+     * @param version 
+     * @param method 
+     * @return ErrorOr<void> 
+     */
+    ErrorOr<void> send_version_identifier_and_method_selection_message(Core::Stream::Socket& socket, Core::SOCKSProxyClient::Version version, Method method)
+    {
+        Socks5VersionIdentifierAndMethodSelectionMessage message {
+            .version_identifier = to_underlying(version),
+            .method_count = 1,
+            .methods = { to_underlying(method) },
+        }
+
+        auto size = TRY(socket.write({ &message, sizeof(message) }));
+
+        if (size != sizeof(message))
+            return Error::from_string_literal("SOCKS5 negotiation failed");
+
+        Socks5InitialResponse response;
+        
+        size = TRY(socket.read({ &response, sizeof(response) })).size();
+
+        if (size != sizeof(response))
+            return Error::from_string_literal("SOCKS5 negotiation failed");
+        
+    }
+} // namespace
+
+namespace Core
+{
+    /**
+     * @brief Destroy the SOCKSProxyClient::SOCKSProxyClient object
+     * 
+     */
+    SOCKSProxyClient::~SOCKSProxyClient()
+    {
+        close();
+        m_socket.on_ready_to_read = nullptr;
+    }
+    
+} // namespace Core
