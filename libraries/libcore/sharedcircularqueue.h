@@ -25,9 +25,25 @@ namespace Core
 
         enum class QueueStatus : u8 
         {
-
+            INVALID,
+            FULL,
+            EMPTY,
         }; // enum class QueueStatus : u8 
-        
+
+        SharedSingleProducerCircularQueue() = default;
+
+        constexpr size_t size() const
+        {
+            return Size;
+        }
+
+    private:
+        struct SharedMemorySPCQ
+        {
+
+        }; // struct SharedMemorySPCQ
+
+        String m_name {};
     }; // class SharedSingleProducerCircularQueue final 
 
 } // namespace Core
