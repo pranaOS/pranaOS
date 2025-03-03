@@ -9,3 +9,25 @@
  * 
  */
 
+
+#pragma once
+
+namespace Core
+{
+
+    template<typename T, size_t Size = 32>
+
+    requires(popcout(Size) == 1)
+    class SharedSingleProducerCircularQueue final 
+    {
+    public:
+        using ValueType = T;
+
+        enum class QueueStatus : u8 
+        {
+
+        }; // enum class QueueStatus : u8 
+        
+    }; // class SharedSingleProducerCircularQueue final 
+
+} // namespace Core
