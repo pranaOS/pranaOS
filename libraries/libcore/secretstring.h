@@ -9,3 +9,36 @@
  * 
  */
 
+#pragma once 
+
+#include <mods/bytebuffer.h>
+#include <mods/noncopyable.h>
+#include <mods/stringview.h>
+
+namespace Core 
+{
+    class SecretString 
+    {
+        MOD_MAKE_NONCOPYABLE(SecretString);
+
+    public:
+
+        /**
+         * @brief Construct a new Secret String object
+         * 
+         */
+        SecretString(SecretString&&) = default;
+
+        /**
+         * @return SecretString& 
+         */
+        SecretString& operator=(SecretString&) = default;
+
+        ~SecretString();
+
+    private:
+        explicit SecretString(ByteBuffer&&);
+
+        ByteBuffer m_secure_buffer;
+    }; // class SecretString 
+} // namespace Core 
