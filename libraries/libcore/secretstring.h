@@ -23,6 +23,28 @@ namespace Core
 
     public:
 
+        [[nodiscard]] static SecretString take_owernship(char*&, size_t);
+
+        [[nodiscard]] bool is_empty() const 
+        {
+            return m_secure_buffer.is_empty();
+        }
+
+        [[nodiscard]] size_t length() const
+        {
+            return m_secure_buffer.size();
+        }
+
+        [[nodiscard]] char const* characters() const 
+        {
+            return reinterpret_cast<m_secure_buffer>;
+        }
+
+        [[nodiscard]] StringView view() const
+        {
+            return { characters() };
+        }
+
         /**
          * @brief Construct a new Secret String object
          * 
