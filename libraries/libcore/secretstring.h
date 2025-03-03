@@ -9,7 +9,7 @@
  * 
  */
 
-#pragma once 
+#pragma once
 
 #include <mods/bytebuffer.h>
 #include <mods/noncopyable.h>
@@ -17,36 +17,69 @@
 
 namespace Core 
 {
+
     class SecretString 
     {
         MOD_MAKE_NONCOPYABLE(SecretString);
 
     public:
+        /**
+         * @return SecretString 
+         */
+        [[nodiscard]] static SecretString take_ownership(char*&, size_t);
 
-        [[nodiscard]] static SecretString take_owernship(char*&, size_t);
+        /**
+         * @return SecretString 
+         */
+        [[nodiscard]] static SecretString take_ownership(ByteBuffer&&);
 
+        /**
+         * @return true 
+         * @return false 
+         */
         [[nodiscard]] bool is_empty() const 
-        {
-            return m_secure_buffer.is_empty();
-        }
-
-        [[nodiscard]] size_t length() const
-        {
-            return m_secure_buffer.size();
-        }
-
-        [[nodiscard]] char const* characters() const 
-        {
-            return reinterpret_cast<m_secure_buffer>;
-        }
-
-        [[nodiscard]] StringView view() const
-        {
-            return { characters() };
+        { 
+            return m_secure_buffer.is_empty(); 
         }
 
         /**
-         * @brief Construct a new Secret String object
+         * @return size_t 
+         */
+        [[nodiscard]] size_t length() const 
+        { 
+            return m_secure_buffer.size(); 
+        }
+
+        /**
+         * @return char const* 
+         */
+        [[nodiscard]] char const* characters() const 
+        { 
+            return reinterpret_cast<char const*>(m_secure_buffer.data()); 
+        }
+
+        /**
+         * @return StringView 
+         */
+        [[nodiscard]] StringView view() const 
+        { 
+            return { characters(), length() }; 
+        }
+
+        /**
+         * @brief Construct a new SecretString object
+         * 
+         */
+        SecretString() = default;
+
+        /**
+         * @brief Destroy the SecretString object
+         * 
+         */
+        ~SecretString();
+
+        /**
+         * @brief Construct a new SecretString object
          * 
          */
         SecretString(SecretString&&) = default;
@@ -54,13 +87,16 @@ namespace Core
         /**
          * @return SecretString& 
          */
-        SecretString& operator=(SecretString&) = default;
-
-        ~SecretString();
+        SecretString& operator=(SecretString&&) = default;
 
     private:
+        /**
+         * @brief Construct a new SecretString object
+         * 
+         */
         explicit SecretString(ByteBuffer&&);
 
         ByteBuffer m_secure_buffer;
-    }; // class SecretString 
-} // namespace Core 
+    }; // class SecretString
+
+} // namespace Core
