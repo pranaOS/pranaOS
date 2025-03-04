@@ -50,6 +50,7 @@ namespace Core::Stream
         virtual void close() = 0;
 
         virtual ~Stream() {}
+
     protected:
         enum class SocketDomain 
         {
@@ -91,4 +92,40 @@ namespace Core::Stream
         static ErrorOr<void> current_inet(int fd, SocketAddress const&);
     }; // class Stream
 
+
+    enum class SeekMode
+    {
+        SetPosition,
+        FromCurrentPosition,
+        FromEndPosition
+    }; // enum class SeekMode
+
+    class ReusableSocket : public Socket 
+    {
+    public:
+        virtual bool is_connected() = 0;
+
+        /**
+         * @param host 
+         * @param port 
+         * @return ErrorOr<void> 
+         */
+        virtual ErrorOr<void> reconnect(String const& host, u16 port) = 0;
+
+        virtual ErrorOr<void> reconnect(SocketAddress const&) = 0;
+    }; // class ReusableSocket : public Socket 
+
+    enum class OpenMode : unsigned 
+    {
+        NotOpen = 0,
+        Read = 1,
+        Write = 2,
+    }; // enum class OpenMode : unsigned 
+
+    MOD_ENUM_BITWISE_OPERATIONS(OpenMode);
+
+    class File final : public SeekableStream
+    {
+        
+    }; // class File final : public SeekableStream
 } // namespace Core::Stream
