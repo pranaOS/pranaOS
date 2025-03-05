@@ -14,6 +14,7 @@
 
 namespace Crypto::ASN1 
 {
+
     /**
      * @param kind 
      * @return String 
@@ -104,6 +105,7 @@ namespace Crypto::ASN1
         auto minute = lexer.consume(2).to_uint();
         Optional<unsigned> seconds, offset_hours, offset_minutes;
         [[maybe_unused]] bool negative_offset = false;
+        
         if (!lexer.next_is('Z')) {
             if (!lexer.next_is(is_any_of("+-"))) {
                 seconds = lexer.consume(2).to_uint();
@@ -130,7 +132,8 @@ namespace Crypto::ASN1
             return {};
         }
 
-        auto full_year = (Core::DateTime::now().year() / 100) * 100 + year_in_century.value();
+        auto full_year = year_in_century.value();
+        full_year += (full_year < 50) ? 2000 : 1900;
         auto full_seconds = seconds.value_or(0);
 
         if (offset_hours.has_value() || offset_minutes.has_value())
@@ -152,7 +155,6 @@ namespace Crypto::ASN1
         auto hour = lexer.consume(2).to_uint();
         Optional<unsigned> minute, seconds, milliseconds, offset_hours, offset_minutes;
         [[maybe_unused]] bool negative_offset = false;
-
         if (!lexer.is_eof()) {
             if (lexer.consume_specific('Z'))
                 goto done_parsing;
@@ -202,9 +204,8 @@ namespace Crypto::ASN1
             return {};
         }
 
-        if (offset_hours.has_value() || offset_minutes.has_value()) {
+        if (offset_hours.has_value() || offset_minutes.has_value())
             dbgln("FIXME: Implement GeneralizedTime with offset!");
-        }
 
         return Core::DateTime::create(year.value(), month.value(), day.value(), hour.value(), minute.value_or(0), seconds.value_or(0));
     }
