@@ -13,7 +13,10 @@
 
 namespace Core 
 {
+
     /**
+     * @brief Construct a new Timer::Timer object
+     * 
      * @param parent 
      */
     Timer::Timer(Object* parent)
@@ -22,58 +25,53 @@ namespace Core
     }
 
     /**
-     * @param interval 
+     * @brief Construct a new Timer::Timer object
+     * 
+     * @param interval_ms 
      * @param timeout_handler 
      * @param parent 
      */
-    Timer::Timer(int interval, Function<void()>&& timeout_handler, Object* parent)
+    Timer::Timer(int interval_ms, Function<void()>&& timeout_handler, Object* parent)
         : Object(parent)
         , on_timeout(move(timeout_handler))
     {
-        start(interval);
+        start(interval_ms);
     }
 
-    /// @brief Destroy the Timer:: Timer object
-    Timer::~Timer()
-    { }
-
-    /// @breif: timer start
     void Timer::start()
     {
-        start(m_interval);
+        start(m_interval_ms);
     }
 
     /**
-     * @param interval 
+     * @param interval_ms 
      */
-    void Timer::start(int interval)
+    void Timer::start(int interval_ms)
     {
         if (m_active)
             return;
-        m_interval = interval;
-        start_timer(interval);
+
+        m_interval_ms = interval_ms;
+        start_timer(interval_ms);
         m_active = true;
     }
 
-    /// @brief timer restart
     void Timer::restart()
     {
-        restart(m_interval);
+        restart(m_interval_ms);
     }
 
     /**
-     * @brief timer restart
-     * 
-     * @param interval 
+     * @param interval_ms 
      */
-    void Timer::restart(int interval)
+    void Timer::restart(int interval_ms)
     {
         if (m_active)
             stop();
-        start(interval);
+
+        start(interval_ms);
     }
 
-    /// @brief timer stop
     void Timer::stop()
     {
         if (!m_active)
@@ -83,7 +81,17 @@ namespace Core
         m_active = false;
     }
 
-    /// @brief: timer event
+    /**
+     * @param active 
+     */
+    void Timer::set_active(bool active)
+    {
+        if (active)
+            start();
+        else
+            stop();
+    }
+
     void Timer::timer_event(TimerEvent&)
     {
         if (m_single_shot)
@@ -91,11 +99,12 @@ namespace Core
         else {
             if (m_interval_dirty) {
                 stop();
-                start(m_interval);
+                start(m_interval_ms);
             }
         }
 
         if (on_timeout)
             on_timeout();
     }
+
 } // namespace Core
