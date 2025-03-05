@@ -17,8 +17,10 @@
 
 namespace Crypto 
 {
+
     /**
      * @return ByteBuffer 
      */
     ByteBuffer decode_pem(ReadonlyBytes);
+
 } // namespace Crypto
