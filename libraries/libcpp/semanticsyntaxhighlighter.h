@@ -11,3 +11,12 @@
 
 #pragma once
 
+namespace Cpp
+{
+
+    class SemanticSyntaxHighlighter final : public Syntax::Highlighter 
+    {
+        
+    }; // class SemanticSyntaxHighlighter final : public Syntax::Highlighter 
+
+} // namespace Cpp
