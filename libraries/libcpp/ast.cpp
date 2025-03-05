@@ -9,3 +9,9 @@
  * 
  */
 
+#include "ast.h"
+
+namespace Cpp
+{
+
+} // namespace Cpp
