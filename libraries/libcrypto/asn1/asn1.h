@@ -17,8 +17,8 @@
 
 namespace Crypto::ASN1 
 {
-    enum class Kind : u8
-    {
+
+    enum class Kind : u8 {
         Eol,
         Boolean = 0x01,
         Integer = 0x02,
@@ -35,22 +35,19 @@ namespace Crypto::ASN1
         Set = 0x11,
     }; // enum class Kind : u8
 
-    enum class Class : u8 
-    {
+    enum class Class : u8 {
         Universal = 0,
         Application = 0x40,
         Context = 0x80,
         Private = 0xc0,
-    }; // enum class Class : u8 
+    }; // enum class Class : u8
 
-    enum class Type : u8 
-    {
+    enum class Type : u8 {
         Primitive = 0,
         Constructed = 0x20,
-    }; // enum class Type : u8 
+    }; // enum class Type : u8
 
-    struct Tag 
-    {
+    struct Tag {
         Kind kind;
         Class class_;
         Type type;
@@ -60,14 +57,7 @@ namespace Crypto::ASN1
     String class_name(Class);
     String type_name(Type);
 
-    /**
-     * @return Optional<Core::DateTime> 
-     */
     Optional<Core::DateTime> parse_utc_time(StringView);
-
-    /**
-     * @return Optional<Core::DateTime> 
-     */
     Optional<Core::DateTime> parse_generalized_time(StringView);
 
-} // namespace Crypto::ASN1
+}
