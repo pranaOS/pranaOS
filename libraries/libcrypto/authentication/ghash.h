@@ -9,6 +9,7 @@
  * 
  */
 
+
 #pragma once
 
 #include <mods/bytereader.h>
@@ -24,6 +25,7 @@ namespace Crypto
 {
     namespace Authentication 
     {
+
         /**
          * @param z 
          * @param x 
@@ -31,25 +33,48 @@ namespace Crypto
          */
         void galois_multiply(u32 (&z)[4], const u32 (&x)[4], const u32 (&y)[4]);
 
-        struct GHashDigest 
-        {
+        struct GHashDigest {
             constexpr static size_t Size = 16;
             u8 data[Size];
 
-            const u8* immutable_data() const { return data; }
-            size_t data_length() { return Size; }
-        }; // struct GHashDigest 
+            /**
+             * @return u8 const* 
+             */
+            u8 const* immutable_data() const 
+            { 
+                return data; 
+            }
 
-        class GHash final {
+            /**
+             * @return size_t 
+             */
+            size_t data_length() 
+            { 
+                return Size; 
+            }
+        }; // struct GHashDigest
+
+        class GHash final 
+        {
         public:
             using TagType = GHashDigest;
 
+            /**
+             * @brief Construct a new GHash object
+             * 
+             * @tparam N 
+             */
             template<size_t N>
-            explicit GHash(const char (&key)[N])
+            explicit GHash(char const (&key)[N])
                 : GHash({ key, N })
             {
             }
 
+            /**
+             * @brief Construct a new GHash object
+             * 
+             * @param key 
+             */
             explicit GHash(ReadonlyBytes key)
             {
                 VERIFY(key.size() >= 16);
@@ -58,7 +83,13 @@ namespace Crypto
                 }
             }
 
-            constexpr static size_t digest_size() { return TagType::Size; }
+            /**
+             * @return constexpr size_t 
+             */
+            constexpr static size_t digest_size() 
+            { 
+                return TagType::Size; 
+            }
 
         #ifndef KERNEL
             String class_name() const
@@ -67,6 +98,11 @@ namespace Crypto
             }
         #endif
 
+            /**
+             * @param aad 
+             * @param cipher 
+             * @return TagType 
+             */
             TagType process(ReadonlyBytes aad, ReadonlyBytes cipher);
 
         private:
@@ -74,5 +110,7 @@ namespace Crypto
 
             u32 m_key[4];
         }; // class GHash final
+
     } // namespace Authentication
-} // namespace Crypto 
+
+} // namespace Crypto
