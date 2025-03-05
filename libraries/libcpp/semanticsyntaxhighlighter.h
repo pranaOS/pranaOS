@@ -11,11 +11,65 @@
 
 #pragma once
 
-namespace Cpp
+#include "syntaxhighlighter.h"
+#include "token.h"
+#include <libgui/autocompleteprovider.h>
+#include <libsyntax/highlighter.h>
+#include <libthreading/mutex.h>
+
+namespace Cpp 
 {
 
     class SemanticSyntaxHighlighter final : public Syntax::Highlighter 
     {
+    public:
+        /**
+         * @brief Construct a new SemanticSyntaxHighlighter object
+         * 
+         */
+        SemanticSyntaxHighlighter() = default;
+
+        /**
+         * @brief Destroy the SemanticSyntaxHighlighter object
+         * 
+         */
+        virtual ~SemanticSyntaxHighlighter() override = default;
+
+        /**
+         * @param token 
+         * @return true 
+         * @return false 
+         */
+        virtual bool is_identifier(u64 token) const override;
+
+        /**
+         * @param token 
+         * @return true 
+         * @return false 
+         */
+        virtual bool is_navigatable(u64 token) const override;
+
+        /**
+         * @return Syntax::Language 
+         */
+        virtual Syntax::Language language() const override 
+        { 
+            return Syntax::Language::Cpp; 
+        }
+
+        virtual void rehighlight(Palette const&) override;
+
+        void update_tokens_info(Vector<GUI::AutocompleteProvider::TokenInfo>);
+
+        /**
+         * @return true 
+         * @return false 
+         */
+        virtual bool is_cpp_semantic_highlighter() const override 
+        { 
+            return true; 
+        }
+
     protected:
         /**
          * @return Vector<MatchingTokenPair> 
@@ -38,7 +92,14 @@ namespace Cpp
         String m_saved_tokens_text;
         Vector<Token> m_saved_tokens;
         Threading::Mutex m_lock;
-
     }; // class SemanticSyntaxHighlighter final : public Syntax::Highlighter 
 
-} // namespace Cpp
+} // namespace Cpp 
+
+/**
+ * @tparam  
+ * @return true 
+ * @return false 
+ */
+template<>
+inline bool Syntax::Highlighter::fast_is<Cpp::SemanticSyntaxHighlighter>() const { return is_cpp_semantic_highlighter(); }
