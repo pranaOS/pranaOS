@@ -9,14 +9,17 @@
  * 
  */
 
-#pragma once 
+#pragma once
 
-#include <mods/byte_buffer.h>
-#include <mods/string.h>
-#include <mods/string_builder.h>
-#include <mods/string_view.h>
-#include <mods/vector.h>
+#include <mods/bytebuffer.h>
+#include <mods/stringbuilder.h>
+#include <mods/stringview.h>
 #include <mods/types.h>
+#include <mods/vector.h>
+
+#ifndef KERNEL
+#    include <mods/string.h>
+#endif
 
 constexpr static auto IPAD = 0x36;
 constexpr static auto OPAD = 0x5c;
@@ -25,6 +28,10 @@ namespace Crypto
 {
     namespace Authentication 
     {
+
+        /**
+         * @tparam HashT 
+         */
         template<typename HashT>
         class HMAC 
         {
@@ -33,14 +40,16 @@ namespace Crypto
             using TagType = typename HashType::DigestType;
 
             /**
-             * @return size_t 
+             * @return constexpr size_t 
              */
-            size_t digest_size() const 
+            constexpr size_t digest_size() const 
             { 
                 return m_inner_hasher.digest_size(); 
             }
 
             /**
+             * @brief Construct a new HMAC object
+             * 
              * @tparam KeyBufferType 
              * @tparam Args 
              * @param key 
@@ -60,7 +69,7 @@ namespace Crypto
              * @param length 
              * @return TagType 
              */
-            TagType process(const u8* message, size_t length)
+            TagType process(u8 const* message, size_t length)
             {
                 reset();
                 update(message, length);
@@ -71,7 +80,7 @@ namespace Crypto
              * @param message 
              * @param length 
              */
-            void update(const u8* message, size_t length)
+            void update(u8 const* message, size_t length)
             {
                 m_inner_hasher.update(message, length);
             }
@@ -80,51 +89,34 @@ namespace Crypto
              * @param span 
              * @return TagType 
              */
-            TagType process(const ReadonlyBytes& span) 
+            TagType process(ReadonlyBytes span) 
             { 
                 return process(span.data(), span.size()); 
             }
 
             /**
-             * @param buffer 
-             * @return TagType 
-             */
-            TagType process(const ByteBuffer& buffer) 
-            { 
-                return process(buffer.data(), buffer.size()); 
-            }
-
-            /**
              * @param string 
              * @return TagType 
              */
-            TagType process(const StringView& string) 
+            TagType process(StringView string) 
             { 
-                return process((const u8*)string.characters_without_null_termination(), string.length()); 
+                return process((u8 const*)string.characters_without_null_termination(), string.length()); 
             }
 
             /**
              * @param span 
              */
-            void update(const ReadonlyBytes& span) 
+            void update(ReadonlyBytes span) 
             { 
                 return update(span.data(), span.size()); 
             }
 
             /**
-             * @param buffer 
-             */
-            void update(const ByteBuffer& buffer) 
-            { 
-                return update(buffer.data(), buffer.size()); 
-            }
-
-            /**
              * @param string 
              */
-            void update(const StringView& string) 
+            void update(StringView string) 
             { 
-                return update((const u8*)string.characters_without_null_termination(), string.length()); 
+                return update((u8 const*)string.characters_without_null_termination(), string.length()); 
             }
 
             /**
@@ -146,9 +138,7 @@ namespace Crypto
                 m_outer_hasher.update(m_key_data + m_inner_hasher.block_size(), m_outer_hasher.block_size());
             }
 
-            /**
-             * @return String 
-             */
+        #ifndef KERNEL
             String class_name() const
             {
                 StringBuilder builder;
@@ -156,21 +146,21 @@ namespace Crypto
                 builder.append(m_inner_hasher.class_name());
                 return builder.build();
             }
+        #endif
 
         private:
             /**
              * @param key 
              * @param length 
              */
-            void derive_key(const u8* key, size_t length)
+            void derive_key(u8 const* key, size_t length)
             {
                 auto block_size = m_inner_hasher.block_size();
-
-                u8 v_key[block_size];
-                __builtin_memset(v_key, 0, block_size);
-
-                ByteBuffer key_buffer = ByteBuffer::wrap(v_key, block_size);
-
+                
+                Vector<u8, 64> v_key;
+                v_key.resize(block_size);
+                auto key_buffer = v_key.span();
+                
                 if (length > block_size) {
                     m_inner_hasher.update(key, length);
                     auto digest = m_inner_hasher.digest();
@@ -181,7 +171,6 @@ namespace Crypto
 
                 auto* i_key = m_key_data;
                 auto* o_key = m_key_data + block_size;
-
                 for (size_t i = 0; i < block_size; ++i) {
                     auto key_byte = key_buffer[i];
                     i_key[i] = key_byte ^ IPAD;
@@ -192,7 +181,7 @@ namespace Crypto
             /**
              * @param key 
              */
-            void derive_key(const ByteBuffer& key) 
+            void derive_key(ReadonlyBytes key) 
             { 
                 derive_key(key.data(), key.size()); 
             }
@@ -200,13 +189,15 @@ namespace Crypto
             /**
              * @param key 
              */
-            void derive_key(const StringView& key) 
+            void derive_key(StringView key) 
             { 
-                derive_key((const u8*)key.characters_without_null_termination(), key.length()); 
+                derive_key(key.bytes()); 
             }
 
             HashType m_inner_hasher, m_outer_hasher;
             u8 m_key_data[2048];
         }; // class HMAC
+
     } // namespace Authentication
+
 } // namespace Crypto
