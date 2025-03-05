@@ -9,3 +9,21 @@
  * 
  */
 
+#pragma once
+
+#include <mods/bytebuffer.h>
+#include <mods/forward.h>
+#include <mods/function.h>
+#include <libcore/forward.h>
+#include <libcore/object.h>
+#include <libcore/socketaddress.h>
+
+namespace Core
+{
+
+    class UDPServer : public Object
+    {
+
+    }; // class UDPServer : public Object
+    
+} // namespace Core
