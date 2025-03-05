@@ -9,88 +9,104 @@
  * 
  */
 
-#pragma once 
+#pragma once
 
 #include <mods/function.h>
 #include <libcore/object.h>
 
 namespace Core 
 {
+
     class Timer final : public Object 
     {
         C_OBJECT(Timer);
 
     public:
-    
         /**
-         * @param interval 
+         * @brief Create a repeating object
+         * 
+         * @param interval_ms 
          * @param timeout_handler 
          * @param parent 
          * @return NonnullRefPtr<Timer> 
          */
-        static NonnullRefPtr<Timer> create_single_shot(int interval, Function<void()>&& timeout_handler, Object* parent = nullptr)
+        static NonnullRefPtr<Timer> create_repeating(int interval_ms, Function<void()>&& timeout_handler, Object* parent = nullptr)
         {
-            auto timer = adopt(*new Timer(interval, move(timeout_handler), parent));
-            timer->set_single_shot(true);
+            auto timer = adopt_ref(*new Timer(interval_ms, move(timeout_handler), parent));
+            timer->stop();
             return timer;
         }
 
-        /// @brief Destroy the Timer object
-        virtual ~Timer() override;
+        /**
+         * @brief Create a single shot object
+         * 
+         * @param interval_ms 
+         * @param timeout_handler 
+         * @param parent 
+         * @return NonnullRefPtr<Timer> 
+         */
+        static NonnullRefPtr<Timer> create_single_shot(int interval_ms, Function<void()>&& timeout_handler, Object* parent = nullptr)
+        {
+            auto timer = adopt_ref(*new Timer(interval_ms, move(timeout_handler), parent));
+            timer->set_single_shot(true);
+            timer->stop();
+            return timer;
+        }
+
+        /**
+         * @brief Destroy the Timer object
+         * 
+         */
+        virtual ~Timer() override = default;
 
         void start();
-        /**
-         * @param interval 
-         */
-        void start(int interval);
 
+        /**
+         * @param interval_ms 
+         */
+        void start(int interval_ms);
 
         void restart();
-        /**
-         * @param interval 
-         */
-        void restart(int interval);
 
+        /**
+         * @param interval_ms 
+         */
+        void restart(int interval_ms);
         void stop();
 
-        /**
-         * @return true 
-         * @return false 
-         */
+        void set_active(bool);
+
         bool is_active() const 
         { 
             return m_active; 
         }
 
-        /**
-         * @return int 
-         */
         int interval() const 
         { 
-            return m_interval; 
+            return m_interval_ms; 
         }
 
         /**
-         * @param interval 
+         * @brief Set the interval Object
+         * 
+         * @param interval_ms 
          */
-        void set_interval(int interval)
+        void set_interval(int interval_ms)
         {
-            if (m_interval == interval)
+            if (m_interval_ms == interval_ms)
                 return;
-            m_interval = interval;
+            m_interval_ms = interval_ms;
             m_interval_dirty = true;
         }
 
-        /**
-         * @return true 
-         * @return false 
-         */
         bool is_single_shot() const 
         { 
             return m_single_shot; 
         }
 
         /**
+         * @brief Set the single shot object
+         * 
          * @param single_shot 
          */
         void set_single_shot(bool single_shot) 
@@ -102,6 +118,8 @@ namespace Core
 
     private:
         /**
+         * @brief Construct a new Timer object
+         * 
          * @param parent 
          */
         explicit Timer(Object* parent = nullptr);
@@ -109,19 +127,18 @@ namespace Core
         /**
          * @brief Construct a new Timer object
          * 
-         * @param interval 
+         * @param interval_ms 
          * @param timeout_handler 
          * @param parent 
          */
-        Timer(int interval, Function<void()>&& timeout_handler, Object* parent = nullptr);
+        Timer(int interval_ms, Function<void()>&& timeout_handler, Object* parent = nullptr);
 
         virtual void timer_event(TimerEvent&) override;
 
         bool m_active { false };
         bool m_single_shot { false };
         bool m_interval_dirty { false };
+        int m_interval_ms { 0 };
+    }; // class Timer final : public Object 
 
-        int m_interval { 0 };
-
-    }; // class Timer
 } // namespace Core
