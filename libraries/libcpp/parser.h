@@ -84,5 +84,53 @@ namespace Cpp
          * @return false 
          */
         bool match_destructor(StringView class_name);
+
+        /**
+         * @brief Create a root ast node object
+         * 
+         * @param start 
+         * @param end 
+         * @return NonnullRefPtr<TranslationUnit> 
+         */
+        NonnullRefPtr<TranslationUnit> create_root_ast_node(Position const& start, Position end)
+        {
+            auto node = adopt_ref(*new TranslationUnit(nullptr, start, end, m_filename));
+            m_nodes.append(node);
+            m_root_node = node;
+            return node;
+        }
+
+        /**
+         * @brief Get the dummy node object
+         * 
+         * @return DummyAstNode& 
+         */
+        DummyAstNode& get_dummy_node()
+        {
+            static NonnullRefPtr<DummyAstNode> dummy = adopt_ref(*new DummyAstNode(nullptr, {}, {}, {}));
+            return dummy;
+        }
+
+        bool match_attribute_specification();
+        void consume_attribute_specification();
+        void consume_access_specifier();
+        bool match_ellipsis();
+        Vector<StringView> parse_type_qualifiers();
+        Vector<StringView> parse_function_qualifiers();
+
+        enum class CtorOrDtor {
+            Ctor,
+            Dtor,
+        }; // enum class CtorOrDtor
+        
+        void parse_constructor_or_destructor_impl(FunctionDeclaration&, CtorOrDtor);
+
+        String m_filename;
+        Vector<Token> m_tokens;
+        State m_state;
+        Vector<State> m_saved_states;
+        RefPtr<TranslationUnit> m_root_node;
+        Vector<String> m_errors;
+        NonnullRefPtrVector<ASTNode> m_nodes;
     }; // class Parser final 
 } // namespace Cpp
