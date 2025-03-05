@@ -38,4 +38,14 @@ namespace Cpp
 
     }; // class Lexer
 
+    /**
+     * @tparam Callback 
+     * @param callback 
+     */
+    template<typename Callback>
+    void Lexer::lex_iterable(Callback callback)
+    {
+        return lex_impl(move(callback));
+    }
+
 } // namespace Cpp
