@@ -12,7 +12,7 @@
 #include "token.h"
 #include <mods/string.h>
 
-namespace Cpp
+namespace Cpp 
 {
 
     /**
@@ -22,7 +22,37 @@ namespace Cpp
      */
     bool Position::operator<(Position const& other) const
     {
-        return line < other.line || (line == other.line && column < other.line);
+        return line < other.line || (line == other.line && column < other.column);
+    }
+
+    /**
+     * @param other 
+     * @return true 
+     * @return false 
+     */
+    bool Position::operator>(Position const& other) const
+    {
+        return !(*this < other) && !(*this == other);
+    }
+
+    /**
+     * @param other 
+     * @return true 
+     * @return false 
+     */
+    bool Position::operator==(Position const& other) const
+    {
+        return line == other.line && column == other.column;
+    }
+
+    /**
+     * @param other 
+     * @return true 
+     * @return false 
+     */
+    bool Position::operator<=(Position const& other) const
+    {
+        return !(*this > other);
     }
 
     /**
@@ -30,14 +60,15 @@ namespace Cpp
      */
     String Token::to_string() const
     {
-        return String::formatted("{} {}:-{}:{}");
+        return String::formatted("{}  {}:{}-{}:{} ({})", type_to_string(m_type), start().line, start().column, end().line, end().column, text());
     }
 
     /**
      * @return String 
      */
-    String Token::type_as_string() const 
+    String Token::type_as_string() const
     {
         return type_to_string(m_type);
     }
+
 } // namespace Cpp
