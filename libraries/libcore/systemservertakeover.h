@@ -9,3 +9,17 @@
  * 
  */
 
+#pragma once
+
+#include <libcore/stream.h>
+
+namespace Core 
+{
+
+    /**
+     * @param socket_path 
+     * @return ErrorOr<NonnullOwnPtr<Core::Stream::LocalSocket>> 
+     */
+    ErrorOr<NonnullOwnPtr<Core::Stream::LocalSocket>> take_over_socket_from_system_server(String const& socket_path = {});
+
+} // namespace Core
