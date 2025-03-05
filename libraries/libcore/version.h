@@ -9,3 +9,15 @@
  * 
  */
 
+#pragma once
+
+#include <mods/stringview.h>
+
+namespace Core::Version 
+{
+
+    constexpr StringView PRANAOS_VERSION = "Version 6.0"sv;
+
+    String read_long_version_string();
+
+} // namespace Core::Version 
