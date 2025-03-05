@@ -15,25 +15,24 @@
 
 __BEGIN_DECLS
 
-struct crypt_data
-{
+struct crypt_data {
     int initialized;
     char result[65];
 }; // struct crypt_data
 
 /**
- * @brief crpyt
- * @param key
- * @param salt
+ * @param key 
+ * @param salt 
+ * @return char* 
  */
-char crpyt(const char* key, const char* salt);
+char* crypt(char const* key, char const* salt);
 
 /**
- * @brief crypt_r
- * @param key
- * @param salt
- * @param data
+ * @param key 
+ * @param salt 
+ * @param data 
+ * @return char* 
  */
-char crypt_r(const char* key, const char* salt, struct crypt_data* data);
+char* crypt_r(char const* key, char const* salt, struct crypt_data* data);
 
 __END_DECLS
