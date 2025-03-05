@@ -23,7 +23,25 @@ namespace Core
 
     class UDPServer : public Object
     {
+    public:
+        virtual ~UDPServer() override;
 
+        bool is_bound() const 
+        {
+            return m_bound;
+        }
+    protected:
+        /**
+         * @brief Construct a new UDPServer object
+         * 
+         * @param parent 
+         */
+        explicit UDPServer(Object* parent = nullptr);
+
+    private:
+        int m_fd { -1 };
+        bool m_bound { false };
+        RefPtr<Notifier> m_notifier;
     }; // class UDPServer : public Object
-    
+
 } // namespace Core
