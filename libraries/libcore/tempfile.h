@@ -22,6 +22,21 @@ namespace Core
         MOD_MAKE_NONCOPYABLE(TempFile);
         MOD_MAKE_NONMOVABLE(TempFile);
 
+    public:
+        enum class Type
+        {
+            FILE,
+            DIRECTORY
+        }; // enum class Type
+
+        /**
+         * @return String 
+         */
+        String path() const 
+        {
+            return m_path;
+        }
+
     private:
         TempFile(Type);
 
