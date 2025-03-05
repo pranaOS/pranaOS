@@ -9,3 +9,20 @@
  * 
  */
 
+#pragma once
+
+namespace Cpp
+{
+
+    class SemanticSyntaxHighlighter;
+
+    class SyntaxHighlighter final : public Syntax::Highlighter
+    {
+    
+    protected:
+        virtual Vector<MatchingTokenPair> matching_token_pairs_impl() const;
+
+        virtual bool token_types_equal(u64, u64) const override;
+    }; // class SyntaxHighlighter final : public Syntax::Highlighter
+
+} // namespace Cpp
