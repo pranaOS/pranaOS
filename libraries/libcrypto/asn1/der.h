@@ -19,8 +19,8 @@
 
 namespace Crypto::ASN1 
 {
-    enum class DecodeError 
-    {
+
+    enum class DecodeError {
         NoInput,
         NonConformingType,
         EndOfStream,
@@ -30,27 +30,81 @@ namespace Crypto::ASN1
         InvalidInputFormat,
         Overflow,
         UnsupportedFormat,
-    }; // enum class DecodeError 
+    }; // enum class DecodeError
+
+    class BitStringView 
+    {
+    public:
+        /**
+         * @brief Construct a new BitStringView object
+         * 
+         * @param data 
+         * @param unused_bits 
+         */
+        BitStringView(ReadonlyBytes data, size_t unused_bits)
+            : m_data(data)
+            , m_unused_bits(unused_bits)
+        {
+        }
+
+        /**
+         * @return ReadonlyBytes 
+         */
+        ReadonlyBytes raw_bytes() const
+        {
+            VERIFY(m_unused_bits == 0);
+            return m_data;
+        }
+
+        /**
+         * @param index 
+         * @return true 
+         * @return false 
+         */
+        bool get(size_t index)
+        {
+            if (index >= 8 * m_data.size() - m_unused_bits)
+                return false;
+            return 0 != (m_data[index / 8] & (1u << (7 - (index % 8))));
+        }
+
+    private:
+        ReadonlyBytes m_data;
+        size_t m_unused_bits;
+    }; // class BitStringView 
 
     class Decoder 
     {
     public:
+        /**
+         * @brief Construct a new Decoder object
+         * 
+         * @param data 
+         */
         Decoder(ReadonlyBytes data)
         {
             m_stack.append(data);
         }
 
+        /**
+         * @return Result<Tag, DecodeError> 
+         */
         Result<Tag, DecodeError> peek();
 
         bool eof() const;
 
+        /**
+         * @tparam ValueType 
+         */
         template<typename ValueType>
-        struct TaggedValue 
-        {
+        struct TaggedValue {
             Tag tag;
             ValueType value;
-        }; // struct TaggedValue 
+        }; // struct TaggedValue
 
+        /**
+         * @return Optional<DecodeError> 
+         */
         Optional<DecodeError> drop()
         {
             if (m_stack.is_empty())
@@ -214,20 +268,9 @@ namespace Crypto::ASN1
 
             return with_type_check<ValueType>(data);
         }
-        
-        /**
-         * @return Result<Tag, DecodeError> 
-         */
+
         Result<Tag, DecodeError> read_tag();
-
-        /**
-         * @return Result<size_t, DecodeError> 
-         */
         Result<size_t, DecodeError> read_length();
-
-        /**
-         * @return Result<u8, DecodeError> 
-         */
         Result<u8, DecodeError> read_byte();
 
         /**
@@ -236,40 +279,13 @@ namespace Crypto::ASN1
          */
         Result<ReadonlyBytes, DecodeError> read_bytes(size_t length);
 
-        /**
-         * @return Result<bool, DecodeError> 
-         */
         static Result<bool, DecodeError> decode_boolean(ReadonlyBytes);
-
-        /**
-         * @return Result<UnsignedBigInteger, DecodeError> 
-         */
         static Result<UnsignedBigInteger, DecodeError> decode_arbitrary_sized_integer(ReadonlyBytes);
-
-        /**
-         * @return Result<StringView, DecodeError> 
-         */
         static Result<StringView, DecodeError> decode_octet_string(ReadonlyBytes);
-
-        /**
-         * @return Result<std::nullptr_t, DecodeError> 
-         */
         static Result<std::nullptr_t, DecodeError> decode_null(ReadonlyBytes);
-
-        /**
-         * @return Result<Vector<int>, DecodeError> 
-         */
         static Result<Vector<int>, DecodeError> decode_object_identifier(ReadonlyBytes);
-
-        /**
-         * @return Result<StringView, DecodeError> 
-         */
         static Result<StringView, DecodeError> decode_printable_string(ReadonlyBytes);
-
-        /**
-         * @return Result<const BitmapView, DecodeError> 
-         */
-        static Result<const BitmapView, DecodeError> decode_bit_string(ReadonlyBytes);
+        static Result<BitStringView, DecodeError> decode_bit_string(ReadonlyBytes);
 
         Vector<ReadonlyBytes> m_stack;
         Optional<Tag> m_current_tag;
@@ -286,7 +302,6 @@ namespace Crypto::ASN1
  * @tparam  
  */
 template<>
-struct Mods::Formatter<Crypto::ASN1::DecodeError> : Formatter<StringView> 
-{
+struct Mods::Formatter<Crypto::ASN1::DecodeError> : Formatter<StringView> {
     ErrorOr<void> format(FormatBuilder&, Crypto::ASN1::DecodeError);
 };
