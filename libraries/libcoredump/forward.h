@@ -9,3 +9,12 @@
  * 
  */
 
+#pragma once
+
+namespace Coredump 
+{
+
+    class Backtrace;
+    class Reader;
+
+} // namespace Coredump
