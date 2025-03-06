@@ -9,24 +9,51 @@
  * 
  */
 
-#include <mods/string_builder.h>
-#include "signedbiginteger.h"
-
+#include "unsignedbiginteger.h"
+#include <mods/builtinwrappers.h>
+#include <mods/charactertypes.h>
+#include <mods/stringbuilder.h>
+#include <mods/stringhash.h>
+#include <libcrypto/bigint/algorithm/unsignedbigintegeralgorithms.h>
 
 namespace Crypto 
 {
 
     /**
+     * @brief Construct a new UnsignedBigInteger::UnsignedBigInteger object
+     * 
      * @param ptr 
      * @param length 
-     * @return SignedBigInteger 
      */
-    SignedBigInteger SignedBigInteger::import_data(const u8* ptr, size_t length)
+    UnsignedBigInteger::UnsignedBigInteger(u8 const* ptr, size_t length)
     {
-        bool sign = *ptr;
-        auto unsigned_data = UnsignedBigInteger::import_data(ptr + 1, length - 1);
+        m_words.resize_and_keep_capacity((length + sizeof(u32) - 1) / sizeof(u32));
+        size_t in = length, out = 0;
 
-        return { move(unsigned_data), sign };
+        while (in >= sizeof(u32)) {
+            in -= sizeof(u32);
+            u32 word = ((u32)ptr[in] << 24) | ((u32)ptr[in + 1] << 16) | ((u32)ptr[in + 2] << 8) | (u32)ptr[in + 3];
+            m_words[out++] = word;
+        }
+
+        if (in > 0) {
+            u32 word = 0;
+            for (size_t i = 0; i < in; i++) {
+                word <<= 8;
+                word |= (u32)ptr[i];
+            }
+            m_words[out++] = word;
+        }
+    }
+
+    /**
+     * @return UnsignedBigInteger 
+     */
+    UnsignedBigInteger UnsignedBigInteger::create_invalid()
+    {
+        UnsignedBigInteger invalid(0);
+        invalid.invalidate();
+        return invalid;
     }
 
     /**
@@ -34,183 +61,201 @@ namespace Crypto
      * @param remove_leading_zeros 
      * @return size_t 
      */
-    size_t SignedBigInteger::export_data(Bytes data, bool remove_leading_zeros) const
+    size_t UnsignedBigInteger::export_data(Bytes data, bool remove_leading_zeros) const
     {
-        ASSERT(!remove_leading_zeros);
+        size_t word_count = trimmed_length();
+        size_t out = 0;
 
-        data[0] = m_sign;
-        auto bytes_view = data.slice(1, data.size() - 1);
-        
-        return m_unsigned_data.export_data(bytes_view, remove_leading_zeros) + 1;
-    }
-
-    /**
-     * @param str 
-     * @return SignedBigInteger 
-     */
-    SignedBigInteger SignedBigInteger::from_base10(StringView str)
-    {
-        bool sign = false;
-
-        if (str.length() > 1) {
-            auto maybe_sign = str[0];
-            if (maybe_sign == '-') {
-                str = str.substring_view(1, str.length() - 1);
-                sign = true;
+        if (word_count > 0) {
+            ssize_t leading_zeros = -1;
+            if (remove_leading_zeros) {
+                UnsignedBigInteger::Word word = m_words[word_count - 1];
+                for (size_t i = 0; i < sizeof(u32); i++) {
+                    u8 byte = (u8)(word >> ((sizeof(u32) - i - 1) * 8));
+                    data[out++] = byte;
+                    if (leading_zeros < 0 && byte != 0)
+                        leading_zeros = (int)i;
+                }
             }
-            if (maybe_sign == '+')
-                str = str.substring_view(1, str.length() - 1);
+            for (size_t i = word_count - (remove_leading_zeros ? 1 : 0); i > 0; i--) {
+                auto word = m_words[i - 1];
+                data[out++] = (u8)(word >> 24);
+                data[out++] = (u8)(word >> 16);
+                data[out++] = (u8)(word >> 8);
+                data[out++] = (u8)word;
+            }
+            if (leading_zeros > 0)
+                out -= leading_zeros;
         }
-        
-        auto unsigned_data = UnsignedBigInteger::from_base10(str);
-
-        return { move(unsigned_data), sign };
+        return out;
     }
 
     /**
+     * @param N 
+     * @param str 
+     * @return UnsignedBigInteger 
+     */
+    UnsignedBigInteger UnsignedBigInteger::from_base(u16 N, StringView str)
+    {
+        VERIFY(N <= 36);
+        UnsignedBigInteger result;
+        UnsignedBigInteger base { N };
+
+        for (auto& c : str) {
+            if (c == '_')
+                continue;
+            result = result.multiplied_by(base).plus(parse_ascii_base36_digit(c));
+        }
+        return result;
+    }
+
+    /**
+     * @param N 
      * @return String 
      */
-    String SignedBigInteger::to_base10() const
+    String UnsignedBigInteger::to_base(u16 N) const
     {
+        VERIFY(N <= 36);
+        if (*this == UnsignedBigInteger { 0 })
+            return "0";
+
         StringBuilder builder;
+        UnsignedBigInteger temp(*this);
+        UnsignedBigInteger quotient;
+        UnsignedBigInteger remainder;
 
-        if (m_sign)
-            builder.append('-');
-
-        builder.append(m_unsigned_data.to_base10());
-
-        return builder.to_string();
-    }
-
-    /**
-     * @param other 
-     * @return FLATTEN 
-     */
-    FLATTEN SignedBigInteger SignedBigInteger::plus(const SignedBigInteger& other) const
-    {
-        if (m_sign == other.m_sign)
-            return { other.m_unsigned_data.plus(m_unsigned_data), m_sign };
-
-        return m_sign ? other.minus(this->m_unsigned_data) : minus(other.m_unsigned_data);
-    }
-
-    /**
-     * @param other 
-     * @return FLATTEN 
-     */
-    FLATTEN SignedBigInteger SignedBigInteger::minus(const SignedBigInteger& other) const
-    {
-        if (m_sign != other.m_sign) {
-            SignedBigInteger result { other.m_unsigned_data.plus(this->m_unsigned_data) };
-            if (m_sign)
-                result.negate();
-            return result;
+        while (temp != UnsignedBigInteger { 0 }) {
+            UnsignedBigIntegerAlgorithms::divide_u16_without_allocation(temp, N, quotient, remainder);
+            VERIFY(remainder.words()[0] < N);
+            builder.append(to_ascii_base36_digit(remainder.words()[0]));
+            temp.set_to(quotient);
         }
 
-        if (!m_sign) {
-            if (m_unsigned_data < other.m_unsigned_data) {
-                return { other.m_unsigned_data.minus(m_unsigned_data), true };
+        return builder.to_string().reverse();
+    }
+
+    /**
+     * @return u64 
+     */
+    u64 UnsignedBigInteger::to_u64() const
+    {
+        VERIFY(sizeof(Word) == 4);
+        if (!length())
+            return 0;
+        u64 value = m_words[0];
+        if (length() > 1)
+            value |= static_cast<u64>(m_words[1]) << 32;
+        return value;
+    }
+
+    /**
+     * @return double 
+     */
+    double UnsignedBigInteger::to_double() const
+    {
+        return static_cast<double>(to_u64());
+    }
+
+    void UnsignedBigInteger::set_to_0()
+    {
+        m_words.clear_with_capacity();
+        m_is_invalid = false;
+        m_cached_trimmed_length = {};
+        m_cached_hash = 0;
+    }
+
+    /**
+     * @param other 
+     */
+    void UnsignedBigInteger::set_to(UnsignedBigInteger::Word other)
+    {
+        m_is_invalid = false;
+        m_words.resize_and_keep_capacity(1);
+        m_words[0] = other;
+        m_cached_trimmed_length = {};
+        m_cached_hash = 0;
+    }
+
+    /**
+     * @param other 
+     */
+    void UnsignedBigInteger::set_to(UnsignedBigInteger const& other)
+    {
+        m_is_invalid = other.m_is_invalid;
+        m_words.resize_and_keep_capacity(other.m_words.size());
+        __builtin_memcpy(m_words.data(), other.m_words.data(), other.m_words.size() * sizeof(u32));
+        m_cached_trimmed_length = {};
+        m_cached_hash = 0;
+    }
+
+    bool UnsignedBigInteger::is_zero() const
+    {
+        for (size_t i = 0; i < length(); ++i) {
+            if (m_words[i] != 0)
+                return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * @return size_t 
+     */
+    size_t UnsignedBigInteger::trimmed_length() const
+    {
+        if (!m_cached_trimmed_length.has_value()) {
+            size_t num_leading_zeroes = 0;
+            for (int i = length() - 1; i >= 0; --i, ++num_leading_zeroes) {
+                if (m_words[i] != 0)
+                    break;
             }
-
-            return SignedBigInteger { m_unsigned_data.minus(other.m_unsigned_data) };
+            m_cached_trimmed_length = length() - num_leading_zeroes;
         }
+        return m_cached_trimmed_length.value();
+    }
 
-        if (m_unsigned_data < other.m_unsigned_data) {
-            return SignedBigInteger { m_unsigned_data.minus(other.m_unsigned_data) };
+    void UnsignedBigInteger::clamp_to_trimmed_length()
+    {
+        auto length = trimmed_length();
+        if (m_words.size() > length)
+            m_words.resize(length);
+    }
+
+    /**
+     * @param new_length 
+     */
+    void UnsignedBigInteger::resize_with_leading_zeros(size_t new_length)
+    {
+        size_t old_length = length();
+        if (old_length < new_length) {
+            m_words.resize_and_keep_capacity(new_length);
+            __builtin_memset(&m_words.data()[old_length], 0, (new_length - old_length) * sizeof(u32));
         }
-
-        return { other.m_unsigned_data.minus(m_unsigned_data), true };
     }
 
     /**
-     * @param other 
-     * @return FLATTEN 
+     * @return size_t 
      */
-    FLATTEN SignedBigInteger SignedBigInteger::plus(const UnsignedBigInteger& other) const
+    size_t UnsignedBigInteger::one_based_index_of_highest_set_bit() const
     {
-        if (m_sign) {
-            if (other < m_unsigned_data)
-                return { m_unsigned_data.minus(other), true };
-
-            return { other.minus(m_unsigned_data), false };
+        size_t number_of_words = trimmed_length();
+        size_t index = 0;
+        if (number_of_words > 0) {
+            index += (number_of_words - 1) * BITS_IN_WORD;
+            index += BITS_IN_WORD - count_leading_zeroes(m_words[number_of_words - 1]);
         }
-
-        return { m_unsigned_data.plus(other), false };
+        return index;
     }
 
     /**
      * @param other 
      * @return FLATTEN 
      */
-    FLATTEN SignedBigInteger SignedBigInteger::minus(const UnsignedBigInteger& other) const
+    FLATTEN UnsignedBigInteger UnsignedBigInteger::plus(UnsignedBigInteger const& other) const
     {
-        if (m_sign)
-            return { m_unsigned_data.plus(m_unsigned_data), true };
+        UnsignedBigInteger result;
 
-        if (other < m_unsigned_data)
-            return { m_unsigned_data.minus(other), false };
-
-        return { other.minus(m_unsigned_data), true };
-    }
-
-    /** 
-     * @param other 
-     * @return FLATTEN 
-     */
-    FLATTEN SignedBigInteger SignedBigInteger::bitwise_or(const UnsignedBigInteger& other) const
-    {
-        return { unsigned_value().bitwise_or(other), m_sign };
-    }
-
-    /**
-     * @param other 
-     * @return FLATTEN 
-     */
-    FLATTEN SignedBigInteger SignedBigInteger::bitwise_and(const UnsignedBigInteger& other) const
-    {
-        return { unsigned_value().bitwise_and(other), false };
-    }
-
-    /**
-     * @param other 
-     * @return FLATTEN 
-     */
-    FLATTEN SignedBigInteger SignedBigInteger::bitwise_xor(const UnsignedBigInteger& other) const
-    {
-        return { unsigned_value().bitwise_xor(other), m_sign };
-    }
-    
-    /**
-     * @return FLATTEN 
-     */
-    FLATTEN SignedBigInteger SignedBigInteger::bitwise_not() const
-    {
-        return { unsigned_value().bitwise_not(), !m_sign };
-    }
-
-    /**
-     * @param other 
-     * @return FLATTEN 
-     */
-    FLATTEN SignedBigInteger SignedBigInteger::bitwise_or(const SignedBigInteger& other) const
-    {
-        auto result = bitwise_or(other.unsigned_value());
-
-        if (other.is_negative())
-            result.negate();
-
-        return result;
-    }
-    
-    /**
-     * @param other 
-     * @return FLATTEN 
-     */
-    FLATTEN SignedBigInteger SignedBigInteger::bitwise_and(const SignedBigInteger& other) const
-    {
-        auto result = bitwise_and(other.unsigned_value());
-
-        result.m_sign = is_negative() || other.is_negative();
+        UnsignedBigIntegerAlgorithms::add_without_allocation(*this, other, result);
 
         return result;
     }
@@ -219,94 +264,150 @@ namespace Crypto
      * @param other 
      * @return FLATTEN 
      */
-    FLATTEN SignedBigInteger SignedBigInteger::bitwise_xor(const SignedBigInteger& other) const
+    FLATTEN UnsignedBigInteger UnsignedBigInteger::minus(UnsignedBigInteger const& other) const
     {
-        auto result = bitwise_xor(other.unsigned_value());
+        UnsignedBigInteger result;
 
-        result.m_sign = is_negative() ^ other.is_negative();
+        UnsignedBigIntegerAlgorithms::subtract_without_allocation(*this, other, result);
 
         return result;
     }
 
     /**
      * @param other 
-     * @return true 
-     * @return false 
+     * @return FLATTEN 
      */
-    bool SignedBigInteger::operator==(const UnsignedBigInteger& other) const
+    FLATTEN UnsignedBigInteger UnsignedBigInteger::bitwise_or(UnsignedBigInteger const& other) const
     {
-        if (m_sign)
-            return false;
+        UnsignedBigInteger result;
 
-        return m_unsigned_data == other;
+        UnsignedBigIntegerAlgorithms::bitwise_or_without_allocation(*this, other, result);
+
+        return result;
     }
 
     /**
      * @param other 
-     * @return true 
-     * @return false 
+     * @return FLATTEN 
      */
-    bool SignedBigInteger::operator!=(const UnsignedBigInteger& other) const
+    FLATTEN UnsignedBigInteger UnsignedBigInteger::bitwise_and(UnsignedBigInteger const& other) const
     {
-        if (m_sign)
-            return true;
+        UnsignedBigInteger result;
 
-        return m_unsigned_data != other;
+        UnsignedBigIntegerAlgorithms::bitwise_and_without_allocation(*this, other, result);
+
+        return result;
     }
 
     /**
      * @param other 
-     * @return true 
-     * @return false 
+     * @return FLATTEN 
      */
-    bool SignedBigInteger::operator<(const UnsignedBigInteger& other) const
+    FLATTEN UnsignedBigInteger UnsignedBigInteger::bitwise_xor(UnsignedBigInteger const& other) const
     {
-        if (m_sign)
-            return true;
+        UnsignedBigInteger result;
 
-        return m_unsigned_data < other;
+        UnsignedBigIntegerAlgorithms::bitwise_xor_without_allocation(*this, other, result);
+
+        return result;
+    }
+
+    /**
+     * @param size 
+     * @return FLATTEN 
+     */
+    FLATTEN UnsignedBigInteger UnsignedBigInteger::bitwise_not_fill_to_one_based_index(size_t size) const
+    {
+        UnsignedBigInteger result;
+
+        UnsignedBigIntegerAlgorithms::bitwise_not_fill_to_one_based_index_without_allocation(*this, size, result);
+
+        return result;
     }
 
     /**
      * @param num_bits 
      * @return FLATTEN 
      */
-    FLATTEN SignedBigInteger SignedBigInteger::shift_left(size_t num_bits) const
+    FLATTEN UnsignedBigInteger UnsignedBigInteger::shift_left(size_t num_bits) const
     {
-        return SignedBigInteger { m_unsigned_data.shift_left(num_bits), m_sign };
+        UnsignedBigInteger output;
+        UnsignedBigInteger temp_result;
+        UnsignedBigInteger temp_plus;
+
+        UnsignedBigIntegerAlgorithms::shift_left_without_allocation(*this, num_bits, temp_result, temp_plus, output);
+
+        return output;
     }
 
     /**
      * @param other 
      * @return FLATTEN 
      */
-    FLATTEN SignedBigInteger SignedBigInteger::multiplied_by(const SignedBigInteger& other) const
+    FLATTEN UnsignedBigInteger UnsignedBigInteger::multiplied_by(UnsignedBigInteger const& other) const
     {
-        bool result_sign = m_sign ^ other.m_sign;
-        return { m_unsigned_data.multiplied_by(other.m_unsigned_data), result_sign };
+        UnsignedBigInteger result;
+        UnsignedBigInteger temp_shift_result;
+        UnsignedBigInteger temp_shift_plus;
+        UnsignedBigInteger temp_shift;
+
+        UnsignedBigIntegerAlgorithms::multiply_without_allocation(*this, other, temp_shift_result, temp_shift_plus, temp_shift, result);
+
+        return result;
     }
 
     /**
      * @param divisor 
      * @return FLATTEN 
      */
-    FLATTEN SignedDivisionResult SignedBigInteger::divided_by(const SignedBigInteger& divisor) const
+    FLATTEN UnsignedDivisionResult UnsignedBigInteger::divided_by(UnsignedBigInteger const& divisor) const
     {
-        bool result_sign = m_sign ^ divisor.m_sign;
-        auto unsigned_division_result = m_unsigned_data.divided_by(divisor.m_unsigned_data);
+        UnsignedBigInteger quotient;
+        UnsignedBigInteger remainder;
 
-        return {
-            { move(unsigned_division_result.quotient), result_sign },
-            { move(unsigned_division_result.remainder), m_sign }
-        };
+        if (divisor.trimmed_length() == 1 && divisor.m_words[0] < (1 << 16)) {
+            UnsignedBigIntegerAlgorithms::divide_u16_without_allocation(*this, divisor.m_words[0], quotient, remainder);
+            return UnsignedDivisionResult { quotient, remainder };
+        }
+
+        UnsignedBigInteger temp_shift_result;
+        UnsignedBigInteger temp_shift_plus;
+        UnsignedBigInteger temp_shift;
+        UnsignedBigInteger temp_minus;
+
+        UnsignedBigIntegerAlgorithms::divide_without_allocation(*this, divisor, temp_shift_result, temp_shift_plus, temp_shift, temp_minus, quotient, remainder);
+
+        return UnsignedDivisionResult { quotient, remainder };
+    }
+
+    /**
+     * @return u32 
+     */
+    u32 UnsignedBigInteger::hash() const
+    {
+        if (m_cached_hash != 0)
+            return m_cached_hash;
+
+        return m_cached_hash = string_hash((char const*)m_words.data(), sizeof(Word) * m_words.size());
     }
 
     /**
      * @param bit_index 
      */
-    void SignedBigInteger::set_bit_inplace(size_t bit_index)
+    void UnsignedBigInteger::set_bit_inplace(size_t bit_index)
     {
-        m_unsigned_data.set_bit_inplace(bit_index);
+        const size_t word_index = bit_index / UnsignedBigInteger::BITS_IN_WORD;
+        const size_t inner_word_index = bit_index % UnsignedBigInteger::BITS_IN_WORD;
+
+        m_words.ensure_capacity(word_index + 1);
+
+        for (size_t i = length(); i <= word_index; ++i) {
+            m_words.unchecked_append(0);
+        }
+        m_words[word_index] |= (1 << inner_word_index);
+
+        m_cached_trimmed_length = {};
+        m_cached_hash = 0;
     }
 
     /**
@@ -314,15 +415,17 @@ namespace Crypto
      * @return true 
      * @return false 
      */
-    bool SignedBigInteger::operator==(const SignedBigInteger& other) const
+    bool UnsignedBigInteger::operator==(UnsignedBigInteger const& other) const
     {
         if (is_invalid() != other.is_invalid())
             return false;
 
-        if (m_unsigned_data == 0 && other.m_unsigned_data == 0)
-            return true;
+        auto length = trimmed_length();
 
-        return m_sign == other.m_sign && m_unsigned_data == other.m_unsigned_data;
+        if (length != other.trimmed_length())
+            return false;
+
+        return !__builtin_memcmp(m_words.data(), other.words().data(), length * (BITS_IN_WORD / 8));
     }
 
     /**
@@ -330,7 +433,7 @@ namespace Crypto
      * @return true 
      * @return false 
      */
-    bool SignedBigInteger::operator!=(const SignedBigInteger& other) const
+    bool UnsignedBigInteger::operator!=(UnsignedBigInteger const& other) const
     {
         return !(*this == other);
     }
@@ -340,15 +443,60 @@ namespace Crypto
      * @return true 
      * @return false 
      */
-    bool SignedBigInteger::operator<(const SignedBigInteger& other) const
+    bool UnsignedBigInteger::operator<(UnsignedBigInteger const& other) const
     {
-        if (m_sign ^ other.m_sign)
-            return m_sign;
+        auto length = trimmed_length();
+        auto other_length = other.trimmed_length();
 
-        if (m_sign)
-            return other.m_unsigned_data < m_unsigned_data;
+        if (length < other_length) {
+            return true;
+        }
 
-        return m_unsigned_data < other.m_unsigned_data;
+        if (length > other_length) {
+            return false;
+        }
+
+        if (length == 0) {
+            return false;
+        }
+        for (int i = length - 1; i >= 0; --i) {
+            if (m_words[i] == other.m_words[i])
+                continue;
+            return m_words[i] < other.m_words[i];
+        }
+        return false;
     }
 
+    /**
+     * @param other 
+     * @return true 
+     * @return false 
+     */
+    bool UnsignedBigInteger::operator>(UnsignedBigInteger const& other) const
+    {
+        return *this != other && !(*this < other);
+    }
+
+    /**
+     * @param other 
+     * @return true 
+     * @return false 
+     */
+    bool UnsignedBigInteger::operator>=(UnsignedBigInteger const& other) const
+    {
+        return *this > other || *this == other;
+    }
+
+} // namespace Crypto
+
+ErrorOr<void> Mods::Formatter<Crypto::UnsignedBigInteger>::format(FormatBuilder& fmtbuilder, Crypto::UnsignedBigInteger const& value)
+{
+    if (value.is_invalid())
+        return Formatter<StringView>::format(fmtbuilder, "invalid");
+
+    StringBuilder builder;
+    for (int i = value.length() - 1; i >= 0; --i)
+        TRY(builder.try_appendff("{}|", value.words()[i]));
+
+    return Formatter<StringView>::format(fmtbuilder, builder.string_view());
 }
