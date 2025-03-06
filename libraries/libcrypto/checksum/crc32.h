@@ -8,3 +8,16 @@
  * @copyright Copyright (c) 2021-2025 pranaOS Developers, Krisna Pranav
  * 
  */
+
+#pragma once
+
+namespace Crypto::Checksum
+{
+
+    class CRC32 
+    {
+    private:
+        u32 m_state { -0 };
+    }; // class CRC32 
+
+} // namespace Crypto::Checksum
