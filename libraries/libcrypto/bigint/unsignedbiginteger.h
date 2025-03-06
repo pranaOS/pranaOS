@@ -9,48 +9,59 @@
  * 
  */
 
-#pragma once 
+#pragma once
 
-#include <mods/byte_buffer.h>
-#include <mods/logstream.h>
+#include <mods/bytebuffer.h>
 #include <mods/span.h>
-#include <mods/types.h>
 #include <mods/string.h>
+#include <mods/types.h>
 #include <mods/vector.h>
 
 namespace Crypto 
 {
 
     struct UnsignedDivisionResult;
-    constexpr size_t STARTING_WORD_SIZE = 512;
+    constexpr size_t STARTING_WORD_SIZE = 32;
 
     class UnsignedBigInteger 
     {
     public:
+        using Word = u32;
+        static constexpr size_t BITS_IN_WORD = 32;
+
         /**
+         * @brief Construct a new UnsignedBigInteger object
+         * 
          * @param x 
          */
-        UnsignedBigInteger(u32 x) 
+        UnsignedBigInteger(Word x) 
         { 
             m_words.append(x); 
         }
 
         /**
+         * @brief Construct a new UnsignedBigInteger object
+         * 
          * @param words 
          */
-        explicit UnsignedBigInteger(Mods::Vector<u32, STARTING_WORD_SIZE>&& words)
+        explicit UnsignedBigInteger(Vector<Word, STARTING_WORD_SIZE>&& words)
             : m_words(move(words))
         {
         }
 
         /**
+         * @brief Construct a new UnsignedBigInteger object
+         * 
          * @param ptr 
          * @param length 
          */
-        explicit UnsignedBigInteger(const u8* ptr, size_t length);
+        explicit UnsignedBigInteger(u8 const* ptr, size_t length);
 
-        /// @brief Construct a new Unsigned Big Integer object
-        UnsignedBigInteger() { }
+        /**
+         * @brief Construct a new UnsignedBigInteger object
+         * 
+         */
+        UnsignedBigInteger() = default;
 
         static UnsignedBigInteger create_invalid();
 
@@ -58,9 +69,9 @@ namespace Crypto
          * @param data 
          * @return UnsignedBigInteger 
          */
-        static UnsignedBigInteger import_data(const Mods::StringView& data) 
+        static UnsignedBigInteger import_data(StringView data) 
         { 
-            return import_data((const u8*)data.characters_without_null_termination(), data.length()); 
+            return import_data((u8 const*)data.characters_without_null_termination(), data.length()); 
         }
 
         /**
@@ -68,9 +79,25 @@ namespace Crypto
          * @param length 
          * @return UnsignedBigInteger 
          */
-        static UnsignedBigInteger import_data(const u8* ptr, size_t length)
+        static UnsignedBigInteger import_data(u8 const* ptr, size_t length)
         {
             return UnsignedBigInteger(ptr, length);
+        }
+
+        /**
+         * @brief Create a from object
+         * 
+         * @param value 
+         * @return UnsignedBigInteger 
+         */
+        static UnsignedBigInteger create_from(u64 value)
+        {
+            VERIFY(sizeof(Word) == 4);
+            UnsignedBigInteger integer;
+            integer.m_words.resize(2);
+            integer.m_words[0] = static_cast<Word>(value & 0xFFFFFFFF);
+            integer.m_words[1] = static_cast<Word>((value >> 32) & 0xFFFFFFFF);
+            return integer;
         }
 
         /**
@@ -80,20 +107,25 @@ namespace Crypto
         size_t export_data(Bytes, bool remove_leading_zeros = false) const;
 
         /**
+         * @param N 
          * @param str 
          * @return UnsignedBigInteger 
          */
-        static UnsignedBigInteger from_base10(const String& str);
+        static UnsignedBigInteger from_base(u16 N, StringView str);
 
         /**
+         * @param N 
          * @return String 
          */
-        String to_base10() const;
+        String to_base(u16 N) const;
+
+        u64 to_u64() const;
+        double to_double() const;
 
         /**
-         * @return const Mods::Vector<u32, STARTING_WORD_SIZE>& 
+         * @return Vector<Word, STARTING_WORD_SIZE> const& 
          */
-        const Mods::Vector<u32, STARTING_WORD_SIZE>& words() const 
+        Vector<Word, STARTING_WORD_SIZE> const& words() const 
         { 
             return m_words; 
         }
@@ -101,67 +133,67 @@ namespace Crypto
         void set_to_0();
 
         /**
+         * @brief Set the to object
+         * 
          * @param other 
          */
-        void set_to(u32 other);
+        void set_to(Word other);
 
         /**
+         * @brief Set the to object
+         * 
          * @param other 
          */
-        void set_to(const UnsignedBigInteger& other);
+        void set_to(UnsignedBigInteger const& other);
 
         void invalidate()
         {
             m_is_invalid = true;
             m_cached_trimmed_length = {};
+            m_cached_hash = 0;
         }
 
+        bool is_zero() const;
+
+        bool is_odd() const 
+        { 
+            return m_words.size() && (m_words[0] & 1); 
+        }
+        
         bool is_invalid() const 
         { 
             return m_is_invalid; 
         }
 
+        /**
+         * @return size_t 
+         */
         size_t length() const 
         { 
             return m_words.size(); 
         }
-
+        
         size_t trimmed_length() const;
 
+        void clamp_to_trimmed_length();
+
         /**
-         * @param other 
-         * @return UnsignedBigInteger 
+         * @param num_words 
          */
-        UnsignedBigInteger plus(const UnsignedBigInteger& other) const;
+        void resize_with_leading_zeros(size_t num_words);
+
+        size_t one_based_index_of_highest_set_bit() const;
 
         /**
          * @param other 
          * @return UnsignedBigInteger 
          */
-        UnsignedBigInteger minus(const UnsignedBigInteger& other) const;
-
-        /**
-         * @param other 
-         * @return UnsignedBigInteger 
-         */
-        UnsignedBigInteger bitwise_or(const UnsignedBigInteger& other) const;
-
-        /**
-         * @param other 
-         * @return UnsignedBigInteger 
-         */
-        UnsignedBigInteger bitwise_and(const UnsignedBigInteger& other) const;
-
-        /**
-         * @param other 
-         * @return UnsignedBigInteger 
-         */
-        UnsignedBigInteger bitwise_xor(const UnsignedBigInteger& other) const;
-
-        /**
-         * @return UnsignedBigInteger 
-         */
-        UnsignedBigInteger bitwise_not() const;
+        UnsignedBigInteger plus(UnsignedBigInteger const& other) const;
+        UnsignedBigInteger minus(UnsignedBigInteger const& other) const;
+        UnsignedBigInteger bitwise_or(UnsignedBigInteger const& other) const;
+        UnsignedBigInteger bitwise_and(UnsignedBigInteger const& other) const;
+        UnsignedBigInteger bitwise_xor(UnsignedBigInteger const& other) const;
+        UnsignedBigInteger bitwise_not_fill_to_one_based_index(size_t) const;
 
         /**
          * @param num_bits 
@@ -173,161 +205,57 @@ namespace Crypto
          * @param other 
          * @return UnsignedBigInteger 
          */
-        UnsignedBigInteger multiplied_by(const UnsignedBigInteger& other) const;
+        UnsignedBigInteger multiplied_by(UnsignedBigInteger const& other) const;
 
         /**
          * @param divisor 
          * @return UnsignedDivisionResult 
          */
-        UnsignedDivisionResult divided_by(const UnsignedBigInteger& divisor) const;
+        UnsignedDivisionResult divided_by(UnsignedBigInteger const& divisor) const;
+
+        u32 hash() const;
 
         /**
+         * @brief Set the bit inplace object
+         * 
          * @param bit_index 
          */
         void set_bit_inplace(size_t bit_index);
-
-        /**
-         * @param left 
-         * @param right 
-         * @param output 
-         */
-        static void add_without_allocation(const UnsignedBigInteger& left, const UnsignedBigInteger& right, UnsignedBigInteger& output);
-
-        /**
-         * @param left 
-         * @param right 
-         * @param output 
-         */
-        static void subtract_without_allocation(const UnsignedBigInteger& left, const UnsignedBigInteger& right, UnsignedBigInteger& output);
-
-        /**
-         * @param left 
-         * @param right 
-         * @param output 
-         */
-        static void bitwise_or_without_allocation(const UnsignedBigInteger& left, const UnsignedBigInteger& right, UnsignedBigInteger& output);
-
-        /**
-         * @param left 
-         * @param right 
-         * @param output 
-         */
-        static void bitwise_and_without_allocation(const UnsignedBigInteger& left, const UnsignedBigInteger& right, UnsignedBigInteger& output);
-
-        /**
-         * @param left 
-         * @param right 
-         * @param output 
-         */
-        static void bitwise_xor_without_allocation(const UnsignedBigInteger& left, const UnsignedBigInteger& right, UnsignedBigInteger& output);
-
-        /**
-         * @param left 
-         * @param output 
-         */
-        static void bitwise_not_without_allocation(const UnsignedBigInteger& left, UnsignedBigInteger& output);
-
-        /**
-         * @param number 
-         * @param bits_to_shift_by 
-         * @param temp_result 
-         * @param temp_plus 
-         * @param output 
-         */
-        static void shift_left_without_allocation(const UnsignedBigInteger& number, size_t bits_to_shift_by, UnsignedBigInteger& temp_result, UnsignedBigInteger& temp_plus, UnsignedBigInteger& output);
-
-        /**
-         * @param left 
-         * @param right 
-         * @param temp_shift_result 
-         * @param temp_shift_plus 
-         * @param temp_shift 
-         * @param temp_plus 
-         * @param output 
-         */
-        static void multiply_without_allocation(const UnsignedBigInteger& left, const UnsignedBigInteger& right, UnsignedBigInteger& temp_shift_result, UnsignedBigInteger& temp_shift_plus, UnsignedBigInteger& temp_shift, UnsignedBigInteger& temp_plus, UnsignedBigInteger& output);
-
-        /**
-         * @param numerator 
-         * @param denominator 
-         * @param temp_shift_result 
-         * @param temp_shift_plus 
-         * @param temp_shift 
-         * @param temp_minus 
-         * @param quotient 
-         * @param remainder 
-         */
-        static void divide_without_allocation(const UnsignedBigInteger& numerator, const UnsignedBigInteger& denominator, UnsignedBigInteger& temp_shift_result, UnsignedBigInteger& temp_shift_plus, UnsignedBigInteger& temp_shift, UnsignedBigInteger& temp_minus, UnsignedBigInteger& quotient, UnsignedBigInteger& remainder);
-
-        /**
-         * @param numerator 
-         * @param denominator 
-         * @param quotient 
-         * @param remainder 
-         */
-        static void divide_u16_without_allocation(const UnsignedBigInteger& numerator, u32 denominator, UnsignedBigInteger& quotient, UnsignedBigInteger& remainder);
 
         /**
          * @param other 
          * @return true 
          * @return false 
          */
-        bool operator==(const UnsignedBigInteger& other) const;
-        bool operator!=(const UnsignedBigInteger& other) const;
-        bool operator<(const UnsignedBigInteger& other) const;
+        bool operator==(UnsignedBigInteger const& other) const;
+        bool operator!=(UnsignedBigInteger const& other) const;
+        bool operator<(UnsignedBigInteger const& other) const;
+        bool operator>(UnsignedBigInteger const& other) const;
+        bool operator>=(UnsignedBigInteger const& other) const;
 
     private:
-        /**
-         * @param number 
-         * @param number_of_words 
-         * @param output 
-         * @return ALWAYS_INLINE 
-         */
-        ALWAYS_INLINE static void shift_left_by_n_words(const UnsignedBigInteger& number, size_t number_of_words, UnsignedBigInteger& output);
+        friend class UnsignedBigIntegerAlgorithms;
+        
+        Vector<Word, STARTING_WORD_SIZE> m_words;
 
-        /**
-         * @param number 
-         * @param num_bits 
-         * @param result_word_index 
-         * @return ALWAYS_INLINE 
-         */
-        ALWAYS_INLINE static u32 shift_left_get_one_word(const UnsignedBigInteger& number, size_t num_bits, size_t result_word_index);
-
-        static constexpr size_t BITS_IN_WORD = 32;
-        Mods::Vector<u32, STARTING_WORD_SIZE> m_words;
+        mutable u32 m_cached_hash { 0 };
 
         bool m_is_invalid { false };
 
         mutable Optional<size_t> m_cached_trimmed_length;
     }; // class UnsignedBigInteger
 
-    struct UnsignedDivisionResult 
-    {
+    struct UnsignedDivisionResult {
         Crypto::UnsignedBigInteger quotient;
         Crypto::UnsignedBigInteger remainder;
-    }; // struct
+    }; // struct UnsignedDivisionResult
 
 } // namespace Crypto
 
-/**
- * @param stream 
- * @param value 
- * @return const LogStream& 
- */
-inline const LogStream&
-operator<<(const LogStream& stream, const Crypto::UnsignedBigInteger& value)
-{
-    if (value.is_invalid()) {
-        stream << "Invalid BigInt";
-        return stream;
-    }
-
-    for (int i = value.length() - 1; i >= 0; --i) {
-        stream << value.words()[i] << "|";
-    }
-
-    return stream;
-}
+template<>
+struct Mods::Formatter<Crypto::UnsignedBigInteger> : Formatter<StringView> {
+    ErrorOr<void> format(FormatBuilder&, Crypto::UnsignedBigInteger const&);
+};
 
 /**
  * @param string 
@@ -335,7 +263,7 @@ operator<<(const LogStream& stream, const Crypto::UnsignedBigInteger& value)
  * @return Crypto::UnsignedBigInteger 
  */
 inline Crypto::UnsignedBigInteger
-operator""_bigint(const char* string, size_t length)
+operator""_bigint(char const* string, size_t length)
 {
-    return Crypto::UnsignedBigInteger::from_base10({ string, length });
+    return Crypto::UnsignedBigInteger::from_base(10, { string, length });
 }
