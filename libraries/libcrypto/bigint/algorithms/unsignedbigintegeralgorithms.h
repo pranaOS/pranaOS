@@ -9,13 +9,13 @@
  * 
  */
 
-
 #pragma once
 
 #include <libcrypto/bigint/unsignedbiginteger.h>
 
 namespace Crypto 
 {
+
     class UnsignedBigIntegerAlgorithms 
     {
     public:
@@ -166,7 +166,6 @@ namespace Crypto
         static void montgomery_modular_power_with_minimal_allocations(UnsignedBigInteger const& base, UnsignedBigInteger const& exponent, UnsignedBigInteger const& modulo, UnsignedBigInteger& temp_z0, UnsignedBigInteger& temp_rr, UnsignedBigInteger& temp_one, UnsignedBigInteger& temp_z, UnsignedBigInteger& temp_zz, UnsignedBigInteger& temp_x, UnsignedBigInteger& temp_extra, UnsignedBigInteger& result);
 
     private:
-
         /**
          * @param z 
          * @param offset_in_z 
@@ -194,7 +193,7 @@ namespace Crypto
          * @param output 
          */
         static void shift_left_by_n_words(UnsignedBigInteger const& number, size_t number_of_words, UnsignedBigInteger& output);
-
+        
         /**
          * @param number 
          * @param number_of_words 
@@ -210,4 +209,5 @@ namespace Crypto
          */
         ALWAYS_INLINE static UnsignedBigInteger::Word shift_left_get_one_word(UnsignedBigInteger const& number, size_t num_bits, size_t result_word_index);
     }; // class UnsignedBigIntegerAlgorithms
-} // namespace Crypto
+
+}
