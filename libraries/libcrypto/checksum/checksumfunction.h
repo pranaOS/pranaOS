@@ -9,3 +9,36 @@
  * 
  */
 
+#pragma once
+
+#include <mods/span.h>
+
+namespace Crypto::Checksum 
+{
+
+    /**
+     * @tparam ChecksumType 
+     */
+    template<typename ChecksumType>
+    class ChecksumFunction 
+    {
+    public: 
+        /**
+         * @param data 
+         */
+        virtual void update(ReadonlyBytes data) = 0;
+
+        /**
+         * @return ChecksumType 
+         */
+        virtual ChecksumType digest() = 0;
+
+    protected:
+        /**
+         * @brief Destroy the ChecksumFunction object
+         * 
+         */
+        virtual ~ChecksumFunction() = default;
+    }; // class class ChecksumFunction
+
+} // namespace Crypto::Checksum 
