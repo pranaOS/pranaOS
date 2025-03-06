@@ -9,9 +9,8 @@
  * 
  */
 
-#pragma once 
+#pragma once
 
-#include "unsignedbiginteger.h"
 #include <mods/span.h>
 #include <libcrypto/bigint/unsignedbiginteger.h>
 
@@ -23,23 +22,33 @@ namespace Crypto
     class SignedBigInteger 
     {
     public:
-
         /**
+         * @brief Construct a new SignedBigInteger object
+         * 
          * @param x 
          */
-        SignedBigInteger(i32 x) : m_sign(x < 0) , m_unsigned_data(abs(x))
-        { }
+        SignedBigInteger(i32 x)
+            : m_sign(x < 0)
+            , m_unsigned_data(abs(x))
+        {
+        }
 
         /**
+         * @brief Construct a new SignedBigInteger object
+         * 
          * @param unsigned_data 
          * @param sign 
          */
         SignedBigInteger(UnsignedBigInteger&& unsigned_data, bool sign)
             : m_sign(sign)
             , m_unsigned_data(move(unsigned_data))
-        { }
+        {
+            ensure_sign_is_valid();
+        }
 
         /**
+         * @brief Construct a new SignedBigInteger object
+         * 
          * @param unsigned_data 
          */
         explicit SignedBigInteger(UnsignedBigInteger unsigned_data)
@@ -48,16 +57,16 @@ namespace Crypto
         {
         }
 
-        /// @brief Construct a new Signed Big Integer object
+        /**
+         * @brief Construct a new SignedBigInteger object
+         * 
+         */
         SignedBigInteger()
             : m_sign(false)
             , m_unsigned_data()
         {
         }
 
-        /**
-         * @return SignedBigInteger 
-         */
         static SignedBigInteger create_invalid()
         {
             return { UnsignedBigInteger::create_invalid(), false };
@@ -67,9 +76,9 @@ namespace Crypto
          * @param data 
          * @return SignedBigInteger 
          */
-        static SignedBigInteger import_data(const Mods::StringView& data) 
+        static SignedBigInteger import_data(StringView data) 
         { 
-            return import_data((const u8*)data.characters_without_null_termination(), data.length()); 
+            return import_data((u8 const*)data.characters_without_null_termination(), data.length()); 
         }
 
         /**
@@ -77,7 +86,26 @@ namespace Crypto
          * @param length 
          * @return SignedBigInteger 
          */
-        static SignedBigInteger import_data(const u8* ptr, size_t length);
+        static SignedBigInteger import_data(u8 const* ptr, size_t length);
+
+        /**
+         * @brief Create a from object
+         * 
+         * @param value 
+         * @return SignedBigInteger 
+         */
+        static SignedBigInteger create_from(i64 value)
+        {
+            auto sign = false;
+            u64 unsigned_value;
+            if (value < 0) {
+                unsigned_value = static_cast<u64>(-(value + 1)) + 1;
+                sign = true;
+            } else {
+                unsigned_value = value;
+            }
+            return SignedBigInteger { UnsignedBigInteger::create_from(unsigned_value), sign };
+        }
 
         /**
          * @param remove_leading_zeros 
@@ -86,52 +114,54 @@ namespace Crypto
         size_t export_data(Bytes, bool remove_leading_zeros = false) const;
 
         /**
+         * @param N 
          * @param str 
          * @return SignedBigInteger 
          */
-        static SignedBigInteger from_base10(StringView str);
+        static SignedBigInteger from_base(u16 N, StringView str);
 
         /**
+         * @param N 
          * @return String 
          */
-        String to_base10() const;
+        String to_base(u16 N) const;
+
+        u64 to_u64() const;
+        double to_double() const;
 
         /**
-         * @return const UnsignedBigInteger& 
+         * @return UnsignedBigInteger const& 
          */
-        const UnsignedBigInteger& unsigned_value() const 
+        UnsignedBigInteger const& unsigned_value() const 
         { 
             return m_unsigned_data; 
         }
 
-        /**
-         * @return const Vector<u32, STARTING_WORD_SIZE> 
-         */
-        const Vector<u32, STARTING_WORD_SIZE> words() const 
+        Vector<u32, STARTING_WORD_SIZE> const words() const 
         { 
             return m_unsigned_data.words(); 
         }
 
-        /**
-         * @return true 
-         * @return false 
-         */
         bool is_negative() const 
         { 
             return m_sign; 
         }
 
-        void negate() 
-        { 
-            m_sign = !m_sign; 
+        void negate()
+        {
+            if (!m_unsigned_data.is_zero())
+                m_sign = !m_sign;
         }
 
-        void set_to_0() 
-        { 
-            m_unsigned_data.set_to_0(); 
+        void set_to_0()
+        {
+            m_unsigned_data.set_to_0();
+            m_sign = false;
         }
 
         /**
+         * @brief Set the to object
+         * 
          * @param other 
          */
         void set_to(i32 other)
@@ -141,9 +171,11 @@ namespace Crypto
         }
 
         /**
+         * @brief Set the to object
+         * 
          * @param other 
          */
-        void set_to(const SignedBigInteger& other)
+        void set_to(SignedBigInteger const& other)
         {
             m_unsigned_data.set_to(other.m_unsigned_data);
             m_sign = other.m_sign;
@@ -159,17 +191,11 @@ namespace Crypto
             return m_unsigned_data.is_invalid(); 
         }
 
-        /**
-         * @return size_t 
-         */
         size_t length() const 
         { 
             return m_unsigned_data.length() + 1; 
         }
-
-        /**
-         * @return size_t 
-         */
+        
         size_t trimmed_length() const 
         { 
             return m_unsigned_data.trimmed_length() + 1; 
@@ -179,11 +205,11 @@ namespace Crypto
          * @param other 
          * @return SignedBigInteger 
          */
-        SignedBigInteger plus(const SignedBigInteger& other) const;
-        SignedBigInteger minus(const SignedBigInteger& other) const;
-        SignedBigInteger bitwise_or(const SignedBigInteger& other) const;
-        SignedBigInteger bitwise_and(const SignedBigInteger& other) const;
-        SignedBigInteger bitwise_xor(const SignedBigInteger& other) const;
+        SignedBigInteger plus(SignedBigInteger const& other) const;
+        SignedBigInteger minus(SignedBigInteger const& other) const;
+        SignedBigInteger bitwise_or(SignedBigInteger const& other) const;
+        SignedBigInteger bitwise_and(SignedBigInteger const& other) const;
+        SignedBigInteger bitwise_xor(SignedBigInteger const& other) const;
 
         SignedBigInteger bitwise_not() const;
 
@@ -197,27 +223,36 @@ namespace Crypto
          * @param other 
          * @return SignedBigInteger 
          */
-        SignedBigInteger multiplied_by(const SignedBigInteger& other) const;
+        SignedBigInteger multiplied_by(SignedBigInteger const& other) const;
 
         /**
          * @param divisor 
          * @return SignedDivisionResult 
          */
-        SignedDivisionResult divided_by(const SignedBigInteger& divisor) const;
+        SignedDivisionResult divided_by(SignedBigInteger const& divisor) const;
 
         /**
          * @param other 
          * @return SignedBigInteger 
          */
-        SignedBigInteger plus(const UnsignedBigInteger& other) const;
-        SignedBigInteger minus(const UnsignedBigInteger& other) const;
-        SignedBigInteger bitwise_or(const UnsignedBigInteger& other) const;
-        SignedBigInteger bitwise_and(const UnsignedBigInteger& other) const;
-        SignedBigInteger bitwise_xor(const UnsignedBigInteger& other) const;
-        SignedBigInteger multiplied_by(const UnsignedBigInteger& other) const;
-        SignedDivisionResult divided_by(const UnsignedBigInteger& divisor) const;
+        SignedBigInteger plus(UnsignedBigInteger const& other) const;
+        SignedBigInteger minus(UnsignedBigInteger const& other) const;
+        SignedBigInteger multiplied_by(UnsignedBigInteger const& other) const;
 
         /**
+         * @param divisor 
+         * @return SignedDivisionResult 
+         */
+        SignedDivisionResult divided_by(UnsignedBigInteger const& divisor) const;
+
+        /**
+         * @return u32 
+         */
+        u32 hash() const;
+
+        /**
+         * @brief Set the bit inplace object
+         * 
          * @param bit_index 
          */
         void set_bit_inplace(size_t bit_index);
@@ -227,46 +262,48 @@ namespace Crypto
          * @return true 
          * @return false 
          */
-        bool operator==(const SignedBigInteger& other) const;
-        bool operator!=(const SignedBigInteger& other) const;
-        bool operator<(const SignedBigInteger& other) const;
+        bool operator==(SignedBigInteger const& other) const;
+        bool operator!=(SignedBigInteger const& other) const;
+        bool operator<(SignedBigInteger const& other) const;
+        bool operator<=(SignedBigInteger const& other) const;
+        bool operator>(SignedBigInteger const& other) const;
+        bool operator>=(SignedBigInteger const& other) const;
 
-        bool operator==(const UnsignedBigInteger& other) const;
-        bool operator!=(const UnsignedBigInteger& other) const;
-        bool operator<(const UnsignedBigInteger& other) const;
+        /**
+         * @param other 
+         * @return true 
+         * @return false 
+         */
+        bool operator==(UnsignedBigInteger const& other) const;
+        bool operator!=(UnsignedBigInteger const& other) const;
+        bool operator<(UnsignedBigInteger const& other) const;
+        bool operator>(UnsignedBigInteger const& other) const;
 
     private:
+        void ensure_sign_is_valid()
+        {
+            if (m_sign && m_unsigned_data.is_zero())
+                m_sign = false;
+        }
+
         bool m_sign { false };
         UnsignedBigInteger m_unsigned_data;
     }; // class SignedBigInteger 
 
-    struct SignedDivisionResult 
-    {
+    struct SignedDivisionResult {
         Crypto::SignedBigInteger quotient;
         Crypto::SignedBigInteger remainder;
-    };
+    }; // struct SignedDivisionResult
 
 } // namespace Crypto
 
-/**
- * @param stream 
- * @param value 
- * @return const LogStream& 
- */
-inline const LogStream&
-operator<<(const LogStream& stream, const Crypto::SignedBigInteger value)
-{
-    if (value.is_invalid()) {
-        stream << "Invalid BigInt";
-        return stream;
-    }
-
-    if (value.is_negative())
-        stream << "-";
-
-    stream << value.unsigned_value();
-    return stream;
-}
+template<>
+struct Mods::Formatter<Crypto::SignedBigInteger> : Mods::Formatter<Crypto::UnsignedBigInteger> {
+    /**
+     * @return ErrorOr<void> 
+     */
+    ErrorOr<void> format(FormatBuilder&, Crypto::SignedBigInteger const&);
+};
 
 /**
  * @param string 
@@ -274,7 +311,7 @@ operator<<(const LogStream& stream, const Crypto::SignedBigInteger value)
  * @return Crypto::SignedBigInteger 
  */
 inline Crypto::SignedBigInteger
-operator""_sbigint(const char* string, size_t length)
+operator""_sbigint(char const* string, size_t length)
 {
-    return Crypto::SignedBigInteger::from_base10({ string, length });
+    return Crypto::SignedBigInteger::from_base(10, { string, length });
 }
