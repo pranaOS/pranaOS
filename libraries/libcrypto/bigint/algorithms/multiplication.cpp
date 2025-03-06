@@ -13,6 +13,7 @@
 
 namespace Crypto 
 {
+
     /**
      * @param left 
      * @param right 
@@ -22,7 +23,13 @@ namespace Crypto
      * @param output 
      * @return FLATTEN 
      */
-    FLATTEN void UnsignedBigIntegerAlgorithms::multiply_without_allocation(UnsignedBigInteger const& left, UnsignedBigInteger const& right, UnsignedBigInteger& temp_shift_result, UnsignedBigInteger& temp_shift_plus, UnsignedBigInteger& temp_shift, UnsignedBigInteger& output)
+    FLATTEN void UnsignedBigIntegerAlgorithms::multiply_without_allocation(
+        UnsignedBigInteger const& left,
+        UnsignedBigInteger const& right,
+        UnsignedBigInteger& temp_shift_result,
+        UnsignedBigInteger& temp_shift_plus,
+        UnsignedBigInteger& temp_shift,
+        UnsignedBigInteger& output)
     {
         output.set_to_0();
 
@@ -38,4 +45,5 @@ namespace Crypto
             }
         }
     }
+
 } // namespace Crypto
