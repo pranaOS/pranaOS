@@ -13,6 +13,7 @@
 
 namespace Crypto 
 {
+
     /**
      * @param temp_a 
      * @param temp_b 
@@ -24,7 +25,16 @@ namespace Crypto
      * @param temp_remainder 
      * @param output 
      */
-    void UnsignedBigIntegerAlgorithms::destructive_GCD_without_allocation(UnsignedBigInteger& temp_a, UnsignedBigInteger& temp_b, UnsignedBigInteger& temp_1, UnsignedBigInteger& temp_2, UnsignedBigInteger& temp_3, UnsignedBigInteger& temp_4, UnsignedBigInteger& temp_quotient, UnsignedBigInteger& temp_remainder, UnsignedBigInteger& output)
+    void UnsignedBigIntegerAlgorithms::destructive_GCD_without_allocation(
+        UnsignedBigInteger& temp_a,
+        UnsignedBigInteger& temp_b,
+        UnsignedBigInteger& temp_1,
+        UnsignedBigInteger& temp_2,
+        UnsignedBigInteger& temp_3,
+        UnsignedBigInteger& temp_4,
+        UnsignedBigInteger& temp_quotient,
+        UnsignedBigInteger& temp_remainder,
+        UnsignedBigInteger& output)
     {
         for (;;) {
             if (temp_a == 0) {
@@ -43,4 +53,5 @@ namespace Crypto
             temp_a.set_to(temp_remainder);
         }
     }
+
 } // namespace Crypto
