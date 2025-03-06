@@ -9,6 +9,7 @@
  * 
  */
 
+
 #include "unsignedbigintegeralgorithms.h"
 #include <mods/builtinwrappers.h>
 #include <mods/numericlimits.h>
@@ -22,7 +23,10 @@ namespace Crypto
      * @param output 
      * @return FLATTEN 
      */
-    FLATTEN void UnsignedBigIntegerAlgorithms::bitwise_or_without_allocation(UnsignedBigInteger const& left, UnsignedBigInteger const& right, UnsignedBigInteger& output)
+    FLATTEN void UnsignedBigIntegerAlgorithms::bitwise_or_without_allocation(
+        UnsignedBigInteger const& left,
+        UnsignedBigInteger const& right,
+        UnsignedBigInteger& output)
     {
         if (left.is_invalid()) {
             output.set_to(right);
@@ -33,7 +37,8 @@ namespace Crypto
             return;
         }
 
-        const UnsignedBigInteger *shorter, *longer;
+        UnsignedBigInteger const *shorter, *longer;
+
         if (left.length() < right.length()) {
             shorter = &left;
             longer = &right;
@@ -57,19 +62,21 @@ namespace Crypto
      * @param output 
      * @return FLATTEN 
      */
-    FLATTEN void UnsignedBigIntegerAlgorithms::bitwise_and_without_allocation(UnsignedBigInteger const& left, UnsignedBigInteger const& right, UnsignedBigInteger& output)
+    FLATTEN void UnsignedBigIntegerAlgorithms::bitwise_and_without_allocation(
+        UnsignedBigInteger const& left,
+        UnsignedBigInteger const& right,
+        UnsignedBigInteger& output)
     {
         if (left.is_invalid()) {
             output.set_to(right);
             return;
         }
-
         if (right.is_invalid()) {
             output.set_to(left);
             return;
         }
 
-        const UnsignedBigInteger *shorter, *longer;
+        UnsignedBigInteger const *shorter, *longer;
 
         if (left.length() < right.length()) {
             shorter = &left;
@@ -94,19 +101,21 @@ namespace Crypto
      * @param output 
      * @return FLATTEN 
      */
-    FLATTEN void UnsignedBigIntegerAlgorithms::bitwise_xor_without_allocation(UnsignedBigInteger const& left, UnsignedBigInteger const& right, UnsignedBigInteger& output)
+    FLATTEN void UnsignedBigIntegerAlgorithms::bitwise_xor_without_allocation(
+        UnsignedBigInteger const& left,
+        UnsignedBigInteger const& right,
+        UnsignedBigInteger& output)
     {
         if (left.is_invalid()) {
             output.set_to(right);
             return;
         }
-
         if (right.is_invalid()) {
             output.set_to(left);
             return;
         }
 
-        const UnsignedBigInteger *shorter, *longer;
+        UnsignedBigInteger const *shorter, *longer;
 
         if (left.length() < right.length()) {
             shorter = &left;
@@ -131,7 +140,10 @@ namespace Crypto
      * @param output 
      * @return FLATTEN 
      */
-    FLATTEN void UnsignedBigIntegerAlgorithms::bitwise_not_fill_to_one_based_index_without_allocation(UnsignedBigInteger const& right, size_t index, UnsignedBigInteger& output)
+    FLATTEN void UnsignedBigIntegerAlgorithms::bitwise_not_fill_to_one_based_index_without_allocation(
+        UnsignedBigInteger const& right,
+        size_t index,
+        UnsignedBigInteger& output)
     {
         if (right.is_invalid()) {
             output.invalidate();
@@ -147,6 +159,7 @@ namespace Crypto
 
         output.m_words.resize_and_keep_capacity(size);
         VERIFY(size > 0);
+
         for (size_t i = 0; i < size - 1; ++i)
             output.m_words[i] = ~(i < right.length() ? right.words()[i] : 0);
 
@@ -165,7 +178,12 @@ namespace Crypto
      * @param output 
      * @return FLATTEN 
      */
-    FLATTEN void UnsignedBigIntegerAlgorithms::shift_left_without_allocation(UnsignedBigInteger const& number, size_t num_bits, UnsignedBigInteger& temp_result, UnsignedBigInteger& temp_plus, UnsignedBigInteger& output)
+    FLATTEN void UnsignedBigIntegerAlgorithms::shift_left_without_allocation(
+        UnsignedBigInteger const& number,
+        size_t num_bits,
+        UnsignedBigInteger& temp_result,
+        UnsignedBigInteger& temp_plus,
+        UnsignedBigInteger& output)
     {
         shift_left_by_n_words(number, num_bits / UnsignedBigInteger::BITS_IN_WORD, temp_result);
 
@@ -196,7 +214,10 @@ namespace Crypto
      * @param number_of_words 
      * @param output 
      */
-    void UnsignedBigIntegerAlgorithms::shift_left_by_n_words(UnsignedBigInteger const& number, size_t number_of_words, UnsignedBigInteger& output)
+    void UnsignedBigIntegerAlgorithms::shift_left_by_n_words(
+        UnsignedBigInteger const& number,
+        size_t number_of_words,
+        UnsignedBigInteger& output)
     {
         output.set_to_0();
         output.m_words.resize_and_keep_capacity(number_of_words + number.length());
@@ -210,7 +231,10 @@ namespace Crypto
      * @param number_of_words 
      * @param output 
      */
-    void UnsignedBigIntegerAlgorithms::shift_right_by_n_words(UnsignedBigInteger const& number,size_t number_of_words, UnsignedBigInteger& output)
+    void UnsignedBigIntegerAlgorithms::shift_right_by_n_words(
+        UnsignedBigInteger const& number,
+        size_t number_of_words,
+        UnsignedBigInteger& output)
     {
         output.set_to_0();
         output.m_words.resize_and_keep_capacity(number.length() - number_of_words);
@@ -223,7 +247,10 @@ namespace Crypto
      * @param result_word_index 
      * @return ALWAYS_INLINE 
      */
-    ALWAYS_INLINE UnsignedBigInteger::Word UnsignedBigIntegerAlgorithms::shift_left_get_one_word(UnsignedBigInteger const& number, size_t num_bits, size_t result_word_index)
+    ALWAYS_INLINE UnsignedBigInteger::Word UnsignedBigIntegerAlgorithms::shift_left_get_one_word(
+        UnsignedBigInteger const& number,
+        size_t num_bits,
+        size_t result_word_index)
     {
         VERIFY(result_word_index <= number.length());
         VERIFY(num_bits <= UnsignedBigInteger::BITS_IN_WORD);
@@ -232,11 +259,10 @@ namespace Crypto
         if (result_word_index > 0 && num_bits != 0) {
             result += number.m_words[result_word_index - 1] >> (UnsignedBigInteger::BITS_IN_WORD - num_bits);
         }
-
         if (result_word_index < number.length() && num_bits < 32) {
             result += number.m_words[result_word_index] << num_bits;
         }
-
         return result;
     }
+
 } // namespace Crypto
