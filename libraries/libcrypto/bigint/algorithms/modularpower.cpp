@@ -9,10 +9,12 @@
  * 
  */
 
+
 #include "unsignedbigintegeralgorithms.h"
 
 namespace Crypto 
 {
+
     /**
      * @param ep 
      * @param base 
@@ -26,7 +28,18 @@ namespace Crypto
      * @param temp_remainder 
      * @param exp 
      */
-    void UnsignedBigIntegerAlgorithms::destructive_modular_power_without_allocation(UnsignedBigInteger& ep, UnsignedBigInteger& base, UnsignedBigInteger const& m, UnsignedBigInteger& temp_1, UnsignedBigInteger& temp_2, UnsignedBigInteger& temp_3, UnsignedBigInteger& temp_4, UnsignedBigInteger& temp_multiply, UnsignedBigInteger& temp_quotient, UnsignedBigInteger& temp_remainder, UnsignedBigInteger& exp)
+    void UnsignedBigIntegerAlgorithms::destructive_modular_power_without_allocation(
+        UnsignedBigInteger& ep,
+        UnsignedBigInteger& base,
+        UnsignedBigInteger const& m,
+        UnsignedBigInteger& temp_1,
+        UnsignedBigInteger& temp_2,
+        UnsignedBigInteger& temp_3,
+        UnsignedBigInteger& temp_4,
+        UnsignedBigInteger& temp_multiply,
+        UnsignedBigInteger& temp_quotient,
+        UnsignedBigInteger& temp_remainder,
+        UnsignedBigInteger& exp)
     {
         exp.set_to(1);
         while (!(ep < 1)) {
@@ -131,7 +144,14 @@ namespace Crypto
      * @param num_words 
      * @param result 
      */
-    void UnsignedBigIntegerAlgorithms::almost_montgomery_multiplication_without_allocation(UnsignedBigInteger const& x, UnsignedBigInteger const& y, UnsignedBigInteger const& modulo, UnsignedBigInteger& z, UnsignedBigInteger::Word k, size_t num_words, UnsignedBigInteger& result)
+    void UnsignedBigIntegerAlgorithms::almost_montgomery_multiplication_without_allocation(
+        UnsignedBigInteger const& x,
+        UnsignedBigInteger const& y,
+        UnsignedBigInteger const& modulo,
+        UnsignedBigInteger& z,
+        UnsignedBigInteger::Word k,
+        size_t num_words,
+        UnsignedBigInteger& result)
     {
         VERIFY(x.length() >= num_words);
         VERIFY(y.length() >= num_words);
@@ -143,7 +163,7 @@ namespace Crypto
         UnsignedBigInteger::Word previous_double_carry { 0 };
         for (size_t i = 0; i < num_words; ++i) {
             UnsignedBigInteger::Word carry_1 = montgomery_fragment(z, i, x, y.m_words[i], num_words);
-
+            
             UnsignedBigInteger::Word t = z.m_words[i] * k;
             UnsignedBigInteger::Word carry_2 = montgomery_fragment(z, i, modulo, t, num_words);
 
@@ -166,7 +186,7 @@ namespace Crypto
             UnsignedBigInteger::Word modulo_digit = modulo.m_words[i];
             UnsignedBigInteger::Word new_z_digit = z_digit - modulo_digit - c;
             z.m_words[i] = new_z_digit;
-
+           
             c = ((modulo_digit & ~z_digit) | ((modulo_digit | ~z_digit) & new_z_digit)) >> (UnsignedBigInteger::BITS_IN_WORD - 1);
         }
 
@@ -188,7 +208,18 @@ namespace Crypto
      * @param temp_extra 
      * @param result 
      */
-    void UnsignedBigIntegerAlgorithms::montgomery_modular_power_with_minimal_allocations(UnsignedBigInteger const& base, UnsignedBigInteger const& exponent, UnsignedBigInteger const& modulo, UnsignedBigInteger& temp_z, UnsignedBigInteger& rr, UnsignedBigInteger& one, UnsignedBigInteger& z, UnsignedBigInteger& zz, UnsignedBigInteger& x, UnsignedBigInteger& temp_extra, UnsignedBigInteger& result)
+    void UnsignedBigIntegerAlgorithms::montgomery_modular_power_with_minimal_allocations(
+        UnsignedBigInteger const& base,
+        UnsignedBigInteger const& exponent,
+        UnsignedBigInteger const& modulo,
+        UnsignedBigInteger& temp_z,
+        UnsignedBigInteger& rr,
+        UnsignedBigInteger& one,
+        UnsignedBigInteger& z,
+        UnsignedBigInteger& zz,
+        UnsignedBigInteger& x,
+        UnsignedBigInteger& temp_extra,
+        UnsignedBigInteger& result)
     {
         VERIFY(modulo.is_odd());
 
@@ -204,11 +235,8 @@ namespace Crypto
         rr.resize_with_leading_zeros(num_words);
 
         x.set_to(base);
-
-        if (x.trimmed_length() > num_words) {
+        if (x.trimmed_length() > num_words)
             divide_without_allocation(base, modulo, temp_z, one, z, zz, temp_extra, x);
-        }
-
         x.resize_with_leading_zeros(num_words);
 
         one.set_to(1);
@@ -258,7 +286,8 @@ namespace Crypto
         subtract_without_allocation(zz, modulo, result);
 
         if (modulo < zz) {
-            dbgln("Encountered the branch during a modular power. Params : {} - {} - {}", base, exponent, modulo);
+            dbgln("Encountered the modulo branch during a montgomery modular power. Params : {} - {} - {}", base, exponent, modulo);
+            
             divide_without_allocation(zz, modulo, temp_z, rr, z, x, temp_extra, result);
         }
 
