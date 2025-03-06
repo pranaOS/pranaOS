@@ -19,10 +19,13 @@ namespace Crypto
      * @param right 
      * @param output 
      */
-    void UnsignedBigIntegerAlgorithms::add_without_allocation(UnsignedBigInteger const& left, UnsignedBigInteger const& right, UnsignedBigInteger& output)
+    void UnsignedBigIntegerAlgorithms::add_without_allocation(
+        UnsignedBigInteger const& left,
+        UnsignedBigInteger const& right,
+        UnsignedBigInteger& output)
     {
-        const UnsignedBigInteger* const longer = (left.length() > right.length()) ? &left : &right;
-        const UnsignedBigInteger* const shorter = (longer == &right) ? &left : &right;
+        UnsignedBigInteger const* const longer = (left.length() > right.length()) ? &left : &right;
+        UnsignedBigInteger const* const shorter = (longer == &right) ? &left : &right;
 
         output.set_to(*longer);
         add_into_accumulator_without_allocation(output, *shorter);
@@ -47,10 +50,13 @@ namespace Crypto
             if (Checked<UnsignedBigInteger::Word>::addition_would_overflow(value.m_words[i], accumulator.m_words[i])) {
                 current_carry_for_word = 1;
             }
+
             UnsignedBigInteger::Word word_addition_result = value.m_words[i] + accumulator.m_words[i];
+
             if (Checked<UnsignedBigInteger::Word>::addition_would_overflow(word_addition_result, last_carry_for_word)) {
                 current_carry_for_word = 1;
             }
+
             word_addition_result += last_carry_for_word;
             last_carry_for_word = current_carry_for_word;
             accumulator.m_words[i] = word_addition_result;
@@ -76,7 +82,10 @@ namespace Crypto
      * @param right 
      * @param output 
      */
-    void UnsignedBigIntegerAlgorithms::subtract_without_allocation(UnsignedBigInteger const& left, UnsignedBigInteger const& right, UnsignedBigInteger& output)
+    void UnsignedBigIntegerAlgorithms::subtract_without_allocation(
+        UnsignedBigInteger const& left,
+        UnsignedBigInteger const& right,
+        UnsignedBigInteger& output)
     {
         if (left < right) {
             output.invalidate();
@@ -93,6 +102,7 @@ namespace Crypto
         for (size_t i = 0; i < own_length; ++i) {
             u32 other_word = (i < other_length) ? right.m_words[i] : 0;
             i64 temp = static_cast<i64>(left.m_words[i]) - static_cast<i64>(other_word) - static_cast<i64>(borrow);
+            
             borrow = (temp >= 0) ? 0 : 1;
             if (temp < 0) {
                 temp += (UINT32_MAX + 1);
