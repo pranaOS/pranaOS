@@ -9,10 +9,12 @@
  * 
  */
 
+
 #include "unsignedbigintegeralgorithms.h"
 
 namespace Crypto 
 {
+
     /**
      * @param numerator 
      * @param denominator 
@@ -24,7 +26,15 @@ namespace Crypto
      * @param remainder 
      * @return FLATTEN 
      */
-    FLATTEN void UnsignedBigIntegerAlgorithms::divide_without_allocation(UnsignedBigInteger const& numerator, UnsignedBigInteger const& denominator, UnsignedBigInteger& temp_shift_result, UnsignedBigInteger& temp_shift_plus, UnsignedBigInteger& temp_shift, UnsignedBigInteger& temp_minus, UnsignedBigInteger& quotient, UnsignedBigInteger& remainder)
+    FLATTEN void UnsignedBigIntegerAlgorithms::divide_without_allocation(
+        UnsignedBigInteger const& numerator,
+        UnsignedBigInteger const& denominator,
+        UnsignedBigInteger& temp_shift_result,
+        UnsignedBigInteger& temp_shift_plus,
+        UnsignedBigInteger& temp_shift,
+        UnsignedBigInteger& temp_minus,
+        UnsignedBigInteger& quotient,
+        UnsignedBigInteger& remainder)
     {
         quotient.set_to_0();
         remainder.set_to(numerator);
@@ -50,7 +60,11 @@ namespace Crypto
      * @param remainder 
      * @return FLATTEN 
      */
-    FLATTEN void UnsignedBigIntegerAlgorithms::divide_u16_without_allocation(UnsignedBigInteger const& numerator, UnsignedBigInteger::Word denominator, UnsignedBigInteger& quotient, UnsignedBigInteger& remainder)
+    FLATTEN void UnsignedBigIntegerAlgorithms::divide_u16_without_allocation(
+        UnsignedBigInteger const& numerator,
+        UnsignedBigInteger::Word denominator,
+        UnsignedBigInteger& quotient,
+        UnsignedBigInteger& remainder)
     {
         VERIFY(denominator < (1 << 16));
         UnsignedBigInteger::Word remainder_word = 0;
@@ -73,4 +87,5 @@ namespace Crypto
         }
         remainder.set_to(remainder_word);
     }
+
 } // namespace Crypto
