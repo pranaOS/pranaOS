@@ -9,10 +9,12 @@
  * 
  */
 
+
 #include "unsignedbigintegeralgorithms.h"
 
 namespace Crypto 
 {
+
     /**
      * @param a 
      * @param b 
@@ -28,7 +30,20 @@ namespace Crypto
      * @param temp_x 
      * @param result 
      */
-    void UnsignedBigIntegerAlgorithms::modular_inverse_without_allocation(UnsignedBigInteger const& a, UnsignedBigInteger const& b, UnsignedBigInteger& temp_1, UnsignedBigInteger& temp_2, UnsignedBigInteger& temp_3, UnsignedBigInteger& temp_4, UnsignedBigInteger& temp_minus, UnsignedBigInteger& temp_quotient, UnsignedBigInteger& temp_d, UnsignedBigInteger& temp_u, UnsignedBigInteger& temp_v, UnsignedBigInteger& temp_x, UnsignedBigInteger& result)
+    void UnsignedBigIntegerAlgorithms::modular_inverse_without_allocation(
+        UnsignedBigInteger const& a,
+        UnsignedBigInteger const& b,
+        UnsignedBigInteger& temp_1,
+        UnsignedBigInteger& temp_2,
+        UnsignedBigInteger& temp_3,
+        UnsignedBigInteger& temp_4,
+        UnsignedBigInteger& temp_minus,
+        UnsignedBigInteger& temp_quotient,
+        UnsignedBigInteger& temp_d,
+        UnsignedBigInteger& temp_u,
+        UnsignedBigInteger& temp_v,
+        UnsignedBigInteger& temp_x,
+        UnsignedBigInteger& result)
     {
         UnsignedBigInteger one { 1 };
 
@@ -56,10 +71,12 @@ namespace Crypto
 
                     divide_u16_without_allocation(temp_u, 2, temp_quotient, temp_1);
                     temp_u.set_to(temp_quotient);
+
                     divide_u16_without_allocation(temp_d, 2, temp_quotient, temp_1);
                     temp_d.set_to(temp_quotient);
                 }
             }
+
             subtract_without_allocation(temp_v, temp_u, temp_minus);
             temp_v.set_to(temp_minus);
 
@@ -80,4 +97,5 @@ namespace Crypto
 
         divide_without_allocation(temp_x, b, temp_1, temp_2, temp_3, temp_4, temp_quotient, result);
     }
+
 } // namespace Crypto
