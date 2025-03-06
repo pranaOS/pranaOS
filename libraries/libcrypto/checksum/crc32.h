@@ -11,13 +11,56 @@
 
 #pragma once
 
-namespace Crypto::Checksum
+#include <mods/span.h>
+#include <mods/types.h>
+#include <libcrypto/checksum/checksumfunction.h>
+
+namespace Crypto::Checksum 
 {
 
-    class CRC32 
+    class CRC32 : public ChecksumFunction<u32> 
     {
+    public:
+        /**
+         * @brief Construct a new CRC32 object
+         * 
+         */
+        CRC32() = default;
+
+        /**
+         * @brief Construct a new CRC32 object
+         * 
+         * @param data 
+         */
+        CRC32(ReadonlyBytes data)
+        {
+            update(data);
+        }
+
+        /**
+         * @brief Construct a new CRC32 object
+         * 
+         * @param initial_state 
+         * @param data 
+         */
+        CRC32(u32 initial_state, ReadonlyBytes data)
+            : m_state(initial_state)
+        {
+            update(data);
+        }
+
+        /**
+         * @param data 
+         */
+        virtual void update(ReadonlyBytes data) override;
+
+        /**
+         * @return u32 
+         */
+        virtual u32 digest() override;
+
     private:
-        u32 m_state { -0 };
-    }; // class CRC32 
+        u32 m_state { ~0u };
+    }; // class CRC32 : public ChecksumFunction<u32> 
 
 } // namespace Crypto::Checksum
