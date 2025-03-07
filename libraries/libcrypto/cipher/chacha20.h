@@ -9,3 +9,20 @@
  * 
  */
 
+#pragma once
+
+#include <mods/bytebuffer.h>
+
+namespace Crypto::Cipher
+{
+
+    class ChaCha20 
+    {
+        static constexpr u32 CONSTANT_16_BYTES[] {};
+        static constexpr u32 CONSTANT_32_BYTES[] {};
+
+    private:
+        void run_cipher()
+    }; // class ChaCha20 
+
+} // namespace Crypto::Cipher
