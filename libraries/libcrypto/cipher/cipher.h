@@ -9,10 +9,10 @@
  * 
  */
 
-#pragma once 
+#pragma once
 
-#include <mods/byte_buffer.h>
 #include <mods/optional.h>
+#include <mods/span.h>
 #include <mods/types.h>
 
 namespace Crypto 
@@ -20,22 +20,20 @@ namespace Crypto
     namespace Cipher 
     {
 
-        enum class Intent 
-        {
+        enum class Intent {
             Encryption,
             Decryption,
-        }; // enum
+        }; // enum class Intent
 
-        enum class PaddingMode 
-        {
-            CMS,    
-            RFC5246,
+        enum class PaddingMode {
+            CMS,     
+            RFC5246, 
             Null,
             Bit,
             Random,
             Space,
             ZeroLength,
-        }; // enum
+        }; // enum class PaddingMode
 
         /**
          * @tparam B 
@@ -48,6 +46,8 @@ namespace Crypto
         {
         public:
             /**
+             * @brief Construct a new CipherBlock object
+             * 
              * @param mode 
              */
             explicit CipherBlock(PaddingMode mode)
@@ -56,34 +56,17 @@ namespace Crypto
             }
 
             /**
-             * @return size_t 
+             * @return ReadonlyBytes 
              */
-            static size_t block_size() 
-            { 
-                ASSERT_NOT_REACHED(); 
-            }
-
-            /**
-             * @return ByteBuffer 
-             */
-            virtual ByteBuffer get() const = 0;
-            virtual const ByteBuffer& data() const = 0;
+            virtual ReadonlyBytes bytes() const = 0;
 
             virtual void overwrite(ReadonlyBytes) = 0;
-
-            /**
-             * @param buffer 
-             */
-            virtual void overwrite(const ByteBuffer& buffer) 
-            { 
-                overwrite(buffer.bytes()); 
-            }
 
             /**
              * @param data 
              * @param size 
              */
-            virtual void overwrite(const u8* data, size_t size) 
+            virtual void overwrite(u8 const* data, size_t size) 
             { 
                 overwrite({ data, size }); 
             }
@@ -91,7 +74,7 @@ namespace Crypto
             /**
              * @param ivec 
              */
-            virtual void apply_initialization_vector(const u8* ivec) = 0;
+            virtual void apply_initialization_vector(ReadonlyBytes ivec) = 0;
 
             /**
              * @return PaddingMode 
@@ -102,6 +85,8 @@ namespace Crypto
             }
 
             /**
+             * @brief Set the padding mode object
+             * 
              * @param mode 
              */
             void set_padding_mode(PaddingMode mode) 
@@ -117,12 +102,11 @@ namespace Crypto
             template<typename T>
             void put(size_t offset, T value)
             {
-                ASSERT(offset + sizeof(T) <= data().size());
-
-                auto* ptr = data().data() + offset;
+                VERIFY(offset + sizeof(T) <= bytes().size());
+                auto* ptr = bytes().offset_pointer(offset);
                 auto index { 0 };
 
-                ASSERT(sizeof(T) <= 4);
+                VERIFY(sizeof(T) <= 4);
 
                 if constexpr (sizeof(T) > 3)
                     ptr[index++] = (u8)(value >> 24);
@@ -136,17 +120,19 @@ namespace Crypto
                 ptr[index] = (u8)value;
             }
 
-        private:
-            virtual ByteBuffer& data() = 0;
-            PaddingMode m_padding_mode;
-        };
+        protected:
+            virtual ~CipherBlock() = default;
 
-        struct CipherKey 
-        {
+        private:
+            virtual Bytes bytes() = 0;
+            PaddingMode m_padding_mode;
+        }; // struct CipherBlock
+
+        struct CipherKey {
             /**
-             * @return ByteBuffer 
+             * @return ReadonlyBytes 
              */
-            virtual ByteBuffer data() const = 0;
+            virtual ReadonlyBytes bytes() const = 0;
 
             /**
              * @return true 
@@ -157,16 +143,20 @@ namespace Crypto
                 return false; 
             };
 
-            virtual ~CipherKey() { }
+            virtual ~CipherKey() = default;
 
         protected:
             /**
              * @param user_key 
              * @param bits 
              */
-            virtual void expand_encrypt_key(const ByteBuffer& user_key, size_t bits) = 0;
-            virtual void expand_decrypt_key(const ByteBuffer& user_key, size_t bits) = 0;
+            virtual void expand_encrypt_key(ReadonlyBytes user_key, size_t bits) = 0;
 
+            /**
+             * @param user_key 
+             * @param bits 
+             */
+            virtual void expand_decrypt_key(ReadonlyBytes user_key, size_t bits) = 0;
             size_t bits { 0 };
         }; // struct CipherKey
 
@@ -174,7 +164,6 @@ namespace Crypto
          * @tparam KeyT 
          * @tparam BlockT 
          */
-
         template<typename KeyT = CipherKey, typename BlockT = CipherBlock>
         class Cipher 
         {
@@ -183,6 +172,8 @@ namespace Crypto
             using BlockType = BlockT;
 
             /**
+             * @brief Construct a new Cipher<KeyT, BlockT> object
+             * 
              * @param mode 
              */
             explicit Cipher<KeyT, BlockT>(PaddingMode mode)
@@ -191,15 +182,15 @@ namespace Crypto
             }
 
             /**
-             * @return const KeyType& 
+             * @return KeyType const& 
              */
-            virtual const KeyType& key() const = 0;
+            virtual KeyType const& key() const = 0;
             virtual KeyType& key() = 0;
 
             /**
-             * @return size_t 
+             * @return constexpr size_t 
              */
-            static size_t block_size() 
+            constexpr static size_t block_size() 
             { 
                 return BlockType::block_size(); 
             }
@@ -216,16 +207,25 @@ namespace Crypto
              * @param in 
              * @param out 
              */
-            virtual void encrypt_block(const BlockType& in, BlockType& out) = 0;
-            virtual void decrypt_block(const BlockType& in, BlockType& out) = 0;
+            virtual void encrypt_block(BlockType const& in, BlockType& out) = 0;
 
             /**
-             * @return String 
+             * @param in 
+             * @param out 
              */
+            virtual void decrypt_block(BlockType const& in, BlockType& out) = 0;
+
+        #ifndef KERNEL
             virtual String class_name() const = 0;
+        #endif
+
+        protected:
+            virtual ~Cipher() = default;
 
         private:
             PaddingMode m_padding_mode;
         }; // class Cipher
+
     } // namespace Cipher
+
 } // namespace Crypto
