@@ -13,7 +13,7 @@
 #include <mods/endian.h>
 #include <libcrypto/cipher/chacha20.h>
 
-namespace Crypto::Cipher
+namespace Crypto::Cipher 
 {
 
     /**
@@ -52,6 +52,7 @@ namespace Crypto::Cipher
         m_state[12] = initial_counter;
 
         u32 nonce_offset = nonce.size() == 8 ? 1 : 0;
+
         for (u32 i = 0; i < 12; i += 4) {
             m_state[(i / 4) + 13 + nonce_offset] = Mods::convert_between_host_and_little_endian(ByteReader::load32(nonce.offset(i)));
         }
@@ -91,4 +92,85 @@ namespace Crypto::Cipher
     {
         x = (x << n) | (x >> (32 - n));
     }
+
+    /**
+     * @param a 
+     * @param b 
+     * @param c 
+     * @param d 
+     */
+    void ChaCha20::do_quarter_round(u32& a, u32& b, u32& c, u32& d)
+    {
+        a += b;
+        d ^= a;
+        rotl(d, 16);
+
+        c += d;
+        b ^= c;
+        rotl(b, 12);
+
+        a += b;
+        d ^= a;
+        rotl(d, 8);
+
+        c += d;
+        b ^= c;
+        rotl(b, 7);
+    }
+
+    /**
+     * @param input 
+     * @param output 
+     */
+    void ChaCha20::run_cipher(ReadonlyBytes input, Bytes& output)
+    {
+        size_t offset = 0;
+        size_t block_offset = 0;
+        while (offset < input.size()) {
+            if (block_offset == 0 || block_offset >= 64) {
+                generate_block();
+
+                m_state[12]++;
+                if (m_state[12] == 0) {
+                    m_state[13]++;
+                }
+
+                block_offset = 0;
+            }
+
+            u32 n = min(input.size() - offset, 64 - block_offset);
+            u8* key_block = (u8*)m_block + block_offset;
+            for (u32 i = 0; i < n; i++) {
+                u8 input_byte = input.offset_pointer(offset)[i];
+                u8 key_byte = key_block[i];
+                u8 output_byte = input_byte ^ key_byte;
+
+                ByteReader::store(output.offset_pointer(offset + i), output_byte);
+            }
+
+            offset += n;
+            block_offset += n;
+        }
+    }
+
+    /**
+     * @param input 
+     * @param output 
+     */
+    void ChaCha20::encrypt(ReadonlyBytes input, Bytes& output)
+    {
+        VERIFY(input.size() <= output.size());
+        this->run_cipher(input, output);
+    }
+
+    /**
+     * @param input 
+     * @param output 
+     */
+    void ChaCha20::decrypt(ReadonlyBytes input, Bytes& output)
+    {
+        VERIFY(input.size() <= output.size());
+        this->run_cipher(input, output);
+    }
+
 } // namespace Crypto::Cipher
