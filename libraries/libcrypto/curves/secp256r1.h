@@ -15,23 +15,49 @@
 #include <mods/ufixedbigint.h>
 #include <libcrypto/curves/ellipticcurve.h>
 
-namespace Crypto::Curves
+namespace Crypto::Curves 
 {
 
-    struct JacobainPoint
-    {
+    struct JacobianPoint {
+        u256 x { 0u };
+        u256 y { 0u };
+        u256 z { 0u };
+    }; // struct JacobianPoint
 
-    }; // struct JacobainPoint
-
-    class SECP256r1 : public EllipticCurve
+    class SECP256r1 : public EllipticCurve 
     {
     public:
-    
-        size_t key_size() override
-        {
-            return 1 + 2 * 32;
+        /**
+         * @return size_t 
+         */
+        size_t key_size() override 
+        { 
+            return 1 + 2 * 32; 
         }
 
-    }; // class SECP256r1 : public EllipticCurve
+        /**
+         * @return ErrorOr<ByteBuffer> 
+         */
+        ErrorOr<ByteBuffer> generate_private_key() override;
 
-} // namespace Crypto::Curves
+        /**
+         * @param a 
+         * @return ErrorOr<ByteBuffer> 
+         */
+        ErrorOr<ByteBuffer> generate_public_key(ReadonlyBytes a) override;
+
+        /**
+         * @param scalar_bytes 
+         * @param point_bytes 
+         * @return ErrorOr<ByteBuffer> 
+         */
+        ErrorOr<ByteBuffer> compute_coordinate(ReadonlyBytes scalar_bytes, ReadonlyBytes point_bytes) override;
+
+        /**
+         * @param shared_point 
+         * @return ErrorOr<ByteBuffer> 
+         */
+        ErrorOr<ByteBuffer> derive_premaster_key(ReadonlyBytes shared_point) override;
+    }; // class SECP256r1 : public EllipticCurve 
+
+} // namespace Crypto::Curves 
