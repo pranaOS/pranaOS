@@ -9,3 +9,16 @@
  * 
  */
 
+#pragma once
+
+#include <mods/bytebuffer.h>
+
+namespace Crypto::Curves
+{
+
+    class EllipticCurve
+    {
+
+    }; // class EllipticCurve
+    
+} // namespace Crypto::Curves
