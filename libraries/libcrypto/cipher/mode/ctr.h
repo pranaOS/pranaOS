@@ -9,20 +9,24 @@
  * 
  */
 
+
 #pragma once
 
-#include <mods/string.h>
-#include <mods/string_builder.h>
-#include <mods/string_view.h>
+#include <mods/stringbuilder.h>
+#include <mods/stringview.h>
 #include <libcrypto/cipher/mode/mode.h>
+
+#ifndef KERNEL
+#    include <mods/string.h>
+#endif
 
 namespace Crypto 
 {
     namespace Cipher 
     {
 
-        struct IncrementInplace 
-        {
+        struct IncrementInplace {
+
             /**
              * @param in 
              */
@@ -38,45 +42,46 @@ namespace Crypto
                     }
                 }
             }
-        };
+        }; // struct IncrementInplace 
 
+        /**
+         * @tparam T 
+         * @tparam IncrementFunctionType 
+         */
         template<typename T, typename IncrementFunctionType = IncrementInplace>
         class CTR : public Mode<T> 
         {
         public:
             constexpr static size_t IVSizeInBits = 128;
 
-            /// @brief Destroy the CTR object
-            virtual ~CTR() { }
+            virtual ~CTR() = default;
 
             /**
              * @tparam KeyType 
              * @tparam Args 
              */
             template<typename KeyType, typename... Args>
-            explicit constexpr CTR(const KeyType& user_key, size_t key_bits, Intent, Args... args)
+            explicit constexpr CTR(KeyType const& user_key, size_t key_bits, Intent, Args... args)
                 : Mode<T>(user_key, key_bits, Intent::Encryption, args...)
-            {}
+            {
+            }
 
-            /**
-             * @return String 
-             */
+        #ifndef KERNEL
             virtual String class_name() const override
             {
                 StringBuilder builder;
-                
                 builder.append(this->cipher().class_name());
                 builder.append("_CTR");
-
                 return builder.build();
             }
+        #endif
 
             /**
              * @return size_t 
              */
-            virtual size_t IV_length() const override 
-            { 
-                return IVSizeInBits / 8; 
+            virtual size_t IV_length() const override
+            {
+                return IVSizeInBits / 8;
             }
 
             /**
@@ -85,7 +90,7 @@ namespace Crypto
              * @param ivec 
              * @param ivec_out 
              */
-            virtual void encrypt(const ReadonlyBytes& in, Bytes& out, const Bytes& ivec = {}, Bytes* ivec_out = nullptr) override
+            virtual void encrypt(ReadonlyBytes in, Bytes& out, ReadonlyBytes ivec = {}, Bytes* ivec_out = nullptr) override
             {
                 this->encrypt_or_stream(&in, out, ivec, ivec_out);
             }
@@ -95,7 +100,7 @@ namespace Crypto
              * @param ivec 
              * @param ivec_out 
              */
-            void key_stream(Bytes& out, const Bytes& ivec = {}, Bytes* ivec_out = nullptr)
+            void key_stream(Bytes& out, Bytes const& ivec = {}, Bytes* ivec_out = nullptr)
             {
                 this->encrypt_or_stream(nullptr, out, ivec, ivec_out);
             }
@@ -105,7 +110,7 @@ namespace Crypto
              * @param out 
              * @param ivec 
              */
-            virtual void decrypt(const ReadonlyBytes& in, Bytes& out, const Bytes& ivec = {}) override
+            virtual void decrypt(ReadonlyBytes in, Bytes& out, ReadonlyBytes ivec = {}) override
             {
                 this->encrypt(in, out, ivec);
             }
@@ -123,12 +128,11 @@ namespace Crypto
              * @param ivec 
              * @param ivec_out 
              */
-            void encrypt_or_stream(const ReadonlyBytes* in, Bytes& out, const Bytes& ivec, Bytes* ivec_out = nullptr)
+            void encrypt_or_stream(ReadonlyBytes const* in, Bytes& out, ReadonlyBytes ivec, Bytes* ivec_out = nullptr)
             {
                 size_t length;
-
                 if (in) {
-                    ASSERT(in->size() <= out.size());
+                    VERIFY(in->size() <= out.size());
                     length = in->size();
                     if (length == 0)
                         return;
@@ -138,8 +142,8 @@ namespace Crypto
 
                 auto& cipher = this->cipher();
 
-                ASSERT(!ivec.is_empty());
-                ASSERT(ivec.size() >= IV_length());
+                VERIFY(!ivec.is_empty());
+                VERIFY(ivec.size() >= IV_length());
 
                 m_cipher_block.set_padding_mode(cipher.padding_mode());
 
@@ -154,12 +158,12 @@ namespace Crypto
 
                     cipher.encrypt_block(m_cipher_block, m_cipher_block);
                     if (in) {
-                        m_cipher_block.apply_initialization_vector(in->data() + offset);
+                        m_cipher_block.apply_initialization_vector(in->slice(offset));
                     }
                     auto write_size = min(block_size, length);
 
-                    ASSERT(offset + write_size <= out.size());
-                    __builtin_memcpy(out.offset(offset), m_cipher_block.get().data(), write_size);
+                    VERIFY(offset + write_size <= out.size());
+                    __builtin_memcpy(out.offset(offset), m_cipher_block.bytes().data(), write_size);
 
                     increment(iv);
                     length -= write_size;
@@ -169,6 +173,9 @@ namespace Crypto
                 if (ivec_out)
                     __builtin_memcpy(ivec_out->data(), iv.data(), min(ivec_out->size(), IV_length()));
             }
-        }; // class CTR
+            
+        }; // class CTR : public Mode<T> 
+
     } // namespace Cipher
+
 } // namespace Crypto
