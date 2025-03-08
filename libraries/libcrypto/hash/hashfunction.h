@@ -9,69 +9,131 @@
  * 
  */
 
-#pragma once 
+#pragma once
 
-#include <mods/byte_buffer.h>
-#include <mods/string_view.h>
+#include <mods/bytebuffer.h>
+#include <mods/stringview.h>
 #include <mods/types.h>
 
 namespace Crypto 
 {
+
     namespace Hash 
     {
+        /**
+         * @tparam DigestS 
+         */
+        template<size_t DigestS>
+        struct Digest {
+            static_assert(DigestS % 8 == 0);
+            constexpr static size_t Size = DigestS / 8;
+            u8 data[Size];
 
-        template<size_t BlockS, typename DigestT>
+            /**
+             * @return ALWAYS_INLINE const* 
+             */
+            [[nodiscard]] ALWAYS_INLINE u8 const* immutable_data() const 
+            { 
+                return data; 
+            }
+
+            /**
+             * @return ALWAYS_INLINE 
+             */
+            [[nodiscard]] ALWAYS_INLINE size_t data_length() const 
+            { 
+                return Size; 
+            }
+
+            /**
+             * @return ALWAYS_INLINE 
+             */
+            [[nodiscard]] ALWAYS_INLINE ReadonlyBytes bytes() const 
+            { 
+                return { immutable_data(), data_length() }; 
+            }
+        }; // struct Digest
+
+        /**
+         * @tparam BlockS 
+         * @tparam DigestS 
+         * @tparam DigestT 
+         */
+        template<size_t BlockS, size_t DigestS, typename DigestT = Digest<DigestS>>
         class HashFunction 
         {
         public:
+            static_assert(BlockS % 8 == 0);
             static constexpr auto BlockSize = BlockS / 8;
-            static constexpr auto DigestSize = DigestT::Size;
+
+            static_assert(DigestS % 8 == 0);
+            static constexpr auto DigestSize = DigestS / 8;
 
             using DigestType = DigestT;
 
             /**
-             * @return size_t 
+             * @return constexpr size_t 
              */
-            static size_t block_size() 
+            constexpr static size_t block_size() 
             { 
                 return BlockSize; 
-            };
+            }
 
-            static size_t digest_size() 
+            /**
+             * @return constexpr size_t 
+             */
+            constexpr static size_t digest_size() 
             { 
                 return DigestSize; 
-            };
+            }
 
-            /// @brief: update
-            virtual void update(const u8*, size_t) = 0;
+            virtual void update(u8 const*, size_t) = 0;
 
             /**
              * @param buffer 
              */
-            virtual void update(const ByteBuffer& buffer) 
+            void update(Bytes buffer) 
             { 
                 update(buffer.data(), buffer.size()); 
-            };
+            }
+
+            /**
+             * @param buffer 
+             */
+            void update(ReadonlyBytes buffer) 
+            { 
+                update(buffer.data(), buffer.size()); 
+            }
+
+            /**
+             * @param buffer 
+             */
+            void update(ByteBuffer const& buffer) 
+            { 
+                update(buffer.data(), buffer.size()); 
+            }
 
             /**
              * @param string 
              */
-            virtual void update(const StringView& string) 
+            void update(StringView string) 
             { 
-                update((const u8*)string.characters_without_null_termination(), string.length()); 
-            };
+                update((u8 const*)string.characters_without_null_termination(), string.length()); 
+            }
 
-            /// @brief: peek + digest
             virtual DigestType peek() = 0;
             virtual DigestType digest() = 0;
 
-            /// @brief: reset
             virtual void reset() = 0;
 
-            /**
-             * @return String 
-             */
+        #ifndef KERNEL
             virtual String class_name() const = 0;
+        #endif
+
+        protected:
+            virtual ~HashFunction() = default;
         }; // class HashFunction
+
     } // namespace Hash
+
 } // namespace Crypto
