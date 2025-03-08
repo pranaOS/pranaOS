@@ -11,13 +11,14 @@
 
 #pragma once
 
-#include <libcrypto/cipher/cipher.h>
-#include <mods/byte_buffer.h>
+#include <mods/bytebuffer.h>
 #include <mods/span.h>
 #include <mods/stdlibextra.h>
+#include <libcrypto/cipher/cipher.h>
 
 namespace Crypto 
 {
+
     namespace Cipher 
     {
         /**
@@ -27,9 +28,11 @@ namespace Crypto
         class Mode 
         {
         public:
-
-            /// @brief Destroy the Mode object
-            virtual ~Mode() { }
+            /**
+             * @brief Destroy the Mode object
+             * 
+             */
+            virtual ~Mode() = default;
 
             /**
              * @param in 
@@ -37,14 +40,14 @@ namespace Crypto
              * @param ivec 
              * @param ivec_out 
              */
-            virtual void encrypt(const ReadonlyBytes& in, Bytes& out, const Bytes& ivec = {}, Bytes* ivec_out = nullptr) = 0;
+            virtual void encrypt(ReadonlyBytes in, Bytes& out, ReadonlyBytes ivec = {}, Bytes* ivec_out = nullptr) = 0;
 
             /**
              * @param in 
              * @param out 
              * @param ivec 
              */
-            virtual void decrypt(const ReadonlyBytes& in, Bytes& out, const Bytes& ivec = {}) = 0;
+            virtual void decrypt(ReadonlyBytes in, Bytes& out, ReadonlyBytes ivec = {}) = 0;
 
             /**
              * @return size_t 
@@ -60,41 +63,39 @@ namespace Crypto
             }
 
             /**
+             * @brief Create a aligned buffer object
+             * 
              * @param input_size 
-             * @return ByteBuffer 
+             * @return ErrorOr<ByteBuffer> 
              */
-            ByteBuffer create_aligned_buffer(size_t input_size) const
+            ErrorOr<ByteBuffer> create_aligned_buffer(size_t input_size) const
             {
                 size_t remainder = (input_size + T::block_size()) % T::block_size();
-
                 if (remainder == 0)
                     return ByteBuffer::create_uninitialized(input_size);
                 else
                     return ByteBuffer::create_uninitialized(input_size + T::block_size() - remainder);
             }
 
-            /**
-             * @return String 
-             */
+        #ifndef KERNEL
             virtual String class_name() const = 0;
+        #endif
 
             /**
              * @return T& 
              */
-            T& cipher() 
-            { 
-                return m_cipher; 
+            T& cipher()
+            {
+                return m_cipher;
             }
 
         protected:
-
             /**
              * @param data 
              */
             virtual void prune_padding(Bytes& data)
             {
                 auto size = data.size();
-
                 switch (m_cipher.padding_mode()) {
                 case PaddingMode::CMS: {
                     auto maybe_padding_length = data[size - 1];
@@ -126,12 +127,14 @@ namespace Crypto
                     break;
                 }
                 default:
-                    ASSERT_NOT_REACHED();
+                    VERIFY_NOT_REACHED();
                     break;
                 }
             }
 
             /**
+             * @brief Construct a new Mode object
+             * 
              * @tparam Args 
              * @param args 
              */
@@ -144,5 +147,7 @@ namespace Crypto
         private:
             T m_cipher;
         }; // class Mode
+
     } // namespace Cipher
+
 } // namespace Crypto
