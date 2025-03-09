@@ -11,7 +11,24 @@
 
 #pragma once
 
-namespace Debug
+#include <mods/optional.h>
+#include <mods/types.h>
+#include "libdebug/debugsession.h"
+
+namespace Debug::StackFrameUtils 
 {
-    
-}
+
+    struct StackFrameInfo {
+        FlatPtr return_address;
+        FlatPtr next_ebp;
+    }; // struct StackFrameInfo
+
+    /**
+     * @brief Get the info object
+     * 
+     * @param current_ebp 
+     * @return Optional<StackFrameInfo> 
+     */
+    Optional<StackFrameInfo> get_info(ProcessInspector const&, FlatPtr current_ebp);
+
+} // namespace Debug::StackFrameUtils 
