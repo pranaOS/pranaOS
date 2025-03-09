@@ -16,14 +16,16 @@
 
 namespace Crypto 
 {
+
     namespace NumberTheory 
     {
+
         /**
          * @param a_ 
          * @param b 
          * @return UnsignedBigInteger 
          */
-        UnsignedBigInteger ModularInverse(const UnsignedBigInteger& a_, const UnsignedBigInteger& b);
+        UnsignedBigInteger ModularInverse(UnsignedBigInteger const& a_, UnsignedBigInteger const& b);
 
         /**
          * @param b 
@@ -31,7 +33,7 @@ namespace Crypto
          * @param m 
          * @return UnsignedBigInteger 
          */
-        UnsignedBigInteger ModularPower(const UnsignedBigInteger& b, const UnsignedBigInteger& e, const UnsignedBigInteger& m);
+        UnsignedBigInteger ModularPower(UnsignedBigInteger const& b, UnsignedBigInteger const& e, UnsignedBigInteger const& m);
 
         /**
          * @tparam IntegerType 
@@ -40,16 +42,15 @@ namespace Crypto
          * @return IntegerType 
          */
         template<typename IntegerType>
-        static IntegerType Power(const IntegerType& b, const IntegerType& e)
+        static IntegerType Power(IntegerType const& b, IntegerType const& e)
         {
             IntegerType ep { e };
             IntegerType base { b };
             IntegerType exp { 1 };
 
             while (!(ep < IntegerType { 1 })) {
-                if (ep.words()[0] % 2 == 1) {
+                if (ep.words()[0] % 2 == 1)
                     exp.set_to(exp.multiplied_by(base));
-                }
 
                 ep.set_to(ep.divided_by(IntegerType { 2 }).quotient);
 
@@ -64,28 +65,28 @@ namespace Crypto
          * @param b 
          * @return UnsignedBigInteger 
          */
-        UnsignedBigInteger GCD(const UnsignedBigInteger& a, const UnsignedBigInteger& b);
+        UnsignedBigInteger GCD(UnsignedBigInteger const& a, UnsignedBigInteger const& b);
 
         /**
          * @param a 
          * @param b 
          * @return UnsignedBigInteger 
          */
-        UnsignedBigInteger LCM(const UnsignedBigInteger& a, const UnsignedBigInteger& b);
+        UnsignedBigInteger LCM(UnsignedBigInteger const& a, UnsignedBigInteger const& b);
 
         /**
          * @param min 
          * @param max_excluded 
          * @return UnsignedBigInteger 
          */
-        UnsignedBigInteger random_number(const UnsignedBigInteger& min, const UnsignedBigInteger& max_excluded);
+        UnsignedBigInteger random_number(UnsignedBigInteger const& min, UnsignedBigInteger const& max_excluded);
 
         /**
          * @param p 
          * @return true 
          * @return false 
          */
-        bool is_probably_prime(const UnsignedBigInteger& p);
+        bool is_probably_prime(UnsignedBigInteger const& p);
 
         /**
          * @param bits 
@@ -94,4 +95,5 @@ namespace Crypto
         UnsignedBigInteger random_big_prime(size_t bits);
 
     } // namespace NumberTheory
+
 } // namespace Crypto
