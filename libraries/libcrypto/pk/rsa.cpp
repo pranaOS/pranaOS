@@ -17,11 +17,182 @@
 #include <libcrypto/asn1/pem.h>
 #include <libcrypto/pk/rsa.h>
 
-namespace Crypto
+namespace Crypto 
 {
 
-    namespace PK
+    namespace PK 
     {
+
+        static constexpr Array<int, 7> pkcs8_rsa_key_oid { 1, 2, 840, 113549, 1, 1, 1 };
+
+        /**
+         * @param der 
+         * @return RSA::KeyPairType 
+         */
+        RSA::KeyPairType RSA::parse_rsa_key(ReadonlyBytes der)
+        {
+            KeyPairType keypair;
+
+            ASN1::Decoder decoder(der);
+            
+            {
+                auto result = decoder.peek();
+                if (result.is_error()) {
+                    dbgln_if(RSA_PARSE_DEBUG, "RSA key parse failed: {}", result.error());
+                    return keypair;
+                }
+                auto tag = result.value();
+                if (tag.kind != ASN1::Kind::Sequence) {
+                    dbgln_if(RSA_PARSE_DEBUG, "RSA key parse failed: Expected a Sequence but got {}", ASN1::kind_name(tag.kind));
+                    return keypair;
+                }
+            }
+
+            {
+                auto error = decoder.enter();
+                if (error.has_value()) {
+                    dbgln_if(RSA_PARSE_DEBUG, "RSA key parse failed: {}", error.value());
+                    return keypair;
+                }
+            }
+
+            bool has_read_error = false;
+
+            auto const check_if_pkcs8_rsa_key = [&] {
+                auto tag_result = decoder.peek();
+                if (tag_result.is_error()) {
+
+                    dbgln_if(RSA_PARSE_DEBUG, "RSA PKCS#8 public key parse failed: {}", tag_result.error());
+                    return false;
+                }
+
+                auto tag = tag_result.value();
+                if (tag.kind != ASN1::Kind::Sequence) {
+                    dbgln_if(RSA_PARSE_DEBUG, "RSA PKCS#8 public key parse failed: Expected a Sequence but got {}", ASN1::kind_name(tag.kind));
+                    return false;
+                }
+
+                auto error = decoder.enter();
+                if (error.has_value()) {
+                    dbgln_if(RSA_PARSE_DEBUG, "RSA PKCS#8 public key parse failed: {}", error.value());
+                    return false;
+                }
+
+                ScopeGuard leave { [&] {
+                    auto error = decoder.leave();
+                    if (error.has_value()) {
+                        dbgln_if(RSA_PARSE_DEBUG, "RSA key parse failed: {}", error.value());
+                        has_read_error = true;
+                    }
+                } };
+
+                auto oid_result = decoder.read<Vector<int>>();
+                if (oid_result.is_error()) {
+                    dbgln_if(RSA_PARSE_DEBUG, "RSA PKCS#8 public key parse failed: {}", oid_result.error());
+                    return false;
+                }
+
+                auto oid = oid_result.release_value();
+                if (oid != pkcs8_rsa_key_oid) {
+                    dbgln_if(RSA_PARSE_DEBUG, "RSA PKCS#8 public key parse failed: Not an RSA key");
+                    return false;
+                }
+
+                return true;
+            };
+
+            auto integer_result = decoder.read<UnsignedBigInteger>();
+
+            if (!integer_result.is_error()) {
+                auto first_integer = integer_result.release_value();
+
+                if (check_if_pkcs8_rsa_key()) {
+                    if (has_read_error)
+                        return keypair;
+
+                    auto data_result = decoder.read<StringView>();
+                    if (data_result.is_error()) {
+                        dbgln_if(RSA_PARSE_DEBUG, "RSA PKCS#8 private key parse failed: {}", data_result.error());
+                        return keypair;
+                    }
+                    return parse_rsa_key(data_result.value().bytes());
+                }
+
+                if (has_read_error)
+                    return keypair;
+
+                if (first_integer == 0) {
+                    auto modulus_result = decoder.read<UnsignedBigInteger>();
+                    if (modulus_result.is_error()) {
+                        dbgln_if(RSA_PARSE_DEBUG, "RSA PKCS#1 private key parse failed: {}", modulus_result.error());
+                        return keypair;
+                    }
+                    auto modulus = modulus_result.release_value();
+
+                    auto public_exponent_result = decoder.read<UnsignedBigInteger>();
+                    if (public_exponent_result.is_error()) {
+                        dbgln_if(RSA_PARSE_DEBUG, "RSA PKCS#1 private key parse failed: {}", public_exponent_result.error());
+                        return keypair;
+                    }
+                    auto public_exponent = public_exponent_result.release_value();
+
+                    auto private_exponent_result = decoder.read<UnsignedBigInteger>();
+                    if (private_exponent_result.is_error()) {
+                        dbgln_if(RSA_PARSE_DEBUG, "RSA PKCS#1 private key parse failed: {}", private_exponent_result.error());
+                        return keypair;
+                    }
+                    auto private_exponent = private_exponent_result.release_value();
+
+                    keypair.private_key = { modulus, move(private_exponent), public_exponent };
+                    keypair.public_key = { move(modulus), move(public_exponent) };
+
+                    return keypair;
+                } else if (first_integer == 1) {
+
+                    dbgln_if(RSA_PARSE_DEBUG, "RSA PKCS#1 private key parse failed: Multi-prime key not supported");
+                    return keypair;
+                } else {
+                    auto&& modulus = move(first_integer);
+
+                    auto public_exponent_result = decoder.read<UnsignedBigInteger>();
+                    if (public_exponent_result.is_error()) {
+
+                        dbgln_if(RSA_PARSE_DEBUG, "RSA PKCS#1 public key parse failed: {}", public_exponent_result.error());
+                        return keypair;
+                    }
+
+                    auto public_exponent = public_exponent_result.release_value();
+                    keypair.public_key.set(move(modulus), move(public_exponent));
+
+                    return keypair;
+                }
+
+            } else {
+                if (!check_if_pkcs8_rsa_key())
+                    return keypair;
+
+                if (has_read_error)
+                    return keypair;
+
+                auto data_result = decoder.read<BitmapView>();
+                if (data_result.is_error()) {
+                    dbgln_if(RSA_PARSE_DEBUG, "RSA PKCS#8 public key parse failed: {}", data_result.error());
+                    return keypair;
+                }
+
+                auto data = data_result.release_value();
+
+                auto padded_data_result = ByteBuffer::create_zeroed(data.size_in_bytes());
+                if (padded_data_result.is_error()) {
+                    dbgln_if(RSA_PARSE_DEBUG, "RSA PKCS#1 key parse failed: Not enough memory");
+                    return keypair;
+                }
+                auto padded_data = padded_data_result.release_value();
+                padded_data.overwrite(0, data.data(), data.size_in_bytes());
+
+                return parse_rsa_key(padded_data.bytes());
+            }
+        }
 
         /**
          * @param in 
@@ -31,11 +202,13 @@ namespace Crypto
         {
             dbgln_if(CRYPTO_DEBUG, "in size: {}", in.size());
             auto in_integer = UnsignedBigInteger::import_data(in.data(), in.size());
+
             if (!(in_integer < m_public_key.modulus())) {
                 dbgln("value too large for key");
                 out = {};
                 return;
             }
+
             auto exp = NumberTheory::ModularPower(in_integer, m_public_key.public_exponent(), m_public_key.modulus());
             auto size = exp.export_data(out);
             auto outsize = out.size();
@@ -174,11 +347,13 @@ namespace Crypto
         {
             auto mod_len = (m_public_key.modulus().trimmed_length() * sizeof(u32) * 8 + 7) / 8;
             dbgln_if(CRYPTO_DEBUG, "key size: {}", mod_len);
+
             if (in.size() > mod_len - 11) {
                 dbgln("message too long :(");
                 out = out.trim(0);
                 return;
             }
+
             if (out.size() < mod_len) {
                 dbgln("output buffer too small");
                 return;
@@ -261,7 +436,7 @@ namespace Crypto
         {
             dbgln("FIXME: RSA_PKCS_EME::sign");
         }
-        
+
         void RSA_PKCS1_EME::verify(ReadonlyBytes, Bytes&)
         {
             dbgln("FIXME: RSA_PKCS_EME::verify");
