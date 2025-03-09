@@ -9,3 +9,14 @@
  * 
  */
 
+#pragma once
+
+namespace Desktop
+{
+
+    class AppFile
+    {
+
+    }; // class AppFile
+
+} // namespace Desktop
