@@ -9,3 +9,18 @@
  * 
  */
 
+#pragma once
+
+#include "hunks.h"
+
+namespace Diff 
+{
+
+    /**
+     * @param old_text 
+     * @param new_text 
+     * @return Vector<Hunk> 
+     */
+    Vector<Hunk> from_text(StringView old_text, StringView new_text);
+
+} // namespace Diff
