@@ -9,18 +9,22 @@
  * 
  */
 
+
 #pragma once
 
 #include <mods/array.h>
 #include <mods/format.h>
+#include <mods/memory.h>
 #include <mods/random.h>
 #include <mods/vector.h>
 #include <libcrypto/pk/code/code.h>
 
 namespace Crypto 
 {
+
     namespace PK 
     {
+
         /**
          * @tparam HashFunction 
          * @tparam SaltSize 
@@ -166,7 +170,7 @@ namespace Crypto
                 hash_fn.update(m_prime_buffer);
                 auto H_prime = hash_fn.digest();
 
-                if (__builtin_memcmp(message_hash.data, H_prime.data, HashFunction::DigestSize) != 0)
+                if (!timing_safe_compare(message_hash.data, H_prime.data, HashFunction::DigestSize))
                     return VerificationConsistency::Inconsistent;
 
                 return VerificationConsistency::Consistent;
@@ -195,6 +199,8 @@ namespace Crypto
         private:
             u8 m_data_buffer[8 + HashFunction::DigestSize + SaltLength];
             Bytes m_buffer;
-        }; // class EMSA_PSS : public Code<HashFunction>
+        }; // class EMSA_PSS : public Code<HashFunction> 
+
     } // namespace PK
+
 } // namespace Crypto
