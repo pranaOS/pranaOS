@@ -9,3 +9,14 @@
  * 
  */
 
+#include "expression.h"
+
+namespace Debug::Dwarf::Expression
+{
+
+    Value evaluate()
+    {
+    }
+
+    
+} // namespace Debug::Dwarf::Expression
