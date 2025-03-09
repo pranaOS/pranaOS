@@ -9,3 +9,21 @@
  * 
  */
 
+#include <mods/debug.h>
+#include <mods/random.h>
+#include <mods/scopeguard.h>
+#include <libcrypto/asn1/asn1.h>
+#include <libcrypto/asn1/der.h>
+#include <libcrypto/asn1/pem.h>
+#include <libcrypto/pk/rsa.h>
+
+namespace Crypto
+{
+
+    namespace PK
+    {
+
+        
+    } // namespace PK
+
+} // namespace Crypto
