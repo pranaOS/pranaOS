@@ -1,7 +1,8 @@
 set(SOURCES
     format.cpp
+    generator.cpp
     hunks.cpp
 )
 
-prana_lib(libdiff diff)
+pranaos_lib(libdiff diff)
 target_link_libraries(libdiff libc)
