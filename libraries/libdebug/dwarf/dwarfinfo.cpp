@@ -75,7 +75,7 @@ namespace Debug::Dwarf
             auto line_program = make<LineProgram>(*this, line_info_stream);
 
     #ifdef __clang__
-            if (line_program->source_files().size() == 1 && line_program->source_files()[0].name.view().contains("serenity_icon_"sv)) {
+            if (line_program->source_files().size() == 1 && line_program->source_files()[0].name.view().contains("pranaos_icon_"sv)) {
                 debug_info_stream.seek(unit_offset);
             } else
     #endif
