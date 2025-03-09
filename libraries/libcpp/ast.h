@@ -12,15 +12,15 @@
 
 #pragma once
 
-#include <AK/FlyString.h>
-#include <AK/NonnullRefPtrVector.h>
-#include <AK/Optional.h>
-#include <AK/RefCounted.h>
-#include <AK/String.h>
-#include <AK/StringView.h>
-#include <AK/TypeCasts.h>
-#include <AK/Vector.h>
-#include <LibCpp/Lexer.h>
+#include <mods/flystring.h>
+#include <mods/nonnullrefptrvector.h>
+#include <mods/optional.h>
+#include <mods/refcounted.h>
+#include <mods/string.h>
+#include <mods/stringview.h>
+#include <mods/typecasts.h>
+#include <mods/vector.h>
+#include <libcpp/lexer.h>
 
 namespace Cpp 
 {
