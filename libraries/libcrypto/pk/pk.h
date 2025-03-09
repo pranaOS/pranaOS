@@ -11,16 +11,17 @@
 
 #pragma once
 
-#include <AK/ByteBuffer.h>
+#include <mods/bytebuffer.h>
 
 #ifndef KERNEL
-#    include <AK/String.h>
+#    include <mods/string.h>
 #endif
 
 namespace Crypto 
 {
     namespace PK 
     {
+
         /**
          * @tparam PrivKeyT 
          * @tparam PubKeyT 
@@ -55,11 +56,6 @@ namespace Crypto
              * @param out 
              */
             virtual void encrypt(ReadonlyBytes in, Bytes& out) = 0;
-
-            /**
-             * @param in 
-             * @param out 
-             */
             virtual void decrypt(ReadonlyBytes in, Bytes& out) = 0;
 
             /**
@@ -67,11 +63,6 @@ namespace Crypto
              * @param out 
              */
             virtual void sign(ReadonlyBytes in, Bytes& out) = 0;
-
-            /**
-             * @param in 
-             * @param out 
-             */
             virtual void verify(ReadonlyBytes in, Bytes& out) = 0;
 
         #ifndef KERNEL
@@ -81,14 +72,12 @@ namespace Crypto
             virtual size_t output_size() const = 0;
 
         protected:
-            /**
-             * @brief Destroy the PKSystem object
-             * 
-             */
             virtual ~PKSystem() = default;
 
             PublicKeyType m_public_key;
             PrivateKeyType m_private_key;
-        }; // class PKSystem
+        }; // class PKSystem 
+
     } // namespace PK
+
 } // namespace Crypto
