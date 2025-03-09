@@ -1,7 +1,7 @@
 /**
  * @file proxy.h
  * @author Krisna Pranav
- * @brief proxy
+ * @brief proxy functionalities
  * @version 6.0
  * @date 2025-03-02
  * 
@@ -15,7 +15,7 @@
 #include <mods/ipv4Address.h>
 #include <mods/types.h>
 #include <mods/url.h>
-#include <libipc/orward.h>
+#include <libipc/forward.h>
 
 namespace Core 
 {
