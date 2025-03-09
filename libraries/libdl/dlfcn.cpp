@@ -21,7 +21,7 @@ __thread bool s_dlerror_retrieved = false;
 /**
  * @param error 
  */
-static void store_error(const String& error)
+static void store_error(String const& error)
 {
     free(s_dlerror_text);
     s_dlerror_text = strdup(error.characters());
@@ -51,7 +51,6 @@ char* dlerror()
         free(s_dlerror_text);
         s_dlerror_text = nullptr;
     }
-
     s_dlerror_retrieved = true;
     return const_cast<char*>(s_dlerror_text);
 }
@@ -61,7 +60,7 @@ char* dlerror()
  * @param flags 
  * @return void* 
  */
-void* dlopen(const char* filename, int flags)
+void* dlopen(char const* filename, int flags)
 {
     auto result = __dlopen(filename, flags);
     if (result.is_error()) {
@@ -76,7 +75,7 @@ void* dlopen(const char* filename, int flags)
  * @param symbol_name 
  * @return void* 
  */
-void* dlsym(void* handle, const char* symbol_name)
+void* dlsym(void* handle, char const* symbol_name)
 {
     auto result = __dlsym(handle, symbol_name);
     if (result.is_error()) {
@@ -86,7 +85,6 @@ void* dlsym(void* handle, const char* symbol_name)
     return result.value();
 }
 
-
 /**
  * @param addr 
  * @param info 
@@ -95,7 +93,6 @@ void* dlsym(void* handle, const char* symbol_name)
 int dladdr(void* addr, Dl_info* info)
 {
     auto result = __dladdr(addr, info);
-    
     if (result.is_error()) {
         store_error(result.error().text);
         return 0;
