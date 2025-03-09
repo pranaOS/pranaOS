@@ -17,43 +17,41 @@
 namespace Diff 
 {
 
-    struct HunkLocation 
-    {
+    struct HunkLocation {
         size_t original_start_line { 0 };
         size_t original_length { 0 };
         size_t target_start_line { 0 };
         size_t target_length { 0 };
 
-        enum class LocationType 
-        {
+        enum class LocationType {
             Original,
             Target,
             Both
-        };
+        }; // enum class LocationType
 
         /**
          * @param offset 
          */
         void apply_offset(size_t offset, LocationType);
-    };
+    }; // struct HunkLocation
 
-    struct Hunk 
-    {
+    struct Hunk {
         size_t original_start_line { 0 };
         size_t target_start_line { 0 };
         Vector<String> removed_lines;
         Vector<String> added_lines;
-    };  
-    
+    }; // struct Hunk
+
     /**
      * @param diff 
      * @return Vector<Hunk> 
      */
-    Vector<Hunk> parse_hunks(const String& diff);
+    Vector<Hunk> parse_hunks(String const& diff);
 
     /**
      * @param location_line 
      * @return HunkLocation 
      */
-    HunkLocation parse_hunk_location(const String& location_line);
-};
+    HunkLocation parse_hunk_location(String const& location_line);
+
+}; // namespace Diff
