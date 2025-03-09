@@ -9,3 +9,26 @@
  * 
  */
 
+#pragma once
+
+#include "mods/bytebuffer.h"
+#include "mods/types.h"
+
+struct PtraceRegisters;
+
+enum class Type
+{
+    None,
+    UnsignedInteger,
+    Register,
+}; // enum class Type
+
+struct  Value 
+{
+    Type type;
+
+    union {
+        FlatPtr as_addr;
+        u32 as_u32;
+    } data { 0 };
+}; // struct  Value 
