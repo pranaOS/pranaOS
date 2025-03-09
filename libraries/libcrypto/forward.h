@@ -9,3 +9,20 @@
  * 
  */
 
+#pragma once
+
+#include <mods/concept.h>
+
+namespace Crypto 
+{
+
+    class SignedBigInteger;
+    class UnsignedBigInteger;
+
+    /**
+     * @tparam T 
+     */
+    template<typename T>
+    concept BigInteger = IsSame<T, SignedBigInteger> || IsSame<T, UnsignedBigInteger>;
+
+} // namespace Crypto 
