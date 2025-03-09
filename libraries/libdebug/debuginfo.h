@@ -9,3 +9,14 @@
  * 
  */
 
+#pragma once
+
+namespace Debug
+{
+
+    class DebugInfo
+    {
+
+    }; // class DebugInfo
+    
+} // namespace Debug
