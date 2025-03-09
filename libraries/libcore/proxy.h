@@ -11,11 +11,11 @@
 
 #pragma once
 
-#include <AK/Error.h>
-#include <AK/IPv4Address.h>
-#include <AK/Types.h>
-#include <AK/URL.h>
-#include <LibIPC/Forward.h>
+#include <mods/error.h>
+#include <mods/ipv4Address.h>
+#include <mods/types.h>
+#include <mods/url.h>
+#include <libipc/orward.h>
 
 namespace Core 
 {
