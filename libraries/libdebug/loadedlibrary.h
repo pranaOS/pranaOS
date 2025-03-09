@@ -10,3 +10,40 @@
  */
 
 #pragma once
+
+#include "debuginfo.h"
+#include <mods/types.h>
+#include <libcore/mappedfile.h>
+#include <libelf/image.h>
+
+namespace Debug 
+{
+
+    struct LoadedLibrary {
+        String name;
+        NonnullRefPtr<Core::MappedFile> file;
+        NonnullOwnPtr<ELF::Image> image;
+        NonnullOwnPtr<DebugInfo> debug_info;
+        FlatPtr base_address {};
+
+        /**
+         * @brief Construct a new LoadedLibrary object
+         * 
+         * @param name 
+         * @param file 
+         * @param image 
+         * @param debug_info 
+         * @param base_address 
+         */
+        LoadedLibrary(String const& name, NonnullRefPtr<Core::MappedFile> file, NonnullOwnPtr<ELF::Image> image, NonnullOwnPtr<DebugInfo>&& debug_info, FlatPtr base_address)
+            : name(name)
+            , file(move(file))
+            , image(move(image))
+            , debug_info(move(debug_info))
+            , base_address(base_address)
+        {
+        }
+
+    }; // struct LoadedLibrary
+
+} // namespace Debug
