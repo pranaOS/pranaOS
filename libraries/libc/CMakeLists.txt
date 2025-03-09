@@ -70,8 +70,8 @@ set(LIBC_SOURCES
     wstdio.cpp
 )
 
-file(GLOB AK_SOURCES CONFIGURE_DEPENDS "../../../AK/*.cpp")
-file(GLOB ELF_SOURCES CONFIGURE_DEPENDS "../LibELF/*.cpp")
+file(GLOB MOD_SOURCES CONFIGURE_DEPENDS "../../../mods/*.cpp")
+file(GLOB ELF_SOURCES CONFIGURE_DEPENDS "../libelf/*.cpp")
 
 if ("${PRANAOS_ARCH}" STREQUAL "aarch64")
     set(ASM_SOURCES "arch/aarch64/setjmp.S")
