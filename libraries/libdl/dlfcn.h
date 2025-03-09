@@ -21,37 +21,17 @@ __BEGIN_DECLS
 #define RTLD_GLOBAL 8
 #define RTLD_LOCAL 16
 
-typedef struct __Dl_info 
-{
-    const char* dli_fname;
+typedef struct __Dl_info {
+    char const* dli_fname;
     void* dli_fbase;
-    const char* dli_sname;
+    char const* dli_sname;
     void* dli_saddr;
 } Dl_info;
 
-/**
- * @return int 
- */
 int dlclose(void*);
-
-/**
- * @return char* 
- */
 char* dlerror(void);
-
-/**
- * @return void* 
- */
-void* dlopen(const char*, int);
-
-/**
- * @return void* 
- */
-void* dlsym(void*, const char*);
-
-/**
- * @return int 
- */
+void* dlopen(char const*, int);
+void* dlsym(void*, char const*);
 int dladdr(void*, Dl_info*);
 
 __END_DECLS
