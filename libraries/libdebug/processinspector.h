@@ -13,5 +13,21 @@
 
 namespace Debug
 {
+    
+    class ProcessInspector
+    {
+    public:
+        virtual ~ProcessInspector() = default;
+
+        /**
+         * @param address 
+         * @param data 
+         * @return true 
+         * @return false 
+         */
+        virtual bool poke(FlatPtr address, FlatPtr data) = 0;
+    protected:
+        ProcessInspector() = default;
+    }; // class ProcessInspector
 
 } // namespace Debug
