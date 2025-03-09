@@ -9,3 +9,22 @@
  * 
  */
 
+
+#pragma once
+
+#include <mods/forward.h>
+
+namespace Core 
+{
+
+    class Process 
+    {
+    public:
+        /**
+         * @param path 
+         * @return pid_t 
+         */
+        static pid_t spawn(StringView path);
+    }; // class Process 
+
+} // namespace Core
