@@ -9,19 +9,26 @@
  * 
  */
 
-#pragma once 
 
-#include <mods/string.h>
-#include <mods/string_builder.h>
+#pragma once
+
+#include <mods/stringbuilder.h>
 #include <libcrypto/hash/hashfunction.h>
 
-namespace Crypto {
-    namespace Hash {
+#ifndef KERNEL
+#    include <mods/string.h>
+#endif
+
+namespace Crypto 
+{
+
+    namespace Hash 
+    {
 
         namespace SHA256Constants 
         {
-            constexpr static u32 RoundConstants[64] 
-            {
+
+            constexpr static u32 RoundConstants[64] {
                 0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5,
                 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
                 0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3,
@@ -40,18 +47,27 @@ namespace Crypto {
                 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
             };
 
-            constexpr static u32 InitializationHashes[8] = 
-            {
+            constexpr static u32 InitializationHashes[8] = {
                 0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a,
                 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19
             };
 
-        } // namespace SHA256Constants
+        } // namespace SHA256Constants 
+
+        namespace SHA384Constants 
+        {
+
+            constexpr static u64 InitializationHashes[8] = {
+                0xcbbb9d5dc1059ed8, 0x629a292a367cd507, 0x9159015a3070dd17, 0x152fecd8f70e5939,
+                0x67332667ffc00b31, 0x8eb44a8768581511, 0xdb0c2e0d64f98fa7, 0x47b5481dbefa4fa4
+            };
+
+        } // namespace SHA384Constants 
 
         namespace SHA512Constants 
         {
-            constexpr static u64 RoundConstants[80] 
-            {
+
+            constexpr static u64 RoundConstants[80] {
                 0x428a2f98d728ae22, 0x7137449123ef65cd, 0xb5c0fbcfec4d3b2f, 0xe9b5dba58189dbbc, 0x3956c25bf348b538,
                 0x59f111f1b605d019, 0x923f82a4af194f9b, 0xab1c5ed5da6d8118, 0xd807aa98a3030242, 0x12835b0145706fbe,
                 0x243185be4ee4b28c, 0x550c7dc3d5ffb4e2, 0x72be5d74f27b896f, 0x80deb1fe3b1696b1, 0x9bdc06a725c71235,
@@ -70,65 +86,28 @@ namespace Crypto {
                 0x431d67c49c100d4c, 0x4cc5d4becb3e42b6, 0x597f299cfc657e2a, 0x5fcb6fab3ad6faec, 0x6c44198c4a475817
             };
 
-            constexpr static u64 InitializationHashes[8] = 
-            {
+            constexpr static u64 InitializationHashes[8] = {
                 0x6a09e667f3bcc908, 0xbb67ae8584caa73b, 0x3c6ef372fe94f82b, 0xa54ff53a5f1d36f1,
                 0x510e527fade682d1, 0x9b05688c2b3e6c1f, 0x1f83d9abfb41bd6b, 0x5be0cd19137e2179
             };
-            
-        } // namespace SHA512Constants
 
-        template<size_t Bytes>
-        struct SHA2Digest 
-        {
-            u8 data[Bytes];
+        } // namespace SHA512Constants 
 
-            constexpr static size_t Size = Bytes;
-
-            /**
-             * @return const u8* 
-             */
-            const u8* immutable_data() const 
-            { 
-                return data; 
-            }
-
-            /**
-             * @return size_t 
-             */
-            size_t data_length() 
-            { 
-                return Bytes; 
-            }
-        }; // struct
-
-        class SHA256 final : public HashFunction<512, SHA2Digest<256 / 8>> 
+        class SHA256 final : public HashFunction<512, 256> 
         {
         public:
-            /// @brief Construct a new SHA256 object
+            using HashFunction::update;
+
+            /**
+             * @brief Construct a new SHA256 object
+             * 
+             */
             SHA256()
             {
                 reset();
             }
 
-            /// @brief: update
-            virtual void update(const u8*, size_t) override;
-
-            /**
-             * @param buffer 
-             */
-            virtual void update(const ByteBuffer& buffer) override 
-            { 
-                update(buffer.data(), buffer.size()); 
-            };
-
-            /**
-             * @param string 
-             */
-            virtual void update(const StringView& string) override 
-            { 
-                update((const u8*)string.characters_without_null_termination(), string.length()); 
-            };
+            virtual void update(u8 const*, size_t) override;
 
             /**
              * @return DigestType 
@@ -141,12 +120,10 @@ namespace Crypto {
              * @param length 
              * @return DigestType 
              */
-            inline static DigestType hash(const u8* data, size_t length)
+            inline static DigestType hash(u8 const* data, size_t length)
             {
                 SHA256 sha;
-
                 sha.update(data, length);
-
                 return sha.digest();
             }
 
@@ -154,7 +131,7 @@ namespace Crypto {
              * @param buffer 
              * @return DigestType 
              */
-            inline static DigestType hash(const ByteBuffer& buffer) 
+            inline static DigestType hash(ByteBuffer const& buffer) 
             { 
                 return hash(buffer.data(), buffer.size()); 
             }
@@ -163,73 +140,54 @@ namespace Crypto {
              * @param buffer 
              * @return DigestType 
              */
-            inline static DigestType hash(const StringView& buffer) 
+            inline static DigestType hash(StringView buffer) 
             { 
-                return hash((const u8*)buffer.characters_without_null_termination(), buffer.length()); 
+                return hash((u8 const*)buffer.characters_without_null_termination(), buffer.length()); 
             }
 
-            /**
-             * @return String 
-             */
+        #ifndef KERNEL
             virtual String class_name() const override
             {
-                StringBuilder builder;
-                builder.append("SHA");
-                builder.appendf("%zu", this->DigestSize * 8);
-                return builder.build();
-            };
+                return String::formatted("SHA{}", DigestSize * 8);
+            }
+        #endif
 
-            /// @brief: reset
             inline virtual void reset() override
             {
                 m_data_length = 0;
                 m_bit_length = 0;
-
                 for (size_t i = 0; i < 8; ++i)
                     m_state[i] = SHA256Constants::InitializationHashes[i];
             }
 
         private:
-            inline void transform(const u8*);
+            inline void transform(u8 const*);
 
-            u8 m_data_buffer[BlockSize];
-
+            u8 m_data_buffer[BlockSize] {};
             size_t m_data_length { 0 };
 
             u64 m_bit_length { 0 };
-
             u32 m_state[8];
 
             constexpr static auto FinalBlockDataSize = BlockSize - 8;
             constexpr static auto Rounds = 64;
-        }; // class SHA256 
+        }; // class SHA256 final : public HashFunction<512, 256> 
 
-        class SHA512 final : public HashFunction<1024, SHA2Digest<512 / 8>> 
+        class SHA384 final : public HashFunction<1024, 384> 
         {
         public:
-            /// @brief Construct a new SHA512 object
-            SHA512()
+            using HashFunction::update;
+
+            /**
+             * @brief Construct a new SHA384 object
+             * 
+             */
+            SHA384()
             {
                 reset();
             }
 
-            virtual void update(const u8*, size_t) override;
-
-            /**
-             * @param buffer 
-             */
-            virtual void update(const ByteBuffer& buffer) override 
-            { 
-                update(buffer.data(), buffer.size()); 
-            };
-
-            /**
-             * @param string 
-             */
-            virtual void update(const StringView& string) override 
-            { 
-                update((const u8*)string.characters_without_null_termination(), string.length()); 
-            };
+            virtual void update(u8 const*, size_t) override;
 
             /**
              * @return DigestType 
@@ -242,7 +200,87 @@ namespace Crypto {
              * @param length 
              * @return DigestType 
              */
-            inline static DigestType hash(const u8* data, size_t length)
+            inline static DigestType hash(u8 const* data, size_t length)
+            {
+                SHA384 sha;
+                sha.update(data, length);
+                return sha.digest();
+            }
+
+            /**
+             * @param buffer 
+             * @return DigestType 
+             */
+            inline static DigestType hash(ByteBuffer const& buffer) 
+            { 
+                return hash(buffer.data(), buffer.size()); 
+            }
+
+            /**
+             * @param buffer 
+             * @return DigestType 
+             */
+            inline static DigestType hash(StringView buffer) 
+            { 
+                return hash((u8 const*)buffer.characters_without_null_termination(), buffer.length()); 
+            }
+
+        #ifndef KERNEL
+            virtual String class_name() const override
+            {
+                return String::formatted("SHA{}", DigestSize * 8);
+            }
+        #endif
+
+            inline virtual void reset() override
+            {
+                m_data_length = 0;
+                m_bit_length = 0;
+                for (size_t i = 0; i < 8; ++i)
+                    m_state[i] = SHA384Constants::InitializationHashes[i];
+            }
+
+        private:
+            inline void transform(u8 const*);
+
+            u8 m_data_buffer[BlockSize] {};
+            size_t m_data_length { 0 };
+
+            u64 m_bit_length { 0 };
+            u64 m_state[8];
+
+            constexpr static auto FinalBlockDataSize = BlockSize - 16;
+            constexpr static auto Rounds = 80;
+        }; // class SHA384 final : public HashFunction<1024, 384> 
+
+        class SHA512 final : public HashFunction<1024, 512> 
+        {
+        public:
+            using HashFunction::update;
+
+            /**
+             * @brief Construct a new SHA512 object
+             * 
+             */
+            SHA512()
+            {
+                reset();
+            }
+
+            virtual void update(u8 const*, size_t) override;
+
+            /**
+             * @return DigestType 
+             */
+            virtual DigestType digest() override;
+            virtual DigestType peek() override;
+
+            /**
+             * @param data 
+             * @param length 
+             * @return DigestType 
+             */
+            inline static DigestType hash(u8 const* data, size_t length)
             {
                 SHA512 sha;
                 sha.update(data, length);
@@ -253,7 +291,7 @@ namespace Crypto {
              * @param buffer 
              * @return DigestType 
              */
-            inline static DigestType hash(const ByteBuffer& buffer) 
+            inline static DigestType hash(ByteBuffer const& buffer) 
             { 
                 return hash(buffer.data(), buffer.size()); 
             }
@@ -262,45 +300,39 @@ namespace Crypto {
              * @param buffer 
              * @return DigestType 
              */
-            inline static DigestType hash(const StringView& buffer) 
+            inline static DigestType hash(StringView buffer) 
             { 
-                return hash((const u8*)buffer.characters_without_null_termination(), buffer.length()); 
+                return hash((u8 const*)buffer.characters_without_null_termination(), buffer.length()); 
             }
 
-            /**
-             * @return String 
-             */
+        #ifndef KERNEL
             virtual String class_name() const override
             {
-                StringBuilder builder;
-                builder.append("SHA");
-                builder.appendf("%zu", this->DigestSize * 8);
-                return builder.build();
-            };
+                return String::formatted("SHA{}", DigestSize * 8);
+            }
+        #endif
 
-            /// @brief: reset
             inline virtual void reset() override
             {
                 m_data_length = 0;
                 m_bit_length = 0;
-
                 for (size_t i = 0; i < 8; ++i)
                     m_state[i] = SHA512Constants::InitializationHashes[i];
             }
 
         private:
-            /// @brief: transform
-            inline void transform(const u8*);
+            inline void transform(u8 const*);
 
-            u8 m_data_buffer[BlockSize];
-
+            u8 m_data_buffer[BlockSize] {};
             size_t m_data_length { 0 };
 
             u64 m_bit_length { 0 };
             u64 m_state[8];
 
-            constexpr static auto FinalBlockDataSize = BlockSize - 8;
+            constexpr static auto FinalBlockDataSize = BlockSize - 16;
             constexpr static auto Rounds = 80;
-        }; // class SHA512
+        }; // class SHA512 final : public HashFunction<1024, 512> 
+
     } // namespace Hash
+
 } // namespace Crypto
