@@ -9,14 +9,16 @@
  * 
  */
 
-#pragma once 
+#pragma once
 
 #include <mods/string.h>
 
-namespace Diff
-{  
+namespace Diff 
+{
+
     /**
      * @return String 
      */
-    String generate_only_additions(const String&);
-} // namespace Diff
+    String generate_only_additions(String const&);
+
+}; // namespace Diff 
