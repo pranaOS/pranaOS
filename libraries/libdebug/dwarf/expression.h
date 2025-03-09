@@ -16,19 +16,31 @@
 
 struct PtraceRegisters;
 
-enum class Type
+namespace Debug::Dwarf::Expression 
 {
-    None,
-    UnsignedInteger,
-    Register,
-}; // enum class Type
 
-struct  Value 
-{
-    Type type;
+    enum class Type {
+        None,
+        UnsignedInteger,
+        Register,
+    }; // enum class Type
 
-    union {
-        FlatPtr as_addr;
-        u32 as_u32;
-    } data { 0 };
-}; // struct  Value 
+    struct Value {
+        Type type;
+        union {
+            FlatPtr as_addr;
+            u32 as_u32;
+        } data { 0 };
+    }; // struct Value
+
+    enum class Operations : u8 {
+        RegEbp = 0x75,
+        FbReg = 0x91,
+    }; // enum class Operations : u8
+
+    /**
+     * @return Value 
+     */
+    Value evaluate(ReadonlyBytes, PtraceRegisters const&);
+
+} // namespace Debug::Dwarf::Expression 
