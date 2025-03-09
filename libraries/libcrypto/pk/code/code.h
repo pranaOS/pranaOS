@@ -12,12 +12,14 @@
 #pragma once
 
 #include <libcrypto/hash/hashfunction.h>
-#include <libcrypto/verify.h>
+#include <libcrypto/verification.h>
 
 namespace Crypto 
 {
+
     namespace PK 
     {
+
         /**
          * @tparam HashFunction 
          */
@@ -53,9 +55,9 @@ namespace Crypto
             virtual VerificationConsistency verify(ReadonlyBytes msg, ReadonlyBytes emsg, size_t em_bits) = 0;
 
             /**
-             * @return const HashFunction& 
+             * @return HashFunction const& 
              */
-            const HashFunction& hasher() const 
+            HashFunction const& hasher() const 
             { 
                 return m_hasher; 
             }
@@ -69,13 +71,11 @@ namespace Crypto
             }
 
         protected:
-            /**
-             * @brief Destroy the Code object
-             * 
-             */
             virtual ~Code() = default;
 
             HashFunction m_hasher;
         }; // class Code
+
     } // namespace PK
+
 } // namespace Crypto
