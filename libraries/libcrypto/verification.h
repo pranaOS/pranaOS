@@ -1,7 +1,7 @@
 /**
- * @file verify.h
+ * @file verification.h
  * @author Krisna Pranav
- * @brief verify
+ * @brief verification
  * @version 6.0
  * @date 2023-08-27
  * 
@@ -9,15 +9,14 @@
  * 
  */
 
-#pragma once 
+#pragma once
 
 namespace Crypto 
 {
 
-    enum class VerificationConsistency 
-    {
+    enum class VerificationConsistency {
         Consistent,
         Inconsistent
-    }; // enum
+    }; // enum class VerificationConsistency
 
-} // namespace Crypto 
+} // namespace Crypto
