@@ -9,6 +9,7 @@
  * 
  */
 
+#include <mods/memory.h>
 #include <mods/types.h>
 #include <libcrypto/hash/md5.h>
 
@@ -132,6 +133,7 @@ static constexpr void round_4(u32& a, u32 b, u32 c, u32 d, u32 x, u32 s, u32 ac)
 
 namespace Crypto 
 {
+
     namespace Hash 
     {
 
@@ -139,12 +141,10 @@ namespace Crypto
          * @param input 
          * @param length 
          */
-        void MD5::update(const u8* input, size_t length)
+        void MD5::update(u8 const* input, size_t length)
         {
             auto index = (u32)(m_count[0] >> 3) & 0x3f;
-
             size_t offset { 0 };
-
             m_count[0] += (u32)length << 3;
 
             if (m_count[0] < ((u32)length << 3)) {
@@ -154,10 +154,11 @@ namespace Crypto
             m_count[1] += (u32)length >> 29;
 
             auto part_length = 64 - index;
+            auto buffer = Bytes { m_data_buffer, sizeof(m_data_buffer) };
 
             if (length >= part_length) {
-                m_buffer.overwrite(index, input, part_length);
-                transform(m_buffer.data());
+                buffer.overwrite(index, input, part_length);
+                transform(buffer.data());
 
                 for (offset = part_length; offset + 63 < length; offset += 64)
                     transform(&input[offset]);
@@ -165,8 +166,8 @@ namespace Crypto
                 index = 0;
             }
 
-            ASSERT(length < part_length || length - offset <= 64);
-            m_buffer.overwrite(index, &input[offset], length - offset);
+            VERIFY(length < part_length || length - offset <= 64);
+            buffer.overwrite(index, &input[offset], length - offset);
         }
 
         /**
@@ -191,9 +192,10 @@ namespace Crypto
 
             u32 index = (u32)((m_count[0] >> 3) & 0x3f);
             u32 pad_length = index < 56 ? 56 - index : 120 - index;
-
             update(MD5Constants::PADDING, pad_length);
+
             update(bits, 8);
+
             encode(&m_A, digest.data, 4 * sizeof(m_A));
 
             return digest;
@@ -204,7 +206,7 @@ namespace Crypto
          * @param to 
          * @param length 
          */
-        void MD5::encode(const u32* from, u8* to, size_t length)
+        void MD5::encode(u32 const* from, u8* to, size_t length)
         {
             for (size_t i = 0, j = 0; j < length; ++i, j += 4) {
                 to[j] = (u8)(from[i] & 0xff);
@@ -219,7 +221,7 @@ namespace Crypto
          * @param to 
          * @param length 
          */
-        void MD5::decode(const u8* from, u32* to, size_t length)
+        void MD5::decode(u8 const* from, u32* to, size_t length)
         {
             for (size_t i = 0, j = 0; j < length; ++i, j += 4)
                 to[i] = (((u32)from[j]) | (((u32)from[j + 1]) << 8) | (((u32)from[j + 2]) << 16) | (((u32)from[j + 3]) << 24));
@@ -228,7 +230,7 @@ namespace Crypto
         /**
          * @param block 
          */
-        void MD5::transform(const u8* block)
+        void MD5::transform(u8 const* block)
         {
             auto a = m_A;
             auto b = m_B;
@@ -244,11 +246,11 @@ namespace Crypto
             round_1(b, c, d, a, x[3], MD5Constants::S14, 0xc1bdceee);  
             round_1(a, b, c, d, x[4], MD5Constants::S11, 0xf57c0faf);  
             round_1(d, a, b, c, x[5], MD5Constants::S12, 0x4787c62a);  
-            round_1(c, d, a, b, x[6], MD5Constants::S13, 0xa8304613);   
+            round_1(c, d, a, b, x[6], MD5Constants::S13, 0xa8304613);  
             round_1(b, c, d, a, x[7], MD5Constants::S14, 0xfd469501);  
             round_1(a, b, c, d, x[8], MD5Constants::S11, 0x698098d8);  
             round_1(d, a, b, c, x[9], MD5Constants::S12, 0x8b44f7af);  
-            round_1(c, d, a, b, x[10], MD5Constants::S13, 0xffff5bb1);
+            round_1(c, d, a, b, x[10], MD5Constants::S13, 0xffff5bb1); 
             round_1(b, c, d, a, x[11], MD5Constants::S14, 0x895cd7be); 
             round_1(a, b, c, d, x[12], MD5Constants::S11, 0x6b901122); 
             round_1(d, a, b, c, x[13], MD5Constants::S12, 0xfd987193); 
@@ -259,17 +261,17 @@ namespace Crypto
             round_2(d, a, b, c, x[6], MD5Constants::S22, 0xc040b340);  
             round_2(c, d, a, b, x[11], MD5Constants::S23, 0x265e5a51); 
             round_2(b, c, d, a, x[0], MD5Constants::S24, 0xe9b6c7aa);  
-            round_2(a, b, c, d, x[5], MD5Constants::S21, 0xd62f105d);   
-            round_2(d, a, b, c, x[10], MD5Constants::S22, 0x2441453);   
-            round_2(c, d, a, b, x[15], MD5Constants::S23, 0xd8a1e681);  
-            round_2(b, c, d, a, x[4], MD5Constants::S24, 0xe7d3fbc8);  
+            round_2(a, b, c, d, x[5], MD5Constants::S21, 0xd62f105d);  
+            round_2(d, a, b, c, x[10], MD5Constants::S22, 0x2441453);  
+            round_2(c, d, a, b, x[15], MD5Constants::S23, 0xd8a1e681); 
+            round_2(b, c, d, a, x[4], MD5Constants::S24, 0xe7d3fbc8);   
             round_2(a, b, c, d, x[9], MD5Constants::S21, 0x21e1cde6);   
             round_2(d, a, b, c, x[14], MD5Constants::S22, 0xc33707d6);  
-            round_2(c, d, a, b, x[3], MD5Constants::S23, 0xf4d50d87);   
+            round_2(c, d, a, b, x[3], MD5Constants::S23, 0xf4d50d87);    
             round_2(b, c, d, a, x[8], MD5Constants::S24, 0x455a14ed);   
-            round_2(a, b, c, d, x[13], MD5Constants::S21, 0xa9e3e905);  
-            round_2(d, a, b, c, x[2], MD5Constants::S22, 0xfcefa3f8);  
-            round_2(c, d, a, b, x[7], MD5Constants::S23, 0x676f02d9);   
+            round_2(a, b, c, d, x[13], MD5Constants::S21, 0xa9e3e905);    
+            round_2(d, a, b, c, x[2], MD5Constants::S22, 0xfcefa3f8);   
+            round_2(c, d, a, b, x[7], MD5Constants::S23, 0x676f02d9);  
             round_2(b, c, d, a, x[12], MD5Constants::S24, 0x8d2a4c8a); 
 
             round_3(a, b, c, d, x[5], MD5Constants::S31, 0xfffa3942);  
@@ -289,11 +291,11 @@ namespace Crypto
             round_3(c, d, a, b, x[15], MD5Constants::S33, 0x1fa27cf8); 
             round_3(b, c, d, a, x[2], MD5Constants::S34, 0xc4ac5665);  
 
-            round_4(a, b, c, d, x[0], MD5Constants::S41, 0xf4292244);  
+            round_4(a, b, c, d, x[0], MD5Constants::S41, 0xf4292244);   
             round_4(d, a, b, c, x[7], MD5Constants::S42, 0x432aff97);   
             round_4(c, d, a, b, x[14], MD5Constants::S43, 0xab9423a7);  
             round_4(b, c, d, a, x[5], MD5Constants::S44, 0xfc93a039);   
-            round_4(a, b, c, d, x[12], MD5Constants::S41, 0x655b59c3);  
+            round_4(a, b, c, d, x[12], MD5Constants::S41, 0x655b59c3); 
             round_4(d, a, b, c, x[3], MD5Constants::S42, 0x8f0ccc92);   
             round_4(c, d, a, b, x[10], MD5Constants::S43, 0xffeff47d);  
             round_4(b, c, d, a, x[1], MD5Constants::S44, 0x85845dd1);   
@@ -303,7 +305,7 @@ namespace Crypto
             round_4(b, c, d, a, x[13], MD5Constants::S44, 0x4e0811a1);  
             round_4(a, b, c, d, x[4], MD5Constants::S41, 0xf7537e82);   
             round_4(d, a, b, c, x[11], MD5Constants::S42, 0xbd3af235);  
-            round_4(c, d, a, b, x[2], MD5Constants::S43, 0x2ad7d2bb);   
+            round_4(c, d, a, b, x[2], MD5Constants::S43, 0x2ad7d2bb);  
             round_4(b, c, d, a, x[9], MD5Constants::S44, 0xeb86d391);   
 
             m_A += a;
@@ -311,7 +313,9 @@ namespace Crypto
             m_C += c;
             m_D += d;
 
-            __builtin_memset(x, 0, sizeof(x));
+            secure_zero(x, sizeof(x));
         }
+
     } // namespace Hash
+
 } // namespace Crypto
