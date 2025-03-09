@@ -9,3 +9,18 @@
  * 
  */
 
+#pragma once
+
+namespace Debug::Dwarf
+{
+
+    class DwarfInfo;
+    class DIE;
+    class LineProgram;
+
+    class CompilationUnit
+    {
+
+    }; // class CompilationUnit
+
+} // namespace Debug::Dwarf
