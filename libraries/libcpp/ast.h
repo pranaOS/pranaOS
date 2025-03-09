@@ -1,7 +1,7 @@
 /**
  * @file ast.h
  * @author Krisna Pranav
- * @brief ast
+ * @brief abstract syntax tree
  * @version 6.0
  * @date 2025-03-05
  * 
