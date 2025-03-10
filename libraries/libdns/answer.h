@@ -9,4 +9,21 @@
  * 
  */
 
-#pragma once
+#pragma once 
+
+#include "name.h"
+#include <mods/format.h>
+#include <mods/string.h>
+#include <mods/traits.h>
+#include <mods/types.h>
+#include <libipc/forward.h>
+
+namespace DNS
+{
+    enum class RecordType : u16
+    {
+        A = 1,
+        NS = 2,
+        CNAMe = 5,
+    } // enum class RecordType : u16
+} // namespace DNS
