@@ -5,6 +5,7 @@ pranaOS.cxxflags
 pranaOS.files
 .qtc_clangd/
 pranaOS.creator.user
+pranaOS.files
 
 # ide caches
 .vscode/
