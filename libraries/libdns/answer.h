@@ -20,10 +20,34 @@
 
 namespace DNS
 {
-    enum class RecordType : u16
-    {
+
+    enum class RecordType : u16 {
         A = 1,
         NS = 2,
-        CNAMe = 5,
-    } // enum class RecordType : u16
+        CNAME = 5,
+        SOA = 6,
+        PTR = 12,
+        MX = 15,
+        TXT = 16,
+        AAAA = 28,
+        SRV = 33,
+    }; // enum class RecordType : u16
+
+    enum class RecordClass : u16 {
+        IN = 1
+    }; // enum class RecordClass : u16
+
+    #define MDNS_CACHE_FLUSH 0x8000
+
+    class Answer
+    {
+
+    }; // class Answer
+
 } // namespace DNS
+
+namespace IPC
+{
+    bool encode(Encoder&, DNS::Answer const&);
+    ErrorOr<void> decode(Decoder&, DNS::Answer&);
+}
