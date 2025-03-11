@@ -9,18 +9,19 @@
  * 
  */
 
-#pragma once 
+#pragma once
 
-#include <mods/distinctnums.h>
+#include <mods/badge.h>
+#include <mods/distinctnumeric.h>
 
-namespace Mods 
+namespace Mods
 {
+
     /**
      * @tparam T 
      */
     template<typename T>
-    struct ArbitrarySizedEnum : public T 
-    {
+    struct ArbitrarySizedEnum : public T {
         using T::T;
 
         /**
@@ -46,7 +47,7 @@ namespace Mods
         [[nodiscard]] consteval ArbitrarySizedEnum<T> operator<<(X other) const
         {
             return T(this->value() << other);
-        }   
+        }
 
         /**
          * @tparam X 
@@ -111,7 +112,7 @@ namespace Mods
          */
         [[nodiscard]] constexpr ArbitrarySizedEnum<T> operator|(ArbitrarySizedEnum<T> const& other) const
         {
-            return { T(this->value() | other.value()), {} };
+            return { T(this->value() | other.value()), Badge<ArbitrarySizedEnum<T>> {} };
         }
 
         /**
@@ -120,7 +121,7 @@ namespace Mods
          */
         [[nodiscard]] constexpr ArbitrarySizedEnum<T> operator&(ArbitrarySizedEnum<T> const& other) const
         {
-            return { T(this->value() & other.value()), {} };
+            return { T(this->value() & other.value()), Badge<ArbitrarySizedEnum<T>> {} };
         }
 
         /**
@@ -129,7 +130,7 @@ namespace Mods
          */
         [[nodiscard]] constexpr ArbitrarySizedEnum<T> operator^(ArbitrarySizedEnum<T> const& other) const
         {
-            return { T(this->value() ^ other.value()), {} };
+            return { T(this->value() ^ other.value()), Badge<ArbitrarySizedEnum<T>> {} };
         }
 
         /**
@@ -137,7 +138,7 @@ namespace Mods
          */
         [[nodiscard]] constexpr ArbitrarySizedEnum<T> operator~() const
         {
-            return { T(~this->value()), {} };
+            return { T(~this->value()), Badge<ArbitrarySizedEnum<T>> {} };
         }
 
         /**
@@ -180,26 +181,22 @@ namespace Mods
             return (*this & mask) == mask;
         }
 
-        /**
-         * @param mask 
-         * @return true 
-         * @return false 
-         */
         [[nodiscard]] constexpr bool has_any_flag(ArbitrarySizedEnum<T> const& mask) const
         {
             return (*this & mask) != 0u;
         }
-    }; // struct ArbitrarySizedEnum : public T
+    };
 
-#define MODS_MAKE_ARBITRARY_SIZED_ENUM(EnumName, T, ...)                               \
-    namespace EnumName {                                                               \
-    using EnumName = ArbitrarySizedEnum<DistinctNumeric<T, struct __##EnumName##Tag,   \
-        false, true, false, false, false, false>>;                                     \
-    using Type = EnumName;                                                             \
-    using UnderlyingType = T;                                                          \
-    inline constexpr static EnumName __VA_ARGS__;                                      \
+#define MODS_MAKE_ARBITRARY_SIZED_ENUM(EnumName, T, ...)                                                                         \
+    namespace EnumName {                                                                                                       \
+    using EnumName = ArbitrarySizedEnum<DistinctNumeric<T, struct __##EnumName##Tag, Mods::DistinctNumericFeature::Comparison>>; \
+    using Type = EnumName;                                                                                                     \
+    using UnderlyingType = T;                                                                                                  \
+    inline constexpr static EnumName __VA_ARGS__;                                                                              \
     }
 
-}
+} // namespace Mods
 
+#if USING_MODS_GLOBALLY
 using Mods::ArbitrarySizedEnum;
+#endif
