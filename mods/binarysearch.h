@@ -11,11 +11,12 @@
 
 #pragma once
 
-#include <mods/stdlibextra.h>
+#include <mods/stdlibextras.h>
 #include <mods/types.h>
 
-namespace Mods
+namespace Mods 
 {
+
     struct DefaultComparator 
     {
         /**
@@ -26,7 +27,7 @@ namespace Mods
          * @return constexpr int 
          */
         template<typename T, typename S>
-        constexpr int operator()(T& lhs, S& rhs)
+        [[nodiscard]] constexpr int operator()(T& lhs, S& rhs)
         {
             if (lhs > rhs)
                 return 1;
@@ -49,18 +50,20 @@ namespace Mods
      * @return decltype(&haystack[0]) 
      */
     template<typename Container, typename Needle, typename Comparator = DefaultComparator>
-    constexpr auto binary_search(Container&& haystack, Needle&& needle, size_t* nearby_index = nullptr, Comparator comparator = Comparator {}) -> decltype(&haystack[0])
+    constexpr auto binary_search(
+        Container&& haystack,
+        Needle&& needle,
+        size_t* nearby_index = nullptr,
+        Comparator comparator = Comparator {}) -> decltype(&haystack[0])
     {
         if (haystack.size() == 0) {
             if (nearby_index)
                 *nearby_index = 0;
-
             return nullptr;
         }
 
         size_t low = 0;
         size_t high = haystack.size() - 1;
-        
         while (low <= high) {
             size_t middle = low + (high - low) / 2;
 
@@ -84,7 +87,10 @@ namespace Mods
             *nearby_index = min(low, high);
 
         return nullptr;
-    } // constexpr auto binary_search(Container&& haystack, Needle&& needle, size_t* nearby_index = nullptr, Comparator comparator = Comparator {}) -> decltype(&haystack[0])
-}
+    }
 
+} // namespace Mods
+
+#if USING_MODS_GLOBALLY
 using Mods::binary_search;
+#endif
