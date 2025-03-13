@@ -16,16 +16,17 @@
 #include <mods/noncopyable.h>
 #include <mods/optional.h>
 #include <mods/platform.h>
+#include <mods/stdlibextras.h>
 #include <mods/try.h>
 #include <mods/types.h>
-#include <mods/stdlibextra.h>
 #include <mods/kmalloc.h>
 
 namespace Mods 
 {
+
     class Bitmap : public BitmapView 
     {
-        MOD_MAKE_NONCOPYABLE(Bitmap);
+        MODS_MAKE_NONCOPYABLE(Bitmap);
 
     public:
         /**
@@ -33,29 +34,17 @@ namespace Mods
          * @param default_value 
          * @return ErrorOr<Bitmap> 
          */
-        static ErrorOr<Bitmap> try_create(size_t size, bool default_value)
+        static ErrorOr<Bitmap> create(size_t size, bool default_value)
         {
             VERIFY(size != 0);
 
             auto* data = kmalloc(ceil_div(size, static_cast<size_t>(8)));
-
             if (!data)
                 return Error::from_errno(ENOMEM);
 
-            auto bitmap = Bitmap { (u8*)data, size, true };
+            auto bitmap = Bitmap { static_cast<u8*>(data), size, true };
             bitmap.fill(default_value);
-
             return bitmap;
-        }
-
-        /**
-         * @param size 
-         * @param default_value 
-         * @return Bitmap 
-         */
-        static Bitmap must_create(size_t size, bool default_value)
-        {
-            return MUST(try_create(size, default_value));
         }
 
         /**
@@ -99,7 +88,6 @@ namespace Mods
                 m_data = exchange(other.m_data, nullptr);
                 m_size = exchange(other.m_size, 0);
             }
-
             return *this;
         }
 
@@ -130,7 +118,6 @@ namespace Mods
         void set(size_t index, bool value)
         {
             VERIFY(index < m_size);
-
             if (value)
                 m_data[index / 8] |= static_cast<u8>((1u << (index % 8)));
             else
@@ -183,14 +170,12 @@ namespace Mods
         {
             VERIFY(start < m_size);
             VERIFY(start + len <= m_size);
-
             if (len == 0)
                 return;
 
             u8* first = &m_data[start / 8];
             u8* last = &m_data[(start + len) / 8];
             u8 byte_mask = bitmask_first_byte[start % 8];
-
             if (first == last) {
                 byte_mask &= bitmask_last_byte[(start + len) % 8];
                 if constexpr (verify_that_all_bits_flip) {
@@ -250,7 +235,7 @@ namespace Mods
                 set_range<true, false>(start, len);
             else
                 set_range<false, false>(start, len);
-        }   
+        }
 
         /**
          * @brief Set the range and verify that all bits flip object
@@ -277,7 +262,10 @@ namespace Mods
 
     private:
         bool m_is_owning { true };
-    }; // class  Bitmap : public BitmapView
+    }; // class Bitmap : public BitmapView
+
 } // namespace Mods
 
+#if USING_MODS_GLOBALLY
 using Mods::Bitmap;
+#endif
