@@ -14,31 +14,26 @@
 #include <mods/array.h>
 #include <mods/builtinwrappers.h>
 #include <mods/optional.h>
-#include <mods/stdlibextra.h>
+#include <mods/stdlibextras.h>
 #include <mods/types.h>
 
 namespace Mods 
 {
 
-    static constexpr Array bitmask_first_byte = { 
-        0xFF, 0xFE, 0xFC, 0xF8, 0xF0, 0xE0, 0xC0, 0x80 
-    };
-    
-    static constexpr Array bitmask_last_byte = { 
-        0x00, 0x1, 0x3, 0x7, 0xF, 0x1F, 0x3F, 0x7F 
-    };
+    static constexpr Array bitmask_first_byte = { 0xFF, 0xFE, 0xFC, 0xF8, 0xF0, 0xE0, 0xC0, 0x80 };
+    static constexpr Array bitmask_last_byte = { 0x00, 0x1, 0x3, 0x7, 0xF, 0x1F, 0x3F, 0x7F };
 
     class BitmapView 
     {
     public:
         /**
-         * @brief Construct a new Bitmap View object
+         * @brief Construct a new BitmapView object
          * 
          */
         BitmapView() = default;
 
         /**
-         * @brief Construct a new Bitmap View object
+         * @brief Construct a new BitmapView object
          * 
          * @param data 
          * @param size 
@@ -56,7 +51,7 @@ namespace Mods
         { 
             return m_size; 
         }
-
+        
         /**
          * @return size_t 
          */
@@ -64,7 +59,7 @@ namespace Mods
         { 
             return ceil_div(m_size, static_cast<size_t>(8)); 
         }
-
+        
         /**
          * @param index 
          * @return true 
@@ -100,43 +95,35 @@ namespace Mods
                 return 0;
 
             size_t count;
-
             u8 const* first = &m_data[start / 8];
             u8 const* last = &m_data[(start + len) / 8];
             u8 byte = *first;
-
             byte &= bitmask_first_byte[start % 8];
-
             if (first == last) {
                 byte &= bitmask_last_byte[(start + len) % 8];
                 count = popcount(byte);
             } else {
                 count = popcount(byte);
-                
+
                 if (last < &m_data[size_in_bytes()]) {
                     byte = *last;
                     byte &= bitmask_last_byte[(start + len) % 8];
                     count += popcount(byte);
                 }
-
                 if (++first < last) {
-                    size_t const* ptr_large = (size_t const*)(((FlatPtr)first + sizeof(size_t) - 1) & ~(sizeof(size_t) - 1));
-
-                    if ((u8 const*)ptr_large > last)
-                        ptr_large = (size_t const*)last;
-                    while (first < (u8 const*)ptr_large) {
+                    size_t const* ptr_large = reinterpret_cast<size_t const*>((reinterpret_cast<FlatPtr>(first) + sizeof(size_t) - 1) & ~(sizeof(size_t) - 1));
+                    if (reinterpret_cast<u8 const*>(ptr_large) > last)
+                        ptr_large = reinterpret_cast<size_t const*>(last);
+                    while (first < reinterpret_cast<u8 const*>(ptr_large)) {
                         count += popcount(*first);
                         first++;
                     }
-
-                    size_t const* last_large = (size_t const*)((FlatPtr)last & ~(sizeof(size_t) - 1));
-
+                    size_t const* last_large = reinterpret_cast<size_t const*>(reinterpret_cast<FlatPtr>(last) & ~(sizeof(size_t) - 1));
                     while (ptr_large < last_large) {
                         count += popcount(*ptr_large);
                         ptr_large++;
                     }
-
-                    for (first = (u8 const*)ptr_large; first < last; first++)
+                    for (first = reinterpret_cast<u8 const*>(ptr_large); first < last; first++)
                         count += popcount(*first);
                 }
             }
@@ -172,20 +159,18 @@ namespace Mods
         Optional<size_t> find_one_anywhere(size_t hint = 0) const
         {
             VERIFY(hint < m_size);
-            u8 const* end = &m_data[m_size / 8];
+            u8 const* end = &m_data[size_in_bytes()];
 
             for (;;) {
-                size_t const* ptr_large = (size_t const*)((FlatPtr)&m_data[hint / 8] & ~(sizeof(size_t) - 1));
-                if ((u8 const*)ptr_large < &m_data[0]) {
+                size_t const* ptr_large = reinterpret_cast<size_t const*>(reinterpret_cast<FlatPtr>(&m_data[hint / 8]) & ~(sizeof(size_t) - 1));
+                if (reinterpret_cast<u8 const*>(ptr_large) < &m_data[0]) {
                     ptr_large++;
 
-                    size_t start_ptr_large = (u8 const*)ptr_large - &m_data[0];
+                    size_t start_ptr_large = reinterpret_cast<u8 const*>(ptr_large) - &m_data[0];
                     size_t i = 0;
                     u8 byte = VALUE ? 0x00 : 0xff;
-
                     while (i < start_ptr_large && m_data[i] == byte)
                         i++;
-
                     if (i < start_ptr_large) {
                         byte = m_data[i];
                         if constexpr (!VALUE)
@@ -196,35 +181,28 @@ namespace Mods
                 }
 
                 size_t val_large = VALUE ? 0x0 : NumericLimits<size_t>::max();
-                size_t const* end_large = (size_t const*)((FlatPtr)end & ~(sizeof(size_t) - 1));
-
+                size_t const* end_large = reinterpret_cast<size_t const*>(reinterpret_cast<FlatPtr>(end) & ~(sizeof(size_t) - 1));
                 while (ptr_large < end_large && *ptr_large == val_large)
                     ptr_large++;
 
                 if (ptr_large == end_large) {
                     u8 byte = VALUE ? 0x00 : 0xff;
-                    size_t i = (u8 const*)ptr_large - &m_data[0];
-                    size_t byte_count = m_size / 8;
-
+                    size_t i = reinterpret_cast<u8 const*>(ptr_large) - &m_data[0];
+                    size_t byte_count = size_in_bytes();
                     VERIFY(i <= byte_count);
-
                     while (i < byte_count && m_data[i] == byte)
                         i++;
                     if (i == byte_count) {
                         if (hint <= 8)
                             return {}; 
 
-                        end = (u8 const*)((FlatPtr)&m_data[hint / 8] & ~(sizeof(size_t) - 1));
+                        end = reinterpret_cast<u8 const*>(reinterpret_cast<FlatPtr>(&m_data[hint / 8]) & ~(sizeof(size_t) - 1));
                         hint = 0;
-
                         continue;
                     }
-
                     byte = m_data[i];
-
                     if constexpr (!VALUE)
                         byte = ~byte;
-
                     VERIFY(byte != 0);
                     return i * 8 + bit_scan_forward(byte) - 1;
                 }
@@ -232,10 +210,8 @@ namespace Mods
                 val_large = *ptr_large;
                 if constexpr (!VALUE)
                     val_large = ~val_large;
-
                 VERIFY(val_large != 0);
-
-                return ((u8 const*)ptr_large - &m_data[0]) * 8 + bit_scan_forward(val_large) - 1;
+                return (reinterpret_cast<u8 const*>(ptr_large) - &m_data[0]) * 8 + bit_scan_forward(val_large) - 1;
             }
         }
 
@@ -264,21 +240,18 @@ namespace Mods
         template<bool VALUE>
         Optional<size_t> find_first() const
         {
-            size_t byte_count = m_size / 8;
+            size_t byte_count = size_in_bytes();
             size_t i = 0;
 
             u8 byte = VALUE ? 0x00 : 0xff;
-
             while (i < byte_count && m_data[i] == byte)
                 i++;
-
             if (i == byte_count)
                 return {};
 
             byte = m_data[i];
             if constexpr (!VALUE)
                 byte = ~byte;
-
             VERIFY(byte != 0);
             return i * 8 + bit_scan_forward(byte) - 1;
         }
@@ -291,9 +264,6 @@ namespace Mods
             return find_first<true>(); 
         }
 
-        /**
-         * @return Optional<size_t> 
-         */
         Optional<size_t> find_first_unset() const 
         { 
             return find_first<false>(); 
@@ -313,7 +283,7 @@ namespace Mods
 
             size_t bit_size = 8 * sizeof(size_t);
 
-            size_t* bitmap = (size_t*)m_data;
+            size_t* bitmap = reinterpret_cast<size_t*>(m_data);
 
             size_t start_bucket_index = from / bit_size;
             size_t start_bucket_bit = from % bit_size;
@@ -326,10 +296,8 @@ namespace Mods
                     if (free_chunks >= min_length) {
                         return min(free_chunks, max_length);
                     }
-
                     free_chunks = 0;
                     start_bucket_bit = 0;
-
                     continue;
                 }
 
@@ -337,13 +305,10 @@ namespace Mods
                     if (free_chunks == 0) {
                         *start_of_free_chunks = bucket_index * bit_size;
                     }
-
                     free_chunks += bit_size;
-                    
                     if (free_chunks >= max_length) {
                         return max_length;
                     }
-
                     start_bucket_bit = 0;
                     continue;
                 }
@@ -387,7 +352,6 @@ namespace Mods
             if (free_chunks < min_length) {
                 size_t first_trailing_bit = (m_size / bit_size) * bit_size;
                 size_t trailing_bits = size() % bit_size;
-
                 for (size_t i = 0; i < trailing_bits; ++i) {
                     if (!get(first_trailing_bit + i)) {
                         if (free_chunks == 0)
@@ -461,6 +425,7 @@ namespace Mods
 
             while (true) {
                 auto length_of_found_range = find_next_range_of_unset_bits(start, minimum_length, best_region_size);
+
                 if (length_of_found_range.has_value()) {
                     if (best_region_size > length_of_found_range.value() || !found) {
                         best_region_start = start;
@@ -485,6 +450,9 @@ namespace Mods
         u8* m_data { nullptr };
         size_t m_size { 0 };
     }; // class BitmapView
+
 } // namespace Mods
 
+#if USING_MODS_GLOBALLY
 using Mods::BitmapView;
+#endif
