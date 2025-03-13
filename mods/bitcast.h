@@ -11,16 +11,19 @@
 
 #pragma once
 
+#include <mods/platform.h>
+
 namespace Mods 
 {
+
     /**
      * @tparam T 
      * @tparam U 
      * @param a 
-     * @return T 
+     * @return constexpr T 
      */
     template<typename T, typename U>
-    inline T bit_cast(const U& a)
+    [[nodiscard]] constexpr inline T bit_cast(U const& a)
     {
     #if (__has_builtin(__builtin_bit_cast))
         return __builtin_bit_cast(T, a);
@@ -33,6 +36,8 @@ namespace Mods
     #endif
     }
 
-} // namspace Mods
+}
 
+#if USING_MODS_GLOBALLY
 using Mods::bit_cast;
+#endif
