@@ -9,6 +9,7 @@
  * 
  */
 
+
 #pragma once
 
 #include <mods/builtinwrappers.h>
@@ -19,8 +20,9 @@
 namespace Mods
 {
 
-    namespace Detail
+    namespace Detail 
     {
+
         /**
          * @tparam T 
          */
@@ -28,8 +30,7 @@ namespace Mods
         struct DoubleWordHelper;
 
         template<>
-        struct DoubleWordHelper<u32>
-        {
+        struct DoubleWordHelper<u32> {
             using Type = u64;
             using SignedType = i64;
         }; // struct DoubleWordHelper<u32>
@@ -39,12 +40,772 @@ namespace Mods
          */
         template<typename T>
         using DoubleWord = typename DoubleWordHelper<T>::Type;
+        template<typename T>
+        using SignedDoubleWord = typename DoubleWordHelper<T>::SignedType;
+
+        #if defined(__SIZEOF_INT128__) && defined(MODS_ARCH_64_BIT)
+        template<>
+        struct DoubleWordHelper<u64> {
+            using Type = unsigned __int128;
+            using SignedType = __int128;
+        }; // struct DoubleWordHelper<u64>
+        using NativeWord = u64;
+        #else
+        using NativeWord = u32;
+        #endif
+
+        using NativeDoubleWord = DoubleWord<NativeWord>;
+        using SignedNativeDoubleWord = SignedDoubleWord<NativeWord>;
+
+        template<typename WordType, bool sign>
+        using ConditionallySignedDoubleWord = Conditional<sign, SignedDoubleWord<WordType>, DoubleWord<WordType>>;
 
         /**
          * @tparam T 
          */
-        template<typeame T>
-        using SignedDoubleWord = typename DoubleWordHelper<T>::SignedType;
-    } // namespace Detail
+        template<typename T>
+        concept BuiltInUFixedInt = OneOf<T, bool, u8, u16, u32, u64, unsigned long, unsigned long long, NativeDoubleWord>;
+
+        /**
+         * @tparam T 
+         */
+        template<typename T>
+        constexpr inline size_t bit_width = sizeof(T) * 8;
+
+        constexpr size_t native_word_size = bit_width<NativeWord>;
+        constexpr NativeWord max_native_word = NumericLimits<NativeWord>::max();
+        static_assert(native_word_size == 32 || native_word_size == 64);
+
+        constexpr size_t max_big_int_length = 1 << (native_word_size == 32 ? 26 : 29);
+
+        /**
+         * @tparam T 
+         * @tparam WordType 
+         */
+        template<typename T, typename WordType = NativeWord>
+        concept IntegerStorage = requires(T storage, size_t index) {
+            {
+                storage.is_negative()
+            } -> SameAs<bool>;
+            {
+                storage.size()
+            } -> SameAs<size_t>;
+            {
+                storage[index]
+            } -> ConvertibleTo<WordType&>;
+            {
+                storage.data()
+            } -> ConvertibleTo<WordType*>;
+        };
+
+        /**
+         * @tparam T 
+         * @tparam WordType 
+         */
+        template<typename T, typename WordType = NativeWord>
+        concept IntegerReadonlyStorage = IntegerStorage<T, WordType const>;
+
+        struct NullAllocator {
+            NativeWord* allocate(size_t) { VERIFY_NOT_REACHED(); }
+        }; // struct NullAllocator 
+
+        /**
+         * @tparam Word 
+         * @tparam is_signed_ 
+         */
+        template<typename Word, bool is_signed_>
+        struct StorageSpan : Mods::Span<Word> {
+            using Mods::Span<Word>::Span;
+
+            constexpr static bool is_signed = is_signed_;
+
+            /**
+             * @param span
+             */
+            explicit constexpr StorageSpan(Mods::Span<Word> span)
+                : Mods::Span<Word>(span)
+            {
+            }
+
+            /**
+             * @return true 
+             * @return false 
+             */
+            constexpr bool is_negative() const
+            {
+                return is_signed && this->last() >> (bit_width<Word> - 1);
+            }
+        }; // struct StorageSpan : Mods::Span<Word>
+
+        using UnsignedStorageSpan = StorageSpan<NativeWord, false>;
+        using UnsignedStorageReadonlySpan = StorageSpan<NativeWord const, false>;
+
+        /**
+         * @tparam is_signed_ 
+         * @tparam bit_size 
+         */
+        template<bool is_signed_, size_t bit_size>
+        requires(bit_size <= max_big_int_length * native_word_size) struct StaticStorage {
+            constexpr static size_t static_size = (bit_size + native_word_size - 1) / native_word_size;
+            constexpr static bool is_signed = is_signed_;
+
+            NativeWord m_data[static_size];
+
+            /**
+             * @return true 
+             * @return false 
+             */
+            constexpr bool is_negative() const
+            {
+                return is_signed_ && m_data[static_size - 1] >> (native_word_size - 1);
+            }
+
+            constexpr static size_t size()
+            {
+                return static_size;
+            }
+
+            /**
+             * @param i 
+             * @return constexpr NativeWord 
+             */
+            constexpr NativeWord operator[](size_t i) const
+            {
+                return m_data[i];
+            }
+
+            /**
+             * @param i 
+             * @return constexpr NativeWord& 
+             */
+            constexpr NativeWord& operator[](size_t i)
+            {
+                return m_data[i];
+            }
+
+            /**
+             * @return constexpr NativeWord const* 
+             */
+            constexpr NativeWord const* data() const
+            {
+                return m_data;
+            }
+
+            /**
+             * @return constexpr NativeWord* 
+             */
+            constexpr NativeWord* data()
+            {
+                return m_data;
+            }
+
+            /**
+             * @return StorageSpan<NativeWord, is_signed> 
+             */
+            constexpr operator StorageSpan<NativeWord, is_signed>() 
+            { 
+                return { m_data, static_size }; 
+            }
+        };
+
+        struct IntegerWrapper {
+            StaticStorage<false, bit_width<int>> m_data;
+
+            /**
+             * @param value 
+             * @return consteval 
+             */
+            consteval IntegerWrapper(int value)
+            {
+                if (value < 0)
+                    compiletime_fail("Requested implicit conversion of an integer to the unsigned one will underflow.");
+                m_data[0] = static_cast<NativeWord>(value);
+            }
+        }; // struct IntegerWrapper
+
+        /**
+         * @brief Get the storage of object
+         * 
+         * @param value 
+         * @return constexpr auto 
+         */
+        constexpr inline auto get_storage_of(IntegerWrapper value) 
+        { 
+            return value.m_data; 
+        }
+
+        /**
+         * @brief Get the storage of object
+         * 
+         * @tparam T 
+         * @param value 
+         * @return constexpr StaticStorage<false, bit_width<T>> 
+         */
+        template<BuiltInUFixedInt T>
+        constexpr StaticStorage<false, bit_width<T>> get_storage_of(T value)
+        {
+            if constexpr (sizeof(T) > sizeof(NativeWord)) {
+                static_assert(sizeof(T) == 2 * sizeof(NativeWord));
+                return { static_cast<NativeWord>(value), static_cast<NativeWord>(value >> native_word_size) };
+            }
+            return { static_cast<NativeWord>(value) };
+        }
+
+        /**
+         * @tparam Word 
+         * @param sign 
+         * @return ALWAYS_INLINE constexpr 
+         */
+        template<typename Word>
+        ALWAYS_INLINE constexpr Word extend_sign(bool sign)
+        {
+            return sign ? NumericLimits<Word>::max() : 0;
+        }
+
+        /**
+         * @tparam WordType 
+         * @param word1 
+         * @param word2 
+         * @param carry 
+         * @return ALWAYS_INLINE constexpr 
+         */
+        template<typename WordType>
+        ALWAYS_INLINE constexpr WordType add_words(WordType word1, WordType word2, bool& carry)
+        {
+            if (!is_constant_evaluated()) {
+        #if __has_builtin(__builtin_addc)
+                WordType ncarry, output;
+                if constexpr (SameAs<WordType, unsigned int>)
+                    output = __builtin_addc(word1, word2, carry, reinterpret_cast<unsigned int*>(&ncarry));
+                else if constexpr (SameAs<WordType, unsigned long>)
+                    output = __builtin_addcl(word1, word2, carry, reinterpret_cast<unsigned long*>(&ncarry));
+                else if constexpr (SameAs<WordType, unsigned long long>)
+                    output = __builtin_addcll(word1, word2, carry, reinterpret_cast<unsigned long long*>(&ncarry));
+                else
+                    VERIFY_NOT_REACHED();
+                carry = ncarry;
+                return output;
+        #elif ARCH(X86_64)
+                if constexpr (SameAs<WordType, unsigned int>) {
+                    unsigned int output;
+                    carry = __builtin_ia32_addcarryx_u32(carry, word1, word2, &output);
+                    return output;
+                } else if constexpr (OneOf<WordType, unsigned long, unsigned long long>) {
+                    unsigned long long output;
+                    carry = __builtin_ia32_addcarryx_u64(carry, word1, word2, &output);
+                    return output;
+                } else {
+                    VERIFY_NOT_REACHED();
+                }
+        #endif
+            }
+
+            WordType output;
+            bool ncarry = __builtin_add_overflow(word1, word2, &output);
+            if (carry) {
+                ++output;
+                if (output == 0)
+                    ncarry = true;
+            }
+            carry = ncarry;
+            return output;
+        }
+
+        /**
+         * @tparam WordType 
+         * @param word1 
+         * @param word2 
+         * @param carry 
+         * @return ALWAYS_INLINE constexpr 
+         */
+        template<typename WordType>
+        ALWAYS_INLINE constexpr WordType sub_words(WordType word1, WordType word2, bool& carry)
+        {
+            if (!is_constant_evaluated()) {
+        #if __has_builtin(__builtin_subc) && !defined(MODS_BUILTIN_SUBC_BROKEN)
+                WordType ncarry, output;
+                if constexpr (SameAs<WordType, unsigned int>)
+                    output = __builtin_subc(word1, word2, carry, reinterpret_cast<unsigned int*>(&ncarry));
+                else if constexpr (SameAs<WordType, unsigned long>)
+                    output = __builtin_subcl(word1, word2, carry, reinterpret_cast<unsigned long*>(&ncarry));
+                else if constexpr (SameAs<WordType, unsigned long long>)
+                    output = __builtin_subcll(word1, word2, carry, reinterpret_cast<unsigned long long*>(&ncarry));
+                else
+                    VERIFY_NOT_REACHED();
+                carry = ncarry;
+                return output;
+        #elif ARCH(X86_64) && defined(MODS_COMPILER_GCC)
+                if constexpr (SameAs<WordType, unsigned int>) {
+                    unsigned int output;
+                    carry = __builtin_ia32_sbb_u32(carry, word1, word2, &output);
+                    return output;
+                } else if constexpr (OneOf<WordType, unsigned long, unsigned long long>) {
+                    unsigned long long output;
+                    carry = __builtin_ia32_sbb_u64(carry, word1, word2, &output);
+                    return output;
+                } else {
+                    VERIFY_NOT_REACHED();
+                }
+        #endif
+            }
+           
+            WordType output;
+            bool ncarry = __builtin_sub_overflow(word1, word2, &output);
+            if (carry) {
+                if (output == 0)
+                    ncarry = true;
+                --output;
+            }
+            carry = ncarry;
+            return output;
+        }
+
+        /**
+         * @tparam WordType 
+         * @param word1 
+         * @param word2 
+         * @return ALWAYS_INLINE constexpr 
+         */
+        template<typename WordType>
+        ALWAYS_INLINE constexpr DoubleWord<WordType> wide_multiply(WordType word1, WordType word2)
+        {
+            return static_cast<DoubleWord<WordType>>(word1) * word2;
+        }
+
+        /**
+         * @tparam WordType 
+         * @param low 
+         * @param high 
+         * @return constexpr DoubleWord<WordType> 
+         */
+        template<typename WordType>
+        constexpr DoubleWord<WordType> dword(WordType low, WordType high)
+        {
+            return (static_cast<DoubleWord<WordType>>(high) << bit_width<WordType>) | low;
+        }
+
+        /**
+         * @tparam WordType 
+         * @param dividend_low 
+         * @param dividend_high 
+         * @param divisor 
+         * @param remainder 
+         * @return ALWAYS_INLINE constexpr 
+         */
+        template<typename WordType>
+        ALWAYS_INLINE constexpr WordType div_mod_words(WordType dividend_low, WordType dividend_high, WordType divisor, WordType& remainder)
+        {
+            auto dividend = dword(dividend_low, dividend_high);
+            remainder = static_cast<WordType>(dividend % divisor);
+            return static_cast<WordType>(dividend / divisor);
+        }
+
+        /**
+         * @tparam WordType 
+         */
+        template<typename WordType = NativeWord>
+        struct StorageOperations {
+            static constexpr size_t word_size = bit_width<WordType>;
+            using DoubleWordType = DoubleWord<WordType>;
+
+            /**
+             * @param operand 
+             * @param result 
+             * @param offset 
+             */
+            static constexpr void copy(IntegerReadonlyStorage<WordType> auto const& operand, IntegerStorage<WordType> auto&& result, size_t offset = 0)
+            {
+                auto fill = extend_sign<WordType>(operand.is_negative());
+                size_t size1 = operand.size(), size = result.size();
+
+                for (size_t i = 0; i < size; ++i)
+                    result[i] = i + offset < size1 ? operand[i + offset] : fill;
+            }
+
+            /**
+             * @param value 
+             * @param result 
+             */
+            static constexpr void set(WordType value, auto&& result)
+            {
+                result[0] = value;
+                for (size_t i = 1; i < result.size(); ++i)
+                    result[i] = 0;
+            }
+
+            /**
+             * @param operand1 
+             * @param operand2 
+             * @param is_for_inequality 
+             * @return constexpr int 
+             */
+            static constexpr int compare(IntegerReadonlyStorage<WordType> auto const& operand1, IntegerReadonlyStorage<WordType> auto const& operand2, bool is_for_inequality)
+            {
+                bool sign1 = operand1.is_negative(), sign2 = operand2.is_negative();
+                size_t size1 = operand1.size(), size2 = operand2.size();
+
+                if (sign1 != sign2) {
+                    if (sign1)
+                        return -1;
+                    return 1;
+                }
+
+                WordType compare_value = extend_sign<WordType>(sign1);
+                bool differ_in_high_bits = false;
+
+                if (size1 > size2) {
+                    for (size_t i = size1; i-- > size2;)
+                        if (operand1[i] != compare_value)
+                            differ_in_high_bits = true;
+                } else if (size1 < size2) {
+                    for (size_t i = size2; i-- > size1;)
+                        if (operand2[i] != compare_value)
+                            differ_in_high_bits = true;
+                }
+
+                if (differ_in_high_bits)
+                    return (size1 > size2) ^ sign1 ? 1 : -1;
+
+                for (size_t i = (size1 > size2 ? size2 : size1); i--;) {
+                    auto word1 = operand1[i], word2 = operand2[i];
+
+                    if (is_for_inequality) {
+                        if (word1 != word2)
+                            return 1;
+                    } else {
+                        if (word1 > word2)
+                            return 1;
+                        if (word1 < word2)
+                            return -1;
+                    }
+                }
+                return 0;
+            }
+
+            enum class Bitwise {
+                AND,
+                OR,
+                XOR,
+                INVERT,
+            }; // enum class Bitwise
+
+            /**
+             * @tparam operation 
+             * @param operand1 
+             * @param operand2 
+             * @param result 
+             */
+            template<Bitwise operation>
+            static constexpr void compute_bitwise(IntegerReadonlyStorage<WordType> auto const& operand1, IntegerReadonlyStorage<WordType> auto const& operand2, IntegerStorage<WordType> auto&& result)
+            {
+                size_t size1 = operand1.size(), size2 = operand2.size(), size = result.size();
+
+                for (size_t i = 0; i < size; ++i) {
+                    auto word1 = i < size1 ? operand1[i] : 0;
+                    auto word2 = i < size2 ? operand2[i] : 0;
+
+                    if constexpr (operation == Bitwise::AND)
+                        result[i] = word1 & word2;
+                    else if constexpr (operation == Bitwise::OR)
+                        result[i] = word1 | word2;
+                    else if constexpr (operation == Bitwise::XOR)
+                        result[i] = word1 ^ word2;
+                    else if constexpr (operation == Bitwise::INVERT)
+                        result[i] = ~word1;
+                    else
+                        static_assert(((void)operation, false));
+                }
+            }
+
+            /**
+             * @tparam operation 
+             * @param auto 
+             * @param operand2 
+             * @param result 
+             */
+            template<Bitwise operation>
+            static constexpr void compute_inplace_bitwise(IntegerReadonlyStorage<WordType> auto const&, IntegerReadonlyStorage<WordType> auto const& operand2, IntegerStorage<WordType> auto&& result)
+            {
+                size_t min_size = min(result.size(), operand2.size());
+
+                for (size_t i = 0; i < min_size; ++i) {
+                    if constexpr (operation == Bitwise::AND)
+                        result[i] &= operand2[i];
+                    else if constexpr (operation == Bitwise::OR)
+                        result[i] |= operand2[i];
+                    else if constexpr (operation == Bitwise::XOR)
+                        result[i] ^= operand2[i];
+                    else
+                        static_assert(((void)operation, false));
+                }
+            }
+
+            /**
+             * @param operand 
+             * @param shift 
+             * @param result 
+             * @return * constexpr void 
+             */
+            static constexpr void shift_left(IntegerReadonlyStorage<WordType> auto const& operand, size_t shift, IntegerStorage<WordType> auto&& result)
+            {
+                size_t size = operand.size();
+                size_t offset = shift / word_size, remainder = shift % word_size;
+
+                if (shift % word_size == 0) {
+                    for (size_t i = size; i-- > offset;)
+                        result[i] = operand[i - offset];
+                    for (size_t i = 0; i < offset; ++i)
+                        result[i] = 0;
+                } else {
+                    for (size_t i = size; --i > offset;)
+                        result[i] = (operand[i - offset] << remainder) | (operand[i - offset - 1] >> (word_size - remainder));
+                    result[offset] = operand[0] << remainder;
+                    for (size_t i = 0; i < offset; ++i)
+                        result[i] = 0;
+                }
+            }
+
+            /**
+             * @param operand 
+             * @param shift 
+             * @param result 
+             */
+            static constexpr void shift_right(IntegerReadonlyStorage<WordType> auto const& operand, size_t shift, IntegerStorage<WordType> auto&& result)
+            {
+                size_t size = operand.size();
+                size_t offset = shift / word_size, remainder = shift % word_size;
+
+                if (shift % word_size == 0) {
+                    for (size_t i = 0; i < size - offset; ++i)
+                        result[i] = operand[i + offset];
+                    for (size_t i = size - offset; i < size; ++i)
+                        result[i] = 0;
+                } else {
+                    for (size_t i = 0; i < size - offset - 1; ++i)
+                        result[i] = (operand[i + offset] >> remainder) | (operand[i + offset + 1] << (word_size - remainder));
+                    result[size - offset - 1] = operand[size - 1] >> remainder;
+                    for (size_t i = size - offset; i < size; ++i)
+                        result[i] = 0;
+                }
+            }
+
+            /**
+             * @tparam subtract 
+             * @param operand1 
+             * @param operand2 
+             * @param result 
+             * @param carry 
+             * @return constexpr int 
+             */
+            template<bool subtract>
+            static constexpr int add(IntegerReadonlyStorage<WordType> auto const& operand1, IntegerReadonlyStorage<WordType> auto const& operand2, IntegerStorage<WordType> auto&& result, bool carry = false)
+            {
+                bool sign1 = operand1.is_negative(), sign2 = operand2.is_negative();
+                auto fill1 = extend_sign<WordType>(sign1), fill2 = extend_sign<WordType>(sign2);
+                size_t size1 = operand1.size(), size2 = operand2.size(), size = result.size();
+
+                for (size_t i = 0; i < size; ++i) {
+                    auto word1 = i < size1 ? operand1[i] : fill1;
+                    auto word2 = i < size2 ? operand2[i] : fill2;
+
+                    if constexpr (!subtract)
+                        result[i] = add_words(word1, word2, carry);
+                    else
+                        result[i] = sub_words(word1, word2, carry);
+                }
+
+                if constexpr (!subtract)
+                    return -sign1 - sign2 + carry + result.is_negative();
+                else
+                    return -sign1 + sign2 - carry + result.is_negative();
+            }
+
+            /**
+             * @tparam subtract 
+             * @param operand 
+             * @return constexpr int 
+             */
+            template<bool subtract>
+            static constexpr int increment(IntegerStorage<WordType> auto&& operand)
+            {
+                bool carry = true;
+                bool sign = operand.is_negative();
+                size_t size = operand.size();
+
+                for (size_t i = 0; i < size; ++i) {
+                    if constexpr (!subtract)
+                        operand[i] = add_words<WordType>(operand[i], 0, carry);
+                    else
+                        operand[i] = sub_words<WordType>(operand[i], 0, carry);
+                }
+
+                if constexpr (!subtract)
+                    return -sign + carry + operand.is_negative();
+                else
+                    return -sign - carry + operand.is_negative();
+            }
+
+            /**
+             * @param operand 
+             * @param result 
+             * @return true 
+             * @return false 
+             */
+            static constexpr bool negate(IntegerReadonlyStorage<WordType> auto const& operand, IntegerStorage<WordType> auto&& result)
+            {
+                bool carry = false;
+                size_t size = operand.size();
+                for (size_t i = 0; i < size; ++i)
+                    result[i] = sub_words<WordType>(0, operand[i], carry);
+                return carry;
+            }
+
+            /**
+             * @tparam Operand1 
+             * @tparam Operand2 
+             * @param operand1 
+             * @param operand2 
+             * @param result 
+             * @param buffer 
+             */
+            template<IntegerReadonlyStorage<WordType> Operand1, IntegerReadonlyStorage<WordType> Operand2>
+            static constexpr void baseline_mul(Operand1 const& operand1, Operand2 const& operand2, IntegerStorage<WordType> auto&& __restrict__ result, auto&& buffer)
+            {
+                bool sign1 = operand1.is_negative(), sign2 = operand2.is_negative();
+                size_t size1 = operand1.size(), size2 = operand2.size(), size = result.size();
+
+                if (size1 == 1 && size2 == 1) {
+                    // We do not want to compete with the cleverness of the compiler of multiplying NativeWords.
+                    ConditionallySignedDoubleWord<WordType, Operand1::is_signed> word1 = operand1[0];
+                    ConditionallySignedDoubleWord<WordType, Operand2::is_signed> word2 = operand2[0];
+                    auto value = static_cast<DoubleWordType>(word1 * word2);
+
+                    result[0] = value;
+                    if (size > 1) {
+                        result[1] = value >> word_size;
+
+                        auto fill = extend_sign<WordType>(sign1 ^ sign2);
+                        for (size_t i = 2; i < result.size(); ++i)
+                            result[i] = fill;
+                    }
+                    return;
+                }
+
+                if (size1 < size2) {
+                    baseline_mul(operand2, operand1, result, buffer);
+                    return;
+                }
+
+                auto data1 = operand1.data(), data2 = operand2.data();
+                if (size2 < size) {
+                    if (sign1) {
+                        auto inverted = buffer.allocate(size1);
+                        negate(operand1, StorageSpan<WordType, false> { inverted, size1 });
+                        data1 = inverted;
+                    }
+                    if (sign2) {
+                        auto inverted = buffer.allocate(size2);
+                        negate(operand2, StorageSpan<WordType, false> { inverted, size2 });
+                        data2 = inverted;
+                    }
+                }
+                size1 = min(size1, size), size2 = min(size2, size);
+
+                DoubleWordType carry = 0;
+                for (size_t i = 0; i < size; ++i) {
+                    result[i] = static_cast<WordType>(carry);
+                    carry >>= word_size;
+
+                    size_t start_index = i >= size2 ? i - size2 + 1 : 0;
+                    size_t end_index = min(i + 1, size1);
+
+                    for (size_t j = start_index; j < end_index; ++j) {
+                        auto x = static_cast<DoubleWordType>(data1[j]) * data2[i - j];
+
+                        bool ncarry = false;
+                        result[i] = add_words(result[i], static_cast<WordType>(x), ncarry);
+                        carry += (x >> word_size) + ncarry;
+                    }
+                }
+
+                if (size2 < size && (sign1 ^ sign2))
+                    negate(result, result);
+            }
+
+            /**
+             * @tparam restore_remainder 
+             * @param dividend 
+             * @param divisor 
+             * @param quotient 
+             * @param remainder 
+             * @param dividend_len 
+             * @param divisor_len 
+             */
+            template<bool restore_remainder = false>
+            static constexpr void div_mod_internal(
+                StorageSpan<WordType, false> dividend, StorageSpan<WordType, false> divisor,
+                StorageSpan<WordType, false> quotient, StorageSpan<WordType, false> remainder,
+                size_t dividend_len, size_t divisor_len)
+            {
+                MODS_IGNORE_DIAGNOSTIC("-Warray-bounds", size_t shift = count_leading_zeroes(divisor[divisor_len - 1]);)
+                shift_left(dividend, shift, dividend);
+                shift_left(divisor, shift, divisor);
+
+                auto divisor_approx = divisor[divisor_len - 1];
+
+                for (size_t i = dividend_len + 1; i-- > divisor_len;) {
+                    WordType qhat;
+                    VERIFY(dividend[i] <= divisor_approx);
+                    if (dividend[i] == divisor_approx) {
+                        qhat = NumericLimits<WordType>::max();
+                    } else {
+                        WordType rhat;
+                        qhat = div_mod_words(dividend[i - 1], dividend[i], divisor_approx, rhat);
+
+                        auto is_qhat_too_large = [&] {
+                            return wide_multiply(qhat, divisor[divisor_len - 2]) > dword(dividend[i - 2], rhat);
+                        };
+                        if (is_qhat_too_large()) {
+                            --qhat;
+                            bool carry = false;
+                            rhat = add_words(rhat, divisor_approx, carry);
+                            if (!carry && is_qhat_too_large())
+                                --qhat;
+                        }
+                    }
+
+                    WordType mul_carry = 0;
+                    bool sub_carry = false;
+                    for (size_t j = 0; j < divisor_len; ++j) {
+                        auto mul_result = wide_multiply(qhat, divisor[j]) + mul_carry;
+                        auto& output = dividend[i + j - divisor_len];
+                        output = sub_words(output, static_cast<WordType>(mul_result), sub_carry);
+                        mul_carry = mul_result >> word_size;
+                    }
+                    dividend[i] = sub_words(dividend[i], mul_carry, sub_carry);
+
+                    if (sub_carry) {
+                        auto dividend_part = StorageSpan<WordType, false> { dividend.slice(i - divisor_len, divisor_len + 1) };
+                        auto overflow = add<false>(dividend_part, divisor, dividend_part);
+                        VERIFY(overflow == 1);
+                    }
+
+                    quotient[i - divisor_len] = qhat - sub_carry;
+                }
+
+                for (size_t i = dividend_len - divisor_len + 1; i < quotient.size(); ++i)
+                    quotient[i] = 0;
+
+                if constexpr (restore_remainder)
+                    shift_right(StorageSpan<WordType, false> { dividend.trim(remainder.size()) }, shift, remainder);
+            }
+        };
+
+    }
+
+    using Detail::StorageOperations, Detail::NativeWord, Detail::native_word_size, Detail::max_native_word,
+        Detail::UnsignedStorageSpan, Detail::UnsignedStorageReadonlySpan;
+
+    inline Detail::NullAllocator g_null_allocator;
 
 } // namespace Mods
