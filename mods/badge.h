@@ -11,8 +11,11 @@
 
 #pragma once
 
+#include <mods/platform.h>
+
 namespace Mods 
 {
+
     /**
      * @tparam T 
      */
@@ -52,4 +55,6 @@ namespace Mods
 
 } // namespace Mods
 
+#if USING_MODS_GLOBALLY
 using Mods::Badge;
+#endif
