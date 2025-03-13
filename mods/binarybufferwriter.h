@@ -12,15 +12,16 @@
 #pragma once
 
 #include <mods/span.h>
-#include <mods/stdlibextradetail.h>
+#include <mods/stdlibextradetails.h>
 
 namespace Mods
 {
+
     class BinaryBufferWriter 
     {
     public:
         /**
-         * @brief Construct a new Binary Buffer Writer object
+         * @brief Construct a new BinaryBufferWriter object
          * 
          * @param target 
          */
@@ -33,7 +34,7 @@ namespace Mods
          * @tparam T 
          */
         template<typename T>
-        requires(Mods::Detail::IsTriviallyConstructible<T>) T& append_structure()
+        requires(IsTriviallyConstructible<T>) T& append_structure()
         {
             VERIFY((reinterpret_cast<FlatPtr>(m_target.data()) + m_offset) % alignof(T) == 0);
             VERIFY(m_offset + sizeof(T) <= m_target.size());
@@ -63,4 +64,5 @@ namespace Mods
         Bytes m_target;
         size_t m_offset { 0 };
     }; // class BinaryBufferWriter 
+
 } // namespace Mods
