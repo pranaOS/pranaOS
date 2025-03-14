@@ -19,8 +19,10 @@
 
 namespace Mods
 {
+
     namespace Detail 
     {
+
         /**
          * @tparam inline_capacity 
          */
@@ -76,7 +78,6 @@ namespace Mods
                         kfree_sized(m_outline_buffer, m_outline_capacity);
                     move_from(move(other));
                 }
-
                 return *this;
             }
 
@@ -94,10 +95,9 @@ namespace Mods
                     }
                     __builtin_memcpy(data(), other.data(), other.size());
                 }
-
                 return *this;
             }
-            
+
             /**
              * @brief Create a uninitialized object
              * 
@@ -108,7 +108,6 @@ namespace Mods
             {
                 auto buffer = ByteBuffer();
                 TRY(buffer.try_resize(size));
-
                 return { move(buffer) };
             }
 
@@ -124,7 +123,6 @@ namespace Mods
 
                 buffer.zero_fill();
                 VERIFY(size == 0 || (buffer[0] == 0 && buffer[size - 1] == 0));
-
                 return { move(buffer) };
             }
 
@@ -136,10 +134,10 @@ namespace Mods
             [[nodiscard]] static ErrorOr<ByteBuffer> copy(void const* data, size_t size)
             {
                 auto buffer = TRY(create_uninitialized(size));
-
+                if (buffer.m_inline && size > inline_capacity)
+                    VERIFY_NOT_REACHED();
                 if (size != 0)
                     __builtin_memcpy(buffer.data(), data, size);
-
                 return { move(buffer) };
             }
 
@@ -150,6 +148,26 @@ namespace Mods
             [[nodiscard]] static ErrorOr<ByteBuffer> copy(ReadonlyBytes bytes)
             {
                 return copy(bytes.data(), bytes.size());
+            }
+
+            /**
+             * @param first 
+             * @param second 
+             * @return ErrorOr<ByteBuffer> 
+             */
+            [[nodiscard]] static ErrorOr<ByteBuffer> xor_buffers(ReadonlyBytes first, ReadonlyBytes second)
+            {
+                if (first.size() != second.size())
+                    return Error::from_errno(EINVAL);
+
+                auto buffer = TRY(create_uninitialized(first.size()));
+                auto buffer_data = buffer.data();
+                auto first_data = first.data();
+                auto second_data = second.data();
+                for (size_t i = 0; i < first.size(); ++i)
+                    buffer_data[i] = first_data[i] ^ second_data[i];
+
+                return { move(buffer) };
             }
 
             /**
@@ -165,16 +183,6 @@ namespace Mods
                     return false;
 
                 return !__builtin_memcmp(data(), other.data(), size());
-            }
-
-            /**
-             * @param other 
-             * @return true 
-             * @return false 
-             */
-            bool operator!=(ByteBuffer const& other) const 
-            { 
-                return !(*this == other); 
             }
 
             /**
@@ -205,7 +213,7 @@ namespace Mods
             { 
                 return m_size == 0; 
             }
-            
+
             /**
              * @return size_t 
              */
@@ -214,28 +222,26 @@ namespace Mods
                 return m_size; 
             }
 
-            /**
-             * @return u8* 
-             */
-            [[nodiscard]] u8* data() 
-            { 
-                return m_inline ? m_inline_buffer : m_outline_buffer; 
-            }
+        #ifdef MODS_COMPILER_GCC
+        #    pragma GCC diagnostic push
 
-            /**
-             * @return u8 const* 
-             */
-            [[nodiscard]] u8 const* data() const 
-            { 
-                return m_inline ? m_inline_buffer : m_outline_buffer; 
+        #    pragma GCC diagnostic ignored "-Warray-bounds"
+        #endif
+            [[nodiscard]] u8* data()
+            {
+                return m_inline ? m_inline_buffer : m_outline_buffer;
             }
+            [[nodiscard]] u8 const* data() const { return m_inline ? m_inline_buffer : m_outline_buffer; }
+        #ifdef MODS_COMPILER_GCC
+        #    pragma GCC diagnostic pop
+        #endif
 
             /**
              * @return Bytes 
              */
-            [[nodiscard]] Bytes bytes() 
-            { 
-                return { data(), size() }; 
+            [[nodiscard]] Bytes bytes()
+            {
+                return { data(), size() };
             }
 
             /**
@@ -247,17 +253,17 @@ namespace Mods
             }
 
             /**
-             * @return Mods::Span<u8> 
+             * @return Mods::Bytes 
              */
-            [[nodiscard]] Mods::Span<u8> span() 
+            [[nodiscard]] Mods::Bytes span() 
             { 
                 return { data(), size() }; 
             }
 
             /**
-             * @return Mods::Span<const u8> 
+             * @return Mods::ReadonlyBytes 
              */
-            [[nodiscard]] Mods::Span<const u8> span() const 
+            [[nodiscard]] Mods::ReadonlyBytes span() const 
             { 
                 return { data(), size() }; 
             }
@@ -266,7 +272,7 @@ namespace Mods
              * @param offset 
              * @return u8* 
              */
-            [[nodiscard]] u8* offset_pointer(int offset) 
+            [[nodiscard]] u8* offset_pointer(size_t offset) 
             { 
                 return data() + offset; 
             }
@@ -275,7 +281,7 @@ namespace Mods
              * @param offset 
              * @return u8 const* 
              */
-            [[nodiscard]] u8 const* offset_pointer(int offset) const 
+            [[nodiscard]] u8 const* offset_pointer(size_t offset) const 
             { 
                 return data() + offset; 
             }
@@ -287,7 +293,7 @@ namespace Mods
             { 
                 return data() + m_size; 
             }
-            
+
             /**
              * @return void const* 
              */
@@ -299,13 +305,13 @@ namespace Mods
             /**
              * @param offset 
              * @param size 
-             * @return ByteBuffer 
+             * @return ErrorOr<ByteBuffer> 
              */
-            [[nodiscard]] ByteBuffer slice(size_t offset, size_t size) const
+            [[nodiscard]] ErrorOr<ByteBuffer> slice(size_t offset, size_t size) const
             {
                 VERIFY(offset + size <= this->size());
 
-                return copy(offset_pointer(offset), size).release_value();
+                return copy(offset_pointer(offset), size);
             }
 
             void clear()
@@ -314,17 +320,34 @@ namespace Mods
                     kfree_sized(m_outline_buffer, m_outline_capacity);
                     m_inline = true;
                 }
-
                 m_size = 0;
             }
 
+            enum class ZeroFillNewElements {
+                No,
+                Yes,
+            }; // enum class ZeroFillNewElements
+
             /**
              * @param new_size 
+             * @param zero_fill_new_elements 
              * @return ALWAYS_INLINE 
              */
-            ALWAYS_INLINE void resize(size_t new_size)
+            ALWAYS_INLINE void resize(size_t new_size, ZeroFillNewElements zero_fill_new_elements = ZeroFillNewElements::No)
             {
-                MUST(try_resize(new_size));
+                MUST(try_resize(new_size, zero_fill_new_elements));
+            }
+
+            /**
+             * @param size 
+             * @param may_discard_existing_data 
+             */
+            void trim(size_t size, bool may_discard_existing_data)
+            {
+                VERIFY(size <= m_size);
+                if (!m_inline && size <= inline_capacity)
+                    shrink_into_inline_buffer(size, may_discard_existing_data);
+                m_size = size;
             }
 
             /**
@@ -338,20 +361,24 @@ namespace Mods
 
             /**
              * @param new_size 
+             * @param zero_fill_new_elements 
              * @return ErrorOr<void> 
              */
-            ErrorOr<void> try_resize(size_t new_size)
+            ErrorOr<void> try_resize(size_t new_size, ZeroFillNewElements zero_fill_new_elements = ZeroFillNewElements::No)
             {
                 if (new_size <= m_size) {
                     trim(new_size, false);
                     return {};
                 }
-
                 TRY(try_ensure_capacity(new_size));
+
+                if (zero_fill_new_elements == ZeroFillNewElements::Yes) {
+                    __builtin_memset(data() + m_size, 0, new_size - m_size);
+                }
+
                 m_size = new_size;
-                
                 return {};
-            }           
+            }
 
             /**
              * @param new_capacity 
@@ -361,7 +388,6 @@ namespace Mods
             {
                 if (new_capacity <= capacity())
                     return {};
-
                 return try_ensure_capacity_slowpath(new_capacity);
             }
 
@@ -373,8 +399,9 @@ namespace Mods
              */
             ErrorOr<Bytes> get_bytes_for_writing(size_t length)
             {
-                TRY(try_ensure_capacity(size() + length));
-                return Bytes { data() + size(), length };
+                auto const old_size = size();
+                TRY(try_resize(old_size + length));
+                return Bytes { data() + old_size, length };
             }
 
             /**
@@ -400,7 +427,7 @@ namespace Mods
             void append(ReadonlyBytes bytes)
             {
                 MUST(try_append(bytes));
-            }   
+            }
 
             /**
              * @param data 
@@ -419,12 +446,9 @@ namespace Mods
             {
                 auto old_size = size();
                 auto new_size = old_size + 1;
-
                 VERIFY(new_size > old_size);
                 TRY(try_resize(new_size));
-                
                 data()[old_size] = byte;
-
                 return {};
             }
 
@@ -446,15 +470,10 @@ namespace Mods
             {
                 if (data_size == 0)
                     return {};
-
                 VERIFY(data != nullptr);
-
-                int old_size = size();
-
+                auto old_size = size();
                 TRY(try_resize(size() + data_size));
-
                 __builtin_memcpy(this->data() + old_size, data, data_size);
-
                 return {};
             }
 
@@ -482,16 +501,22 @@ namespace Mods
                 __builtin_memset(data(), 0, m_size);
             }
 
+            /**
+             * @return Bytes 
+             */
             operator Bytes() 
             { 
                 return bytes(); 
             }
 
+            /**
+             * @return ReadonlyBytes 
+             */
             operator ReadonlyBytes() const 
             { 
                 return bytes(); 
             }
-            
+
             /**
              * @return ALWAYS_INLINE 
              */
@@ -508,7 +533,6 @@ namespace Mods
             {
                 m_size = other.m_size;
                 m_inline = other.m_inline;
-
                 if (!other.m_inline) {
                     m_outline_buffer = other.m_outline_buffer;
                     m_outline_capacity = other.m_outline_capacity;
@@ -516,21 +540,8 @@ namespace Mods
                     VERIFY(other.m_size <= inline_capacity);
                     __builtin_memcpy(m_inline_buffer, other.m_inline_buffer, other.m_size);
                 }
-
                 other.m_size = 0;
                 other.m_inline = true;
-            }
-
-            /**
-             * @param size 
-             * @param may_discard_existing_data 
-             */
-            void trim(size_t size, bool may_discard_existing_data)
-            {
-                VERIFY(size <= m_size);
-                if (!m_inline && size <= inline_capacity)
-                    shrink_into_inline_buffer(size, may_discard_existing_data);
-                m_size = size;
             }
 
             /**
@@ -542,12 +553,9 @@ namespace Mods
             {
                 auto* outline_buffer = m_outline_buffer;
                 auto outline_capacity = m_outline_capacity;
-
                 if (!may_discard_existing_data)
                     __builtin_memcpy(m_inline_buffer, outline_buffer, size);
-
                 kfree_sized(outline_buffer, outline_capacity);
-
                 m_inline = true;
             }
 
@@ -557,10 +565,9 @@ namespace Mods
              */
             NEVER_INLINE ErrorOr<void> try_ensure_capacity_slowpath(size_t new_capacity)
             {
+                new_capacity = max(new_capacity, (capacity() * 3) / 2);
                 new_capacity = kmalloc_good_size(new_capacity);
-
-                auto* new_buffer = (u8*)kmalloc(new_capacity);
-
+                auto* new_buffer = static_cast<u8*>(kmalloc(new_capacity));
                 if (!new_buffer)
                     return Error::from_errno(ENOMEM);
 
@@ -574,7 +581,6 @@ namespace Mods
                 m_outline_buffer = new_buffer;
                 m_outline_capacity = new_capacity;
                 m_inline = false;
-
                 return {};
             }
 
@@ -587,6 +593,43 @@ namespace Mods
             };
             size_t m_size { 0 };
             bool m_inline { true };
-        }; // class ByteBuffer
-    } // namespace Detail
+        }; // class ByteBuffer 
+
+    } // namespace Details
+
+    template<>
+    struct Traits<ByteBuffer> : public DefaultTraits<ByteBuffer> 
+    {
+        /**
+         * @param byte_buffer 
+         * @return unsigned 
+         */
+        static unsigned hash(ByteBuffer const& byte_buffer)
+        {
+            return Traits<ReadonlyBytes>::hash(byte_buffer.span());
+        }
+
+        /**
+         * @param byte_buffer 
+         * @param other 
+         * @return true 
+         * @return false 
+         */
+        static bool equals(ByteBuffer const& byte_buffer, Bytes const& other)
+        {
+            return byte_buffer.bytes() == other;
+        }
+
+        /**
+         * @param byte_buffer 
+         * @param other 
+         * @return true 
+         * @return false 
+         */
+        static bool equals(ByteBuffer const& byte_buffer, ReadonlyBytes const& other)
+        {
+            return byte_buffer.bytes() == other;
+        }
+    }; // struct Traits<ByteBuffer> : public DefaultTraits<ByteBuffer> 
+
 } // namespace Mods
