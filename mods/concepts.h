@@ -12,7 +12,7 @@
 
 #include <mods/forward.h>
 #include <mods/iterationdecision.h>
-#include <mods/stdlibextra.h>
+#include <mods/stdlibextras.h>
 
 namespace Mods::Concepts 
 {
@@ -67,6 +67,13 @@ namespace Mods::Concepts
     concept SameAs = IsSame<T, U>;
 
     /**
+     * @tparam From 
+     * @tparam To 
+     */
+    template<class From, class To>
+    concept ConvertibleTo = IsConvertible<From, To>;
+
+    /**
      * @tparam U 
      * @tparam Ts 
      */
@@ -89,9 +96,16 @@ namespace Mods::Concepts
 
     /**
      * @tparam T 
+     * @tparam S 
+     */
+    template<typename T, typename S>
+    concept DerivedFrom = IsBaseOf<S, T>;
+
+    /**
+     * @tparam T 
      */
     template<typename T>
-    concept AnyString = Detail::IsConstructible<StringView, T>;
+    concept AnyString = IsConstructible<StringView, RemoveCVReference<T> const&>;
 
     /**
      * @tparam T 
@@ -106,8 +120,7 @@ namespace Mods::Concepts
      * @tparam SizeT 
      */
     template<typename ArrayT, typename ContainedT, typename SizeT = size_t>
-    concept ArrayLike = requires(ArrayT array, SizeT index)
-    {
+    concept ArrayLike = requires(ArrayT array, SizeT index) {
         {
             array[index]
         }
@@ -130,12 +143,24 @@ namespace Mods::Concepts
     };
 
     /**
+     * @tparam ArrayT 
+     * @tparam ContainedT 
+     * @tparam SizeT 
+     */
+    template<typename ArrayT, typename ContainedT, typename SizeT = size_t>
+    concept Indexable = requires(ArrayT array, SizeT index) {
+        {
+            array[index]
+        }
+        -> OneOf<RemoveReference<ContainedT>&, RemoveReference<ContainedT>>;
+    };
+
+    /**
      * @tparam Func 
      * @tparam Args 
      */
     template<typename Func, typename... Args>
-    concept VoidFunction = requires(Func func, Args... args)
-    {
+    concept VoidFunction = requires(Func func, Args... args) {
         {
             func(args...)
         }
@@ -147,8 +172,7 @@ namespace Mods::Concepts
      * @tparam Args 
      */
     template<typename Func, typename... Args>
-    concept IteratorFunction = requires(Func func, Args... args)
-    {
+    concept IteratorFunction = requires(Func func, Args... args) {
         {
             func(args...)
         }
@@ -160,10 +184,11 @@ namespace Mods::Concepts
      * @tparam EndT 
      */
     template<typename T, typename EndT>
-    concept IteratorPairWith = requires(T it, EndT end)
-    {
+    concept IteratorPairWith = requires(T it, EndT end) {
         *it;
-        { it != end } -> SameAs<bool>;
+        {
+            it != end
+        } -> SameAs<bool>;
         ++it;
     };
 
@@ -171,17 +196,79 @@ namespace Mods::Concepts
      * @tparam T 
      */
     template<typename T>
-    concept IterableContainer = requires
-    {
-        { declval<T>().begin() } -> IteratorPairWith<decltype(declval<T>().end())>;
+    concept IterableContainer = requires {
+        {
+            declval<T>().begin()
+        } -> IteratorPairWith<decltype(declval<T>().end())>;
     };
+
+    /**
+     * @tparam Func 
+     * @tparam Args 
+     */
+    template<typename Func, typename... Args>
+    concept FallibleFunction = requires(Func&& func, Args&&... args) {
+        func(forward<Args>(args)...).is_error();
+        func(forward<Args>(args)...).release_error();
+        func(forward<Args>(args)...).release_value();
+    };
+
+} // namespace Mods::Concepts
+
+namespace Mods::Detail 
+{
+
+    /**
+     * @tparam T 
+     * @tparam Out 
+     * @tparam Args 
+     */
+    template<typename T, typename Out, typename... Args>
+    inline constexpr bool IsCallableWithArguments = requires(T t) {
+        {
+            t(declval<Args>()...)
+        } -> Concepts::ConvertibleTo<Out>;
+    } || requires(T t) {
+        {
+            t(declval<Args>()...)
+        } -> Concepts::SameAs<Out>;
+    };
+
+} // namespace Mods::Detail
+
+namespace Mods  
+{
+
+    using Detail::IsCallableWithArguments;
+
 } // namespace Mods
 
+namespace Mods::Concepts 
+{
+
+    /**
+     * @tparam Func 
+     * @tparam R 
+     * @tparam Args 
+     */
+    template<typename Func, typename R, typename... Args>
+    concept CallableAs = Detail::IsCallableWithArguments<Func, R, Args...>;
+
+} // namespace Mods::Concepts 
+
+#if !USING_MODS_GLOBALLY
+namespace Mods {
+#endif
 using Mods::Concepts::Arithmetic;
 using Mods::Concepts::ArrayLike;
+using Mods::Concepts::CallableAs;
+using Mods::Concepts::ConvertibleTo;
+using Mods::Concepts::DerivedFrom;
 using Mods::Concepts::Enum;
+using Mods::Concepts::FallibleFunction;
 using Mods::Concepts::FloatingPoint;
 using Mods::Concepts::Fundamental;
+using Mods::Concepts::Indexable;
 using Mods::Concepts::Integral;
 using Mods::Concepts::IterableContainer;
 using Mods::Concepts::IteratorFunction;
@@ -193,3 +280,6 @@ using Mods::Concepts::Signed;
 using Mods::Concepts::SpecializationOf;
 using Mods::Concepts::Unsigned;
 using Mods::Concepts::VoidFunction;
+#if !USING_MODS_GLOBALLY
+}
+#endif
