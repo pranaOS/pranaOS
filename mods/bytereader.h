@@ -11,13 +11,14 @@
 
 #pragma once
 
-#include <mods/stdlibextradetail.h>
+#include <mods/stdlibextradetails.h>
 #include <mods/types.h>
 
 namespace Mods
 {
-    struct ByteReader 
-    {
+
+    struct ByteReader {
+        
         /**
          * @tparam T 
          */
@@ -69,7 +70,7 @@ namespace Mods
             u32 value;
             load(address, value);
             return value;
-        }   
+        }
 
         /**
          * @param address 
@@ -80,8 +81,12 @@ namespace Mods
             u64 value;
             load(address, value);
             return value;
-         }
+        }
+
     }; // struct ByteReader
+
 } // namespace Mods
 
+#if USING_MODS_GLOBALLY
 using Mods::ByteReader;
+#endif
