@@ -11,13 +11,8 @@
 
 #pragma once
 
-#include <mods/concept.h>
+#include <mods/concepts.h>
 #include <mods/math.h>
-
-#ifdef __cplusplus
-#    if __cplusplus >= 201103L
-#        define COMPLEX_NOEXCEPT noexcept
-#    endif
 
 namespace Mods 
 {
@@ -29,45 +24,56 @@ namespace Mods
     class [[gnu::packed]] Complex 
     {
     public:
+
         constexpr Complex()
             : m_real(0)
             , m_imag(0)
         {
         }
 
+        /**
+         * @param val
+         */
         constexpr Complex(T real)
             : m_real(real)
             , m_imag((T)0)
         {
         }
 
+        /**
+         * @param real
+         * @param imaginary
+         */
         constexpr Complex(T real, T imaginary)
             : m_real(real)
             , m_imag(imaginary)
         {
         }
 
-        constexpr T real() const COMPLEX_NOEXCEPT 
+        /**
+         * @return constexpr T 
+         */
+        constexpr T real() const noexcept 
         { 
             return m_real; 
         }
 
-        constexpr T imag() const COMPLEX_NOEXCEPT 
+        constexpr T imag() const noexcept 
         { 
             return m_imag; 
         }
 
-        constexpr T magnitude_squared() const COMPLEX_NOEXCEPT 
+        constexpr T magnitude_squared() const noexcept 
         { 
             return m_real * m_real + m_imag * m_imag; 
         }
 
-        constexpr T magnitude() const COMPLEX_NOEXCEPT
+        constexpr T magnitude() const noexcept
         {
             return hypot(m_real, m_imag);
         }
 
-        constexpr T phase() const COMPLEX_NOEXCEPT
+        constexpr T phase() const noexcept
         {
             return atan2(m_imag, m_real);
         }
@@ -85,7 +91,7 @@ namespace Mods
             V s, c;
             sincos(phase, s, c);
             return Complex<T>(magnitude * c, magnitude * s);
-        }   
+        }
 
         /**
          * @tparam U 
@@ -106,7 +112,7 @@ namespace Mods
          * @return constexpr Complex<T>& 
          */
         template<Mods::Concepts::Arithmetic U>
-        constexpr Complex<T>& operator=(const U& x)
+        constexpr Complex<T>& operator=(U const& x)
         {
             m_real = x;
             m_imag = 0;
@@ -126,11 +132,15 @@ namespace Mods
             return *this;
         }
 
-
+        /**
+         * @tparam U 
+         * @param x 
+         * @return constexpr Complex<T> 
+         */
         template<Mods::Concepts::Arithmetic U>
-        constexpr Complex<T> operator+=(const U& x)
+        constexpr Complex<T> operator+=(U const& x)
         {
-            m_real += x.real();
+            m_real += x;
             return *this;
         }
 
@@ -153,9 +163,9 @@ namespace Mods
          * @return constexpr Complex<T> 
          */
         template<Mods::Concepts::Arithmetic U>
-        constexpr Complex<T> operator-=(const U& x)
+        constexpr Complex<T> operator-=(U const& x)
         {
-            m_real -= x.real();
+            m_real -= x;
             return *this;
         }
 
@@ -167,7 +177,7 @@ namespace Mods
         template<Mods::Concepts::Arithmetic U>
         constexpr Complex<T> operator*=(Complex<U> const& x)
         {
-            const T real = m_real;
+            T const real = m_real;
             m_real = real * x.real() - m_imag * x.imag();
             m_imag = real * x.imag() + m_imag * x.real();
             return *this;
@@ -179,7 +189,7 @@ namespace Mods
          * @return constexpr Complex<T> 
          */
         template<Mods::Concepts::Arithmetic U>
-        constexpr Complex<T> operator*=(const U& x)
+        constexpr Complex<T> operator*=(U const& x)
         {
             m_real *= x;
             m_imag *= x;
@@ -194,8 +204,8 @@ namespace Mods
         template<Mods::Concepts::Arithmetic U>
         constexpr Complex<T> operator/=(Complex<U> const& x)
         {
-            const T real = m_real;
-            const T divisor = x.real() * x.real() + x.imag() * x.imag();
+            T const real = m_real;
+            T const divisor = x.real() * x.real() + x.imag() * x.imag();
             m_real = (real * x.real() + m_imag * x.imag()) / divisor;
             m_imag = (m_imag * x.real() - x.real() * x.imag()) / divisor;
             return *this;
@@ -207,7 +217,7 @@ namespace Mods
          * @return constexpr Complex<T> 
          */
         template<Mods::Concepts::Arithmetic U>
-        constexpr Complex<T> operator/=(const U& x)
+        constexpr Complex<T> operator/=(U const& x)
         {
             m_real /= x;
             m_imag /= x;
@@ -233,7 +243,7 @@ namespace Mods
          * @return constexpr Complex<T> 
          */
         template<Mods::Concepts::Arithmetic U>
-        constexpr Complex<T> operator+(const U& a)
+        constexpr Complex<T> operator+(U const& a)
         {
             Complex<T> x = *this;
             x += a;
@@ -259,7 +269,7 @@ namespace Mods
          * @return constexpr Complex<T> 
          */
         template<Mods::Concepts::Arithmetic U>
-        constexpr Complex<T> operator-(const U& a)
+        constexpr Complex<T> operator-(U const& a)
         {
             Complex<T> x = *this;
             x -= a;
@@ -285,7 +295,7 @@ namespace Mods
          * @return constexpr Complex<T> 
          */
         template<Mods::Concepts::Arithmetic U>
-        constexpr Complex<T> operator*(const U& a)
+        constexpr Complex<T> operator*(U const& a)
         {
             Complex<T> x = *this;
             x *= a;
@@ -311,7 +321,7 @@ namespace Mods
          * @return constexpr Complex<T> 
          */
         template<Mods::Concepts::Arithmetic U>
-        constexpr Complex<T> operator/(const U& a)
+        constexpr Complex<T> operator/(U const& a)
         {
             Complex<T> x = *this;
             x /= a;
@@ -331,18 +341,6 @@ namespace Mods
         }
 
         /**
-         * @tparam U 
-         * @param a 
-         * @return true 
-         * @return false 
-         */
-        template<Mods::Concepts::Arithmetic U>
-        constexpr bool operator!=(Complex<U> const& a) const
-        {
-            return !(*this == a);
-        }
-
-        /**
          * @return constexpr Complex<T> 
          */
         constexpr Complex<T> operator+()
@@ -350,9 +348,6 @@ namespace Mods
             return *this;
         }
 
-        /**
-         * @return constexpr Complex<T> 
-         */
         constexpr Complex<T> operator-()
         {
             return Complex<T>(-m_real, -m_imag);
@@ -366,12 +361,12 @@ namespace Mods
     /**
      * @tparam T 
      * @tparam U 
-     * @param b 
      * @param a 
+     * @param b 
      * @return constexpr Complex<T> 
      */
     template<Mods::Concepts::Arithmetic T, Mods::Concepts::Arithmetic U>
-    constexpr Complex<T> operator+(const U& b, Complex<T> const& a)
+    constexpr Complex<T> operator+(U const& a, Complex<T> const& b)
     {
         Complex<T> x = a;
         x += b;
@@ -381,12 +376,12 @@ namespace Mods
     /**
      * @tparam T 
      * @tparam U 
-     * @param b 
      * @param a 
+     * @param b 
      * @return constexpr Complex<T> 
      */
     template<Mods::Concepts::Arithmetic T, Mods::Concepts::Arithmetic U>
-    constexpr Complex<T> operator-(const U& b, Complex<T> const& a)
+    constexpr Complex<T> operator-(U const& a, Complex<T> const& b)
     {
         Complex<T> x = a;
         x -= b;
@@ -396,27 +391,27 @@ namespace Mods
     /**
      * @tparam T 
      * @tparam U 
-     * @param b 
      * @param a 
+     * @param b 
      * @return constexpr Complex<T> 
      */
     template<Mods::Concepts::Arithmetic T, Mods::Concepts::Arithmetic U>
-    constexpr Complex<T> operator*(const U& b, Complex<T> const& a)
+    constexpr Complex<T> operator*(U const& a, Complex<T> const& b)
     {
         Complex<T> x = a;
         x *= b;
         return x;
-    }   
+    }
 
     /**
      * @tparam T 
      * @tparam U 
-     * @param b 
      * @param a 
+     * @param b 
      * @return constexpr Complex<T> 
      */
     template<Mods::Concepts::Arithmetic T, Mods::Concepts::Arithmetic U>
-    constexpr Complex<T> operator/(const U& b, Complex<T> const& a)
+    constexpr Complex<T> operator/(U const& a, Complex<T> const& b)
     {
         Complex<T> x = a;
         x /= b;
@@ -428,10 +423,6 @@ namespace Mods
      */
     template<Mods::Concepts::Arithmetic T>
     static constinit Complex<T> complex_real_unit = Complex<T>((T)1, (T)0);
-
-    /**
-     * @tparam T 
-     */
     template<Mods::Concepts::Arithmetic T>
     static constinit Complex<T> complex_imag_unit = Complex<T>((T)0, (T)1);
 
@@ -461,12 +452,29 @@ namespace Mods
     {
         return exp(a.real()) * Complex<T>(cos(a.imag()), sin(a.imag()));
     }
+
 } // namespace Mods
 
+/**
+ * @tparam T 
+ */
+template<Mods::Concepts::Arithmetic T>
+struct Mods::Formatter<Mods::Complex<T>> : Formatter<StringView> {
+    /**
+     * @param builder 
+     * @param c 
+     * @return ErrorOr<void> 
+     */
+    ErrorOr<void> format(FormatBuilder& builder, Mods::Complex<T> c)
+    {
+        return Formatter<StringView>::format(builder, TRY(String::formatted("{}{:+}i", c.real(), c.imag())));
+    }
+}; // struct Mods::Formatter<Mods::Complex<T>> : Formatter<StringView>
+
+#if USING_MODS_GLOBALLY
 using Mods::approx_eq;
 using Mods::cexp;
 using Mods::Complex;
 using Mods::complex_imag_unit;
 using Mods::complex_real_unit;
-
 #endif
