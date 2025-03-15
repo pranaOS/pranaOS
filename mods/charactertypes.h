@@ -14,9 +14,9 @@
 #include <mods/array.h>
 #include <mods/types.h>
 
-
 namespace Mods
 {
+
     /**
      * @param code_point 
      * @return true 
@@ -36,7 +36,7 @@ namespace Mods
     {
         return code_point >= '0' && code_point <= '9';
     }
-    
+
     /**
      * @param code_point 
      * @return true 
@@ -76,7 +76,17 @@ namespace Mods
     {
         return is_ascii_alpha(code_point) || is_ascii_digit(code_point);
     }
-    
+
+    /**
+     * @param code_point 
+     * @return true 
+     * @return false 
+     */
+    constexpr bool is_ascii_base36_digit(u32 code_point)
+    {
+        return is_ascii_digit(code_point) || (code_point >= 'A' && code_point <= 'Z') || (code_point >= 'a' && code_point <= 'z');
+    }
+
     /**
      * @param code_point 
      * @return true 
@@ -86,7 +96,7 @@ namespace Mods
     {
         return code_point == '0' || code_point == '1';
     }
-    
+
     /**
      * @param code_point 
      * @return true 
@@ -102,9 +112,19 @@ namespace Mods
      * @return true 
      * @return false 
      */
+    constexpr bool is_ascii_uppercase_hex_digit(u32 code_point)
+    {
+        return is_ascii_digit(code_point) || (code_point >= 'A' && code_point <= 'F');
+    }
+
+    /**
+     * @param code_point 
+     * @return true 
+     * @return false 
+     */
     constexpr bool is_ascii_hex_digit(u32 code_point)
     {
-        return is_ascii_digit(code_point) || (code_point >= 'A' && code_point <= 'F') || (code_point >= 'a' && code_point <= 'f');
+        return is_ascii_uppercase_hex_digit(code_point) || (code_point >= 'a' && code_point <= 'f');
     }
 
     /**
@@ -116,7 +136,7 @@ namespace Mods
     {
         return code_point == '\t' || code_point == ' ';
     }
-    
+
     /**
      * @param code_point 
      * @return true 
@@ -186,7 +206,7 @@ namespace Mods
     {
         return code_point <= 0x10FFFF;
     }
-    
+
     /**
      * @param code_point 
      * @return true 
@@ -235,7 +255,6 @@ namespace Mods
     {
         if (is_ascii_upper_alpha(code_point))
             return code_point + 0x20;
-
         return code_point;
     }
 
@@ -247,10 +266,9 @@ namespace Mods
     {
         if (is_ascii_lower_alpha(code_point))
             return code_point - 0x20;
-
         return code_point;
     }
-    
+
     /**
      * @param code_point 
      * @return constexpr u32 
@@ -259,7 +277,6 @@ namespace Mods
     {
         if (is_ascii_digit(code_point))
             return code_point - '0';
-
         VERIFY_NOT_REACHED();
     }
 
@@ -271,13 +288,10 @@ namespace Mods
     {
         if (is_ascii_digit(code_point))
             return parse_ascii_digit(code_point);
-
         if (code_point >= 'A' && code_point <= 'F')
             return code_point - 'A' + 10;
-
         if (code_point >= 'a' && code_point <= 'f')
             return code_point - 'a' + 10;
-
         VERIFY_NOT_REACHED();
     }
 
@@ -289,13 +303,10 @@ namespace Mods
     {
         if (is_ascii_digit(code_point))
             return parse_ascii_digit(code_point);
-            
         if (code_point >= 'A' && code_point <= 'Z')
             return code_point - 'A' + 10;
-
         if (code_point >= 'a' && code_point <= 'z')
             return code_point - 'a' + 10;
-
         VERIFY_NOT_REACHED();
     }
 
@@ -309,11 +320,14 @@ namespace Mods
         VERIFY(digit < base36_map.size());
         return base36_map[digit];
     }
+
 } // namespace Mods
 
+#if USING_MODS_GLOBALLY
 using Mods::is_ascii;
 using Mods::is_ascii_alpha;
 using Mods::is_ascii_alphanumeric;
+using Mods::is_ascii_base36_digit;
 using Mods::is_ascii_binary_digit;
 using Mods::is_ascii_blank;
 using Mods::is_ascii_c0_control;
@@ -327,6 +341,7 @@ using Mods::is_ascii_printable;
 using Mods::is_ascii_punctuation;
 using Mods::is_ascii_space;
 using Mods::is_ascii_upper_alpha;
+using Mods::is_ascii_uppercase_hex_digit;
 using Mods::is_unicode;
 using Mods::is_unicode_control;
 using Mods::is_unicode_noncharacter;
@@ -338,3 +353,4 @@ using Mods::parse_ascii_hex_digit;
 using Mods::to_ascii_base36_digit;
 using Mods::to_ascii_lowercase;
 using Mods::to_ascii_uppercase;
+#endif
