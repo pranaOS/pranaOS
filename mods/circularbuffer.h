@@ -9,3 +9,10 @@
  * 
  */
 
+#pragma once
+
+namespace Mods
+{
+
+    
+} // namespace Mods
