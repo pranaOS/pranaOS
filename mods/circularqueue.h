@@ -13,10 +13,11 @@
 
 #include <mods/assertions.h>
 #include <mods/forward.h>
-#include <mods/stdlibextra.h>
+#include <mods/stdlibextras.h>
 
-namespace Mods 
+namespace Mods  
 {
+
     /**
      * @tparam T 
      * @tparam Capacity 
@@ -24,8 +25,6 @@ namespace Mods
     template<typename T, size_t Capacity>
     class CircularQueue 
     {
-        friend CircularDuplexStream<Capacity>;
-
     public:
         /**
          * @brief Construct a new Circular Queue object
@@ -41,7 +40,7 @@ namespace Mods
         {
             clear();
         }
-        
+
         void clear()
         {
             for (size_t i = 0; i < m_size; ++i)
@@ -80,12 +79,10 @@ namespace Mods
         void enqueue(U&& value)
         {
             auto& slot = elements()[(m_head + m_size) % Capacity];
-
             if (m_size == Capacity)
                 slot.~T();
 
             new (&slot) T(forward<U>(value));
-
             if (m_size == Capacity)
                 m_head = (m_head + 1) % Capacity;
             else
@@ -103,15 +100,14 @@ namespace Mods
             slot.~T();
             m_head = (m_head + 1) % Capacity;
             --m_size;
-
             return value;
         }
 
         /**
          * @param index 
-         * @return const T& 
+         * @return T const& 
          */
-        const T& at(size_t index) const 
+        T const& at(size_t index) const 
         { 
             return elements()[(m_head + index) % Capacity]; 
         }
@@ -126,17 +122,17 @@ namespace Mods
         }
 
         /**
-         * @return const T& 
+         * @return T const& 
          */
-        const T& first() const 
+        T const& first() const 
         { 
             return at(0); 
         }
 
         /**
-         * @return const T& 
+         * @return T const& 
          */
-        const T& last() const 
+        T const& last() const 
         { 
             return at(size() - 1); 
         }
@@ -149,10 +145,7 @@ namespace Mods
              * @return true 
              * @return false 
              */
-            bool operator!=(ConstIterator const& other) 
-            { 
-                return m_index != other.m_index; 
-            }
+            bool operator!=(ConstIterator const& other) { return m_index != other.m_index; }
 
             /**
              * @return ConstIterator& 
@@ -164,9 +157,9 @@ namespace Mods
             }
 
             /**
-             * @return const T& 
+             * @return T const& 
              */
-            const T& operator*() const 
+            T const& operator*() const 
             { 
                 return m_queue.at(m_index); 
             }
@@ -180,7 +173,7 @@ namespace Mods
              * @param queue 
              * @param index 
              */
-            ConstIterator(CircularQueue const& queue, const size_t index)
+            ConstIterator(CircularQueue const& queue, size_t const index)
                 : m_queue(queue)
                 , m_index(index)
             {
@@ -244,12 +237,9 @@ namespace Mods
          */
         ConstIterator begin() const 
         { 
-            return ConstIterator(*this, 0);
+            return ConstIterator(*this, 0); 
         }
 
-        /**
-         * @return ConstIterator 
-         */
         ConstIterator end() const 
         { 
             return ConstIterator(*this, size()); 
@@ -263,9 +253,6 @@ namespace Mods
             return Iterator(*this, 0); 
         }
 
-        /**
-         * @return Iterator 
-         */
         Iterator end() 
         { 
             return Iterator(*this, size()); 
@@ -280,20 +267,14 @@ namespace Mods
         }
 
     protected:
-        /**
-         * @return T* 
-         */
         T* elements() 
         { 
             return reinterpret_cast<T*>(m_storage); 
         }
-
-        /**
-         * @return const T* 
-         */
-        const T* elements() const 
+        
+        T const* elements() const 
         { 
-            return reinterpret_cast<const T*>(m_storage); 
+            return reinterpret_cast<T const*>(m_storage); 
         }
 
         friend class ConstIterator;
@@ -301,6 +282,9 @@ namespace Mods
         size_t m_size { 0 };
         size_t m_head { 0 };
     }; // class CircularQueue
+
 } // namespace Mods
 
+#if USING_MODS_GLOBALLY
 using Mods::CircularQueue;
+#endif
