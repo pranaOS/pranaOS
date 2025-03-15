@@ -14,8 +14,9 @@
 #include <mods/circularqueue.h>
 #include <mods/types.h>
 
-namespace Mods
+namespace Mods 
 {
+
     /**
      * @tparam T 
      * @tparam Capacity 
@@ -33,10 +34,8 @@ namespace Mods
         {
             auto const new_head = (this->m_head - 1 + Capacity) % Capacity;
             auto& slot = this->elements()[new_head];
-
             if (this->m_size == Capacity)
                 slot.~T();
-
             else
                 ++this->m_size;
 
@@ -56,7 +55,10 @@ namespace Mods
             this->m_size--;
             return value;
         }
-    }; // class CircularDeque : public CircularQueue<T, Capacity> 
+    }; // class CircularDeque : public CircularQueue<T, Capacity>
+
 } // namespace Mods
 
+#if USING_MODS_GLOBALLY
 using Mods::CircularDeque;
+#endif
