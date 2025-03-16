@@ -9,3 +9,13 @@
  * 
  */
 
+#pragma once
+
+#define _MODS_PRAGMA(x) _Pragma(#x)
+#define MODS_PRAGMA(x) _MODS_PRAGMA(x)
+
+#define MODS_IGNORE_DIAGNOSTIC(name, statement) \
+    MODS_PRAGMA(GCC diagnostic push);           \
+    MODS_PRAGMA(GCC diagnostic ignored name);   \
+    statement;                                \
+    MODS_PRAGMA(GCC diagnostic pop);
