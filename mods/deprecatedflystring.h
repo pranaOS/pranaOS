@@ -9,3 +9,14 @@
  * 
  */
 
+#pragma once
+
+namespace Mods
+{
+
+    class DeprecatedFlyString
+    {
+
+    }; // class DeprecatedFlyString
+
+} // namespace Mods
