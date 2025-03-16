@@ -11,29 +11,30 @@
 
 #pragma once
 
-#include <mods/all.h>
+#include <mods/allof.h>
 #include <mods/forward.h>
 #include <mods/span.h>
+#include <mods/stdlibextras.h>
 #include <mods/try.h>
-#include <mods/stdlibextra.h>
 
-namespace Mods
-{   
+namespace Mods 
+{
+
     /**
      * @tparam ChunkType 
      * @tparam IsConst 
+     * @tparam InlineCapacity 
      */
-    template<typename ChunkType, bool IsConst>
+    template<typename ChunkType, bool IsConst, size_t InlineCapacity = 0>
     struct DisjointIterator 
     {
-        struct EndTag 
-        {
+        struct EndTag {
         };
 
-        using ReferenceType = Conditional<IsConst, AddConst<Vector<ChunkType>>, Vector<ChunkType>>&;
+        using ReferenceType = Conditional<IsConst, AddConst<Vector<ChunkType, InlineCapacity>>, Vector<ChunkType, InlineCapacity>>&;
 
         /**
-         * @brief Construct a new Disjoint Iterator object
+         * @brief Construct a new DisjointIterator object
          * 
          * @param chunks 
          */
@@ -45,7 +46,7 @@ namespace Mods
         }
 
         /**
-         * @brief Construct a new Disjoint Iterator object
+         * @brief Construct a new DisjointIterator object
          * 
          * @param chunks 
          */
@@ -65,19 +66,16 @@ namespace Mods
                 return *this;
 
             auto& chunk = m_chunks[m_chunk_index];
-
             if (m_index_in_chunk + 1 >= chunk.size()) {
                 ++m_chunk_index;
                 m_index_in_chunk = 0;
             } else {
                 ++m_index_in_chunk;
             }
-
             if (m_chunk_index < m_chunks.size()) {
                 while (m_chunks[m_chunk_index].is_empty())
                     ++m_chunk_index;
             }
-
             return *this;
         }
 
@@ -91,21 +89,33 @@ namespace Mods
             return &other.m_chunks == &m_chunks && other.m_index_in_chunk == m_index_in_chunk && other.m_chunk_index == m_chunk_index;
         }
 
-        auto& operator*() requires(!IsConst) 
-        { 
-            return m_chunks[m_chunk_index][m_index_in_chunk]; 
+        /**
+         * @param !Isconst
+         * 
+         */
+        auto& operator*()
+        requires(!IsConst)
+        {
+            return m_chunks[m_chunk_index][m_index_in_chunk];
         }
 
-        auto* operator->() requires(!IsConst) 
-        { 
-            return &m_chunks[m_chunk_index][m_index_in_chunk]; 
+        auto* operator->()
+        requires(!IsConst)
+        {
+            return &m_chunks[m_chunk_index][m_index_in_chunk];
         }
 
+        /**
+         * @return auto const& 
+         */
         auto const& operator*() const 
         { 
             return m_chunks[m_chunk_index][m_index_in_chunk]; 
         }
 
+        /**
+         * @return auto const* 
+         */
         auto const* operator->() const 
         { 
             return &m_chunks[m_chunk_index][m_index_in_chunk]; 
@@ -115,45 +125,31 @@ namespace Mods
         size_t m_chunk_index { 0 };
         size_t m_index_in_chunk { 0 };
         ReferenceType m_chunks;
-    }; // struct DisjointIterator 
+    }; // struct DisjoinIterator
 
     /**
      * @tparam T 
+     * @tparam SpanContainer 
      */
-    template<typename T>
+    template<typename T, typename SpanContainer = Vector<Span<T>>>
     class DisjointSpans 
     {
     public:
         /**
-         * @brief Construct a new Disjoint Spans object
+         * @brief Construct a new DisjointSpans object
          * 
          */
         DisjointSpans() = default;
-
-        /**
-         * @brief Destroy the Disjoint Spans object
-         * 
-         */
         ~DisjointSpans() = default;
-
-        /**
-         * @brief Construct a new Disjoint Spans object
-         * 
-         */
         DisjointSpans(DisjointSpans const&) = default;
-
-        /**
-         * @brief Construct a new Disjoint Spans object
-         * 
-         */
         DisjointSpans(DisjointSpans&&) = default;
 
         /**
-         * @brief Construct a new Disjoint Spans object
+         * @brief Construct a new DisjointSpans object
          * 
          * @param spans 
          */
-        explicit DisjointSpans(Vector<Span<T>> spans)
+        explicit DisjointSpans(SpanContainer spans)
             : m_spans(move(spans))
         {
         }
@@ -162,11 +158,24 @@ namespace Mods
          * @return DisjointSpans& 
          */
         DisjointSpans& operator=(DisjointSpans&&) = default;
+        DisjointSpans& operator=(DisjointSpans const&) = default;
 
         /**
-         * @return DisjointSpans& 
+         * @return Span<T> 
          */
-        DisjointSpans& operator=(DisjointSpans const&) = default;
+        Span<T> singular_span() const
+        {
+            VERIFY(m_spans.size() == 1);
+            return m_spans[0];
+        }
+
+        /**
+         * @return SpanContainer const& 
+         */
+        SpanContainer const& individual_spans() const 
+        { 
+            return m_spans; 
+        }
 
         /**
          * @param other 
@@ -180,12 +189,10 @@ namespace Mods
 
             auto it = begin();
             auto other_it = other.begin();
-
             for (; it != end(); ++it, ++other_it) {
                 if (*it != *other_it)
                     return false;
             }
-
             return true;
         }
 
@@ -234,10 +241,8 @@ namespace Mods
         T* find(size_t index)
         {
             auto span_and_offset = span_around(index);
-
             if (span_and_offset.offset >= span_and_offset.span.size())
                 return nullptr;
-
             return &span_and_offset.span.at(span_and_offset.offset);
         }
 
@@ -248,7 +253,7 @@ namespace Mods
         T const* find(size_t index) const
         {
             return const_cast<DisjointSpans*>(this)->find(index);
-        }   
+        }
 
         /**
          * @return size_t 
@@ -256,13 +261,15 @@ namespace Mods
         size_t size() const
         {
             size_t size = 0;
-
             for (auto& span : m_spans)
                 size += span.size();
-
             return size;
         }
 
+        /**
+         * @return true 
+         * @return false 
+         */
         bool is_empty() const
         {
             return all_of(m_spans, [](auto& span) { return span.is_empty(); });
@@ -289,7 +296,7 @@ namespace Mods
                 start = 0;
                 length -= sliced_length;
             }
-           
+            
             VERIFY(length == 0);
             return spans;
         }
@@ -320,36 +327,26 @@ namespace Mods
             return { m_spans }; 
         }
 
-        /**
-         * @return DisjointIterator<Span<T>, false> 
-         */
         DisjointIterator<Span<T>, false> end() 
         { 
             return { m_spans, {} }; 
         }
 
-        /**
-         * @return DisjointIterator<Span<T>, true> 
-         */
         DisjointIterator<Span<T>, true> begin() const 
         { 
             return { m_spans }; 
         }
 
-        /**
-         * @return DisjointIterator<Span<T>, true> 
-         */
         DisjointIterator<Span<T>, true> end() const 
         { 
             return { m_spans, {} }; 
         }
 
     private:
-        struct SpanAndOffset 
-        {
+        struct SpanAndOffset {
             Span<T>& span;
             size_t offset;
-        };
+        }; // struct SpanAndOffset
 
         /**
          * @param index 
@@ -373,11 +370,12 @@ namespace Mods
             return { m_spans.last(), index - (offset - m_spans.last().size()) };
         }
 
-        Vector<Span<T>> m_spans;
-    }; // class DisjoinSpans
+        SpanContainer m_spans;
+    }; // struct DisjoinIterator
 
     namespace Detail 
     {
+
         /**
          * @tparam T 
          * @tparam ChunkType 
@@ -392,7 +390,6 @@ namespace Mods
             auto wanted_slice = source_chunk.span().slice(start, sliced_length);
 
             ChunkType new_chunk;
-
             if constexpr (IsTriviallyConstructible<T>) {
                 new_chunk.resize(wanted_slice.size());
 
@@ -402,7 +399,6 @@ namespace Mods
                 for (auto& entry : wanted_slice)
                     new_chunk.unchecked_append(move(entry));
             }
-
             source_chunk.remove(start, sliced_length);
             return new_chunk;
         }
@@ -420,62 +416,43 @@ namespace Mods
             auto wanted_slice = source_chunk.span().slice(start, sliced_length);
 
             FixedArray<T> new_chunk = FixedArray<T>::must_create_but_fixme_should_propagate_errors(wanted_slice.size());
-
             if constexpr (IsTriviallyConstructible<T>) {
                 TypedTransfer<T>::move(new_chunk.data(), wanted_slice.data(), wanted_slice.size());
             } else {
-                auto copied_chunk = MUST(FixedArray<T>::try_create(wanted_slice));
+                auto copied_chunk = FixedArray<T>::create(wanted_slice).release_value_but_fixme_should_propagate_errors();
                 new_chunk.swap(copied_chunk);
             }
-
-            auto rest_of_chunk = MUST(FixedArray<T>::try_create(source_chunk.span().slice(start)));
+            auto rest_of_chunk = FixedArray<T>::create(source_chunk.span().slice(start)).release_value_but_fixme_should_propagate_errors();
             source_chunk.swap(rest_of_chunk);
-
             return new_chunk;
         }
 
-    } // namespace Detail
+    } // namespace Detail 
 
     /**
      * @tparam T 
      * @tparam ChunkType 
      */
     template<typename T, typename ChunkType = Vector<T>>
-    class DisjointChunks
+    class DisjointChunks 
     {
+    private:
+        constexpr static auto InlineCapacity = IsCopyConstructible<ChunkType> ? 1 : 0;
+
     public:
         /**
-         * @brief Construct a new Disjoint Chunks object
+         * @brief Construct a new DisjointChunks object
          * 
          */
         DisjointChunks() = default;
-
-        /**
-         * @brief Destroy the Disjoint Chunks object
-         * 
-         */
         ~DisjointChunks() = default;
-
-        /**
-         * @brief Construct a new Disjoint Chunks object
-         * 
-         */
         DisjointChunks(DisjointChunks const&) = default;
-
-        /**
-         * @brief Construct a new Disjoint Chunks object
-         * 
-         */
         DisjointChunks(DisjointChunks&&) = default;
 
         /**
          * @return DisjointChunks& 
          */
         DisjointChunks& operator=(DisjointChunks&&) = default;
-
-        /**
-         * @return DisjointChunks& 
-         */
         DisjointChunks& operator=(DisjointChunks const&) = default;
 
         /**
@@ -502,22 +479,33 @@ namespace Mods
             m_chunks.extend(chunks.m_chunks); 
         }
 
+        /**
+         * @return ChunkType& 
+         */
         ChunkType& first_chunk() 
         { 
             return m_chunks.first(); 
         }
 
-
+        /**
+         * @return ChunkType& 
+         */
         ChunkType& last_chunk() 
         { 
             return m_chunks.last(); 
         }
 
+        /**
+         * @return ChunkType const& 
+         */
         ChunkType const& first_chunk() const 
         { 
             return m_chunks.first(); 
         }
-        
+
+        /**
+         * @return ChunkType const& 
+         */
         ChunkType const& last_chunk() const 
         { 
             return m_chunks.last(); 
@@ -539,9 +527,7 @@ namespace Mods
         {
             if (m_chunks.size() == 1)
                 return m_chunks.first().insert(index, value);
-
             auto chunk_and_offset = chunk_around(index);
-
             if (!chunk_and_offset.chunk) {
                 m_chunks.empend();
                 chunk_and_offset.chunk = &m_chunks.last();
@@ -552,7 +538,7 @@ namespace Mods
 
         void clear() 
         { 
-            m_chunks.clear();
+            m_chunks.clear(); 
         }
 
         /**
@@ -604,12 +590,9 @@ namespace Mods
                     return &m_chunks.first().at(index);
                 return nullptr;
             }
-
             auto chunk_and_offset = chunk_around(index);
-
             if (!chunk_and_offset.chunk || chunk_and_offset.offset >= chunk_and_offset.chunk->size())
                 return nullptr;
-
             return &chunk_and_offset.chunk->at(chunk_and_offset.offset);
         }
 
@@ -628,30 +611,37 @@ namespace Mods
         size_t size() const
         {
             size_t sum = 0;
-
             for (auto& chunk : m_chunks)
                 sum += chunk.size();
-
             return sum;
         }
 
+        /**
+         * @return true 
+         * @return false 
+         */
         bool is_empty() const
         {
             return all_of(m_chunks, [](auto& chunk) { return chunk.is_empty(); });
         }
 
         /**
-         * @return DisjointSpans<T> 
+         * @tparam InlineSize 
+         * @return DisjointSpans<T, Vector<Span<T>, InlineSize>> 
          */
-        DisjointSpans<T> spans() const&
+        template<size_t InlineSize = 0>
+        DisjointSpans<T, Vector<Span<T>, InlineSize>> spans() const&
         {
-            Vector<Span<T>> spans;
+            Vector<Span<T>, InlineSize> spans;
             spans.ensure_capacity(m_chunks.size());
+            if (m_chunks.size() == 1) {
+                spans.append(const_cast<ChunkType&>(m_chunks[0]).span());
+                return DisjointSpans<T, Vector<Span<T>, InlineSize>> { move(spans) };
+            }
 
             for (auto& chunk : m_chunks)
                 spans.unchecked_append(const_cast<ChunkType&>(chunk).span());
-
-            return DisjointSpans<T> { move(spans) };
+            return DisjointSpans<T, Vector<Span<T>, InlineSize>> { move(spans) };
         }
 
         /**
@@ -678,10 +668,7 @@ namespace Mods
          * @param length 
          * @return DisjointChunks 
          */
-        DisjointChunks release_slice(size_t start, size_t length) & 
-        { 
-            return move(*this).slice(start, length); 
-        }
+        DisjointChunks release_slice(size_t start, size_t length) & { return move(*this).slice(start, length); }
 
         /**
          * @param start 
@@ -697,7 +684,6 @@ namespace Mods
         DisjointChunks slice(size_t start, size_t length) &&
         {
             DisjointChunks result;
-
             for (auto& chunk : m_chunks) {
                 if (length == 0)
                     break;
@@ -707,7 +693,6 @@ namespace Mods
                 }
 
                 auto sliced_length = min(length, chunk.size() - start);
-
                 if (start == 0 && sliced_length == chunk.size()) {
                     result.m_chunks.append(move(chunk));
                 } else {
@@ -715,7 +700,6 @@ namespace Mods
 
                     result.m_chunks.append(move(new_chunk));
                 }
-
                 start = 0;
                 length -= sliced_length;
             }
@@ -747,7 +731,6 @@ namespace Mods
             auto& first_chunk = m_chunks.first();
             first_chunk.ensure_capacity(size);
             bool first = true;
-
             for (auto& chunk : m_chunks) {
                 if (first) {
                     first = false;
@@ -760,43 +743,36 @@ namespace Mods
         }
 
         /**
-         * @return DisjointIterator<ChunkType, false> 
+         * @return DisjointIterator<ChunkType, false, InlineCapacity> 
          */
-        DisjointIterator<ChunkType, false> begin() 
+        DisjointIterator<ChunkType, false, InlineCapacity> begin() 
         { 
             return { m_chunks }; 
         }
 
-        /**
-         * @return DisjointIterator<ChunkType, false> 
-         */
-        DisjointIterator<ChunkType, false> end() 
+        DisjointIterator<ChunkType, false, InlineCapacity> end() 
         { 
             return { m_chunks, {} }; 
         }
 
         /**
-         * @return DisjointIterator<ChunkType, true> 
+         * @return DisjointIterator<ChunkType, true, InlineCapacity> 
          */
-        DisjointIterator<ChunkType, true> begin() const 
+        DisjointIterator<ChunkType, true, InlineCapacity> begin() const 
         { 
             return { m_chunks }; 
         }
 
-        /**
-         * @return DisjointIterator<ChunkType, true> 
-         */
-        DisjointIterator<ChunkType, true> end() const 
+        DisjointIterator<ChunkType, true, InlineCapacity> end() const 
         { 
             return { m_chunks, {} }; 
         }
 
     private:
-        struct ChunkAndOffset 
-        {
+        struct ChunkAndOffset {
             ChunkType* chunk;
             size_t offset;
-        }; // struct ChunkAndOffset 
+        }; // struct ChunkAndOffset
 
         /**
          * @param index 
@@ -808,7 +784,6 @@ namespace Mods
                 return { nullptr, index };
 
             size_t offset = 0;
-
             for (auto& chunk : m_chunks) {
                 if (chunk.is_empty())
                     continue;
@@ -824,9 +799,34 @@ namespace Mods
             return { &m_chunks.last(), index - (offset - m_chunks.last().size()) };
         }
 
-        Vector<ChunkType> m_chunks;
-    }; 
-} // namespace Mods
+        Vector<ChunkType, InlineCapacity> m_chunks;
+    }; // struct DisjoinIterator
 
+    /**
+     * @tparam T 
+     */
+    template<typename T>
+    struct Traits<DisjointSpans<T>> : public DefaultTraits<DisjointSpans<T>> {
+        /**
+         * @param span 
+         * @return unsigned 
+         */
+        static unsigned hash(DisjointSpans<T> const& span)
+        {
+            unsigned hash = 0;
+            for (auto const& value : span) {
+                auto value_hash = Traits<T>::hash(value);
+                hash = pair_int_hash(hash, value_hash);
+            }
+            return hash;
+        }
+
+        constexpr static bool is_trivial() { return false; }
+    }; // struct Traits<DisjointSpans<T>> : public DefaultTraits<DisjointSpans<T>>
+
+}
+
+#if USING_MODS_GLOBALLY
 using Mods::DisjointChunks;
 using Mods::DisjointSpans;
+#endif
