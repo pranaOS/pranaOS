@@ -9,3 +9,45 @@
  * 
  */
 
+#pragma once
+
+namespace Mods 
+{
+
+    /**
+     * @tparam T 
+     */
+    template<class T>
+    struct DefaultDelete {
+        constexpr DefaultDelete() = default;
+
+        /**
+         * @param t 
+         */
+        constexpr void operator()(T* t)
+        {
+            delete t;
+        }
+    }; // struct DefaultDelete
+
+    /**
+     * @tparam T 
+     */
+    template<class T>
+    struct DefaultDelete<T[]> {
+        constexpr DefaultDelete() = default;
+
+        /**
+         * @param t 
+         */
+        constexpr void operator()(T* t)
+        {
+            delete[] t;
+        }
+    }; // struct DefaultDelete<T[]>
+
+} // namespace Mods
+
+#ifdef USING_MODS_GLOBALLY
+using Mods::DefaultDelete;
+#endif
