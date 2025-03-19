@@ -12,11 +12,13 @@
 #pragma once
 
 #include <mods/assertions.h>
+#include <mods/error.h>
 #include <mods/find.h>
-#include <mods/stdlibextra.h>
+#include <mods/stdlibextras.h>
 
-namespace Mods
+namespace Mods 
 {
+
     /**
      * @tparam ListType 
      * @tparam ElementType 
@@ -62,26 +64,16 @@ namespace Mods
             return m_node->value; 
         }
 
-        /**
-         * @return ElementType* 
-         */
         ElementType* operator->() 
         { 
             return &m_node->value; 
         }
 
-        /**
-         * @return true 
-         * @return false 
-         */
         [[nodiscard]] bool is_end() const 
         { 
             return !m_node; 
         }
 
-        /**
-         * @return DoublyLinkedListIterator 
-         */
         static DoublyLinkedListIterator universal_end() 
         { 
             return DoublyLinkedListIterator(nullptr); 
@@ -110,8 +102,7 @@ namespace Mods
     class DoublyLinkedList 
     {
     private:
-        struct Node 
-        {
+        struct Node {
             /**
              * @brief Construct a new Node object
              * 
@@ -129,7 +120,7 @@ namespace Mods
             T value;
             Node* next { nullptr };
             Node* prev { nullptr };
-        };
+        }; // struct Node
 
     public:
         /**
@@ -165,8 +156,8 @@ namespace Mods
             VERIFY(m_head);
             return m_head->value;
         }
-        
-        [[nodiscard]] const T& first() const
+
+        [[nodiscard]] T const& first() const
         {
             VERIFY(m_head);
             return m_head->value;
@@ -178,7 +169,7 @@ namespace Mods
             return m_tail->value;
         }
         
-        [[nodiscard]] const T& last() const
+        [[nodiscard]] T const& last() const
         {
             VERIFY(m_head);
             return m_tail->value;
@@ -187,106 +178,111 @@ namespace Mods
         /**
          * @tparam U 
          * @param value 
+         * @return ErrorOr<void> 
          */
         template<typename U>
-        void append(U&& value)
+        ErrorOr<void> try_append(U&& value)
         {
             static_assert(
                 requires { T(value); }, "Conversion operator is missing.");
-
-            auto* node = new Node(forward<U>(value));
-
+            auto* node = new (nothrow) Node(forward<U>(value));
+            if (!node)
+                return Error::from_errno(ENOMEM);
             if (!m_head) {
                 VERIFY(!m_tail);
                 m_head = node;
                 m_tail = node;
-                return;
+                return {};
             }
-
             VERIFY(m_tail);
             VERIFY(!node->next);
             m_tail->next = node;
             node->prev = m_tail;
             m_tail = node;
+            return {};
         }
 
         /**
          * @tparam U 
          * @param value 
+         * @return ErrorOr<void> 
          */
         template<typename U>
-        void prepend(U&& value)
+        ErrorOr<void> try_prepend(U&& value)
         {
             static_assert(IsSame<T, U>);
-            auto* node = new Node(forward<U>(value));
-
+            auto* node = new (nothrow) Node(forward<U>(value));
+            if (!node)
+                return Error::from_errno(ENOMEM);
             if (!m_head) {
                 VERIFY(!m_tail);
                 m_head = node;
                 m_tail = node;
-                return;
+                return {};
             }
-
             VERIFY(m_tail);
             VERIFY(!node->prev);
             m_head->prev = node;
             node->next = m_head;
             m_head = node;
+            return {};
         }
+
+    #ifndef KERNEL
+        template<typename U>
+        void append(U&& value)
+        {
+            MUST(try_append(forward<U>(value)));
+        }
+
+        template<typename U>
+        void prepend(U&& value)
+        {
+            MUST(try_prepend(forward<U>(value)));
+        }
+    #endif
 
         /**
          * @param value 
          * @return true 
          * @return false 
          */
-        [[nodiscard]] bool contains_slow(const T& value) const
+        [[nodiscard]] bool contains_slow(T const& value) const
         {
             return find(value) != end();
         }
 
         using Iterator = DoublyLinkedListIterator<DoublyLinkedList, T>;
         friend Iterator;
-
-        /**
-         * @return Iterator 
-         */
+        
         Iterator begin() 
         { 
             return Iterator(m_head); 
         }
 
-        /**
-         * @return Iterator 
-         */
         Iterator end() 
         { 
             return Iterator::universal_end(); 
         }
 
-        using ConstIterator = DoublyLinkedListIterator<const DoublyLinkedList, const T>;
+        using ConstIterator = DoublyLinkedListIterator<DoublyLinkedList const, T const>;
         friend ConstIterator;
 
-        /**
-         * @return ConstIterator 
-         */
         ConstIterator begin() const 
         { 
             return ConstIterator(m_head); 
         }
 
-        /**
-         * @return ConstIterator 
-         */
         ConstIterator end() const 
         { 
-            return ConstIterator::universal_end();
+            return ConstIterator::universal_end(); 
         }
 
         /**
          * @param value 
          * @return ConstIterator 
          */
-        ConstIterator find(const T& value) const
+        ConstIterator find(T const& value) const
         {
             return Mods::find(begin(), end(), value);
         }
@@ -295,7 +291,7 @@ namespace Mods
          * @param value 
          * @return Iterator 
          */
-        Iterator find(const T& value)
+        Iterator find(T const& value)
         {
             return Mods::find(begin(), end(), value);
         }
@@ -307,7 +303,6 @@ namespace Mods
         {
             VERIFY(it.m_node);
             auto* node = it.m_node;
-
             if (node->prev) {
                 VERIFY(node != m_head);
                 node->prev->next = node->next;
@@ -315,7 +310,6 @@ namespace Mods
                 VERIFY(node == m_head);
                 m_head = node->next;
             }
-
             if (node->next) {
                 VERIFY(node != m_tail);
                 node->next->prev = node->prev;
@@ -323,7 +317,6 @@ namespace Mods
                 VERIFY(node == m_tail);
                 m_tail = node->prev;
             }
-
             delete node;
         }
 
@@ -331,6 +324,9 @@ namespace Mods
         Node* m_head { nullptr };
         Node* m_tail { nullptr };
     }; // class DoublyLinkedList
+
 } // namespace Mods
 
+#if USING_MODS_GLOBALLY
 using Mods::DoublyLinkedList;
+#endif
