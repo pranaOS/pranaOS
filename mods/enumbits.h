@@ -11,7 +11,7 @@
 
 #pragma once
 
-#include "mods/stdlibextra.h"
+#include <mods/stdlibextradetails.h>
 
 #define MODS_ENUM_BITWISE_OPERATORS(Enum) \
     _MODS_ENUM_BITWISE_OPERATORS_INTERNAL(Enum, )
