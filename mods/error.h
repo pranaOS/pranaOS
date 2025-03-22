@@ -11,13 +11,12 @@
 
 #pragma once
 
-#include <mods/optional.h>
 #include <mods/stringview.h>
 #include <mods/try.h>
 #include <mods/variant.h>
 
-#if defined(__pranaos__) && defined(KERNEL)
-#    include <libc/errno_codes.h>
+#if defined(MODS_OS_PRANAOS) && defined(KERNEL)
+#    include <errno_codes.h>
 #else
 #    include <errno.h>
 #    include <string.h>
@@ -25,70 +24,120 @@
 
 namespace Mods 
 {
-    class Error 
+
+    class [[nodiscard]] Error 
     {
     public:
+        ALWAYS_INLINE Error(Error&&) = default;
+        ALWAYS_INLINE Error& operator=(Error&&) = default;
+
         /**
          * @param code 
          * @return Error 
          */
-        static Error from_errno(int code) 
-        { 
-            return Error(code); 
+        static Error from_errno(int code)
+        {
+            VERIFY(code != 0);
+            return Error(code);
         }
 
+        /**
+         * @param string_literal 
+         * @param code 
+         * @return Error 
+         */
+        static Error from_string_view_or_print_error_and_return_errno(StringView string_literal, int code);
+
+    #ifndef KERNEL
         /**
          * @param syscall_name 
          * @param rc 
          * @return Error 
          */
-        static Error from_syscall(StringView syscall_name, int rc) 
-        { 
-            return Error(syscall_name, rc); 
+        static Error from_syscall(StringView syscall_name, int rc)
+        {
+            return Error(syscall_name, rc);
         }
 
         /**
          * @param string_literal 
          * @return Error 
          */
-        static Error from_string_literal(StringView string_literal) 
+        static Error from_string_view(StringView string_literal) 
         { 
-            return Error(string_literal);
+            return Error(string_literal); 
         }
 
         /**
+         * @tparam T 
+         * @return Error 
+         */
+        template<OneOf<ByteString, DeprecatedFlyString, String, FlyString> T>
+        static Error from_string_view(T)
+        {
+            static_assert(DependentFalse<T>, "Error::from_string_view(String) is almost always a use-after-free");
+            VERIFY_NOT_REACHED();
+        }
+
+    #endif
+
+        /**
+         * @brief 
+         * 
+         * @param error 
+         * @return Error 
+         */
+        static Error copy(Error const& error)
+        {
+            return Error(error);
+        }
+
+    #ifndef KERNEL
+        /**
+         * @tparam N 
+         * @return ALWAYS_INLINE 
+         */
+        template<size_t N>
+        ALWAYS_INLINE static Error from_string_literal(char const (&string_literal)[N])
+        {
+            return from_string_view(StringView { string_literal, N - 1 });
+        }
+
+    #endif
+
+        /**
+         * @param other 
          * @return true 
          * @return false 
          */
-        bool is_errno() const 
-        { 
-            return m_code != 0; 
+        bool operator==(Error const& other) const
+        {
+    #ifdef KERNEL
+            return m_code == other.m_code;
+    #else
+            return m_code == other.m_code && m_string_literal == other.m_string_literal && m_syscall == other.m_syscall;
+    #endif
         }
 
-        /**
-         * @return true 
-         * @return false 
-         */
-        bool is_syscall() const 
-        { 
-            return m_syscall; 
-        }
-
-        /**
-         * @return int 
-         */
         int code() const 
         { 
             return m_code; 
         }
 
-        /**
-         * @return StringView 
-         */
-        StringView string_literal() const 
-        { 
-            return m_string_literal; 
+        bool is_errno() const
+        {
+            return m_code != 0;
         }
+    #ifndef KERNEL
+        bool is_syscall() const
+        {
+            return m_syscall;
+        }
+        StringView string_literal() const
+        {
+            return m_string_literal;
+        }
+    #endif
 
     protected:
         /**
@@ -102,6 +151,7 @@ namespace Mods
         }
 
     private:
+    #ifndef KERNEL
         /**
          * @brief Construct a new Error object
          * 
@@ -118,45 +168,83 @@ namespace Mods
          * @param syscall_name 
          * @param rc 
          */
-        Error(StringView syscall_name, int rc)  
-            : m_code(-rc)
-            , m_string_literal(syscall_name)
+        Error(StringView syscall_name, int rc)
+            : m_string_literal(syscall_name)
+            , m_code(-rc)
             , m_syscall(true)
         {
         }
+    #endif
+
+        Error(Error const&) = default;
+        Error& operator=(Error const&) = default;
+
+    #ifndef KERNEL
+        StringView m_string_literal;
+    #endif
 
         int m_code { 0 };
-        StringView m_string_literal;
+
+    #ifndef KERNEL
         bool m_syscall { false };
+    #endif
     }; // class Error
 
     /**
      * @tparam T 
-     * @tparam ErrorType 
+     * @tparam E 
      */
-    template<typename T, typename ErrorType>
-    class [[nodiscard]] ErrorOr final : public Variant<T, ErrorType> 
+    template<typename T, typename E>
+    class [[nodiscard]] ErrorOr 
     {
+        template<typename U, typename F>
+        friend class ErrorOr;
+
     public:
-        using Variant<T, ErrorType>::Variant;
+        using ResultType = T;
+        using ErrorType = E;
+
+        ErrorOr()
+        requires(IsSame<T, Empty>)
+            : m_value_or_error(Empty {})
+        {
+        }
+
+        ALWAYS_INLINE ErrorOr(ErrorOr&&) = default;
+        ALWAYS_INLINE ErrorOr& operator=(ErrorOr&&) = default;
+
+        ErrorOr(ErrorOr const&) = delete;
+        ErrorOr& operator=(ErrorOr const&) = delete;
 
         /**
          * @tparam U 
          */
         template<typename U>
-        ALWAYS_INLINE ErrorOr(U&& value) requires(!IsSame<RemoveCVReference<U>, ErrorOr<T>>)
-            : Variant<T, ErrorType>(forward<U>(value))
+        ALWAYS_INLINE ErrorOr(ErrorOr<U, ErrorType>&& value)
+        requires(IsConvertible<U, T>)
+            : m_value_or_error(value.m_value_or_error.visit([](U& v) { return Variant<T, ErrorType>(move(v)); }, [](ErrorType& error) { return Variant<T, ErrorType>(move(error)); }))
         {
         }
 
-    #ifdef __pranaos__
+        /**
+         * @tparam U 
+         */
+        template<typename U>
+        ALWAYS_INLINE ErrorOr(U&& value)
+        requires(
+            requires { T(declval<U>()); } || requires { ErrorType(declval<RemoveCVReference<U>>()); })
+            : m_value_or_error(forward<U>(value))
+        {
+        }
+
+    #ifdef MODS_OS_PRANAOS
         /**
          * @brief Construct a new Error Or object
          * 
          * @param code 
          */
         ErrorOr(ErrnoCode code)
-            : Variant<T, ErrorType>(Error::from_errno(code))
+            : m_value_or_error(Error::from_errno(code))
         {
         }
     #endif
@@ -166,7 +254,7 @@ namespace Mods
          */
         T& value()
         {
-            return this->template get<T>();
+            return m_value_or_error.template get<T>();
         }
 
         /**
@@ -174,7 +262,7 @@ namespace Mods
          */
         T const& value() const 
         { 
-            return this->template get<T>(); 
+            return m_value_or_error.template get<T>(); 
         }
 
         /**
@@ -182,7 +270,7 @@ namespace Mods
          */
         ErrorType& error() 
         { 
-            return this->template get<ErrorType>(); 
+            return m_value_or_error.template get<ErrorType>(); 
         }
 
         /**
@@ -190,7 +278,7 @@ namespace Mods
          */
         ErrorType const& error() const 
         { 
-            return this->template get<ErrorType>(); 
+            return m_value_or_error.template get<ErrorType>(); 
         }
 
         /**
@@ -199,8 +287,8 @@ namespace Mods
          */
         bool is_error() const 
         { 
-            return this->template has<ErrorType>(); 
-        }   
+            return m_value_or_error.template has<ErrorType>(); 
+        }
 
         /**
          * @return T 
@@ -217,7 +305,7 @@ namespace Mods
         { 
             return move(error()); 
         }
-        
+
         /**
          * @return T 
          */
@@ -228,107 +316,23 @@ namespace Mods
         }
 
     private:
-        using Variant<T, ErrorType>::downcast;
-    }; // class [[nodiscard]] ErrorOr final : public Variant<T, ErrorType> 
+        Variant<T, ErrorType> m_value_or_error;
+    }; // class ErrorOr
 
     /**
      * @tparam ErrorType 
      */
     template<typename ErrorType>
-    class [[nodiscard]] ErrorOr<void, ErrorType> 
+    class [[nodiscard]] ErrorOr<void, ErrorType> : public ErrorOr<Empty, ErrorType> 
     {
     public:
-        /**
-         * @brief Construct a new Error Or object
-         * 
-         * @param error 
-         */
-        ErrorOr(ErrorType error)
-            : m_error(move(error))
-        {
-        }
+        using ResultType = void;
+        using ErrorOr<Empty, ErrorType>::ErrorOr;
+    }; // class [[nodiscard]] ErrorOr<void, ErrorType> : public ErrorOr<Empty, ErrorType> 
 
-    #ifdef __pranaos__
-        /**
-         * @brief Construct a new Error Or object
-         * 
-         * @param code 
-         */
-        ErrorOr(ErrnoCode code)
-            : m_error(Error::from_errno(code))
-        {
-        }
-    #endif
-
-        /**
-         * @brief Construct a new Error Or object
-         * 
-         */
-        ErrorOr() = default;
-
-        /**
-         * @brief Construct a new Error Or object
-         * 
-         * @param other 
-         */
-        ErrorOr(ErrorOr&& other) = default;
-
-        /**
-         * @brief Construct a new Error Or object
-         * 
-         * @param other 
-         */
-        ErrorOr(ErrorOr const& other) = default;
-
-        /**
-         * @brief Destroy the Error Or object
-         * 
-         */
-        ~ErrorOr() = default;
-
-        /**
-         * @param other 
-         * @return ErrorOr& 
-         */
-        ErrorOr& operator=(ErrorOr&& other) = default;
-
-        /**
-         * @param other 
-         * @return ErrorOr& 
-         */
-        ErrorOr& operator=(ErrorOr const& other) = default;
-
-        /**
-         * @return ErrorType& 
-         */
-        ErrorType& error() 
-        { 
-            return m_error.value(); 
-        }
-
-        /**
-         * @return true 
-         * @return false 
-         */
-        bool is_error() const 
-        { 
-            return m_error.has_value(); 
-        }
-
-        /**
-         * @return ErrorType 
-         */
-        ErrorType release_error() 
-        { 
-            return m_error.release_value(); 
-        }
-
-        void release_value() { }
-
-    private:
-        Optional<ErrorType> m_error;
-    }; // class [[nodiscard]] ErrorOr final : public Variant<T, ErrorType>  
 } // namespace Mods
 
+#if USING_MODS_GLOBALLY
 using Mods::Error;
 using Mods::ErrorOr;
+#endif
