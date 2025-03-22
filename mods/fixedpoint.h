@@ -11,7 +11,7 @@
 
 #pragma once
 
-#include <mods/concept.h>
+#include <mods/concepts.h>
 #include <mods/format.h>
 #include <mods/integralmath.h>
 #include <mods/numericlimits.h>
@@ -20,9 +20,18 @@
 #ifndef KERNEL
 #    include <mods/math.h>
 #endif
+#ifndef __SIZEOF_INT128__
+#    include <mods/ufixedbigint.h>
+#    include <mods/ufixedbigintdivision.h>
+#endif
 
-namespace Mods
+#ifdef MODS_OS_SOLARIS
+#    undef signbit
+#endif
+
+namespace Mods 
 {
+
     /**
      * @tparam precision 
      * @tparam Underlying 
@@ -52,14 +61,19 @@ namespace Mods
         {
         }
 
+    #ifndef KERNEL
         /**
+         * @brief Construct a new Fixed Point object
+         * 
          * @tparam F 
+         * @param value 
          */
         template<FloatingPoint F>
-        constexpr FixedPoint(F value)
-            : m_value(static_cast<Underlying>(value * (static_cast<Underlying>(1) << precision)))
+        FixedPoint(F value)
+            : m_value(round_to<Underlying>(value * (static_cast<Underlying>(1) << precision)))
         {
         }
+    #endif
 
         /**
          * @tparam P 
@@ -90,16 +104,20 @@ namespace Mods
         template<Integral I>
         explicit constexpr operator I() const
         {
-            I value = m_value >> precision;
-            
-            if (m_value & (1u << (precision - 1))) {
-                if (m_value & (radix_mask >> 2u)) {
-                    value += (m_value > 0 ? 1 : -1);
-                } else {
-                    value += value & 1;
-                }
-            }
-            return value;
+            return trunc().raw() >> precision;
+        }
+
+        /**
+         * @brief Create a raw object
+         * 
+         * @param value 
+         * @return constexpr This 
+         */
+        static constexpr This create_raw(Underlying value)
+        {
+            This t {};
+            t.raw() = value;
+            return t;
         }
 
         /**
@@ -127,11 +145,34 @@ namespace Mods
         }
 
         /**
+         * @param minimum 
+         * @param maximum 
          * @return constexpr This 
          */
-        constexpr This round() const
+        constexpr This clamp(This minimum, This maximum) const
         {
-            return This { static_cast<Underlying>(*this) };
+            if (*this < minimum)
+                return minimum;
+            if (*this > maximum)
+                return maximum;
+            return *this;
+        }
+
+        /**
+         * @return constexpr This 
+         */
+        constexpr This rint() const
+        {
+            Underlying value = m_value >> precision;
+
+            if (m_value & (static_cast<Underlying>(1) << (precision - 1))) {
+                if (m_value & (radix_mask >> 1)) {
+                    value += 1;
+                } else {
+                    value += value & 1;
+                }
+            }
+            return value;
         }
 
         /**
@@ -148,26 +189,26 @@ namespace Mods
         constexpr This ceil() const
         {
             return create_raw((m_value & ~radix_mask)
-                + (m_value & radix_mask ? 1 << precision : 0));
+                + (m_value & radix_mask ? static_cast<Underlying>(1) << precision : 0));
         }
 
         /**
          * @return constexpr This 
          */
-        constexpr This trunk() const
+        constexpr This trunc() const
         {
             return create_raw((m_value & ~radix_mask)
                 + ((m_value & radix_mask)
-                        ? (m_value > 0 ? 0 : (1 << precision))
+                        ? (m_value > 0 ? 0 : (static_cast<Underlying>(1) << precision))
                         : 0));
         }
 
         /**
          * @return constexpr Underlying 
          */
-        constexpr Underlying lround() const 
+        constexpr Underlying lrint() const 
         { 
-            return static_cast<Underlying>(*this); 
+            return rint().raw() >> precision; 
         }
 
         /**
@@ -190,7 +231,7 @@ namespace Mods
         /**
          * @return constexpr Underlying 
          */
-        constexpr Underlying ltrunk() const
+        constexpr Underlying ltrunc() const
         {
             return (m_value >> precision)
                 + ((m_value & radix_mask)
@@ -198,12 +239,9 @@ namespace Mods
                         : 0);
         }
 
-        /**
-         * @return constexpr This 
-         */
         constexpr This log2() const
         {
-            This b = create_raw(1 << (precision - 1));
+            This b = create_raw(static_cast<Underlying>(1) << (precision - 1));
             This y = 0;
             This x = *this;
 
@@ -231,12 +269,14 @@ namespace Mods
             return y;
         }
 
-        constexpr bool signbit() const requires(IsSigned<Underlying>)
+        constexpr bool signbit() const
+        requires(IsSigned<Underlying>)
         {
             return m_value >> (sizeof(Underlying) * 8 - 1);
         }
 
-        constexpr This operator-() const requires(IsSigned<Underlying>)
+        constexpr This operator-() const
+        requires(IsSigned<Underlying>)
         {
             return create_raw(-m_value);
         }
@@ -265,15 +305,23 @@ namespace Mods
          */
         constexpr This operator*(This const& other) const
         {
-            Underlying value = m_value * other.raw();
-            This ret {};
-            ret.raw() = value >> precision;
-         
-            if (value & (1u << (precision - 1))) {
-                if (value & (radix_mask >> 2u)) {
-                    ret.raw() += (value > 0 ? 1 : -1);
+    #ifdef __SIZEOF_INT128__
+            using MulRes = Conditional<sizeof(Underlying) < sizeof(i64), i64, __int128>;
+            MulRes value = raw();
+            value *= other.raw();
+
+            This ret = create_raw(value >> precision);
+    #else
+            u128 value = { (u64)(i64)raw(), ~0ull * (raw() < 0) };
+            value *= (u64)(i64)other.raw();
+
+            This ret = create_raw((value >> precision).low());
+    #endif
+            if (value & (static_cast<Underlying>(1) << (precision - 1))) {
+                if (value & (radix_mask >> 1)) {
+                    ret.raw() += 1;
                 } else {
-                    ret.raw() += m_value & 1;
+                    ret.raw() += ret.raw() & 1;
                 }
             }
             return ret;
@@ -285,7 +333,31 @@ namespace Mods
          */
         constexpr This operator/(This const& other) const
         {
-            return create_raw((m_value / other.m_value) << (precision));
+    #ifdef __SIZEOF_INT128__
+            using DivRes = Conditional<sizeof(Underlying) < sizeof(i64), i64, __int128>;
+
+            DivRes value = raw();
+            value <<= precision;
+            value /= other.raw();
+
+            return create_raw(value);
+    #else
+            if constexpr (sizeof(Underlying) > sizeof(u32)) {
+                u128 value = { (u64)(i64)raw(), ~0ull * (raw() < 0) };
+
+                value <<= precision;
+                value /= (u64)(i64)other.raw();
+
+                return create_raw(value.low());
+            }
+
+            using DivRes = Conditional<sizeof(Underlying) < sizeof(i32), i32, i64>;
+            DivRes value = raw();
+            value <<= precision;
+            value /= other.raw();
+
+            return create_raw(value);
+    #endif
         }
 
         /**
@@ -296,7 +368,7 @@ namespace Mods
         template<Integral I>
         constexpr This operator+(I other) const
         {
-            return create_raw(m_value + (other << precision));
+            return create_raw(m_value + (static_cast<Underlying>(other) << precision));
         }
 
         /**
@@ -307,7 +379,7 @@ namespace Mods
         template<Integral I>
         constexpr This operator-(I other) const
         {
-            return create_raw(m_value - (other << precision));
+            return create_raw(m_value - (static_cast<Underlying>(other) << precision));
         }
 
         /**
@@ -380,16 +452,7 @@ namespace Mods
          */
         This& operator*=(This const& other)
         {
-            Underlying value = m_value * other.raw();
-            m_value = value >> precision;
-           
-            if (value & (1u << (precision - 1))) {
-                if (value & (radix_mask >> 2u)) {
-                    m_value += (value > 0 ? 1 : -1);
-                } else {
-                    m_value += m_value & 1;
-                }
-            }
+            *this = *this * other;
             return *this;
         }
 
@@ -399,8 +462,7 @@ namespace Mods
          */
         This& operator/=(This const& other)
         {
-            m_value /= other.raw();
-            m_value <<= precision;
+            *this = *this / other;
             return *this;
         }
 
@@ -412,7 +474,7 @@ namespace Mods
         template<Integral I>
         This& operator+=(I other)
         {
-            m_value += other << precision;
+            m_value += static_cast<Underlying>(other) << precision;
             return *this;
         }
 
@@ -424,7 +486,7 @@ namespace Mods
         template<Integral I>
         This& operator-=(I other)
         {
-            m_value -= other << precision;
+            m_value -= static_cast<Underlying>(other) << precision;
             return *this;
         }
 
@@ -525,7 +587,7 @@ namespace Mods
         { 
             return raw() < other.raw(); 
         }
-        
+
         /**
          * @param other 
          * @return true 
@@ -593,7 +655,7 @@ namespace Mods
         template<Integral I>
         bool operator<(I other) const
         {
-            return (m_value >> precision) < other || m_value < (other << precision);
+            return (m_value >> precision) < other || m_value < (static_cast<Underlying>(other) << precision);
         }
 
         /**
@@ -615,7 +677,10 @@ namespace Mods
          * @return false 
          */
         template<FloatingPoint F>
-        bool operator==(F other) const { return *this == (This)other; }
+        bool operator==(F other) const 
+        { 
+            return *this == (This)other; 
+        }
 
         /**
          * @tparam F 
@@ -698,7 +763,6 @@ namespace Mods
         constexpr FixedPoint<P, U> cast_to() const
         {
             U raw_value = static_cast<U>(m_value >> precision) << P;
-
             if constexpr (precision > P)
                 raw_value |= (m_value & radix_mask) >> (precision - P);
             else if constexpr (precision < P)
@@ -709,21 +773,70 @@ namespace Mods
             return FixedPoint<P, U>::create_raw(raw_value);
         }
 
-        /**
-         * @brief Create a raw object
-         * 
-         * @param value 
-         * @return This 
-         */
-        static This create_raw(Underlying value)
-        {
-            This t {};
-            t.raw() = value;
-            return t;
-        }
-
         Underlying m_value;
     }; // class FixedPoint
+
+    /**
+     * @tparam precision 
+     * @tparam Underlying 
+     */
+    template<size_t precision, typename Underlying>
+    struct Formatter<FixedPoint<precision, Underlying>> : StandardFormatter {
+        Formatter() = default;
+
+        /**
+         * @brief Construct a new Formatter object
+         * 
+         * @param formatter 
+         */
+        explicit Formatter(StandardFormatter formatter)
+            : StandardFormatter(formatter)
+        {
+        }
+
+        /**
+         * @param builder 
+         * @param value 
+         * @return ErrorOr<void> 
+         */
+        ErrorOr<void> format(FormatBuilder& builder, FixedPoint<precision, Underlying> value)
+        {
+            u8 base;
+            bool upper_case = false;
+            if (m_mode == Mode::Default || m_mode == Mode::FixedPoint) {
+                base = 10;
+            } else if (m_mode == Mode::Hexfloat) {
+                base = 16;
+            } else if (m_mode == Mode::HexfloatUppercase) {
+                base = 16;
+                upper_case = true;
+            } else if (m_mode == Mode::Binary) {
+                base = 2;
+            } else if (m_mode == Mode::BinaryUppercase) {
+                base = 2;
+                upper_case = true;
+            } else if (m_mode == Mode::Octal) {
+                base = 8;
+            } else {
+                VERIFY_NOT_REACHED();
+            }
+
+            m_width = m_width.value_or(0);
+            m_precision = m_precision.value_or(6);
+
+            bool is_negative = false;
+            if constexpr (IsSigned<Underlying>)
+                is_negative = value < 0;
+
+            i64 integer = value.ltrunc();
+            constexpr u64 one = static_cast<Underlying>(1) << precision;
+            u64 fraction_raw = value.raw() & (one - 1);
+            return builder.put_fixed_point(is_negative, integer, fraction_raw, one, precision, base, upper_case, m_zero_pad, m_use_separator, m_align, m_width.value(), m_precision.value(), m_fill, m_sign_mode);
+        }
+    };
+
 } // namespace Mods
 
+#if USING_MODS_GLOBALLY
 using Mods::FixedPoint;
+#endif
