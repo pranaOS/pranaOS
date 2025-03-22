@@ -19,6 +19,7 @@
 
 namespace Mods 
 {
+
     /**
      * @tparam T 
      */
@@ -36,16 +37,14 @@ namespace Mods
          * @param initializer 
          * @return ErrorOr<FixedArray<T>> 
          */
-        static ErrorOr<FixedArray<T>> try_create(std::initializer_list<T> initializer)
+        static ErrorOr<FixedArray<T>> create(std::initializer_list<T> initializer)
         {
-            auto array = TRY(try_create(initializer.size()));
+            auto array = TRY(create(initializer.size()));
             auto it = initializer.begin();
-
             for (size_t i = 0; i < array.size(); ++i) {
                 array[i] = move(*it);
                 ++it;
             }
-
             return array;
         }
 
@@ -53,19 +52,15 @@ namespace Mods
          * @param size 
          * @return ErrorOr<FixedArray<T>> 
          */
-        static ErrorOr<FixedArray<T>> try_create(size_t size)
+        static ErrorOr<FixedArray<T>> create(size_t size)
         {
             if (size == 0)
                 return FixedArray<T>();
-
-            T* elements = static_cast<T*>(kmalloc_array(size, sizeof(T)));
-
+            auto* elements = reinterpret_cast<T*>(kmalloc(storage_allocation_size(size)));
             if (!elements)
                 return Error::from_errno(ENOMEM);
-
             for (size_t i = 0; i < size; ++i)
                 new (&elements[i]) T();
-
             return FixedArray<T>(size, elements);
         }
 
@@ -75,7 +70,7 @@ namespace Mods
          */
         static FixedArray<T> must_create_but_fixme_should_propagate_errors(size_t size)
         {
-            return MUST(try_create(size));
+            return MUST(create(size));
         }
 
         /**
@@ -83,20 +78,9 @@ namespace Mods
          * @return ErrorOr<FixedArray<T>> 
          */
         template<size_t N>
-        static ErrorOr<FixedArray<T>> try_create(T (&&array)[N])
+        static ErrorOr<FixedArray<T>> create(T (&&array)[N])
         {
-            if (N == 0)
-                return FixedArray<T>();
-
-            T* elements = static_cast<T*>(kmalloc_array(N, sizeof(T)));
-
-            if (!elements)
-                return Error::from_errno(ENOMEM);
-
-            for (size_t i = 0; i < N; ++i)
-                new (&elements[i]) T(move(array[i]));
-                
-            return FixedArray<T>(N, elements);
+            return create(Span(array, N));
         }
 
         /**
@@ -105,47 +89,24 @@ namespace Mods
          * @return ErrorOr<FixedArray<T>> 
          */
         template<typename U>
-        static ErrorOr<FixedArray<T>> try_create(Span<U> span)
+        static ErrorOr<FixedArray<T>> create(Span<U> span)
         {
             if (span.size() == 0)
                 return FixedArray<T>();
-
-            T* elements = static_cast<T*>(kmalloc_array(span.size(), sizeof(T)));
-
+            auto* elements = reinterpret_cast<T*>(kmalloc(storage_allocation_size(span.size())));
             if (!elements)
                 return Error::from_errno(ENOMEM);
-
             for (size_t i = 0; i < span.size(); ++i)
                 new (&elements[i]) T(span[i]);
-
             return FixedArray<T>(span.size(), elements);
         }
 
         /**
          * @return ErrorOr<FixedArray<T>> 
          */
-        ErrorOr<FixedArray<T>> try_clone() const
+        ErrorOr<FixedArray<T>> clone() const
         {
-            if (m_size == 0)
-                return FixedArray<T>();
-
-            T* elements = static_cast<T*>(kmalloc_array(m_size, sizeof(T)));
-
-            if (!elements)
-                return Error::from_errno(ENOMEM);
-
-            for (size_t i = 0; i < m_size; ++i)
-                new (&elements[i]) T(m_elements[i]);
-
-            return FixedArray<T>(m_size, elements);
-        }
-
-        /**
-         * @return FixedArray<T> 
-         */
-        FixedArray<T> must_clone_but_fixme_should_propagate_errors() const
-        {
-            return MUST(try_clone());
+            return create(span());
         }
 
         /**
@@ -153,26 +114,29 @@ namespace Mods
          * 
          */
         FixedArray(FixedArray<T> const&) = delete;
-
-        /**
-         * @return FixedArray<T>& 
-         */
         FixedArray<T>& operator=(FixedArray<T> const&) = delete;
 
         /**
-         * @brief Construct a new Fixed Array object
-         * 
          * @param other 
          */
         FixedArray(FixedArray<T>&& other)
-            : m_size(other.m_size)
-            , m_elements(other.m_elements)
+            : m_size(exchange(other.m_size, 0))
+            , m_elements(exchange(other.m_elements, nullptr))
         {
-            other.m_size = 0;
-            other.m_elements = nullptr;
         }
-        
-        FixedArray<T>& operator=(FixedArray<T>&&) = delete;
+
+        /**
+         * @param other 
+         * @return FixedArray<T>& 
+         */
+        FixedArray<T>& operator=(FixedArray<T>&& other)
+        {
+            if (this != &other) {
+                this->~FixedArray();
+                new (this) FixedArray<T>(move(other));
+            }
+            return *this;
+        }
 
         /**
          * @brief Destroy the Fixed Array object
@@ -182,13 +146,9 @@ namespace Mods
         {
             if (!m_elements)
                 return;
-
             for (size_t i = 0; i < m_size; ++i)
                 m_elements[i].~T();
-
-            kfree_sized(m_elements, sizeof(T) * m_size);
-            
-            m_size = 0;
+            kfree_sized(m_elements, storage_allocation_size(m_size));
             m_elements = nullptr;
         }
 
@@ -206,7 +166,7 @@ namespace Mods
          */
         bool is_empty() const 
         { 
-            return m_size == 0; 
+            return size() == 0; 
         }
 
         /**
@@ -218,7 +178,7 @@ namespace Mods
         }
 
         /**
-         * @return T const* 
+         * @return T const*
          */
         T const* data() const 
         { 
@@ -233,7 +193,16 @@ namespace Mods
         {
             VERIFY(index < m_size);
             return m_elements[index];
-        }   
+        }
+
+        /**
+         * @param index 
+         * @return T& 
+         */
+        T& unchecked_at(size_t index)
+        {
+            return m_elements[index];
+        }
 
         /**
          * @param index 
@@ -270,11 +239,12 @@ namespace Mods
          */
         bool contains_slow(T const& value) const
         {
+            if (!m_elements)
+                return false;
             for (size_t i = 0; i < m_size; ++i) {
                 if (m_elements[i] == value)
                     return true;
             }
-
             return false;
         }
 
@@ -283,8 +253,19 @@ namespace Mods
          */
         void swap(FixedArray<T>& other)
         {
-            ::swap(m_size, other.m_size);
-            ::swap(m_elements, other.m_elements);
+            Mods::swap(m_size, other.m_size);
+            Mods::swap(m_elements, other.m_elements);
+        }
+
+        /**
+         * @param value 
+         */
+        void fill_with(T const& value)
+        {
+            if (!m_elements)
+                return;
+            for (size_t i = 0; i < m_size; ++i)
+                m_elements[i] = value;
         }
 
         using Iterator = SimpleIterator<FixedArray, T>;
@@ -331,14 +312,23 @@ namespace Mods
         }
 
         /**
-         * @return Span<T const> 
+         * @return ReadonlySpan<T> 
          */
-        Span<T const> span() const 
+        ReadonlySpan<T> span() const 
         { 
             return { data(), size() }; 
         }
 
     private:
+        /**
+         * @param size 
+         * @return size_t 
+         */
+        static size_t storage_allocation_size(size_t size)
+        {
+            return size * sizeof(T);
+        }
+
         /**
          * @brief Construct a new Fixed Array object
          * 
@@ -354,6 +344,9 @@ namespace Mods
         size_t m_size { 0 };
         T* m_elements { nullptr };
     }; // class FixedArray
+
 } // namespace Mods
 
+#if USING_MODS_GLOBALLY
 using Mods::FixedArray;
+#endif
