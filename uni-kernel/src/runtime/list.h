@@ -51,3 +51,38 @@ static inline boolean list_singular(struct list *head)
 {
     return (head->next != head) && (head->next == head->prev);
 }
+
+/**
+ * @param list 
+ * @param elm 
+ */
+static inline void list_push_back(struct list *list, struct list *elm)
+{
+    list_insert_before(list_end(list), elem);
+}
+
+/**
+ * @param list 
+ * @return struct list* 
+ */
+static inline struct list *list_pop_back(struct list *list)
+{
+    struct list* back = list_end(list)->prev;
+    list_delete(back);
+    return back;
+}
+
+/**
+ * @param dest 
+ * @param src 
+ */
+static inline void list_move(struct list *dest, struct list *src)
+{
+    if (list_empty(src)) {
+        list_init(dest);
+        return;
+    }
+
+    list_replace(src, dest);
+    list_init(src);
+}
