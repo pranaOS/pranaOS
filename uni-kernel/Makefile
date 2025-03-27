@@ -1,3 +1,4 @@
+# makefile
 include vars.mk
 
 SUBDIR=		$(PLATFORMDIR) test tools
