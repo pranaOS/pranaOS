@@ -16,16 +16,16 @@ QEMU_IMG=	qemu-img
 GCLOUD= 	gcloud
 GSUTIL=		gsutil
 GCE_PROJECT=	prod-1033
-GCE_BUCKET=	nanos-test/gce-images
-GCE_IMAGE=	nanos-$(TARGET)
-GCE_INSTANCE=	nanos-$(TARGET)
+GCE_BUCKET=	prana-test/gce-images
+GCE_IMAGE=	prana-$(TARGET)
+GCE_INSTANCE=	prana-$(TARGET)
 
 AWS=		aws
 JQ=		jq
 PRINTF=		printf
 CLEAR_LINE=	[1K\r
-AWS_S3_BUCKET=	nanos-test
-AWS_AMI_IMAGE=	nanos-$(TARGET)
+AWS_S3_BUCKET=	prana-test
+AWS_AMI_IMAGE=	prana-$(TARGET)
 
 MKFS=		$(TOOLDIR)/mkfs
 DUMP=		$(TOOLDIR)/dump
@@ -68,7 +68,7 @@ release: kernel
 	$(CP) $(KERNEL) release
 	$(Q) $(MKDIR) release/klibs
 	bash -O extglob -c "$(CP) $(PLATFORMOBJDIR)/bin/!(test|*.dbg|kernel.*) release/klibs"
-	cd release && $(TAR) -czvf nanos-release-$(REL_OS)-${version}.tar.gz *
+	cd release && $(TAR) -czvf prana-release-$(REL_OS)-${version}.tar.gz *
 
 target: contgen
 	$(Q) $(MAKE) -C test/runtime $(TARGET)
@@ -211,7 +211,7 @@ delete-gce-image:
 	- $(Q) $(GCLOUD) compute --project=$(GCE_PROJECT) images delete $(GCE_IMAGE) --quiet
 
 run-gce: delete-gce
-	$(Q) $(GCLOUD) compute --project=$(GCE_PROJECT) instances create $(GCE_INSTANCE) --machine-type=custom-1-2048 --image=$(GCE_IMAGE) --image-project=$(GCE_PROJECT) --tags=nanos
+	$(Q) $(GCLOUD) compute --project=$(GCE_PROJECT) instances create $(GCE_INSTANCE) --machine-type=custom-1-2048 --image=$(GCE_IMAGE) --image-project=$(GCE_PROJECT) --tags=prana
 	$(Q) $(MAKE) gce-console
 
 delete-gce:
