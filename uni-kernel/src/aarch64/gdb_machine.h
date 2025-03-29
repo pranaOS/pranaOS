@@ -26,7 +26,7 @@ static inline int computeSignal(context_frame c)
  * @param c 
  * @return int 
  */
-static inline int get_register(u64 num, void *buf, context_frame c)
+static inline int get_register(u64 num, void* buf, context_frame c)
 {
     return -1;
 }
@@ -52,4 +52,53 @@ static boolean set_thread_register(thread t, int regno, u64 val)
  */
 static inline void set_thread_pc(thread t, u64 addr)
 {
+}
+
+/**
+ * @param b 
+ * @param t 
+ */
+static inline void read_registers(buffer b, thread t)
+{
+}
+
+/**
+ * @param b 
+ * @param t 
+ */
+static inline void write_registers(buffer b, thread t)
+{
+}
+
+/**
+ * @brief Set the write protect object
+ * 
+ * @param enable 
+ */
+static inline void set_write_protect(boolean enable)
+{
+}
+
+/**
+ * @param h 
+ * @param a 
+ * @param type 
+ * @param log_length 
+ * @param completion 
+ * @return boolean 
+ */
+boolean breakpoint_insert(heap h, u64 a, u8 type, u8 log_length, thunk completion)
+{
+    return false;
+}
+
+/**
+ * @param h 
+ * @param a 
+ * @param completion 
+ * @return boolean 
+ */
+boolean breakpoint_remove(heap h, u32 a, thunk completion)
+{
+    return false;
 }
