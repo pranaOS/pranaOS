@@ -11,55 +11,60 @@
 
 #pragma once
 
+#include <mods/defaultdelete.h>
+#include <mods/singlylinkedlistsizepolicy.h>
+#include <mods/stdlibextras.h>
 #include <mods/types.h>
 
-namespace Mods
+namespace Mods  
 {
 
     namespace Detail 
     {
         /**
-         * @tparam inline_capacity 
+         * @tparam inline_capacity
          */
         template<size_t inline_capacity>
         class ByteBuffer;
-    } // namespace Detail
- 
-    class Bitmap;
-    
-    using ByteBuffer = Mods::Detail::ByteBuffer<32>;
+    } // namespace Detail 
 
+    enum class TrailingCodePointTransformation : u8;
+
+    class BigEndianInputBitStream;
+    class BigEndianOutputBitStream;
+    class Bitmap;
+    using ByteBuffer = Detail::ByteBuffer<32>;
+    class CircularBuffer;
+    class ConstrainedStream;
+    class CountingStream;
+    class DeprecatedFlyString;
+    class ByteString;
+    class DeprecatedStringCodePointIterator;
+    class Duration;
     class Error;
+    class FlyString;
     class GenericLexer;
     class IPv4Address;
     class JsonArray;
     class JsonObject;
     class JsonValue;
+    class LexicalPath;
+    class LittleEndianInputBitStream;
+    class LittleEndianOutputBitStream;
+    class SearchableCircularBuffer;
+    class SeekableStream;
     class StackInfo;
+    class Stream;
     class String;
     class StringBuilder;
     class StringImpl;
     class StringView;
-    class Time;
-    class URL;
-    class FlyString;
+    class UnixDateTime;
     class Utf16View;
+    class Utf32CodePointIterator;
     class Utf32View;
     class Utf8CodePointIterator;
     class Utf8View;
-    class InputStream;
-    class InputMemoryStream;
-    class DuplexMemoryStream;
-    class OutputStream;
-    class InputBitStream;
-    class OutputBitStream;
-    class OutputMemoryStream;
-
-    /**
-     * @tparam Capacity 
-     */
-    template<size_t Capacity>
-    class CircularDuplexStream;
 
     /**
      * @tparam T 
@@ -68,196 +73,208 @@ namespace Mods
     class Span;
 
     /**
-     * @tparam T 
-     * @tparam Size 
+     * @tparam T
+     * @tparam Size
      */
     template<typename T, size_t Size>
     struct Array;
 
     /**
-     * @tparam Container 
-     * @tparam ValueType 
+     * @tparam Container
+     * @tparam ValueType
      */
     template<typename Container, typename ValueType>
     class SimpleIterator;
 
-    using ReadonlyBytes = Span<const u8>;
+    /**
+     * @tparam T 
+     */
+    template<typename T>
+    using ReadonlySpan = Span<T const>;
+
+    using ReadonlyBytes = ReadonlySpan<u8>;
     using Bytes = Span<u8>;
 
     /**
-     * @tparam T 
-     * @tparam DefaultMemoryOrder 
+     * @tparam T
+     * @tparam DefaultMemoryOrder
      */
     template<typename T, Mods::MemoryOrder DefaultMemoryOrder>
     class Atomic;
 
     /**
-     * @tparam T 
+     * @tparam T
+     * @tparam TSizeCalcuationPolicy
      */
-    template<typename T>
+    template<typename T, typename TSizeCalculationPolicy = DefaultSizeCalculationPolicy>
     class SinglyLinkedList;
 
     /**
-     * @tparam T 
+     * @tparam T
      */
     template<typename T>
     class DoublyLinkedList;
 
     /**
-     * @tparam T 
-     * @tparam capacity 
+     * @tparam T
+     * @tparam capacity
      */
     template<typename T, size_t capacity>
     class CircularQueue;
 
     /**
-     * @tparam T 
+     * @tparam T
      */
     template<typename T>
     struct Traits;
 
     /**
-     * @tparam T 
-     * @tparam TraitsForT 
-     * @tparam IsOrdered 
+     * @tparam T
+     * @tparam IsOrdered
      */
     template<typename T, typename TraitsForT = Traits<T>, bool IsOrdered = false>
     class HashTable;
 
     /**
-     * @tparam T 
-     * @tparam TraitsForT 
+     * @tparam T
      */
     template<typename T, typename TraitsForT = Traits<T>>
     using OrderedHashTable = HashTable<T, TraitsForT, true>;
 
     /**
-     * @tparam K 
-     * @tparam V 
-     * @tparam KeyTraits 
-     * @tparam IsOrdered 
+     * @tparam K
+     * @tparam V
+     * @tparam KeyTraits
+     * @tparam ValueTraits
      */
-    template<typename K, typename V, typename KeyTraits = Traits<K>, bool IsOrdered = false>
+    template<typename K, typename V, typename KeyTraits = Traits<K>, typename ValueTraits = Traits<V>, bool IsOrdered = false>
     class HashMap;
 
     /**
-     * @tparam K 
-     * @tparam V 
-     * @tparam KeyTraits 
+     * @tparam K
+     * @tparam V
+     * @tparam KeyTraits
      */
-    template<typename K, typename V, typename KeyTraits = Traits<K>>
-    using OrderedHashMap = HashMap<K, V, KeyTraits, true>;
+    template<typename K, typename V, typename KeyTraits = Traits<K>, typename ValueTraits = Traits<V>>
+    using OrderedHashMap = HashMap<K, V, KeyTraits, ValueTraits, true>;
 
     /**
-     * @tparam T 
+     * @tparam T
      */
     template<typename T>
     class Badge;
 
     /**
-     * @tparam T 
+     * @tparam T
      */
     template<typename T>
     class FixedArray;
-    
+
     /**
-     * @tparam precision 
-     * @tparam Underlying 
+     * @tparam precision
+     * @tparam Underlying
      */
     template<size_t precision, typename Underlying = i32>
     class FixedPoint;
 
     /**
-     * @tparam ypename 
+     * @tparam
      */
     template<typename>
     class Function;
 
-    /**
-     * @tparam Out 
-     * @tparam In 
-     */
     template<typename Out, typename... In>
     class Function<Out(In...)>;
 
     /**
-     * @tparam T 
+     * @tparam T
      */
     template<typename T>
     class NonnullRefPtr;
 
     /**
-     * @tparam T 
+     * @tparam T
      */
     template<typename T>
     class NonnullOwnPtr;
 
     /**
-     * @tparam T 
-     * @tparam inline_capacity 
-     */
-    template<typename T, size_t inline_capacity = 0>
-    class NonnullRefPtrVector;
-
-    /**
-     * @tparam T 
-     * @tparam inline_capacity 
-     */
-    template<typename T, size_t inline_capacity = 0>
-    class NonnullOwnPtrVector;
-
-    /**
-     * @tparam T 
+     * @tparam T
      */
     template<typename T>
     class Optional;
 
+    #ifdef KERNEL
     /**
-     * @tparam T 
+     * @tparam T
      */
     template<typename T>
-    struct RefPtrTraits;
+    class NonnullLockRefPtr;
 
     /**
-     * @tparam T 
-     * @tparam PtrTraits 
+     * @tparam T
      */
-    template<typename T, typename PtrTraits = RefPtrTraits<T>>
+    template<typename T>
+    struct LockRefPtrTraits;
+
+    /**
+     * @tparam T
+     */
+    template<typename T, typename PtrTraits = LockRefPtrTraits<T>>
+    class LockRefPtr;
+    #endif
+
+    /**
+     * @tparam T
+     */
+    template<typename T>
     class RefPtr;
 
     /**
-     * @tparam T 
+     * @tparam T
      */
-    template<typename T>
+    template<typename T, typename TDeleter = DefaultDelete<T>>
     class OwnPtr;
 
     /**
-     * @tparam T 
+     * @tparam T
      */
     template<typename T>
     class WeakPtr;
 
+    /**
+     * @tparam T
+     * @tparam inline_capacity
+     */
     template<typename T, size_t inline_capacity = 0>
     requires(!IsRvalueReference<T>) class Vector;
 
     /**
-     * @tparam T 
-     * @tparam ErrorType 
+     * @tparam T
      */
     template<typename T, typename ErrorType = Error>
     class [[nodiscard]] ErrorOr;
-}
 
+} // namespace Mods
+
+#if USING_MODS_GLOBALLY
 using Mods::Array;
 using Mods::Atomic;
 using Mods::Badge;
+using Mods::BigEndianInputBitStream;
+using Mods::BigEndianOutputBitStream;
 using Mods::Bitmap;
 using Mods::ByteBuffer;
 using Mods::Bytes;
-using Mods::CircularDuplexStream;
+using Mods::ByteString;
+using Mods::CircularBuffer;
 using Mods::CircularQueue;
+using Mods::ConstrainedStream;
+using Mods::CountingStream;
+using Mods::DeprecatedFlyString;
+using Mods::DeprecatedStringCodePointIterator;
 using Mods::DoublyLinkedList;
-using Mods::DuplexMemoryStream;
+using Mods::Duration;
 using Mods::Error;
 using Mods::ErrorOr;
 using Mods::FixedArray;
@@ -267,36 +284,43 @@ using Mods::Function;
 using Mods::GenericLexer;
 using Mods::HashMap;
 using Mods::HashTable;
-using Mods::InputBitStream;
-using Mods::InputMemoryStream;
-using Mods::InputStream;
 using Mods::IPv4Address;
 using Mods::JsonArray;
 using Mods::JsonObject;
 using Mods::JsonValue;
+using Mods::LexicalPath;
+using Mods::LittleEndianInputBitStream;
+using Mods::LittleEndianOutputBitStream;
 using Mods::NonnullOwnPtr;
-using Mods::NonnullOwnPtrVector;
 using Mods::NonnullRefPtr;
-using Mods::NonnullRefPtrVector;
 using Mods::Optional;
-using Mods::OutputBitStream;
-using Mods::OutputMemoryStream;
-using Mods::OutputStream;
 using Mods::OwnPtr;
 using Mods::ReadonlyBytes;
 using Mods::RefPtr;
+using Mods::SearchableCircularBuffer;
+using Mods::SeekableStream;
 using Mods::SinglyLinkedList;
 using Mods::Span;
 using Mods::StackInfo;
+using Mods::Stream;
 using Mods::String;
 using Mods::StringBuilder;
 using Mods::StringImpl;
 using Mods::StringView;
-using Mods::Time;
+using Mods::TrailingCodePointTransformation;
 using Mods::Traits;
-using Mods::URL;
+using Mods::UnixDateTime;
 using Mods::Utf16View;
+using Mods::Utf32CodePointIterator;
 using Mods::Utf32View;
 using Mods::Utf8CodePointIterator;
 using Mods::Utf8View;
 using Mods::Vector;
+
+#    ifdef KERNEL
+using Mods::LockRefPtr;
+using Mods::LockRefPtrTraits;
+using Mods::NonnullLockRefPtr;
+#    endif
+
+#endif
