@@ -9,43 +9,26 @@
  *
  */
 
+use clap::Parser;
+use commands::{init, add, commit, log, status, push, pull};
+
+mod cli;
 mod commands;
-mod object;
+mod networking;
+mod storage;
+mod objects;
 mod utils;
-mod core;
-mod remote;
 
-use clap::{Parser, Subcommand};
-
-#[derive(Parser)]
-#[command(name = "dvcs")]
-#[command(about = "A simple Git-inspired DVCS written in Rust")]
-struct Cli {
-    #[command(subcommand)]
-    command: Commands,
-}
-
-#[derive(Subcommand)]
-enum Commands {
-    Init,
-    Commit { message: String },
-    Log,
-    Status,
-    Push,
-    Pull,
-}
-
-fn main() -> anyhow::Result<()> {
-    let cli = Cli::parse();
+fn main() {
+    let cli = cli::args::Cli::parse();
 
     match cli.command {
-        Commands::Init => commands::init::run()?,
-        Commands::Commit { message } => commands::commit::run(&message)?,
-        Commands::Log => commands::log::run()?,
-        Commands::Status => commands::status::run()?,
-        // Commands::Push => commands::push()?,
-        // Commands::Pull => commands::pull::pull()?,
+        cli::args::Command::Init { path } => init::execute(path),
+        cli::args::Command::Add { file } => add::execute(file),
+        cli::args::Command::Commit { message } => todo!(),
+        cli::args::Command::Log => log::execute(),
+        cli::args::Command::Status => status::execute(),
+        cli::args::Command::Push { remote } => push::execute(remote),
+        cli::args::Command::Pull { remote } => pull::execute(remote),
     }
-
-    Ok(())
 }
