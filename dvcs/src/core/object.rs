@@ -1,7 +1,7 @@
 /**
- * @file object.rs
+ * @file objects.rs
  * @author Krisna Pranav
- * @brief object
+ * @brief objects
  * @version 6.0
  * @date 2023-06-28
  *
