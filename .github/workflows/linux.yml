@@ -1,4 +1,4 @@
-name: Linux C++ Workflow
+name: Linux C++ CI/CD
 
 on:
   push:

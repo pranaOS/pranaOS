@@ -1,4 +1,4 @@
-name: macos C++ (latest + 11)
+name: macos C++ CI/CD
 
 on:
   push:

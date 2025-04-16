@@ -1,4 +1,4 @@
-name: Rust
+name: Rust CI/CD
 
 on:
   push:
@@ -10,9 +10,32 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  build:
-
+  build-ubuntu:
     runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Build
+      working-directory: ./dvcs
+      run: cargo build --verbose
+    - name: Run tests
+      working-directory: ./dvcs
+      run: cargo test --verbose
+
+  build-macos:
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Build
+      working-directory: ./dvcs
+      run: cargo build --verbose
+    - name: Run tests
+      working-directory: ./dvcs
+      run: cargo test --verbose
+
+  build-windows:
+    runs-on: windows-latest
 
     steps:
     - uses: actions/checkout@v4
