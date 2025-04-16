@@ -10,4 +10,4 @@
  */
 
 pub mod hash;
-mod storage;
+pub mod storage;
