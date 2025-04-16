@@ -11,7 +11,6 @@
 
 use blake3::Hasher;
 use flate2::{Compression, write::ZlibEncoder, read::ZlibDecoder};
-use std::fs;
 use std::io::{Read, Write};
 use std::path::PathBuf;
 
