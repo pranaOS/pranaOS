@@ -12,22 +12,25 @@
 use std::fs;
 use std::path::Path;
 
-pub fn run() -> anyhow::Result<()> {
-    let head_path = Path::new(".dvcs/HEAD");
+pub fn execute() {
+    let log_path = Path::new(".dvcs/log");
 
-    if !head_path.exists() {
+    if !log_path.exists() {
         println!("No commits found.");
-        return Ok(());
+        return;
     }
 
-    let hash = fs::read_to_string(head_path)?;
-    let object_path = format!(".dvcs/objects/{}", hash.trim());
+    let log_entries = fs::read_dir(log_path)
+        .expect("Failed to read log directory")
+        .filter_map(Result::ok)
+        .map(|entry| entry.path())
+        .collect::<Vec<_>>();
 
-    if let Ok(commit) = fs::read_to_string(&object_path) {
-        println!("Latest commit:\n{}", commit);
+    if log_entries.is_empty() {
+        println!("No commits found.");
     } else {
-        println!("No commit object found for hash.");
+        for entry in log_entries {
+            println!("Commit: {}", entry.display());
+        }
     }
-
-    Ok(())
 }
