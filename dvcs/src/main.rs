@@ -13,6 +13,7 @@ mod commands;
 mod object;
 mod utils;
 mod core;
+mod remote;
 
 use clap::{Parser, Subcommand};
 
