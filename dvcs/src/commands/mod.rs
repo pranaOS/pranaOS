@@ -13,3 +13,4 @@ pub mod init;
 mod add;
 mod commit;
 mod log;
+mod status;
