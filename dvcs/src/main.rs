@@ -31,6 +31,8 @@ enum Commands {
     Commit { message: String },
     Log,
     Status,
+    Push,
+    Pull,
 }
 
 fn main() -> anyhow::Result<()> {
@@ -41,6 +43,8 @@ fn main() -> anyhow::Result<()> {
         Commands::Commit { message } => commands::commit::run(&message)?,
         Commands::Log => commands::log::run()?,
         Commands::Status => commands::status::run()?,
+        // Commands::Push => commands::push()?,
+        // Commands::Pull => commands::pull::pull()?,
     }
 
     Ok(())
