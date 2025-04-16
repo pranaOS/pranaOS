@@ -9,8 +9,32 @@
  *
  */
 
+use reqwest::blocking::Client;
 use std::error::Error;
 
-pub fn push_to_remote() {
-    
+pub fn push_to_remote(remote_url: &str, payload: Vec<u8>) -> Result<(), Box<dyn Error>> {
+    let client = Client::new();
+    let res = client.post(format!("{}/push", remote_url))
+        .body(payload)
+        .send()?;
+
+    if res.status().is_success() {
+        println!("Push successful.");
+    } else {
+        println!("Push failed: {}", res.status());
+    }
+
+    Ok(())
+}
+
+pub fn pull_from_remote(remote_url: &str) -> Result<Vec<u8>, Box<dyn Error>> {
+    let client = Client::new();
+    let res = client.get(format!("{}/pull", remote_url)).send()?;
+
+    if res.status().is_success() {
+        let data = res.bytes()?.to_vec();
+        Ok(data)
+    } else {
+        Err(format!("Pull failed: {}", res.status()).into())
+    }
 }

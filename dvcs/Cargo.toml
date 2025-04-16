@@ -17,3 +17,4 @@ log = "0.4"
 tracing = "0.1"
 anyhow = "1.0"
 hex = "0.4.3"
+reqwest = { version = "0.12", features = ["blocking", "json"] }
