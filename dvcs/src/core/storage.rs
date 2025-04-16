@@ -17,3 +17,25 @@ pub fn write_object(hash: &str, data: &[u8]) -> anyhow::Result<()> {
     fs::write(path, data)?;
     Ok(())
 }
+
+pub fn package_repository() -> anyhow::Result<Vec<u8>> {
+    let mut data = Vec::new();
+
+    for entry in fs::read_dir(".dvcs/objects")? {
+        if let Ok(entry) = entry {
+            let file_data = fs::read(entry.path())?;
+            data.extend(file_data);
+        }
+    }
+
+    Ok(data)
+}
+
+
+pub fn apply_remote_data(data: Vec<u8>) -> anyhow::Result<()> {
+    use std::fs::write;
+    write(".dvcs/remote_pack", data)?;
+    println!("Fetched data saved to .dvcs/remote_pack");
+    Ok(())
+}
+
