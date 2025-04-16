@@ -9,17 +9,19 @@
  *
  */
 
-use crate::core::{hash, storage};
 use std::fs;
 use std::path::Path;
 
-pub fn run(path: &str) -> anyhow::Result<()> {
-    let data = fs::read(path)?;
-    let hash = hash::hash_blob(&data);
+pub fn execute(file: String) {
+    let path = Path::new(&file);
 
-    storage::write_object(&hash, &data)?;
+    if !path.exists() {
+        println!("File {} does not exist", file);
+        return;
+    }
 
-    println!("Added '{}' to staging area with hash {}", path, hash);
+    let staged_file = Path::new(".dvcs/staging").join(path.file_name().unwrap());
+    fs::copy(path, staged_file).expect("Failed to add file to staging");
 
-    Ok(())
+    println!("Added {} to staging area", file);
 }
