@@ -10,3 +10,4 @@
  */
 
 pub mod hash;
+mod storage;
