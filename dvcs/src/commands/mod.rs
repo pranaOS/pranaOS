@@ -10,3 +10,4 @@
  */
 
 pub mod init;
+mod add;
