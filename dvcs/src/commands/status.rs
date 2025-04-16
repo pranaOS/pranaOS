@@ -9,7 +9,28 @@
  *
  */
 
-pub fn run() -> anyhow::Result<()> {
-    println!("Feature not fully implemented yet, but here's your status: Clean.");
-    Ok(())
+use std::fs;
+
+pub fn execute() {
+    let staged_path = ".dvcs/staging";
+
+    if !std::path::Path::new(staged_path).exists() {
+        println!("No files are staged.");
+        return;
+    }
+
+    let staged_files = fs::read_dir(staged_path)
+        .expect("Failed to read staging directory")
+        .filter_map(Result::ok)
+        .map(|entry| entry.path())
+        .collect::<Vec<_>>();
+
+    if staged_files.is_empty() {
+        println!("No files are staged.");
+    } else {
+        println!("Staged files:");
+        for file in staged_files {
+            println!("{}", file.display());
+        }
+    }
 }
