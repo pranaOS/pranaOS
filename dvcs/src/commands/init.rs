@@ -12,18 +12,15 @@
 use std::fs;
 use std::path::Path;
 
-pub fn run() -> anyhow::Result<()> {
-    let dvcs_dir = Path::new(".dvcs");
+pub fn execute(path: String) {
+    let repo_path = Path::new(&path);
 
-    if dvcs_dir.exists() {
-        println!("Repository already initialized.");
-    } else {
-        fs::create_dir_all(dvcs_dir.join("objects"))?;
-        fs::create_dir_all(dvcs_dir.join("refs"))?;
-        fs::write(dvcs_dir.join("HEAD"), b"ref: refs/heads/master\n")?;
-
-        println!("Initialized empty DVCS repository.");
+    if repo_path.exists() {
+        println!("Repository already exists at {}", path);
+        return;
     }
 
-    Ok(())
+    fs::create_dir_all(repo_path.join(".dvcs")).expect("Failed to initialize repository");
+
+    println!("Repository initialized at {}", path);
 }
