@@ -10,4 +10,5 @@
  */
 
 pub mod blob;
-mod tree;
+pub mod tree;
+pub mod commit;
