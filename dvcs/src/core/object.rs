@@ -1,7 +1,7 @@
 /**
- * @file mod.rs
+ * @file object.rs
  * @author Krisna Pranav
- * @brief mod
+ * @brief object
  * @version 6.0
  * @date 2023-06-28
  *
@@ -9,6 +9,10 @@
  *
  */
 
-pub mod hash;
-pub mod storage;
-pub mod object;
+#[derive(Debug)]
+pub enum ObjectType {
+    Blob,
+    Tree,
+    Commit,
+    Tag,
+}
