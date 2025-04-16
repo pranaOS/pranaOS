@@ -11,3 +11,4 @@
 
 pub mod init;
 mod add;
+mod commit;
