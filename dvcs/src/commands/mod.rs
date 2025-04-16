@@ -10,7 +10,7 @@
  */
 
 pub mod init;
-mod add;
-mod commit;
-mod log;
-mod status;
+pub mod add;
+pub mod commit;
+pub mod log;
+pub mod status;
