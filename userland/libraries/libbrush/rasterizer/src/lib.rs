@@ -9,4 +9,5 @@
  */
 pub mod nostd_float;
 pub mod geometry;
+mod raster;
 
