@@ -8,9 +8,13 @@
  *
  */
 
-mod errors;
+mod brush;
 mod cache;
+mod errors;
+mod pipeline;
 
+pub use brush::{BrushBuilder, TextBrush};
+pub use errors::BrushError;
 pub use glyph_brush;
 
 pub type Matrix = [[f32; 4]; 4];
