@@ -7,7 +7,19 @@
  * @copyright Copyright (c) 2021-2025 pranaOS Developers, Krisna Pranav
  *
  */
-pub mod nostd_float;
-pub mod geometry;
+
+#[cfg(not(feature = "std"))]
+#[macro_use]
+extern crate alloc;
+
+#[cfg(all(feature = "libm", not(feature = "std")))]
+mod nostd_float;
+
+#[cfg(not(any(feature = "libm", feature = "std")))]
+compile_error!("You need to activate either the `std` or `libm` feature.");
+
+mod geometry;
 mod raster;
 
+pub use geometry::{point, Point};
+pub use raster::Rasterizer;
