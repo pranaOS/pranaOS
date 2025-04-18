@@ -9,6 +9,7 @@
  */
 
 mod errors;
+mod cache;
 
 pub use glyph_brush;
 
