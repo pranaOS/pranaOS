@@ -1,6 +1,7 @@
 [workspace]
 #members = ["gfx-glyph", "glyph-brush", "layout", "draw-cache"]
 resolver = "2"
+members = ["rasterizer"]
 
 [profile.bench]
 lto = "thin"
