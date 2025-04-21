@@ -12,6 +12,7 @@ pranaOS is a flexible operating system designed for x86, ARM, mobile, and watch 
 # Features:
 - operating system for all, there are many features at this operating system, you can able to create frameworks, applications, and many more for the os(watch, mobile & desktopOS).
 - we have specialized ui & other runtime libraries so that developers can able to develop many things using it (or) they can create they're own framework or application for the pranaOS.
+- we have our own distributed version control system and our own programming language
 
 ## Kernel
 - **Multi-threaded Kernel**: Optimized for x86, ARM, mobile, and watch architectures.
