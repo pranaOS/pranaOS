@@ -15,6 +15,8 @@ namespace LibWebView
 {
     namespace JS
     {
+        std::string const onLoadHTMLInjection = R"()";
 
+        std::string const onResultResolveInjection = "webview.results";
     } // namespace JS
 } // namespace LibWebView
