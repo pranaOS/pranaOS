@@ -1,0 +1,27 @@
+[package]
+name = "event-loop"
+version = "1.0.0"
+edition = "2024"
+
+[dependencies]
+anyhow = "1.0.81"
+rayon = "1.10.0"
+downcast-rs = { version = "1.2.0", default-features = false }
+mio = { version = "0.8.11", features = ["os-poll", "net"] }
+notify = "7.0.0"
+
+[dependencies.signal-hook]
+version = "0.3.17"
+default-features = false
+features = ["channel"]
+
+[target.'cfg(unix)'.dependencies.signal-hook]
+version = "0.3.17"
+default-features = false
+features = ["channel", "iterator"]
+
+[target.'cfg(unix)'.dependencies]
+signal-hook-mio = { version = "0.2.3", features = ["support-v0_8"] }
+
+[target.'cfg(windows)'.dependencies]
+ctrlc = "3.4.4"
