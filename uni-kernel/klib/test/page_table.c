@@ -1,5 +1,5 @@
 /**
- * @file page_table.c
+ * @file page_table
  * @author Krisna Pranav
  * @version 6.0
  * @date 2025-06-05
