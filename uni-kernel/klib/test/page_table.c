@@ -8,6 +8,7 @@
  *
  */
 
+#include <aws.h>
 #include <kernel.h>
 
 closure_function(1, 3, boolean, pt_test_entry_handler, boolean, writable, int level, u64 vaddr, pteptr entry)
