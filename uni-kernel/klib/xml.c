@@ -10,6 +10,7 @@
  */
 
 #include "xml.h"
+#include <aws.h>
 #include <runtime.h>
 
 boolean xml_get_elem(buffer b, sstring name, xml_elem elem)
