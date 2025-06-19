@@ -1,5 +1,5 @@
 # pranaOS
-Operating System designed for x86, ARM, mobile, and watch platforms. It provides a robust kernel, a graphical user interface, and a comprehensive set of libraries for application development. With a focus on performance, security, and modularity, pranaOS aims to be a versatile OS for various computing environments.
+Operating System for x86, ARM, mobile, and watch platforms. It provides a robust kernel, a graphical user interface, and a comprehensive set of libraries for application development. With a focus on performance, security, and modularity, pranaOS aims to be a versatile OS for various computing environments.
 
 <p align="center">
 <img src="https://raw.githubusercontent.com/pranaOS/pranaOS/master/imgs/pranaOS.png" width="200" height="200">
