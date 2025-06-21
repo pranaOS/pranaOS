@@ -2,6 +2,7 @@
 
 ## Coding style:
 - check out the [coding style](https://github.com/pranaOS/pranaOS/blob/master/docs/CodingStyle.md) before contributing to this project :)
+- contributions are always welcome :) 
 
 ## PullRequest:
 
