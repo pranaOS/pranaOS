@@ -24,5 +24,8 @@ u32 crc32c(const u8* data, bytes len)
 {
     u32 crc = ~0;
 
+    for(bytes i = 0; i < len; i++)
+        crc = crc32c_table[(crc ^ data[i]) & 0xff] ^ (crc >> 8);
+
     return ~crc;
 }
