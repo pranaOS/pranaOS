@@ -1,9 +1,9 @@
 /**
  * @file batteryutils.h
  * @author Krisna Pranav
- * @brief batteryutils
- * @version 6.0
- * @date 2025-07-03
+ * @brief Advanced battery utility functions
+ * @version 7.0
+ * @date 2024-05-21
  * 
  * @copyright Copyright (c) 2021-2025 pranaOS Developers, Krisna Pranav
  * 
@@ -12,18 +12,20 @@
 #pragma once
 
 #include <config.h>
+#include <cstdint>
 
 namespace LibUtils
 {
-
-    class BatteryUtils
+    /**
+     * @brief Represents the charging state of the battery.
+     */
+    enum class BatteryChargingState : uint8_t
     {
-    public:
-      int getBatteryPercentage();
-      int getCycleCounts();
-
-      BatteryUtils() {};
-      ~BatteryUtils() {};
-    }; // class BatteryUtils
+        Unknown,
+        Discharging,
+        Charging,
+        Full
+    };
+    
 
 } // namespace LibUtils
