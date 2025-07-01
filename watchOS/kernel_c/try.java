@@ -23,9 +23,6 @@ public class Try extends JFrame {
 
     public static void main(String[] args) {
         boolean resizable = true;
-        boolean closable = true;
-        boolean maximizable = true;
-        boolean iconifiable = true;
 
         f = new JFrame("frame");
 
