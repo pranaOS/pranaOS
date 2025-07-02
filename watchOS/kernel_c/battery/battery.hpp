@@ -16,3 +16,7 @@ float batteryVoltage();
 float batteryPercentage();
 
 float batteryCapacity();
+
+float charge();
+
+float chargeCycle();
