@@ -26,6 +26,11 @@ namespace LibUtils
         Charging,
         Full
     };
-    
+
+    /**
+    * @brief A collection of utility functions to query battery status.
+    *
+    * This class provides a static interface, so it does not need to be instantiated.
+    */
 
 } // namespace LibUtils
