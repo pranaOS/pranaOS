@@ -32,5 +32,7 @@ namespace LibUtils
     *
     * This class provides a static interface, so it does not need to be instantiated.
     */
-
-} // namespace LibUtils
+    class BatteryUtils
+    {
+    };
+    } // namespace LibUtils
