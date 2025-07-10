@@ -55,3 +55,6 @@
 #define LONGTOUCH_UNLOCK 400
 #define LONGTOUCH_INAPP 400
 #define TOUCH_LIFETIME 2500
+
+#define TOUCH 30
+#define CYCLE 30
