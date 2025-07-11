@@ -26,4 +26,6 @@ public:
 
 	// month name short
 	static void monthNameShort(char (&name)[4], int month);
+
+    static void yearNameShort(char (&name)[4], int year);
 };
