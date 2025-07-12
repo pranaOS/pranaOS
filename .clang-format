@@ -24,6 +24,4 @@ AlwaysBreakTemplateDeclarations: Yes
 
 AllowShortLoopsOnASingleLine: true
 
-BinPackArguments: false
-
 ColumnLimit: 0
