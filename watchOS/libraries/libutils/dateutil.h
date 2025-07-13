@@ -15,17 +15,39 @@
 class DateUtil {
 public:
 
-	// weekdays
+	/**
+	 * @param year 
+	 * @param month 
+	 * @param day 
+	 * @return uint8_t 
+	 */
 	static uint8_t weekday(uint year, uint8_t month, uint8_t day);
 
-	// get days in mnth
+	/**
+	 * @param year 
+	 * @param month 
+	 * @return uin8_t 
+	 */
 	static uin8_t getDaysInMonth(uint year, int month);
 
-	// week days
+	/**
+	 * @param dayInWeekStr 
+	 * @param year 
+	 * @param month 
+	 * @param day 
+	 */
 	static void weekdayName(char *dayInWeekStr, uint year, uint8_t month, uint8_t day);
 
-	// month name short
+	/**
+	 * @param name 
+	 * @param month 
+	 */
 	static void monthNameShort(char (&name)[4], int month);
 
+	/**
+	 * @param name 
+	 * @param year 
+	 * @return * void 
+	 */
     static void yearNameShort(char (&name)[4], int year);
 };
