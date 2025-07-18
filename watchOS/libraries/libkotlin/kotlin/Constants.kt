@@ -24,3 +24,8 @@ enum class OSAppID(val value: Byte) {
     EMAIL(1),
     UNKNOWN(-1),
 }
+
+enum OSIDS(val value: Byte) {
+    UID(0),
+    EID(1),
+}
