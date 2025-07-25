@@ -250,3 +250,10 @@ pub fn report(writer: &mut impl WriteColor, source: &str, (error, span): &ErrorS
     let diagnostic = error.as_diagnostic(span);
     term::emit(writer, &config, &file, &diagnostic).expect("failed to write to output");
 }
+
+pub fn report_output(writer: &mut impl WriteColor, source: &str, (error, span): &ErrorS) {
+    let file = SimpleFile::new("<script>", source);
+    let config = term::Config::default();
+    let diagnostic = error.as_diagnostic(span);
+    term::emit(writer, &config, &file, &diagnostic).expect("failed to write to output");
+}
