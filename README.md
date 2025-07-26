@@ -29,7 +29,7 @@ Operating System for x86, ARM, mobile, and watch platforms. It provides a robust
 - objective-c runtime support **(libobjc)**
 - swift runtime support **(libswift)**
 - java runtime and support for kernel **(libjava)**
-- Application runtime(swift/c++)
+- Application runtime(swift/c++/objective-c)
 
 ## Userland
 - **POSIX Compatibility**: Supports standard Unix utilities, signals, and `/proc` filesystem.
