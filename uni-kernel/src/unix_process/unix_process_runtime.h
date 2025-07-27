@@ -11,6 +11,9 @@
 
 typedef int descriptor;
 
+/**
+ * @return heap 
+ */
 heap init_process_runtime();
 
 /**
@@ -24,3 +27,17 @@ sstring errno_sstring(void);
  * @return heap 
  */
 heap allocate_mmapheap(heap meta, bytes size);
+
+/**
+ * @param parent 
+ * @return heap 
+ */
+heap make_tiny_heap(heap parent);
+
+/**
+ * @param h 
+ * @param argc 
+ * @param argv 
+ * @return tuple 
+ */
+tuple parse_arguments(heap h, int argc, char **argv);
