@@ -10,3 +10,17 @@
 */
 
 typedef int descriptor;
+
+heap init_process_runtime();
+
+/**
+ * @return sstring 
+ */
+sstring errno_sstring(void);
+
+/**
+ * @param meta 
+ * @param size 
+ * @return heap 
+ */
+heap allocate_mmapheap(heap meta, bytes size);
