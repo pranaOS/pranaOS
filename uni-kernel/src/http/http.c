@@ -41,3 +41,33 @@ struct http_responder
     u32 http_version;
     boolean keepalive;
 };
+
+closure_function(3, 2, boolean, each_header,
+                 buffer, dest, symbol, ignore, boolean, dealloc,
+                 value n, value v)
+{
+    if(n != bound(ignore))
+    {
+        if(is_tuple(v) || is_symbol(v))
+            bprintf(bound(dest), "%v: %v\r\n", n, v);
+        else
+            bprintf(bound(dest), "%v: %b\r\n", n, (buffer)v);
+    }
+
+    if(bound(dealloc))
+    {
+        assert(!is_tuple(v));
+        deallocate_value(v);
+    }
+    return true;
+}
+
+/**
+ * @param dest
+ * @param t
+ */
+static void http_header(buffer dest, tuple t)
+{
+    iterate(t, stack_closure(each_header, dest, sym(url), false));
+    bprintf(dest, "\r\n");
+}
