@@ -71,3 +71,31 @@ static void http_header(buffer dest, tuple t)
     iterate(t, stack_closure(each_header, dest, sym(url), false));
     bprintf(dest, "\r\n");
 }
+
+/**
+ * @param h
+ * @param bh
+ * @param method
+ * @param headers
+ * @param body
+ * @return status
+ */
+status http_request(heap h, buffer_handler bh, http_method method, tuple headers, buffer body)
+{
+    buffer b = allocate_buffer(h, 100);
+    buffer url = get(headers, sym(url));
+    bprintf(b, "%s %b HTTP/1.1\r\n", http_request_methods[method], url);
+    buffer content_len = little_stack_buffer(16);
+    bprintf(content_len, "%ld", body ? buffer_length(body) : 0);
+    set(headers, sym(Content - Length), content_len);
+    http_header(b, headers);
+    status s = apply(bh, b);
+    if(!is_ok(s))
+    {
+        deallocate_buffer(b);
+        return timm_up(s, "result", "%s failed to send", func_ss);
+    }
+    if(body)
+        s = apply(bh, body);
+    return s;
+}
