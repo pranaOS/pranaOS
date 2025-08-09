@@ -62,3 +62,42 @@ void unix_shutdown(void);
  * @param prog 
  */
 void program_set_perms(tuple root, tuple prog);
+
+/**
+ * @param b 
+ */
+void dump_mem_stats(buffer b);
+
+/**
+ * @param s 
+ */
+void coredump_set_limit(u64 s);
+
+/**
+ * @return u64 
+ */
+u64 coredump_get_limit(void);
+
+/**
+ * @param p 
+ * @return timestamp 
+ */
+timestamp proc_utime(process p);
+
+/**
+ * @param p 
+ * @return timestamp 
+ */
+timestamp proc_stime(process p);
+
+/**
+ * @param t 
+ * @return timestamp 
+ */
+timestamp thread_utime(thread t);
+
+/**
+ * @param t 
+ * @return timestamp 
+ */
+timestamp thread_stime(thread t);
