@@ -99,3 +99,43 @@ status http_request(heap h, buffer_handler bh, http_method method, tuple headers
         s = apply(bh, body);
     return s;
 }
+
+/**
+ * @param out
+ * @param t
+ * @return status
+ */
+static status send_http_headers(http_responder out, tuple t)
+{
+    status s;
+
+    if(out->keepalive && out->http_version <= HTTP_VER(1, 0))
+        set(t, sym(connection), aprintf(out->h, "keep-alive"));
+    else if(!out->keepalive && out->http_version >= HTTP_VER(1, 1))
+        set(t, sym(connection), aprintf(out->h, "close"));
+
+    buffer d = allocate_buffer(transient, 128);
+    bprintf(d, "HTTP/%d.%d ", HTTP_MAJ(out->http_version), HTTP_MIN(out->http_version));
+
+    symbol ss = sym(status);
+    string sstr = get_string(t, ss);
+
+    if(sstr)
+        bprintf(d, "%b\r\n", sstr);
+    else
+        bprintf(d, "200 OK\r\n");
+
+    iterate(t, stack_closure(each_header, d, ss, true));
+    deallocate_value(t);
+    bprintf(d, "\r\n");
+
+    s = apply(out->out, d);
+
+    if(!is_ok(s))
+    {
+        deallocate_buffer(d);
+        return timm_up(s, "result", "%s failed to send", func_ss);
+    }
+
+    return STATUS_OK;
+}
