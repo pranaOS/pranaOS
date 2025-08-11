@@ -139,3 +139,20 @@ static status send_http_headers(http_responder out, tuple t)
 
     return STATUS_OK;
 }
+
+http_listener allocate_http_listener(heap h, u16 port)
+{
+    http_listener hl = allocate(h, sizeof(struct http_listener));
+    if(hl == INVALID_ADDRESS)
+        return hl;
+
+    hl->h = h;
+    hl->default_handler = 0;
+    list_init(&hl->registrants);
+    return hl;
+}
+
+void deallocate_http_listener(heap h, http_listener hl)
+{
+    deallocate(h, hl, sizeof(struct http_listener));
+}
