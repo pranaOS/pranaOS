@@ -140,6 +140,16 @@ static status send_http_headers(http_responder out, tuple t)
     return STATUS_OK;
 }
 
+void http_register_default_handler(http_listener hl, http_request_handler each)
+{
+    hl->default_handler = each;
+}
+
+connection_handler connection_handler_from_http_listener(http_listener hl)
+{
+    return closure(hl->h, each_http_connection, hl);
+}
+
 http_listener allocate_http_listener(heap h, u16 port)
 {
     http_listener hl = allocate(h, sizeof(struct http_listener));
