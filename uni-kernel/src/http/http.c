@@ -140,6 +140,11 @@ static status send_http_headers(http_responder out, tuple t)
     return STATUS_OK;
 }
 
+/**
+ * @param hl
+ * @param uri
+ * @param each
+ */
 void http_register_uri_handler(http_listener hl, sstring uri, http_request_handler each)
 {
     http_listener_registrant r = allocate(hl->h, sizeof(struct http_listener_registrant));
@@ -149,6 +154,10 @@ void http_register_uri_handler(http_listener hl, sstring uri, http_request_handl
     list_insert_before(&hl->registrants, &r->l);
 }
 
+/**
+ * @param hl
+ * @param each
+ */
 void http_register_default_handler(http_listener hl, http_request_handler each)
 {
     hl->default_handler = each;
