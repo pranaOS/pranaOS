@@ -140,6 +140,19 @@ static status send_http_headers(http_responder out, tuple t)
     return STATUS_OK;
 }
 
+closure_function(1, 1, boolean, http_ibh,
+                 buffer_handler, parser,
+                 buffer b)
+{
+    status s = apply(bound(parser), b);
+    if(!b)
+        closure_finish();
+    if(s == STATUS_OK)
+        return false;
+    timm_dealloc(s);
+    return true;
+}
+
 /**
  * @param hl
  * @param uri
