@@ -140,6 +140,100 @@ static status send_http_headers(http_responder out, tuple t)
     return STATUS_OK;
 }
 
+closure_function(2, 1, void, each_http_request,
+                 http_listener, hl, struct http_responder, hr,
+                 value v)
+{
+    http_method method;
+    http_listener hl = bound(hl);
+    http_responder hr = &bound(hr);
+    vector vsl = get_vector(v, sym(start_line));
+    if(!vsl || vsl == INVALID_ADDRESS)
+        goto not_found;
+
+    buffer ver = vector_get(vsl, 2);
+
+    if(ver)
+    {
+        get_http_ver(alloca_wrap(ver), &hr->http_version);
+        if(hr->http_version > HTTP_VER(1, 1))
+            goto bad_ver;
+
+        check_keepalive(hr, v);
+    }
+
+    buffer mb = vector_get(vsl, 0);
+
+    for(method = 0; method < HTTP_REQUEST_METHODS; method++)
+    {
+        if(buffer_compare(mb, alloca_wrap_sstring(http_request_methods[method])))
+            break;
+    }
+
+    if(method == HTTP_REQUEST_METHODS)
+        goto not_found;
+
+    buffer uri = vector_get(vsl, 1);
+
+    if(!uri || buffer_length(uri) < 1 || *(u8*)buffer_ref(uri, 0) != '/')
+        goto not_found;
+
+    if(buffer_length(uri) == 1)
+    {
+        if(!hl->default_handler)
+            goto not_found;
+        apply(hl->default_handler, method, hr, v);
+        return;
+    }
+
+    buffer rel_uri = clone_buffer(hl->h, uri);
+    assert(rel_uri != INVALID_ADDRESS);
+    buffer_consume(rel_uri, 1);
+    int total_len = buffer_length(rel_uri);
+    int top_len = 0;
+    char* top = buffer_ref(rel_uri, 0);
+
+    for(int i = 0; i < total_len; i++)
+    {
+        if(top[i] == '/')
+        {
+            buffer_consume(rel_uri, 1);
+            break;
+        }
+        top_len++;
+    }
+
+    http_listener_registrant match = 0;
+    list_foreach(&hl->registrants, l)
+    {
+        http_listener_registrant r = struct_from_list(l, http_listener_registrant, l);
+        if((top_len == r->uri.len) && !runtime_memcmp(top, r->uri.ptr, top_len))
+        {
+            match = r;
+            break;
+        }
+    }
+
+    buffer_consume(rel_uri, top_len);
+    if(buffer_length(rel_uri) > 0)
+        set(v, sym(relative_uri), rel_uri);
+    else
+        deallocate_buffer(rel_uri);
+
+    if(match)
+        apply(match->each, method, hr, v);
+    return;
+not_found:
+    send_http_response(hr, timm("status", "404 Not Found"),
+                       aprintf(hl->h, "<html><head><title>404 Not Found</title></head>"
+                                      "<body><h1>Not Found</h1></body></html>\r\n"));
+    return;
+bad_ver:
+    send_http_response(hr, timm("status", "505 HTTP Version Not Supported"),
+                       aprintf(hl->h, "<html><head><title>505 HTTP Version Not Supported</title></head>"
+                                      "<body><h1>Use HTTP/1.1</h1></body></html>\r\n"));
+}
+
 closure_function(1, 1, boolean, http_ibh,
                  buffer_handler, parser,
                  buffer b)
