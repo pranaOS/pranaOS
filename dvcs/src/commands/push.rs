@@ -9,7 +9,6 @@
  *
  */
 
-// src/commands/push.rs
 use crate::networking::http::push_to_remote;
 
 pub fn execute(remote: String) {
