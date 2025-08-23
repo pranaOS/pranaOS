@@ -20,9 +20,8 @@ pub fn save_commit(commit: Commit) -> io::Result<()> {
         fs::create_dir_all(path)?;
     }
 
-    let commit_path = path.join("commit_1234");  // Placeholder for commit ID
+    let commit_path = path.join(path); 
     let mut file = File::create(commit_path)?;
-    // file.write_all(&commit.serialize())?;
     file.write(&commit.serialize()?.into_bytes())?;
 
     Ok(())
