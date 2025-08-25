@@ -1,1 +1,1 @@
-kernel designed to run one application in a vm
+monolithic kernel designed to run one application in a vm
