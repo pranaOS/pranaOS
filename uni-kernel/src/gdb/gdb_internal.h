@@ -126,6 +126,4 @@ boolean handle_query(gdb g, buffer b, string out, handler h);
  * @param outh 
  * @return buffer_handler 
  */
-buffer_handler init_gdb(heap h,
-                        process p,
-                        buffer_handler outh);
+buffer_handler init_gdb(heap h, process p, buffer_handler outh);
