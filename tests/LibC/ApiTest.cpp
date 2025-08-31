@@ -13,3 +13,7 @@ using namespace LibC;
 void api::initialize() {
     log(Info, "YEEEE api test succeded");
 }
+
+void api::syscall() {
+    log(INFO, "Syscall initialized");
+}
