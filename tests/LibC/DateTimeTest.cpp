@@ -11,3 +11,9 @@ Time dateTime::current() {
     doSyscall(SYSCALL_GET_DATETIME, (uint32_t)&result);
     return result;
 }
+
+Time dateTime::year() {
+    Time result;
+    doSyscall(SYSCALL_GET_DATETIME, (uint32_t)&result);
+    return result;
+}
