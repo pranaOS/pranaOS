@@ -121,16 +121,3 @@ void test_hex2mem()
     deallocate_buffer(b);
     printf("test_hex2mem passed.\n");
 }
-
-int main()
-{
-    test_get_char();
-    test_check();
-    test_reset_buffer();
-    test_parse_hex_pair();
-    test_mem2hex();
-    test_hex2mem();
-
-    printf("\nAll gdb utility tests passed!\n");
-    return 0;
-}
