@@ -4,7 +4,7 @@
 - check out the [coding style](docs/CodingStyle.md) before contributing to this project :)
 - contributions are always welcome :) 
 
-## PullRequest:
+## pull requests:
 
 ## Library:
 - if your working in library use this type of pull request template
