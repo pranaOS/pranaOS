@@ -38,3 +38,16 @@ typedef struct dt_reserve_entry
     u64 address;
     u64 size;
 }* dt_reserve_entry;
+
+struct dt_node
+{
+    u32 token;
+    char name[0];
+};
+
+struct dt_prop
+{
+    u32 data_length;
+    u32 name;
+    u8 data[0];
+};
