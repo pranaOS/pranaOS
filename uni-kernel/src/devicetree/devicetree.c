@@ -51,3 +51,9 @@ struct dt_prop
     u32 name;
     u8 data[0];
 };
+
+closure_type(dt_node_begin_handler, boolean, dt_node n, sstring name, int level, dt_node parent);
+closure_type(dt_node_end_handler, boolean, dt_node n, int level);
+closure_type(dt_prop_handler, boolean, void* dtb, dt_node n, sstring name, dt_prop p);
+
+#define nelem(x) (sizeof((x)) / sizeof((x)[0]))
