@@ -57,3 +57,27 @@ closure_type(dt_node_end_handler, boolean, dt_node n, int level);
 closure_type(dt_prop_handler, boolean, void* dtb, dt_node n, sstring name, dt_prop p);
 
 #define nelem(x) (sizeof((x)) / sizeof((x)[0]))
+static struct prop_value_map
+{
+    sstring name;
+    int type;
+} prop_value_map[] = {
+    {ss_static_init("compatible"), DT_VALUE_STRINGLIST},
+    {ss_static_init("model"), DT_VALUE_STRING},
+    {ss_static_init("phandle"), DT_VALUE_U32},
+    {ss_static_init("status"), DT_VALUE_STRING},
+    {ss_static_init("#address-cells"), DT_VALUE_U32},
+    {ss_static_init("#size-cells"), DT_VALUE_U32},
+    {ss_static_init("#interrupt-cells"), DT_VALUE_U32},
+    {ss_static_init("interrupt-parent"), DT_VALUE_PHANDLE},
+    {ss_static_init("reg"), DT_VALUE_REG},
+    {ss_static_init("virtual-reg"), DT_VALUE_U32},
+    {ss_static_init("device_type"), DT_VALUE_STRING},
+    {ss_static_init("bootargs"), DT_VALUE_STRING},
+    {ss_static_init("stdout-path"), DT_VALUE_STRING},
+    {ss_static_init("stdin-path"), DT_VALUE_STRING},
+    {ss_static_init("clock-frequency"), DT_VALUE_FREQ},
+    {ss_static_init("timebase-frequency"), DT_VALUE_FREQ},
+    {ss_static_init("mmu-type"), DT_VALUE_STRING},
+    {ss_static_init("cpu"), DT_VALUE_PHANDLE},
+};
