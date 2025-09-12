@@ -81,3 +81,25 @@ static struct prop_value_map
     {ss_static_init("mmu-type"), DT_VALUE_STRING},
     {ss_static_init("cpu"), DT_VALUE_PHANDLE},
 };
+
+unsigned int dt_prop_cell_count(dt_prop prop)
+{
+    return dt_u32(prop->data_length) / sizeof(u32);
+}
+
+u32 dt_prop_get_cell(dt_prop prop, unsigned int index)
+{
+    void* ptr = prop->data + index * sizeof(u32);
+    return dt_u32(*((u32*)ptr));
+}
+
+sstring dtb_string(void* dtb, u64 off)
+{
+    dt_header fdt = dtb;
+    u64 end = dt_u32(fdt->size_dt_strings);
+    if(off >= end)
+        return ss("(bad string offset)");
+    return sstring_from_cstring((char*)fdt + dt_u32(fdt->off_dt_strings) + off, end - off);
+}
+
+#define MAX_NODE_DEPTH 16
