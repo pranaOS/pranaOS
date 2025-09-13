@@ -103,3 +103,71 @@ sstring dtb_string(void* dtb, u64 off)
 }
 
 #define MAX_NODE_DEPTH 16
+
+/**
+ * @param dtb
+ * @param dn
+ * @param nbh
+ * @param neh
+ * @param ph
+ */
+void dtb_walk_internal(void* dtb, dt_node dn, dt_node_begin_handler nbh, dt_node_end_handler neh, dt_prop_handler ph)
+{
+    dt_node nstack[MAX_NODE_DEPTH];
+    sstring name;
+    int nodelevel = 0;
+    dt_header fdt = dtb;
+    u8* n = (u8*)dn;
+    if(dt_u32(fdt->magic) != DTB_MAGIC)
+    {
+        console("dtb_walk_internal: bad magic\n");
+        return;
+    }
+    u8* end = dtb + dt_u32(fdt->totalsize);
+    while(true)
+    {
+        if(n < (u8*)dtb || n >= end)
+        {
+            console("dtb_walk_internal: parsing outside blob; aborted\n");
+            return;
+        }
+        u32 token = dt_u32(*(u32*)n);
+        void* curtok = n;
+        n += 4;
+        void* data = n;
+        switch(token)
+        {
+        case FDT_BEGIN_NODE:
+            name = sstring_from_cstring(data, end - n);
+            if(nbh && !apply(nbh, (dt_node)curtok, name, nodelevel, nodelevel ? nstack[nodelevel - 1] : INVALID_ADDRESS))
+                return;
+            n += pad(name.len + 1, 4);
+            nstack[nodelevel++] = curtok;
+            break;
+        case FDT_END_NODE:
+            nodelevel--;
+            if(neh && !apply(neh, nstack[nodelevel], nodelevel))
+                return;
+            if(nodelevel == 0)
+                return;
+            break;
+        case FDT_PROP:
+        {
+            dt_prop p = data;
+            name = dt_string(dtb, p->name);
+            if(ph && !apply(ph, dtb, nstack[nodelevel - 1], name, p))
+                return;
+            n += sizeof(*p) + pad(dt_u32(p->data_length), 4);
+            break;
+        }
+        case FDT_NOP:
+            break;
+        case FDT_END:
+            console("dtb_walk_internal: unexpected FDT_END\n");
+            return;
+        default:
+            console("dtb_walk_internal: unknown token\n");
+            return;
+        }
+    }
+}
