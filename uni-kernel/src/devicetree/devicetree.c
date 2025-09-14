@@ -171,3 +171,33 @@ void dtb_walk_internal(void* dtb, dt_node dn, dt_node_begin_handler nbh, dt_node
         }
     }
 }
+
+/**
+ * @param dtb
+ * @return u32
+ */
+u32 dtb_blob_size(void* dtb)
+{
+    dt_header fdt = dtb;
+    if(dt_u32(fdt->magic) != DTB_MAGIC)
+    {
+        console("dtb_blob_size: bad magic\n");
+        return 0;
+    }
+    return dt_u32(fdt->totalsize);
+}
+
+/**
+ * @param dtb
+ * @return dt_node
+ */
+dt_node dtb_get_root(void* dtb)
+{
+    dt_header fdt = dtb;
+    if(dt_u32(fdt->magic) != DTB_MAGIC)
+    {
+        console("dtb_get_root: bad magic\n");
+        return INVALID_ADDRESS;
+    }
+    return (dt_node)(dtb + dt_u32(fdt->off_dt_struct));
+}
