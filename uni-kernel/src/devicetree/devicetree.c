@@ -201,3 +201,28 @@ dt_node dtb_get_root(void* dtb)
     }
     return (dt_node)(dtb + dt_u32(fdt->off_dt_struct));
 }
+
+closure_function(2, 4, boolean, get_parent_handler,
+                 dt_node, ln, dt_node*, p,
+                 dt_node n, sstring name, int level, dt_node parent)
+{
+    if(bound(ln) == n)
+    {
+        *bound(p) = parent;
+        return false;
+    }
+    return true;
+}
+
+/**
+ * @param dtb
+ * @param n
+ * @return dt_node
+ */
+dt_node dtb_get_parent(void* dtb, dt_node n)
+{
+    dt_node parent = INVALID_ADDRESS;
+    dtb_walk_internal(dtb, dtb_get_root(dtb),
+                      stack_closure(get_parent_handler, n, &parent), 0, 0);
+    return parent;
+}
