@@ -226,3 +226,31 @@ dt_node dtb_get_parent(void* dtb, dt_node n)
                       stack_closure(get_parent_handler, n, &parent), 0, 0);
     return parent;
 }
+
+closure_function(2, 4, boolean, get_prop_handler,
+                 sstring, pname, dt_prop*, p,
+                 void* dtb, dt_node n, sstring name, dt_prop p)
+{
+    if(runtime_strcmp(bound(pname), name) == 0)
+    {
+        *bound(p) = p;
+        return false;
+    }
+    return true;
+}
+
+/**
+ * @brief Construct a new closure func basic object
+ *
+ * @param n
+ * @param name
+ * @param level
+ * @param parent
+ */
+closure_func_basic(dt_node_begin_handler, boolean, get_prop_nb,
+                   dt_node n, sstring name, int level, dt_node parent)
+{
+    if(level > 0)
+        return false;
+    return true;
+}
