@@ -254,3 +254,19 @@ closure_func_basic(dt_node_begin_handler, boolean, get_prop_nb,
         return false;
     return true;
 }
+
+/**
+ * @param dtb
+ * @param dn
+ * @param pname
+ * @return dt_prop
+ */
+dt_prop dtb_get_prop(void* dtb, dt_node dn, sstring pname)
+{
+    dt_prop p = INVALID_ADDRESS;
+    if(dn == INVALID_ADDRESS)
+        return p;
+    dtb_walk_internal(dtb, dn, stack_closure_func(dt_node_begin_handler, get_prop_nb), 0,
+                      stack_closure(get_prop_handler, pname, &p));
+    return p;
+}
